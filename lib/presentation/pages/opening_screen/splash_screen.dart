@@ -37,10 +37,11 @@ class _SplashScreenState extends State<SplashScreen> {
         userOnboardingUseCase: checkUserOnboardingUseCase,
       )));
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const SelectSignScreen()),
-      );
+      print(isFirstTime);
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (_) => const SelectSignScreen()),
+      // );
     }
   }
 

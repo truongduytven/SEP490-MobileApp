@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/theme/color.dart';
 
 class OnBoardingSlideData {
   final String imagePath;
@@ -15,41 +16,50 @@ class OnBoardingSlideData {
 // A single slide layout: image + title + description
 class OnBoardingSlide extends StatelessWidget {
   final OnBoardingSlideData slide;
-
   const OnBoardingSlide({super.key, required this.slide});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.bgColor,
+      ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Image
-          Expanded(
-            child: Image.asset(
-              slide.imagePath,
-              fit: BoxFit.cover,
-            ),
+          Image.asset(
+            slide.imagePath,
           ),
-          const SizedBox(height: 24),
           // Title
-          Text(
-            slide.title,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+            child: Text(
+              slide.title,
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+                height: 1,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           // Description
-          Text(
-            slide.description,
-            style: const TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Text(
+              slide.description,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
-          const SizedBox(height: 24),
         ],
       ),
     );
