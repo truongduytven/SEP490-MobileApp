@@ -62,7 +62,7 @@ class _OnBoaringScreenState extends State<OnBoaringScreen> {
     if (_currentPage < slides.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
-        curve: Curves.easeIn,
+        curve: Curves.easeInOut,
       );
     } else {
       _completeOnboarding();
@@ -73,7 +73,7 @@ class _OnBoaringScreenState extends State<OnBoaringScreen> {
     if (_currentPage > 0) {
       _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
-        curve: Curves.easeIn,
+        curve: Curves.easeInOut,
       );
     } else {
       Navigator.pushReplacement(
@@ -153,7 +153,6 @@ class _OnBoaringScreenState extends State<OnBoaringScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Container(
-                  // Some margin if you want spacing on the sides
                   margin: const EdgeInsets.only(left: 20, bottom: 20),
                   child: ElevatedButton(
                     onPressed: _goToPreviousPage,
@@ -162,10 +161,6 @@ class _OnBoaringScreenState extends State<OnBoaringScreen> {
                       minimumSize: const Size(0, 60),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
-                        // side: BorderSide(
-                        //   color: AppColors.secondaryColor,
-                        //   width: 2.0,
-                        // ),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),

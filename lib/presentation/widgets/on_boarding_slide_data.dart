@@ -13,7 +13,6 @@ class OnBoardingSlideData {
   });
 }
 
-// A single slide layout: image + title + description
 class OnBoardingSlide extends StatelessWidget {
   final OnBoardingSlideData slide;
   const OnBoardingSlide({super.key, required this.slide});
@@ -30,11 +29,9 @@ class OnBoardingSlide extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Image
           Image.asset(
             slide.imagePath,
           ),
-          // Title
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
             child: Text(
@@ -48,7 +45,6 @@ class OnBoardingSlide extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          // Description
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: Text(
