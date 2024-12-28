@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/opening_screen/splash_screen.dart';
+import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 void main() async {
