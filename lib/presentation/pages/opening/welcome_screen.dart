@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/domain/use_cases/user_pref_repository.dart';
-import 'package:sep490/presentation/pages/opening_screen/onboaring_screen.dart';
+import 'package:sep490/presentation/pages/opening/onboaring_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class WelcomeScreen extends StatelessWidget {

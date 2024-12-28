@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/domain/use_cases/user_pref_repository.dart';
-import 'package:sep490/presentation/pages/opening_screen/welcome_screen.dart';
+import 'package:sep490/presentation/pages/opening/select_sign.dart';
+import 'package:sep490/presentation/pages/opening/welcome_screen.dart';
 import 'package:sep490/presentation/widgets/on_boarding_slide_data.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -53,9 +54,12 @@ class _OnBoaringScreenState extends State<OnBoaringScreen> {
   Future<void> _completeOnboarding() async {
     await widget.userOnboardingUseCase.completeOnboarding();
     if (!mounted) return;
-    //--------------------------------------------------------------------------------------------------
-    Navigator.pop(context);
-    //--------------------------------------------------------------------------------------------------
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const SelectSignScreen(),
+      ),
+    );
   }
 
   void _goToNextPage() {

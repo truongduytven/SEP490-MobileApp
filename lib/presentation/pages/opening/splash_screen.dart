@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:sep490/data/repositories/user_pref_repository_impl.dart';
 import 'package:sep490/data/services/local_storage_service.dart';
 import 'package:sep490/domain/use_cases/user_pref_repository.dart';
-import 'package:sep490/presentation/pages/opening_screen/select_sign.dart';
-import 'package:sep490/presentation/pages/opening_screen/welcome_screen.dart';
+import 'package:sep490/presentation/pages/opening/select_sign.dart';
+import 'package:sep490/presentation/pages/opening/welcome_screen.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:lottie/lottie.dart';
 
@@ -36,11 +36,10 @@ class _SplashScreenState extends State<SplashScreen> {
         userOnboardingUseCase: checkUserOnboardingUseCase,
       )));
     } else {
-      print(isFirstTime);
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (_) => const SelectSignScreen()),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const SelectSignScreen()),
+      );
     }
   }
 
