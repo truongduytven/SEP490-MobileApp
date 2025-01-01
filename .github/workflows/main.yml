@@ -16,14 +16,6 @@ jobs:
           distribution: "zulu"
           java-version: "11"
 
-      - name: Install SDK 34
-        run: |
-          sudo sdkmanager --install "platform-tools" \
-                          "platforms;android-34" \
-                          "build-tools;34.0.0" \
-                          --sdk_root=$ANDROID_SDK_ROOT
-          yes | sdkmanager --licenses --sdk_root=$ANDROID_SDK_ROOT
-
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
