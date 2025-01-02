@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/presentation/pages/auth/forgot_password_screen.dart';
+import 'package:sep490/theme/color.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text("Sign In"),
+        title: Text(
+          "Đăng nhập",
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w700,
+            color: AppColors.secondaryColor,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
       ),
       body: SafeArea(
         child: SizedBox(
@@ -21,40 +30,48 @@ class SignInScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-                  const Text(
-                    "Welcome Back",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Chào mừng",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          "đã đến với Senior Essentials, nơi kết nối các thành viên trong gia đình cũng như dễ quản lí sức khỏe của người cao tuổi",
+                          textAlign:
+                              TextAlign.start, // Align text content to the left
+                          style: TextStyle(color: AppColors.textColor),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Sign in with your email and password  \nor continue with social media",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Color(0xFF757575)),
-                  ),
-                  // const SizedBox(height: 16),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   SignInForm(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "hoặc tiếp tục với",
+                        style: TextStyle(color: Color(0xFF757575)),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SocalCard(
-                        icon:   SvgPicture.asset('assets/icons/googleIcon.svg', width: 50, height: 50),
-                        press: () {},
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: SocalCard(
-                          icon: SvgPicture.asset('assets/icons/facebookIcon.svg', width: 50, height: 50),
-                          press: () {},
-                        ),
-                      ),
-                      SocalCard(
-                        icon: SvgPicture.asset('assets/icons/twitterIcon.svg', width: 50, height: 50),
+                        icon: SvgPicture.asset('assets/icons/googleIcon.svg',
+                            width: 50, height: 50),
                         press: () {},
                       ),
                     ],
@@ -73,94 +90,143 @@ class SignInScreen extends StatelessWidget {
 
 const authOutlineInputBorder = OutlineInputBorder(
   borderSide: BorderSide(color: Color(0xFF757575)),
-  borderRadius: BorderRadius.all(Radius.circular(100)),
+  borderRadius: BorderRadius.all(Radius.circular(20)),
 );
 
-class SignInForm extends StatelessWidget {
+class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
+
+  @override
+  State<SignInForm> createState() => _SignInFormState();
+}
+
+class _SignInFormState extends State<SignInForm> {
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode passwordFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    emailFocusNode.addListener(() {
+      setState(() {});
+    });
+    passwordFocusNode.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Form(
       child: Column(
         children: [
-          TextFormField(
-            onSaved: (email) {},
-            onChanged: (email) {},
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-                hintText: "Enter your email",
-                labelText: "Email",
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                hintStyle: const TextStyle(color: Color(0xFF757575)),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                suffix: SvgPicture.string(
-                  mailIcon,
-                ),
-                border: authOutlineInputBorder,
-                enabledBorder: authOutlineInputBorder,
-                focusedBorder: authOutlineInputBorder.copyWith(
-                    borderSide: const BorderSide(color: Color(0xFFFF7643)))),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+          Focus(
+            focusNode: emailFocusNode,
             child: TextFormField(
-              onSaved: (password) {},
-              onChanged: (password) {},
-              obscureText: true,
+              onSaved: (email) {},
+              onChanged: (email) {},
+              textInputAction: TextInputAction.next,
               decoration: InputDecoration(
-                  hintText: "Enter your password",
-                  labelText: "Password",
+                  hintText: "Nhập email hoặc số điện thoại",
+                  labelText: "Email hoặc số điện thoại",
+                  labelStyle: TextStyle(
+                    color: emailFocusNode.hasFocus
+                        ? AppColors.primaryColor
+                        : AppColors.textColor,
+                  ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   hintStyle: const TextStyle(color: Color(0xFF757575)),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 16,
                   ),
-                  suffix:SvgPicture.asset('assets/icons/lockIcon.svg'),
+                  suffix: SvgPicture.string(
+                    mailIcon,
+                  ),
                   border: authOutlineInputBorder,
                   enabledBorder: authOutlineInputBorder,
                   focusedBorder: authOutlineInputBorder.copyWith(
-                      borderSide: const BorderSide(color: Color(0xFFFF7643)))),
+                      borderSide:
+                          const BorderSide(color: AppColors.primaryColor))),
             ),
           ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ForgotPasswordScreen(),
-                ),
-              );
-            },
-            child: Text(
-              'Forgot Password?',
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .color!
-                        .withOpacity(0.64),
-                  ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Focus(
+              focusNode: passwordFocusNode,
+              child: TextFormField(
+                onSaved: (password) {},
+                onChanged: (password) {},
+                obscureText: true,
+                decoration: InputDecoration(
+                    hintText: "Nhập mật khẩu",
+                    labelText: "Mật khẩu",
+                    labelStyle: TextStyle(
+                      color: passwordFocusNode.hasFocus
+                          ? AppColors.primaryColor
+                          : AppColors.textColor,
+                    ),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    hintStyle: const TextStyle(color: Color(0xFF757575)),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    suffix: SvgPicture.asset('assets/icons/lockIcon.svg'),
+                    border: authOutlineInputBorder,
+                    enabledBorder: authOutlineInputBorder,
+                    focusedBorder: authOutlineInputBorder.copyWith(
+                        borderSide:
+                            const BorderSide(color: AppColors.primaryColor))),
+              ),
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ForgotPasswordScreen(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "Quên mật khẩu?",
+                  style: TextStyle(
+                    color: AppColors.primaryColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
               elevation: 0,
-              backgroundColor: const Color(0xFFFF7643),
-              foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 48),
+              backgroundColor: AppColors.secondaryColor,
+              foregroundColor: AppColors.bgColor,
+              minimumSize: const Size(double.infinity, 55),
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
             ),
-            child: const Text("Continue"),
+            child: const Text(
+              "Đăng nhập",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
         ],
       ),
@@ -187,7 +253,7 @@ class SocalCard extends StatelessWidget {
         height: 56,
         width: 56,
         decoration: const BoxDecoration(
-          color: Color(0xFFF5F6F9),
+          color: AppColors.bgColor,
           shape: BoxShape.circle,
         ),
         child: icon,
@@ -207,7 +273,7 @@ class NoAccountText extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          "Don’t have an account? ",
+          "Không có tài khoản? ",
           style: TextStyle(color: Color(0xFF757575)),
         ),
         GestureDetector(
@@ -215,15 +281,12 @@ class NoAccountText extends StatelessWidget {
             // Handle navigation to Sign Up
           },
           child: const Text(
-            "Sign Up",
+            "Đăng kí",
             style: TextStyle(
-              color: Color(0xFFFF7643),
-            ),
+                color: AppColors.primaryColor, fontWeight: FontWeight.w600),
           ),
         ),
       ],
     );
   }
 }
-
-
