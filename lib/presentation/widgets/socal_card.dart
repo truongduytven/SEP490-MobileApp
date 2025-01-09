@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sep490/theme/color.dart';
 
 class SocalCard extends StatelessWidget {
-  const  SocalCard({
+  const SocalCard({
     Key? key,
     required this.icon,
     required this.press,
@@ -20,7 +20,7 @@ class SocalCard extends StatelessWidget {
         height: 56,
         width: 56,
         decoration: const BoxDecoration(
-          color: AppColors.bgColor,
+          color: AppColors.grayColor2,
           shape: BoxShape.circle,
         ),
         child: icon,

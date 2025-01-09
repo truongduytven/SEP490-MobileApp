@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/presentation/pages/auth/signup_screen.dart';
-import 'package:sep490/presentation/widgets/signIn_form.dart';
+import 'package:sep490/presentation/widgets/form/signin_form.dart';
+import 'package:sep490/presentation/widgets/socal_card.dart';
 import 'package:sep490/theme/color.dart';
 
 class SignInScreen extends StatelessWidget {
@@ -87,7 +88,12 @@ class SignInScreen extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Handle navigation to Sign Up
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignUpScreen(),
+                            ),
+                          );
                         },
                         child: const Text(
                           "Đăng kí",

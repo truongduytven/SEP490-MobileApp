@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:sep490/presentation/widgets/form/otp_form.dart';
+import 'package:sep490/theme/color.dart';
 
 class OtpScreen extends StatelessWidget {
   const OtpScreen({super.key});
@@ -7,13 +8,18 @@ class OtpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bgColor,
         title: const Text(
-          "OTP Verification",
-          style: TextStyle(color: Color(0xFF757575)),
+          "Xác thực mã OTP",
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w700,
+            color: AppColors.secondaryColor,
+          ),
         ),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SizedBox(
@@ -25,29 +31,40 @@ class OtpScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 16),
                   const Text(
-                    "OTP Verification",
+                    "Xác thực OTP",
                     style: TextStyle(
-                      color: Colors.black,
+                      color: AppColors.textColor,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    "We sent your code to +1 898 860 *** \nThis code will expire in 00:30",
+                    "Chúng tôi đã gửi mã code tới +1 898 860 *** \nVui lòng kiểm tra, mã code sẽ hết hạn lúc 08:24",
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Color(0xFF757575)),
+                    style: TextStyle(color: AppColors.textColor),
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   const OtpForm(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "Resend OTP Code",
-                      style: TextStyle(color: Color(0xFF757575)),
-                    ),
-                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Không nhận được mã? ",
+                        style: TextStyle(color: Color(0xFF757575)),
+                      ),
+                      GestureDetector(
+                        onTap: () {},
+                        child: const Text(
+                          " Gửi lại mã OTP",
+                          style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -58,65 +75,4 @@ class OtpScreen extends StatelessWidget {
   }
 }
 
-const authOutlineInputBorder = OutlineInputBorder(
-  borderSide: BorderSide(color: Color(0xFF757575)),
-  borderRadius: BorderRadius.all(Radius.circular(12)),
-);
 
-class OtpForm extends StatefulWidget {
-  const OtpForm({super.key});
-
-  @override
-  _OtpFormState createState() => _OtpFormState();
-}
-
-class _OtpFormState extends State<OtpForm> {
-  // Variable to store the OTP value
-  String _otpCode = "";
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      child: Column(
-        children: [
-          // OtpTextField to handle OTP input
-          OtpTextField(
-            numberOfFields: 6, // Number of OTP input fields
-            borderColor: const Color(0xFF757575),
-            showFieldAsBox: true,
-            onCodeChanged: (String code) {
-              // You can handle OTP code change here if needed
-              setState(() {
-                _otpCode = code;
-              });
-            },
-            onSubmit: (String code) {
-              // Handle OTP submission
-              print("Submitted OTP: $code");
-              setState(() {
-                _otpCode = code;
-              });
-            },
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              // Print OTP code when Continue is pressed
-              print("OTP Code entered: $_otpCode");
-            },
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              backgroundColor: const Color(0xFFFF7643),
-              foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 48),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-              ),
-            ),
-            child: const Text("Continue"),
-          ),
-        ],
-      ),
-    );
-  }
-}

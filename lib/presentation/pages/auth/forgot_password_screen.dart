@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/widgets/forgor_password_form.dart';
+import 'package:sep490/presentation/pages/auth/signup_screen.dart';
+import 'package:sep490/presentation/widgets/form/forgor_password_form.dart';
 import 'package:sep490/theme/color.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
@@ -29,7 +30,6 @@ class ForgotPasswordScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-
                   const SizedBox(height: 8),
                   const Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -42,12 +42,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   const ForgotPasswordForm(),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-
-                  // const NoAccountText(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -57,7 +54,12 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Handle navigation to Sign Up
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignUpScreen(),
+                            ),
+                          );
                         },
                         child: const Text(
                           "Đăng kí",
@@ -78,10 +80,6 @@ class ForgotPasswordScreen extends StatelessWidget {
   }
 }
 
-// const authOutlineInputBorder = OutlineInputBorder(
-//   borderSide: BorderSide(color: Color(0xFF757575)),
-//   borderRadius: BorderRadius.all(Radius.circular(100)),
-// );
 const authOutlineInputBorder = OutlineInputBorder(
   borderSide: BorderSide(color: Color(0xFF757575)),
   borderRadius: BorderRadius.all(Radius.circular(20)),
