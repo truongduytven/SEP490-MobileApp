@@ -12,9 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'LeagueSpartan'
-      ),
+      theme: ThemeData(fontFamily: 'LeagueSpartan'),
       color: AppColors.bgColor,
       home: SplashScreen(),
       debugShowCheckedModeBanner: false,
