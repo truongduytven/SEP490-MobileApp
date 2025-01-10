@@ -28,8 +28,9 @@ class AuthField extends StatelessWidget {
     return Theme(
       data: Theme.of(context).copyWith(
         inputDecorationTheme: InputDecorationTheme(
-          hintStyle: const TextStyle(color: AppColors.grayColor3),
-          labelStyle: TextStyle(color: AppColors.textColor),
+          hintStyle: const TextStyle(color: AppColors.grayColor3, fontSize: 20),
+          labelStyle: TextStyle(color: AppColors.textColor, fontSize: 19),
+
           floatingLabelBehavior: FloatingLabelBehavior.always,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -66,6 +67,7 @@ class AuthField extends StatelessWidget {
         keyboardType: keyboardType,
         textInputAction: textInputAction,
         maxLength: maxLength,
+        style: TextStyle(color: AppColors.textColor, fontSize: 20),
       ),
     );
   }

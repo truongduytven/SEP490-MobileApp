@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/auth/signin_screen.dart';
 import 'package:sep490/presentation/pages/opening/select_role.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -6,12 +7,21 @@ class SelectSignScreen extends StatelessWidget {
   const SelectSignScreen({super.key});
 
   void _goToSelectRole(BuildContext context, String sign) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SelectRoleScreen(sign: sign),
-      ),
-    );
+    if (sign == 'signup') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SelectRoleScreen(sign: sign),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SignInScreen(),
+        ),
+      );
+    }
   }
 
   @override

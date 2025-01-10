@@ -6,7 +6,8 @@ import 'package:sep490/presentation/widgets/socal_card.dart';
 import 'package:sep490/theme/color.dart';
 
 class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+  final String role;
+  const SignUpScreen({super.key, required this.role});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,19 +38,19 @@ class SignUpScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Text(
+                        //   "Chào mừng",
+                        //   style: TextStyle(
+                        //     color: Colors.black,
+                        //     fontSize: 24,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        // SizedBox(height: 8),
                         Text(
-                          "Chào mừng",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          "đã đến với Senior Essentials, nơi kết nối các thành viên trong gia đình cũng như dễ quản lí sức khỏe của người cao tuổi",
+                          "Chào mừng đã đến với Senior Essentials, nơi kết nối các thành viên trong gia đình cũng như dễ quản lí sức khỏe của người cao tuổi",
                           textAlign: TextAlign.start,
-                          style: TextStyle(color: AppColors.textColor),
+                          style: TextStyle(color: AppColors.textColor, fontSize: 16),
                         ),
                       ],
                     ),
@@ -88,7 +89,8 @@ class SignUpScreen extends StatelessWidget {
                           " Đăng nhập",
                           style: TextStyle(
                               color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w600),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18),
                         ),
                       ),
                     ],
