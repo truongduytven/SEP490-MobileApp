@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/auth/signin_screen.dart';
 import 'package:sep490/presentation/pages/chat/chat_screen.dart';
 import 'package:sep490/presentation/pages/health/health_screen.dart';
 import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
 import 'package:sep490/presentation/pages/ultility/ultility_screen.dart';
 import 'package:sep490/theme/color.dart';
-
-import 'package:shared_preferences/shared_preferences.dart'; // Ensure you import the LoginPage
+import 'package:flutter/services.dart';// Ensure you import the LoginPage
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _NavigationMenuState createState() => _NavigationMenuState();
 }
 
@@ -21,17 +20,20 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
-        if (_selectedIndex != 0) {
-          setState(() {
-            _selectedIndex = 0;
-          });
-          return false; // Prevent default back navigation
-        } else {
-          await _showLogoutDialog(); // Show logout dialog
-          return false; // Prevent default back navigation
-        }
+        // if (_selectedIndex != 0) {
+        //   setState(() {
+        //     _selectedIndex = 0;
+        //   });
+        //   return false; // Prevent default back navigation
+        // } else {
+        //   await _showOutDialog(); // Show logout dialog
+        //   return false; // Prevent default back navigation
+        // }
+        await _showOutDialog();
+        return false; // Show logout dialog
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -139,17 +141,17 @@ class _NavigationMenuState extends State<NavigationMenu> {
     }
   }
 
-  Future<void> _showLogoutDialog() async {
+  Future<void> _showOutDialog() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // User must tap button to dismiss
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Đăng xuất'),
+          title: Text('Thoát ứng dụng'),
           content: SingleChildScrollView(
             child: ListBody(
-              children: <Widget>[
-                Text('Bạn có chắc muốn đăng xuất?'),
+              children: const <Widget> [
+                Text('Bạn có chắc chắn muốn thoát ứng dụng không?'),
               ],
             ),
           ),
@@ -161,15 +163,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
               },
             ),
             TextButton(
-              child: Text('Đăng xuất'),
+              child: Text('Thoát ngay'),
               onPressed: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.clear(); // Clear all stored data
-
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => SignInScreen()),
-                  (Route<dynamic> route) => false,
-                ); // Navigate to login page and remove all previous routes
+                SystemNavigator.pop(); // Navigate to login page and remove all previous routes
               },
             ),
           ],
