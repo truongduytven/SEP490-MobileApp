@@ -1,0 +1,78 @@
+import 'package:flutter/material.dart';
+import 'package:sep490/presentation/widgets/form/otp_form.dart';
+import 'package:sep490/theme/color.dart';
+
+class OtpScreen extends StatelessWidget {
+  const OtpScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bgColor,
+      appBar: AppBar(
+        backgroundColor: AppColors.bgColor,
+        title: const Text(
+          "Xác thực mã OTP",
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w700,
+            color: AppColors.secondaryColor,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Xác thực OTP",
+                    style: TextStyle(
+                      color: AppColors.textColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Chúng tôi đã gửi mã code tới +1 898 860 *** \nVui lòng kiểm tra, mã code sẽ hết hạn lúc 08:24",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.textColor),
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                  const OtpForm(),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Không nhận được mã? ",
+                        style: TextStyle(color: Color(0xFF757575)),
+                      ),
+                      GestureDetector(
+                        onTap: () {},
+                        child: const Text(
+                          " Gửi lại mã OTP",
+                          style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+

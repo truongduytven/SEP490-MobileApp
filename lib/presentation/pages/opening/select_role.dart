@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/auth/signin_screen.dart';
+import 'package:sep490/presentation/pages/auth/signup_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class SelectRoleScreen extends StatefulWidget {
@@ -44,8 +46,30 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
 
   void _continue() {
     if (_selectedRole == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a role to continue')),
+      );
       return;
     }
+
+    if (widget.sign == 'signin') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignInScreen(),
+          // builder: (context) => SignInScreen(role: roleData[_selectedRole!]['role']),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          // builder: (context) => SignUpScreen(role: roleData[_selectedRole!]['role']),
+          builder: (context) => SignUpScreen(),
+        ),
+      );
+    }
+
     // Push to login or register screen
   }
 
