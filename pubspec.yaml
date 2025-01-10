@@ -42,6 +42,7 @@ dependencies:
   dropdown_button2: ^2.3.9
   flutter_datetime_picker: ^1.5.1
   table_calendar: ^3.2.0
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,7 @@ flutter:
   assets:
     - assets/img/
     - assets/icons/
+    - assets/img3D/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
