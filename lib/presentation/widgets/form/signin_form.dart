@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/presentation/pages/auth/forgot_password_screen.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -32,7 +33,7 @@ class _SignInFormState extends State<SignInForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey, 
+      key: _formKey,
       child: Column(
         children: [
           AuthField(
@@ -78,10 +79,13 @@ class _SignInFormState extends State<SignInForm> {
           const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                print('Email/Số điện thoại: ${emailController.text}');
-                print('Mật khẩu: ${passwordController.text}');
-              }
+              // if (_formKey.currentState!.validate()) {
+              //   print('Email/Số điện thoại: ${emailController.text}');
+              //   print('Mật khẩu: ${passwordController.text}');
+              // }
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                return NavigationMenu();
+              }));
             },
             style: ElevatedButton.styleFrom(
               elevation: 0,
