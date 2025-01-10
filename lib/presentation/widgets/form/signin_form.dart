@@ -68,7 +68,7 @@ class _SignInFormState extends State<SignInForm> {
                   "Quên mật khẩu?",
                   style: TextStyle(
                     color: AppColors.primaryColor,
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/auth/signin_screen.dart';
 import 'package:sep490/presentation/pages/auth/signup_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -27,13 +26,13 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
           'Quản lý sức khỏe người cao tuổi, nhận thông báo khẩn cấp, ...',
       'image': 'assets/img/role2.jpg',
     },
-    {
-      'role': 'doctor',
-      'title': 'Bác sĩ',
-      'description':
-          'Nhận lịch tư vấn bệnh nhân, xem thông tin sức khỏe, gửi lời cảnh báo, ...',
-      'image': 'assets/img/role3.jpg',
-    },
+    // {
+    //   'role': 'doctor',
+    //   'title': 'Bác sĩ',
+    //   'description':
+    //       'Nhận lịch tư vấn bệnh nhân, xem thông tin sức khỏe, gửi lời cảnh báo, ...',
+    //   'image': 'assets/img/role3.jpg',
+    // },
   ];
 
   int? _selectedRole;
@@ -52,25 +51,13 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
       return;
     }
 
-    if (widget.sign == 'signin') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SignInScreen(),
-          // builder: (context) => SignInScreen(role: roleData[_selectedRole!]['role']),
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          // builder: (context) => SignUpScreen(role: roleData[_selectedRole!]['role']),
-          builder: (context) => SignUpScreen(),
-        ),
-      );
-    }
-
-    // Push to login or register screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        // builder: (context) => SignUpScreen(role: roleData[_selectedRole!]['role']),
+        builder: (context) => SignUpScreen(role: roleData[_selectedRole!]['role']),
+      ),
+    );
   }
 
   @override
@@ -78,6 +65,7 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
+        backgroundColor: AppColors.bgColor,
         title: Text(
           widget.sign == 'signin' ? 'Đăng nhập với quyền' : 'Đăng ký với quyền',
           style: TextStyle(

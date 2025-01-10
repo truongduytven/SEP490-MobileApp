@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sep490/presentation/pages/auth/signup_screen.dart';
+import 'package:sep490/presentation/pages/opening/select_role.dart';
 import 'package:sep490/presentation/widgets/form/signin_form.dart';
 import 'package:sep490/presentation/widgets/socal_card.dart';
 import 'package:sep490/theme/color.dart';
@@ -37,25 +37,25 @@ class SignInScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Text(
+                        //   "Chào mừng",
+                        //   style: TextStyle(
+                        //     color: Colors.black,
+                        //     fontSize: 24,
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        // SizedBox(height: 8),
                         Text(
-                          "Chào mừng",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          "đã đến với Senior Essentials, nơi kết nối các thành viên trong gia đình cũng như dễ quản lí sức khỏe của người cao tuổi",
+                          "Chào mừng đã đến với Senior Essentials, nơi kết nối các thành viên trong gia đình cũng như dễ quản lí sức khỏe của người cao tuổi",
                           textAlign:
                               TextAlign.start, // Align text content to the left
-                          style: TextStyle(color: AppColors.textColor),
+                          style: TextStyle(color: AppColors.textColor, fontSize: 16, fontWeight: FontWeight.w400),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.08),
                   SignInForm(),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.04),
                   const Row(
@@ -63,7 +63,7 @@ class SignInScreen extends StatelessWidget {
                     children: [
                       Text(
                         "hoặc tiếp tục với",
-                        style: TextStyle(color: Color(0xFF757575)),
+                        style: TextStyle(color: Color(0xFF757575), fontSize: 20),
                       ),
                     ],
                   ),
@@ -91,7 +91,7 @@ class SignInScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignUpScreen(),
+                              builder: (context) => SelectRoleScreen(sign: 'signup'),
                             ),
                           );
                         },
@@ -99,7 +99,8 @@ class SignInScreen extends StatelessWidget {
                           "Đăng kí",
                           style: TextStyle(
                               color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w600),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18),
                         ),
                       ),
                     ],
