@@ -45,6 +45,7 @@ dependencies:
   floating_bottom_bar: ^0.0.3
   flutter_speed_dial: ^7.0.0
   flutter_ruler_picker: ^1.0.6
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:

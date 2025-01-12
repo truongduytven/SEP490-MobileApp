@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
+import 'package:sep490/presentation/pages/notification/notification_screen.dart';
 import 'package:sep490/presentation/widgets/health/horizontal_weight_slider.dart';
 import 'package:sep490/presentation/widgets/health/rules.dart';
 import 'package:sep490/theme/color.dart';
@@ -57,22 +59,7 @@ class Header extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Rules(title: "hehe"),
-                      // Scaffold(
-                      //   body: Column(
-                      //     children: [
-                      //       HorizontalWeightSlider(
-                      //         minWeight: 30.0,
-                      //         maxWeight: 150.0,
-                      //         initialWeight: 60.0,
-                      //         onWeightChanged: (weight) {
-                      //           print("Selected weight: $weight kg");
-                      //         },
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                    ),
+                        builder: (context) => NotificationScreen()),
                   );
                 },
                 icon: Image.asset(
