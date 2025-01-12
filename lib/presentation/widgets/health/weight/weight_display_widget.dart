@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sep490/theme/color.dart';
 
 class WeightDisplayWidget extends StatelessWidget {
@@ -6,12 +7,14 @@ class WeightDisplayWidget extends StatelessWidget {
   final num height; // in centimeters
   final String dateTime;
   final VoidCallback onEdit;
+  final bool isDraft;
 
   const WeightDisplayWidget({
     required this.weight,
     required this.height,
     required this.dateTime,
     required this.onEdit,
+    required this.isDraft,
     super.key,
   });
 
@@ -32,6 +35,15 @@ class WeightDisplayWidget extends StatelessWidget {
     } else {
       return "Béo phì";
     }
+  }
+
+  bool isToday(String dateTime) {
+    final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
+    final DateTime dateFromString = dateFormat.parse(dateTime);
+    final DateTime today = DateTime.now();
+    return dateFromString.year == today.year &&
+        dateFromString.month == today.month &&
+        dateFromString.day == today.day;
   }
 
   @override
@@ -55,24 +67,50 @@ class WeightDisplayWidget extends StatelessWidget {
             // Row with date-time and edit button
             Row(
               children: [
-                Icon(Icons.calendar_today,
-                    color: AppColors.secondaryColor, size: 24),
+                // Icon(
+                //   Icons.delete_outline,
+                //   color: AppColors.primaryColor,
+                //   size: 30,
+                // ),
+                isDraft
+                    ? Icon(
+                        Icons.calendar_month_outlined,
+                        color: AppColors.errorColor,
+                        size: 30,
+                      )
+                    : Icon(
+                        Icons.delete_outline,
+                        color: AppColors.primaryColor,
+                        size: 30,
+                      ),
                 SizedBox(width: 8),
                 Expanded(
                   child: Center(
                     child: Text(
-                      dateTime,
+                      isToday(dateTime) // Check if it's today's date
+                          ? "Hôm nay"
+                          : dateTime,
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                       textAlign: TextAlign.center,
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.edit,
-                      size: 32, color: AppColors.secondaryColor),
-                  onPressed: onEdit,
-                ),
+                // IconButton(
+                //   icon: Icon(Icons.edit, size: 28, color: AppColors.grayColor5),
+                //   onPressed: onEdit,
+                // ),
+                isToday(dateTime) // Check if it's today's date
+                    ? IconButton(
+                        onPressed: onEdit,
+                        icon: Icon(Icons.edit,
+                            size: 30, color: AppColors.primaryColor),
+                      )
+                    : Icon(
+                        Icons.lock_outline, // "Cannot edit" icon
+                        size: 30,
+                        color: AppColors.primaryColor,
+                      )
               ],
             ),
             Divider(color: AppColors.borderColor, thickness: 1, height: 24),

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/weight_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/weight_picker_widget_state.dart';
+import 'package:sep490/presentation/widgets/health/weight/weight_display_widget.dart';
+import 'package:sep490/presentation/widgets/health/weight/weight_picker_widget_state.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddWeight extends StatefulWidget {
   final num currentValue;
   final bool showWeightWidget;
-
-  const AddWeight({
-    super.key,
-    required this.currentValue,
-    required this.showWeightWidget,
-  });
+  final bool isDraft;
+  const AddWeight(
+      {super.key,
+      required this.currentValue,
+      required this.showWeightWidget,
+      required this.isDraft});
 
   @override
   State<AddWeight> createState() => _AddWeightState();
@@ -22,13 +22,14 @@ class _AddWeightState extends State<AddWeight> {
   late String formattedDateTime;
   late num currentValue;
   late bool showWeightWidget;
-
+  late bool isDraft;
   @override
   void initState() {
     super.initState();
-    formattedDateTime = DateFormat('MM-dd-yyyy').format(DateTime.now());
+    formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
     currentValue = widget.currentValue;
     showWeightWidget = widget.showWeightWidget;
+    isDraft = widget.isDraft;
   }
 
   void onEdit() {
@@ -89,6 +90,7 @@ class _AddWeightState extends State<AddWeight> {
       ),
       body: showWeightWidget
           ? WeightDisplayWidget(
+              isDraft: isDraft,
               height: 170,
               dateTime: formattedDateTime,
               weight: currentValue,

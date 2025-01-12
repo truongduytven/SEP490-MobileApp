@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/presentation/pages/notification/notification_screen.dart';
-import 'package:sep490/presentation/widgets/health/horizontal_weight_slider.dart';
-import 'package:sep490/presentation/widgets/health/rules.dart';
+import 'package:sep490/presentation/widgets/health/weight/horizontal_weight_slider.dart';
+import 'package:sep490/presentation/widgets/health/weight/rules.dart';
 import 'package:sep490/theme/color.dart';
 
 class Header extends StatelessWidget {

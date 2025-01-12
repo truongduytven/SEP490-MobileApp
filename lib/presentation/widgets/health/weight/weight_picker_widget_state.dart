@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ruler_picker/flutter_ruler_picker.dart';
-import 'package:sep490/presentation/widgets/health/needle_painter.dart';
+import 'package:sep490/presentation/widgets/health/weight/needle_painter.dart';
 import 'package:sep490/theme/color.dart';
 
 class WeightPickerWidget extends StatefulWidget {
@@ -73,7 +73,7 @@ class _WeightPickerWidgetState extends State<WeightPickerWidget> {
                       ),
                       SizedBox(width: 8),
                       Text(
-                        "${widget.dateTime}",
+                        "Hôm nay, ${widget.dateTime}",
                         style: TextStyle(
                           fontSize: 20,
                         ),
