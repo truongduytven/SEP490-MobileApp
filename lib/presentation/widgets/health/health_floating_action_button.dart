@@ -175,10 +175,14 @@ class HealthFloatingActionButton extends StatelessWidget {
         ),
         SpeedDialChild(
           onTap: () {
-            isDialOpen.value = false; 
+            isDialOpen.value = false;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddWeight()),
+              MaterialPageRoute(
+                  builder: (context) => AddWeight(
+                        currentValue: 40,
+                        showWeightWidget: false,
+                      )),
             );
           },
           labelWidget: ConstrainedBox(
