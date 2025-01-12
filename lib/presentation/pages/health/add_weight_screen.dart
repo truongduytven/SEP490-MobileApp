@@ -49,15 +49,18 @@ class _AddWeightState extends State<AddWeight> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Image.asset(
-            "assets/img3D/cannang.png",
-            width: 45,
-            height: 45,
-            fit: BoxFit.cover,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Image.asset(
+              "assets/img3D/cannang.png",
+              width: 45,
+              height: 45,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         title: Text(
@@ -70,27 +73,32 @@ class _AddWeightState extends State<AddWeight> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.secondaryColor,
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+              icon: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.secondaryColor,
+                ),
+                padding: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.white,
+                ),
               ),
-              padding: EdgeInsets.all(8),
-              child: Icon(
-                Icons.close,
-                color: Colors.white,
-              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
           ),
         ],
       ),
       body: showWeightWidget
           ? WeightDisplayWidget(
+            
               isDraft: isDraft,
+              typeData: "Thủ công",
               height: 170,
               dateTime: formattedDateTime,
               weight: currentValue,

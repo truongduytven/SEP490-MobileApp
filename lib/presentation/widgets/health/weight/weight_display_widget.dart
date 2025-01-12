@@ -8,6 +8,7 @@ class WeightDisplayWidget extends StatelessWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final String typeData;
 
   const WeightDisplayWidget({
     required this.weight,
@@ -15,6 +16,7 @@ class WeightDisplayWidget extends StatelessWidget {
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
+    required this.typeData,
     super.key,
   });
 
@@ -37,6 +39,22 @@ class WeightDisplayWidget extends StatelessWidget {
     }
   }
 
+  /// Get color based on BMI classification
+  Color getBMIClassificationColor(String classification) {
+    switch (classification) {
+      case "Thiếu cân":
+        return Colors.blue; // Underweight
+      case "Bình Thường":
+        return Colors.green; // Normal weight
+      case "Thừa cân":
+        return Colors.orange; // Overweight
+      case "Béo phì":
+        return Colors.red; // Obese
+      default:
+        return AppColors.textPrimary; // Default color
+    }
+  }
+
   bool isToday(String dateTime) {
     final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
     final DateTime dateFromString = dateFormat.parse(dateTime);
@@ -50,132 +68,203 @@ class WeightDisplayWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final double bmi = calculateBMI();
     final String bmiClassification = getBMIClassification(bmi);
-
-    return Card(
-      color: AppColors.bgColor,
-      margin: const EdgeInsets.all(16.0),
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Row with date-time and edit button
-            Row(
-              children: [
-                // Icon(
-                //   Icons.delete_outline,
-                //   color: AppColors.primaryColor,
-                //   size: 30,
-                // ),
-                isDraft
-                    ? Icon(
-                        Icons.calendar_month_outlined,
-                        color: AppColors.errorColor,
-                        size: 30,
-                      )
-                    : Icon(
-                        Icons.delete_outline,
-                        color: AppColors.primaryColor,
-                        size: 30,
+    final Color classificationColor =
+        getBMIClassificationColor(bmiClassification);
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Card(
+                color: AppColors.bgColor,
+                margin: const EdgeInsets.all(20.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(
+                      color: AppColors.borderColor, width: 1.5),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Row with date-time and edit button
+                      Row(
+                        children: [
+                          isDraft
+                              ? Icon(
+                                  Icons.calendar_month_outlined,
+                                  color: AppColors.textColor,
+                                  size: 30,
+                                )
+                              : Icon(
+                                  Icons.delete_outline,
+                                  color: AppColors.primaryColor,
+                                  size: 30,
+                                ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                isToday(dateTime) // Check if it's today's date
+                                    ? "Hôm nay"
+                                    : dateTime,
+                                style: TextStyle(
+                                    color: AppColors.textColor,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w400),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          isToday(dateTime)
+                              ? IconButton(
+                                  onPressed: onEdit,
+                                  icon: Icon(Icons.edit,
+                                      size: 30, color: AppColors.primaryColor),
+                                )
+                              : Icon(
+                                  Icons.lock_outline,
+                                  size: 30,
+                                  color: AppColors.primaryColor,
+                                )
+                        ],
                       ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      isToday(dateTime) // Check if it's today's date
-                          ? "Hôm nay"
-                          : dateTime,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.center,
-                    ),
+                      // Weight display
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              weight.toStringAsFixed(1),
+                              style: TextStyle(
+                                  fontSize: 80, fontWeight: FontWeight.w700),
+                            ),
+                            Transform.translate(
+                              offset: Offset(0,
+                                  -25), // Adjust the vertical position of "kg"
+                              child: Text(
+                                "kg",
+                                style: TextStyle(
+                                    fontSize: 40, color: AppColors.grayColor5),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.borderColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.draw_outlined,
+                              color: AppColors.textPrimary,
+                              size: 24,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              typeData,
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 26,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 10),
+                        child: Divider(
+                            color: AppColors.grayColor4,
+                            thickness: 0.3,
+                            height: 24),
+                      ),
+                      // BMI display
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Chỉ số khối cơ thể (BMI): ",
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            bmi.toStringAsFixed(1),
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.speed_rounded,
+                            size: 30,
+                            color: classificationColor,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            bmiClassification,
+                            style: TextStyle(
+                              fontSize: 26,
+                              color: classificationColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                // IconButton(
-                //   icon: Icon(Icons.edit, size: 28, color: AppColors.grayColor5),
-                //   onPressed: onEdit,
-                // ),
-                isToday(dateTime) // Check if it's today's date
-                    ? IconButton(
-                        onPressed: onEdit,
-                        icon: Icon(Icons.edit,
-                            size: 30, color: AppColors.primaryColor),
-                      )
-                    : Icon(
-                        Icons.lock_outline, // "Cannot edit" icon
-                        size: 30,
-                        color: AppColors.primaryColor,
-                      )
-              ],
+              ),
             ),
-            Divider(color: AppColors.borderColor, thickness: 1, height: 24),
-            // Weight display
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Cân nặng:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+          // Lưu Button
+
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+            child: ElevatedButton(
+              onPressed: () {
+                print('hehe $weight $bmi $dateTime');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondaryColor,
+                padding: EdgeInsets.all(12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
                 ),
-                Text(
-                  "${weight.toStringAsFixed(1)} kg",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              child: Text(
+                'Lưu',
+                style: TextStyle(
+                  fontSize: 28,
+                  color: AppColors.bgColor,
+                  fontWeight: FontWeight.w400,
                 ),
-              ],
+              ),
             ),
-            Divider(color: AppColors.borderColor, thickness: 1, height: 24),
-            // Height display
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Chiều cao:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                ),
-                Text(
-                  "${height.toStringAsFixed(1)} cm",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            Divider(color: AppColors.borderColor, thickness: 1, height: 24),
-            // BMI display
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "BMI:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      bmi.toStringAsFixed(1),
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      bmiClassification,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: bmiClassification == "Bình Thường"
-                            ? Colors.green
-                            : AppColors.secondaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Divider(color: AppColors.borderColor, thickness: 1, height: 24),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
