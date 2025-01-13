@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/medicine/create_medicine.dart';
+import 'package:sep490/presentation/pages/medicine/detail_medicine.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:intl/intl.dart';
 
@@ -112,13 +112,10 @@ class _HomeMedicineState extends State<HomeMedicine> {
                             selectedMonth != DateTime.now().month ||
                             selectedYear != DateTime.now().year)
                         ? () {
-                            // Set selected day to today
                             setState(() {
                               selectedDay = DateTime.now().day;
                               selectedMonth = DateTime.now().month;
                               selectedYear = DateTime.now().year;
-
-                              // Scroll to today's date
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 _scrollToSelectedDay();
                               });
@@ -149,7 +146,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
               controller: _scrollController,
               child: Row(
                 children: List.generate(daysInMonth, (index) {
-                  int day = index + 1; // Days start from 1
+                  int day = index + 1;
                   bool isSelected = day == selectedDay;
 
                   return Padding(
@@ -240,11 +237,15 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CreateMedicine(),
+                    builder: (context) => DetailMedicine(),
                   ),
                 );
               },
-              icon: const Icon(Icons.medical_services_outlined, size: 20, color: AppColors.bgColor,),
+              icon: const Icon(
+                Icons.medical_services_outlined,
+                size: 20,
+                color: AppColors.bgColor,
+              ),
               label: const Text(
                 'Chỉnh sửa hộp thuốc',
                 style: TextStyle(fontSize: 22, color: AppColors.bgColor),
