@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:sep490/presentation/pages/health/add_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -77,6 +78,19 @@ class HealthFloatingActionButton extends StatelessWidget {
           ),
         ),
         SpeedDialChild(
+          onTap: () {
+            isDialOpen.value = false;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddBloodPressureScreen(
+                        isDraft: true,
+                        currentValueSystolic: 0,
+                        currentValueDiastolic: 0,
+                        showBloodPressuretWidget: false,
+                      )),
+            );
+          },
           labelWidget: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
             child: IntrinsicWidth(
