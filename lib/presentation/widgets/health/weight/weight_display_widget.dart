@@ -43,15 +43,15 @@ class WeightDisplayWidget extends StatelessWidget {
   Color getBMIClassificationColor(String classification) {
     switch (classification) {
       case "Thiếu cân":
-        return Colors.blue; // Underweight
+        return Colors.blue;
       case "Bình Thường":
-        return Colors.green; // Normal weight
+        return Colors.green; 
       case "Thừa cân":
-        return Colors.orange; // Overweight
+        return Colors.orange; 
       case "Béo phì":
-        return Colors.red; // Obese
+        return Colors.red;
       default:
-        return AppColors.textPrimary; // Default color
+        return AppColors.textPrimary;
     }
   }
 

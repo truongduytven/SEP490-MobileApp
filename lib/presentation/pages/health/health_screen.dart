@@ -86,9 +86,33 @@ class _HealthScreenState extends State<HealthScreen> {
             children: [
               const Header(),
               const SizedBox(height: 20),
-              const Text(
-                "Sức khỏe của tôi",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+              Row(
+                children: [
+                  ClipOval(
+                    child: Image.asset(
+                      "assets/img/Logo.png",
+                      width: 30,
+                      height: 30,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  const Text(
+                    "Sức khỏe của tôi",
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        _showAccountDialog(context);
+                      },
+                      icon: Icon(
+                        color: AppColors.textPrimary,
+                        Icons.autorenew_rounded,
+                        size: 28,
+                      ))
+                ],
               ),
               Expanded(
                 child: ListView.separated(
@@ -181,4 +205,127 @@ class _HealthScreenState extends State<HealthScreen> {
       ),
     );
   }
+}
+
+void _showAccountDialog(BuildContext context) {
+  final List<Map<String, dynamic>> users = [
+    {"id": 1, "name": "User 1"},
+    {"id": 2, "name": "User 2"},
+    {"id": 3, "name": "User 3"},
+  ];
+
+  const int currentUserId = 2;
+  showDialog(
+    barrierColor: AppColors.secondaryColor.withOpacity(0.95),
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        insetPadding: EdgeInsets.all(20),
+        backgroundColor: AppColors.bgColor,
+        title: const Text(
+          "Hỗ trợ từ người thân",
+          style:
+              TextStyle(fontSize: 40, fontWeight: FontWeight.w600, height: 1.2),
+          textAlign: TextAlign.center,
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Chọn một người để xem hoặc thêm mới",
+                style: TextStyle(
+                    color: AppColors.grayColor5, fontSize: 20, height: 1.2),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: users.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == users.length) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.borderColor,
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: 22,
+                              backgroundColor: AppColors.primaryColor,
+                              child: const Icon(Icons.add, color: Colors.white),
+                            ),
+                            title: const Text(
+                              "Thêm người mới",
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        );
+                      }
+
+                      final user = users[index];
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: user['id'] == currentUserId
+                                ? AppColors.primaryColor
+                                : AppColors.borderColor,
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 5),
+                        margin: const EdgeInsets.symmetric(vertical: 6.0),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 22,
+                            child: const Icon(Icons.person),
+                          ),
+                          title: Text(
+                            user['name'],
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          trailing: user['id'] == currentUserId
+                              ? const Icon(Icons.check_circle_rounded,
+                                  color: AppColors.primaryColor)
+                              : null,
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              "Đóng",
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }
