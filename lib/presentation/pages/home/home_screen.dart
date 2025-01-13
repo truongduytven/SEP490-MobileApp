@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/widgets/health_card.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -302,7 +303,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       'assets/img3D/thuoc.png', // Replace with your asset path
                   label: 'Thuốc',
                   onTap: () {
-                    print("Thuốc clicked");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeMedicine(),
+                      ),
+                    );
                   },
                 ),
                 _buildCategoryCard(
