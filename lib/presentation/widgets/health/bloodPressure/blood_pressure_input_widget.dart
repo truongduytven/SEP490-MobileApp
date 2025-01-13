@@ -37,8 +37,9 @@ class _BloodPressureInputWidgetState extends State<BloodPressureInputWidget> {
   @override
   void initState() {
     super.initState();
-    systolicErrorMessage = "";
-    diastolicErrorMessage = "";
+    // systolicErrorMessage = "";
+    // diastolicErrorMessage = "";
+
     systolicController = TextEditingController(
         text: widget.initialValueSystolic == 0
             ? ""
@@ -113,228 +114,234 @@ class _BloodPressureInputWidgetState extends State<BloodPressureInputWidget> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 18, vertical: 4),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: AppColors.borderColor,
-                  width: 1.5,
-                ),
-                color: AppColors.bgColor,
-                borderRadius: BorderRadius.circular(20),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 20,
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.calendar_month_outlined,
-                    color: AppColors.secondaryColor,
-                    size: 24,
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AppColors.borderColor,
+                    width: 1.5,
                   ),
-                  SizedBox(width: 8),
-                  Text(
-                    "Hôm nay, ${widget.dateTime}",
-                    style: TextStyle(
-                      fontSize: 20,
+                  color: AppColors.bgColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.calendar_month_outlined,
+                      color: AppColors.secondaryColor,
+                      size: 24,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "Hôm nay, ${widget.dateTime}",
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              // Row for Systolic and Diastolic input fields
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Systolic input
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: TextField(
+                            style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w600,
+                                color: systolicFocusNode.hasFocus
+                                    ? AppColors.primaryColor
+                                    : AppColors.textColor),
+                            showCursor: false,
+                            controller: systolicController,
+                            focusNode: systolicFocusNode,
+                            keyboardType: TextInputType.number,
+                            autofocus: true,
+                            textAlign: TextAlign.center,
+                            textAlignVertical: TextAlignVertical
+                                .center, // Center text vertically
+                            decoration: InputDecoration(
+                              hintText: "---",
+                              hintStyle: TextStyle(
+                                fontSize: 40,
+                                color: systolicFocusNode.hasFocus
+                                    ? AppColors.primaryColor
+                                    : AppColors
+                                        .grayColor4, // Change color based on focus
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                                borderSide: const BorderSide(
+                                    color: AppColors.grayColor1),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                                borderSide: const BorderSide(
+                                    width: 1.5, color: AppColors.primaryColor),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: 25,
+                                horizontal: 0,
+                              ),
+                            ),
+                            onChanged: (value) => _onValueChanged(value,
+                                systolicFocusNode, diastolicFocusNode, true),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          systolicLabel,
+                          style: const TextStyle(
+                              color: AppColors.textColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Diastolic input
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: TextField(
+                            style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w600,
+                                color: diastolicFocusNode.hasFocus
+                                    ? AppColors.primaryColor
+                                    : AppColors.textColor),
+                            showCursor: false,
+                            textAlign: TextAlign.center,
+                            textAlignVertical: TextAlignVertical
+                                .center, // Center text vertically
+                            controller: diastolicController,
+                            focusNode: diastolicFocusNode,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: 25,
+                                horizontal: 0,
+                              ),
+                              hintText: "---",
+                              hintStyle: TextStyle(
+                                fontSize: 40,
+                                color: diastolicFocusNode.hasFocus
+                                    ? AppColors.primaryColor
+                                    : AppColors
+                                        .grayColor4, // Change color based on focus
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                                borderSide: const BorderSide(
+                                    color: AppColors.grayColor1),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                                borderSide: const BorderSide(
+                                    width: 1.5, color: AppColors.primaryColor),
+                              ),
+                            ),
+                            onChanged: (value) => _onValueChanged(value,
+                                diastolicFocusNode, systolicFocusNode, false),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          diastolicLabel,
+                          style: const TextStyle(
+                              color: AppColors.textColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 40),
-            // Row for Systolic and Diastolic input fields
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Systolic input
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: TextField(
-                          style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.w600,
-                              color: systolicFocusNode.hasFocus
-                                  ? AppColors.primaryColor
-                                  : AppColors.textColor),
-                          showCursor: false,
-                          controller: systolicController,
-                          focusNode: systolicFocusNode,
-                          keyboardType: TextInputType.number,
-                          autofocus: true,
-                          textAlign: TextAlign.center,
-                          textAlignVertical: TextAlignVertical
-                              .center, // Center text vertically
-                          decoration: InputDecoration(
-                            hintText: "---",
-                            hintStyle: TextStyle(
-                              fontSize: 40,
-                              color: systolicFocusNode.hasFocus
-                                  ? AppColors.primaryColor
-                                  : AppColors
-                                      .grayColor4, // Change color based on focus
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              borderSide:
-                                  const BorderSide(color: AppColors.grayColor1),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              borderSide: const BorderSide(
-                                  width: 1.5, color: AppColors.primaryColor),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 25,
-                              horizontal: 0,
-                            ),
-                          ),
-                          onChanged: (value) => _onValueChanged(value,
-                              systolicFocusNode, diastolicFocusNode, true),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        systolicLabel,
-                        style: const TextStyle(
-                            color: AppColors.textColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ],
+              if (systolicFocusNode.hasFocus)
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Text(
+                    systolicDescription,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ),
-                // Diastolic input
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: TextField(
-                          style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.w600,
-                              color: diastolicFocusNode.hasFocus
-                                  ? AppColors.primaryColor
-                                  : AppColors.textColor),
-                          showCursor: false,
-                          textAlign: TextAlign.center,
-                          textAlignVertical: TextAlignVertical
-                              .center, // Center text vertically
-                          controller: diastolicController,
-                          focusNode: diastolicFocusNode,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 25,
-                              horizontal: 0,
-                            ),
-                            hintText: "---",
-                            hintStyle: TextStyle(
-                              fontSize: 40,
-                              color: diastolicFocusNode.hasFocus
-                                  ? AppColors.primaryColor
-                                  : AppColors
-                                      .grayColor4, // Change color based on focus
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              borderSide:
-                                  const BorderSide(color: AppColors.grayColor1),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              borderSide: const BorderSide(
-                                  width: 1.5, color: AppColors.primaryColor),
-                            ),
-                          ),
-                          onChanged: (value) => _onValueChanged(value,
-                              diastolicFocusNode, systolicFocusNode, false),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        diastolicLabel,
-                        style: const TextStyle(
-                            color: AppColors.textColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ],
+              if (diastolicFocusNode.hasFocus)
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Text(
+                    diastolicDescription,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ),
-              ],
-            ),
-            if (systolicFocusNode.hasFocus)
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Text(
-                  systolicDescription,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+              if (diastolicErrorMessage != null)
+                Text(
+                  diastolicErrorMessage!,
+                  style: TextStyle(color: AppColors.errorColor, fontSize: 16),
                 ),
-              ),
-            if (diastolicFocusNode.hasFocus)
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Text(
-                  diastolicDescription,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+              if (systolicErrorMessage != null)
+                Text(
+                  systolicErrorMessage!,
+                  style: TextStyle(color: AppColors.errorColor, fontSize: 16),
                 ),
-              ),
-            if (diastolicErrorMessage != null)
-              Text(
-                diastolicErrorMessage!,
-                style: TextStyle(color: AppColors.errorColor, fontSize: 16),
-              ),
-            if (systolicErrorMessage != null)
-              Text(
-                systolicErrorMessage!,
-                style: TextStyle(color: AppColors.errorColor, fontSize: 16),
-              ),
-            const SizedBox(height: 30),
+              const SizedBox(height: 10),
 
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: (systolicErrorMessage == null &&
-                        diastolicErrorMessage == null)
-                    ? _handleSubmit // Enable button if no error messages
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondaryColor,
-                  padding: EdgeInsets.all(12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(16),
+                child: ElevatedButton(
+                  onPressed: (num.tryParse(systolicController.text) != null &&
+                              num.tryParse(systolicController.text)! >= 30 &&
+                              num.tryParse(systolicController.text)! <= 300) &&
+                          (num.tryParse(diastolicController.text) != null &&
+                              num.tryParse(diastolicController.text)! >= 20 &&
+                              num.tryParse(diastolicController.text)! <= 250)
+                      ? _handleSubmit
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.secondaryColor,
+                    padding: EdgeInsets.all(12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Tiếp tục',
-                  style: TextStyle(
-                    fontSize: 28,
-                    color: AppColors.bgColor,
-                    fontWeight: FontWeight.w400,
+                  child: Text(
+                    'Tiếp tục',
+                    style: TextStyle(
+                      fontSize: 28,
+                      color: AppColors.bgColor,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

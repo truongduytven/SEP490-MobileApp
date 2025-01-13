@@ -45,9 +45,9 @@ class WeightDisplayWidget extends StatelessWidget {
       case "Thiếu cân":
         return Colors.blue;
       case "Bình Thường":
-        return Colors.green; 
+        return Colors.green;
       case "Thừa cân":
-        return Colors.orange; 
+        return Colors.orange;
       case "Béo phì":
         return Colors.red;
       default:
@@ -159,7 +159,7 @@ class WeightDisplayWidget extends StatelessWidget {
                       ),
                       Container(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                            EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                         decoration: BoxDecoration(
                           color: AppColors.borderColor,
                           borderRadius: BorderRadius.circular(20),

@@ -27,6 +27,7 @@ class _AddBloodPressureScreenState extends State<AddBloodPressureScreen> {
   late num currentValueSystolic;
   late num currentValueDiastolic;
   late bool showBloodPressuretWidget;
+  late bool isDraft;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _AddBloodPressureScreenState extends State<AddBloodPressureScreen> {
     currentValueSystolic = widget.currentValueSystolic;
     currentValueDiastolic = widget.currentValueDiastolic;
     showBloodPressuretWidget = widget.showBloodPressuretWidget;
+    isDraft = widget.isDraft;
   }
 
   /// Switch to edit mode (hide display widget, show input widget).
@@ -106,11 +108,13 @@ class _AddBloodPressureScreenState extends State<AddBloodPressureScreen> {
       ),
       body: showBloodPressuretWidget
           ? BloodPressureDisplayWidget(
-              // systolic: currentValueSystolic,
-              // diastolic: currentValueDiastolic,
-              // dateTime: formattedDateTime,
-              // onEdit: onEdit,
-              )
+              isDraft: isDraft,
+              typeData: "Thủ công",
+              systolic: currentValueSystolic,
+              diastolic: currentValueDiastolic,
+              dateTime: formattedDateTime,
+              onEdit: onEdit,
+            )
           : BloodPressureInputWidget(
               initialValueSystolic: currentValueSystolic,
               initialValueDiastolic: currentValueDiastolic,
