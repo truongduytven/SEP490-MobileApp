@@ -257,15 +257,17 @@ void _showAccountDialog(BuildContext context) {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           margin: const EdgeInsets.symmetric(vertical: 4.0),
+                          padding: EdgeInsets.symmetric(vertical: 5),
                           child: ListTile(
                             leading: CircleAvatar(
                               radius: 22,
-                              backgroundColor: AppColors.primaryColor,
-                              child: const Icon(Icons.add, color: Colors.white),
+                              backgroundColor: Colors.transparent,
+                              child: const Icon(Icons.person_add_alt_1_outlined,
+                                  color: AppColors.primaryColor),
                             ),
                             title: const Text(
                               "Thêm người mới",
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(fontSize: 20),
                             ),
                             onTap: () {
                               Navigator.of(context).pop();
@@ -295,12 +297,18 @@ void _showAccountDialog(BuildContext context) {
                           title: Text(
                             user['name'],
                             style: TextStyle(
+                              color: user['id'] == currentUserId
+                                  ? AppColors.primaryColor
+                                  : AppColors.textColor,
+                              fontWeight: user['id'] == currentUserId
+                                  ? FontWeight.w600
+                                  : null,
                               fontSize: 20,
                             ),
                           ),
                           trailing: user['id'] == currentUserId
                               ? const Icon(Icons.check_circle_rounded,
-                                  color: AppColors.primaryColor)
+                                  size: 28, color: AppColors.primaryColor)
                               : null,
                           onTap: () {
                             Navigator.of(context).pop();
