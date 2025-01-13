@@ -51,6 +51,7 @@ class _AddBloodPressureScreenState extends State<AddBloodPressureScreen> {
       currentValueDiastolic =
           updatedValues['diastolic'] ?? currentValueDiastolic;
       showBloodPressuretWidget = true;
+      print('gia tri huyet ap $currentValueSystolic $currentValueDiastolic');
     });
   }
 
