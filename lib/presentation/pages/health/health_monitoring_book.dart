@@ -90,16 +90,14 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
     selectedTopic = widget.initialTopic;
     // Sort the listData by date and time from newest to oldest
     listData.sort((a, b) {
-      // Convert DD-MM-YYYY to YYYY-MM-DD
       String convertDateFormat(String date) {
         List<String> parts = date.split("-");
         return "${parts[2]}-${parts[1]}-${parts[0]}"; // YYYY-MM-DD
       }
 
-      // Ensure the time is in HH:mm format (adds leading zero if necessary)
       String formatTime(String time) {
         List<String> parts = time.split(":");
-        String hour = parts[0].padLeft(2, '0'); // Add leading zero if needed
+        String hour = parts[0].padLeft(2, '0');
         return "$hour:${parts[1]}";
       }
 
@@ -130,9 +128,10 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
   }
 
   // Group data by date
-  Map<String, List<Map<String, String>>> groupDataByDate() {
+  Map<String, List<Map<String, String>>> groupDataByDate(
+      List<Map<String, String>> filteredData) {
     Map<String, List<Map<String, String>>> groupedData = {};
-    for (var item in listData) {
+    for (var item in filteredData) {
       final date = item["date"]!;
       if (!groupedData.containsKey(date)) {
         groupedData[date] = [];
@@ -144,7 +143,23 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
 
   @override
   Widget build(BuildContext context) {
-    final groupedData = groupDataByDate();
+    // Filter listData based on the selectedTopic (compare using value from topics)
+    List<Map<String, String>> filteredData = listData.where((item) {
+      if (selectedTopic == "all") {
+        return true; // Show all topics
+      }
+
+      // Get the label corresponding to the selected topic value
+      String? selectedLabel = topics.firstWhere(
+          (topic) => topic["value"] == selectedTopic,
+          orElse: () => {"label": ""})["label"];
+      return item["title"] ==
+          selectedLabel; // Compare title with the selected label
+    }).toList();
+
+    // Group filtered data by date
+    Map<String, List<Map<String, String>>> filteredGroupedData =
+        groupDataByDate(filteredData);
 
     return Scaffold(
       appBar: AppBar(
@@ -203,7 +218,7 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
           // Wrap the ListView inside Expanded to avoid layout issues
           Expanded(
             child: ListView(
-              children: groupedData.entries.map((entry) {
+              children: filteredGroupedData.entries.map((entry) {
                 final date = entry.key;
                 final items = entry.value;
 
