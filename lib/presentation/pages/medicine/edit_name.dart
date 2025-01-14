@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/theme/color.dart';
 
 class EditNameScreen extends StatefulWidget {
@@ -39,7 +38,6 @@ class _EditNameScreenState extends State<EditNameScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/medicine/edit_dosage.dart';
 import 'package:sep490/presentation/pages/medicine/edit_name.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -50,6 +51,29 @@ class _DetailMedicineState extends State<DetailMedicine> {
             });
           }
         }
+        break;
+      case 'Hàm lượng':
+        {
+          final parts = value.split(' ');
+          final currentDosage = parts[0];
+          final currentUnit = parts.length > 1 ? parts[1] : 'mL';
+
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditDosageScreen(
+                currentDosage: currentDosage,
+                currentUnit: currentUnit,
+              ),
+            ),
+          );
+          if (result != null) {
+            setState(() {
+              medicineData['dosage'] = '${result['dosage']} ${result['unit']}';
+            });
+          }
+        }
+        break;
     }
   }
 

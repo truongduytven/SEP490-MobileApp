@@ -194,7 +194,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                                color: isSelected ? Colors.white : Colors.black,
+                                color: isSelected ? Colors.white : AppColors.secondaryColor,
                               ),
                             ),
                           ],
@@ -255,7 +255,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                   vertical: 12,
                   horizontal: 25,
                 ),
-                backgroundColor: Colors.black,
+                backgroundColor: AppColors.secondaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
