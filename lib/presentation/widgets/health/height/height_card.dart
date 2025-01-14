@@ -35,40 +35,36 @@ class HeightCardState extends State<HeightCard> {
       child: Column(
         children: [
           Expanded(
-            child: Card(
-              elevation: 3,
-              color: AppColors.bgColor,
-              child: Padding(
-                padding: EdgeInsets.only(top: screenAwareSize(16.0, context)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      "Kéo thanh trượt lên xuống để xác định chiều cao chính xác",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.w500),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(screenAwareSize(8.0, context)),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final double maxHeight = constraints.maxHeight > 0
-                                ? constraints.maxHeight
-                                : 300.0;
+            child: Padding(
+              padding: EdgeInsets.only(top: screenAwareSize(16.0, context)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "Kéo thanh trượt lên xuống để xác định chiều cao chính xác",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(screenAwareSize(8.0, context)),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final double maxHeight = constraints.maxHeight > 0
+                              ? constraints.maxHeight
+                              : 300.0;
 
-                            return HeightPicker(
-                              widgetHeight: maxHeight,
-                              height: height,
-                              onChange: (val) => setState(() => height = val),
-                            );
-                          },
-                        ),
+                          return HeightPicker(
+                            widgetHeight: maxHeight,
+                            height: height,
+                            onChange: (val) => setState(() => height = val),
+                          );
+                        },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

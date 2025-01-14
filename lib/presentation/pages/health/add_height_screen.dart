@@ -51,6 +51,7 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: AppColors.bgColor,
           leading: Padding(
             padding: const EdgeInsets.only(left: 10),
             child: Container(
@@ -96,6 +97,7 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
             ),
           ],
         ),
+        backgroundColor: AppColors.bgColor,
         body: showHeightWidget
             ? HeightDisplayWidget(
                 weight: 50,

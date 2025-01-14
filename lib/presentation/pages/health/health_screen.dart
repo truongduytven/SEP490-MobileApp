@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/presentation/widgets/health/card.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
@@ -137,40 +138,52 @@ class _HealthScreenState extends State<HealthScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(18),
-                                    child: Image.asset(
-                                      'assets/img3D/sotheodoi.png',
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            HealthMonitoringBook(
+                                              initialTopic: "all",
+                                            )),
+                                  );
+                                },
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(18),
+                                      child: Image.asset(
+                                        'assets/img3D/sotheodoi.png',
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: const [
-                                      Text(
-                                        'Sổ theo dõi',
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
+                                    const SizedBox(width: 16),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: const [
+                                        Text(
+                                          'Sổ theo dõi',
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Xem tất cả số lần đo của bạn.',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey,
+                                        SizedBox(height: 4),
+                                        Text(
+                                          'Xem tất cả số lần đo của bạn.',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                               Icon(
                                 Icons.arrow_forward_ios,
