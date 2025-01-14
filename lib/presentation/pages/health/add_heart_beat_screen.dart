@@ -1,48 +1,50 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/weight/weight_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/weight/weight_picker_widget_state.dart';
+import 'package:sep490/presentation/widgets/health/heartBeat/heart_beat_display_widget.dart';
+import 'package:sep490/presentation/widgets/health/heartBeat/heart_beat_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
-class AddWeight extends StatefulWidget {
+class AddHeartBeatScreen extends StatefulWidget {
   final num currentValue;
-  final bool showWeightWidget;
+  final bool showHeartBeatWidget;
   final bool isDraft;
-  const AddWeight({
+  const AddHeartBeatScreen({
     super.key,
     required this.currentValue,
-    required this.showWeightWidget,
+    required this.showHeartBeatWidget,
     required this.isDraft,
   });
 
   @override
-  State<AddWeight> createState() => _AddWeightState();
+  State<AddHeartBeatScreen> createState() => _AddHeartBeatScreenState();
 }
 
-class _AddWeightState extends State<AddWeight> {
+class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
   late String formattedDateTime;
   late num currentValue;
-  late bool showWeightWidget;
+  late bool showHeartBeatWidget;
   late bool isDraft;
   @override
   void initState() {
     super.initState();
     formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
     currentValue = widget.currentValue;
-    showWeightWidget = widget.showWeightWidget;
+    showHeartBeatWidget = widget.showHeartBeatWidget;
     isDraft = widget.isDraft;
   }
 
   void onEdit() {
     setState(() {
-      showWeightWidget = false;
+      showHeartBeatWidget = false;
     });
   }
 
   void onSubmit(num updatedValue) {
+    print("chi so nhip tim $updatedValue");
     setState(() {
       currentValue = updatedValue;
-      showWeightWidget = true;
+      showHeartBeatWidget = true;
     });
   }
 
@@ -51,21 +53,25 @@ class _AddWeightState extends State<AddWeight> {
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Image.asset(
-              "assets/img3D/cannang.png",
-              width: 45,
-              height: 45,
-              fit: BoxFit.cover,
+          padding: const EdgeInsets.only(left: 10, bottom: 5, top: 5),
+          child: SizedBox(
+            width: 10,
+            height: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(
+                "assets/img3D/nhiptim.png",
+                width: 10,
+                height: 10,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
         title: Text(
-          "Cân nặng",
+          "Nhịp tim",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -95,16 +101,15 @@ class _AddWeightState extends State<AddWeight> {
           ),
         ],
       ),
-      body: showWeightWidget
-          ? WeightDisplayWidget(
+      body: showHeartBeatWidget
+          ? HeartBeatDisplayWidget(
               isDraft: isDraft,
               typeData: "Thủ công",
-              height: 170,
               dateTime: formattedDateTime,
-              weight: currentValue,
+              heartBeat: currentValue,
               onEdit: onEdit,
             )
-          : WeightPickerWidget(
+          : HeartBeatInputWidget(
               dateTime: formattedDateTime,
               initialValue: currentValue,
               onSubmit: onSubmit,

@@ -178,6 +178,8 @@ class _BloodPressureInputWidgetState extends State<BloodPressureInputWidget> {
                             textAlignVertical: TextAlignVertical
                                 .center, // Center text vertically
                             decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.bgColor,
                               hintText: "---",
                               hintStyle: TextStyle(
                                 fontSize: 40,
@@ -241,6 +243,8 @@ class _BloodPressureInputWidgetState extends State<BloodPressureInputWidget> {
                             focusNode: diastolicFocusNode,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.bgColor,
                               contentPadding: EdgeInsets.symmetric(
                                 vertical: 25,
                                 horizontal: 0,

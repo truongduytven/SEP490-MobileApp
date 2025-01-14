@@ -329,13 +329,13 @@ void _showAccountDialog(BuildContext context) {
                 const SizedBox(height: 10),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: const [
                     Icon(
                       Icons.info_outline,
                       color: Colors.orange,
                       size: 24,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       // Adjust text to fit within the available space
                       child: Text(
