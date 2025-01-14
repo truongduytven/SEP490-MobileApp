@@ -12,4 +12,6 @@ class AppColors {
   static const Color iconColor = Color(0xFF5F669A);
   static const Color grayColor2 = Color.fromARGB(255, 236, 237, 238);
   static const Color grayColor3 = Color.fromARGB(255, 148, 148, 149);
+  static const Color borderColor = Color(0xFFF1EDFD);
+  static const Color textPrimary = Color.fromARGB(255, 110, 97, 149);
 }

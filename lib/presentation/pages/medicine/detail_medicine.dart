@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/medicine/edit_dosage.dart';
+import 'package:sep490/presentation/pages/medicine/edit_form_medical.dart';
 import 'package:sep490/presentation/pages/medicine/edit_name.dart';
+import 'package:sep490/presentation/pages/medicine/edit_remaining.dart';
+import 'package:sep490/presentation/pages/medicine/edit_treatment.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -54,9 +57,17 @@ class _DetailMedicineState extends State<DetailMedicine> {
         break;
       case 'Hàm lượng':
         {
-          final parts = value.split(' ');
-          final currentDosage = parts[0];
-          final currentUnit = parts.length > 1 ? parts[1] : 'mL';
+          final firstSpaceIndex = value.indexOf(' ');
+          final String currentDosage;
+          final String currentUnit;
+
+          if (firstSpaceIndex != -1) {
+            currentDosage = value.substring(0, firstSpaceIndex).trim();
+            currentUnit = value.substring(firstSpaceIndex + 1).trim();
+          } else {
+            currentDosage = value.trim();
+            currentUnit = 'mL';
+          }
 
           final result = await Navigator.push(
             context,
@@ -74,6 +85,50 @@ class _DetailMedicineState extends State<DetailMedicine> {
           }
         }
         break;
+      case 'Dạng':
+        {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditFormMedical(currentForm: value),
+            ),
+          );
+          if (result != null) {
+            setState(() {
+              medicineData['form'] = result;
+            });
+          }
+        }
+        break;
+      case 'Điều trị':
+        {
+          final newTreatment = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditTreatment(currentTreatment: value),
+            ),
+          );
+          if (newTreatment != null && newTreatment is String) {
+            setState(() {
+              medicineData['treatment'] = newTreatment;
+            });
+          }
+        }
+        break;
+      case 'Trong hộp còn':
+        {
+          final newRemaining = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditRemaining(currentRemaining: value),
+            ),
+          );
+          if (newRemaining != null && newRemaining is String) {
+            setState(() {
+              medicineData['remaining'] = newRemaining;
+            });
+          }
+        }
     }
   }
 
@@ -292,6 +347,11 @@ class _DetailMedicineState extends State<DetailMedicine> {
             ),
             Row(
               children: [
+                if (title == 'Dạng') _buildImgForm(value),
+                if (title == 'Điều trị') _buildImgTreatment(value),
+                SizedBox(
+                  width: 10,
+                ),
                 Text(
                   value.isNotEmpty ? value : '-',
                   style: const TextStyle(
@@ -307,6 +367,54 @@ class _DetailMedicineState extends State<DetailMedicine> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildImgTreatment(String value) {
+    String imgPath = 'assets/img3D/treatment_medical/huyetap.png';
+    if (value == 'Tiểu đường') {
+      imgPath = 'assets/img3D/treatment_medical/tieuduong.png';
+    } else if (value == 'Tim mạch') {
+      imgPath = 'assets/img3D/treatment_medical/timmach.png';
+    } else if (value == 'Não') {
+      imgPath = 'assets/img3D/treatment_medical/nao.png';
+    } else if (value == 'Gan') {
+      imgPath = 'assets/img3D/treatment_medical/gan.png';
+    } else if (value == 'Phổi') {
+      imgPath = 'assets/img3D/treatment_medical/phoi.png';
+    } else if (value == 'Thận') {
+      imgPath = 'assets/img3D/treatment_medical/than.png';
+    } else if (value == 'Xương khớp') {
+      imgPath = 'assets/img3D/treatment_medical/xuong.png';
+    } else if (value == 'Khác') {
+      imgPath = 'assets/img3D/form_medical/khac.png';
+    }
+    return CircleAvatar(
+      backgroundColor: Colors.blue[50],
+      radius: 20,
+      child: Image.asset(imgPath, width: 30, height: 30),
+    );
+  }
+
+  Widget _buildImgForm(String value) {
+    String imgPath = 'assets/img3D/form_medical/viennhong.png';
+    if (value == 'Viên') {
+      imgPath = 'assets/img3D/form_medical/vien.png';
+    } else if (value == 'Ống') {
+      imgPath = 'assets/img3D/form_medical/ong.png';
+    } else if (value == 'Lần dùng') {
+      imgPath = 'assets/img3D/form_medical/landung.png';
+    } else if (value == 'Xịt') {
+      imgPath = 'assets/img3D/form_medical/xit.png';
+    } else if (value == 'Gói') {
+      imgPath = 'assets/img3D/form_medical/goi.png';
+    } else if (value == 'Khác') {
+      imgPath = 'assets/img3D/form_medical/khac.png';
+    }
+    return CircleAvatar(
+      backgroundColor: Colors.blue[50],
+      radius: 20,
+      child: Image.asset(imgPath, width: 30, height: 30),
     );
   }
 

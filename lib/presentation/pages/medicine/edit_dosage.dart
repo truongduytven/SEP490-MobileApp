@@ -19,13 +19,22 @@ class _EditDosageScreenState extends State<EditDosageScreen> {
   late String _selectedUnit;
   final FocusNode _focusNode = FocusNode();
   bool _isOtherUnitSelected = false;
+  final List<String> _units = ['mL', 'IU', '%', 'mcg', 'mg', 'g'];
 
   @override
   void initState() {
     super.initState();
     _dosageController = TextEditingController(text: widget.currentDosage);
-    _diffController = TextEditingController();
-    _selectedUnit = widget.currentUnit;
+    if (_units.contains(widget.currentUnit)) {
+      _selectedUnit = widget.currentUnit;
+      _diffController = TextEditingController();
+      _isOtherUnitSelected = false;
+    } else {
+      _selectedUnit = 'Khác';
+      _diffController = TextEditingController(text: widget.currentUnit);
+      _isOtherUnitSelected = true;
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
@@ -151,47 +160,47 @@ class _EditDosageScreenState extends State<EditDosageScreen> {
                     ],
                   ),
                 ),
-                if(_isOtherUnitSelected) SizedBox(height: 20),
+                if (_isOtherUnitSelected) SizedBox(height: 20),
                 if (_isOtherUnitSelected)
-                TextField(
-                  controller: _dosageController,
-                  focusNode: _focusNode,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Nhập đơn vị khác',
-                    hintStyle:
-                        const TextStyle(fontSize: 20, color: Colors.grey),
-                    filled: true,
-                    fillColor: AppColors
-                        .bgColor, // Background color of the input field
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
-                    ), // Padding inside the input
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(30), // Rounded corners
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(
-                        color: Colors.grey, // Border color when enabled
-                        width: 1,
+                  TextField(
+                    controller: _dosageController,
+                    focusNode: _focusNode,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText: 'Nhập đơn vị khác',
+                      hintStyle:
+                          const TextStyle(fontSize: 20, color: Colors.grey),
+                      filled: true,
+                      fillColor: AppColors
+                          .bgColor, // Background color of the input field
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 15,
+                      ), // Padding inside the input
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(30), // Rounded corners
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: const BorderSide(
+                          color: Colors.grey, // Border color when enabled
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: const BorderSide(
+                          color: AppColors
+                              .secondaryColor, // Border color when focused
+                          width: 2,
+                        ),
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(
-                        color: AppColors
-                            .secondaryColor, // Border color when focused
-                        width: 2,
-                      ),
-                    ),
+                    style: const TextStyle(
+                        fontSize: 20, color: AppColors.secondaryColor),
                   ),
-                  style: const TextStyle(
-                      fontSize: 20, color: AppColors.secondaryColor),
-                ),
               ],
             ),
             const Spacer(),
