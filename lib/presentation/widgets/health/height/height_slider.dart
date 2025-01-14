@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/widgets/health/height/height_styles.dart';
 import 'package:sep490/presentation/widgets/health/height/widget_utils.dart';
+import 'package:sep490/theme/color.dart';
 
 class HeightSlider extends StatelessWidget {
-  final int? height;
+  final double? height;
 
   const HeightSlider({Key? key, this.height}) : super(key: key);
 
@@ -13,7 +14,7 @@ class HeightSlider extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SliderLabel(height: height ?? 0),
+          SliderLabel(height: height ?? 0.0),
           Row(
             children: <Widget>[
               SliderCircle(),
@@ -27,7 +28,7 @@ class HeightSlider extends StatelessWidget {
 }
 
 class SliderLabel extends StatelessWidget {
-  final int? height;
+  final double? height;
 
   const SliderLabel({Key? key, this.height}) : super(key: key);
 
@@ -39,10 +40,10 @@ class SliderLabel extends StatelessWidget {
         bottom: screenAwareSize(2.0, context),
       ),
       child: Text(
-        "$height",
+        "${height?.toStringAsFixed(1)} cm", // Show one decimal place
         style: TextStyle(
           fontSize: selectedLabelFontSize,
-          color: Theme.of(context).primaryColor,
+          color: AppColors.primaryColor,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -62,9 +63,7 @@ class SliderLine extends StatelessWidget {
                 child: Container(
                   height: 2.0,
                   decoration: BoxDecoration(
-                      color: i.isEven
-                          ? Theme.of(context).primaryColor
-                          : Colors.white),
+                      color: i.isEven ? AppColors.primaryColor : Colors.white),
                 ),
               )),
     );
@@ -78,7 +77,7 @@ class SliderCircle extends StatelessWidget {
       width: circleSizeAdapted(context),
       height: circleSizeAdapted(context),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
+        color: AppColors.primaryColor,
         shape: BoxShape.circle,
       ),
       child: Icon(

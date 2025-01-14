@@ -1,28 +1,27 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/presentation/widgets/health/height/height_slider.dart';
 import 'package:sep490/presentation/widgets/health/height/height_styles.dart';
+import 'dart:math' as math;
 import 'package:sep490/presentation/widgets/health/height/widget_utils.dart';
 
 class HeightPicker extends StatefulWidget {
-  final int maxHeight;
-  final int minHeight;
-  final int height;
+  final double maxHeight; // Change to double
+  final double minHeight; // Change to double
+  final double height; // Change to double
   final double widgetHeight;
-  final ValueChanged<int> onChange;
+  final ValueChanged<double> onChange; // Change to double
 
   const HeightPicker({
     Key? key,
     required this.height,
     required this.widgetHeight,
     required this.onChange,
-    this.maxHeight = 190,
-    this.minHeight = 145,
+    this.maxHeight = 190.0,
+    this.minHeight = 145.0,
   }) : super(key: key);
 
-  int get totalUnits => maxHeight - minHeight;
+  double get totalUnits => maxHeight - minHeight;
 
   @override
   _HeightPickerState createState() => _HeightPickerState();
@@ -30,13 +29,13 @@ class HeightPicker extends StatefulWidget {
 
 class _HeightPickerState extends State<HeightPicker> {
   late double startDragYOffset;
-  late int startDragHeight;
+  late double startDragHeight;
 
   double get _pixelsPerUnit => _drawingHeight / widget.totalUnits;
 
   double get _sliderPosition {
     double halfOfBottomLabel = labelsFontSize / 2;
-    int unitsFromBottom = widget.height - widget.minHeight;
+    double unitsFromBottom = widget.height - widget.minHeight;
     return halfOfBottomLabel + unitsFromBottom * _pixelsPerUnit;
   }
 
@@ -65,25 +64,25 @@ class _HeightPickerState extends State<HeightPicker> {
   }
 
   void _onTapDown(TapDownDetails tapDownDetails) {
-    int height = _globalOffsetToHeight(tapDownDetails.globalPosition);
+    double height = _globalOffsetToHeight(tapDownDetails.globalPosition);
     widget.onChange(_normalizeHeight(height));
   }
 
-  int _normalizeHeight(int height) {
+  double _normalizeHeight(double height) {
     return math.max(widget.minHeight, math.min(widget.maxHeight, height));
   }
 
-  int _globalOffsetToHeight(Offset globalOffset) {
+  double _globalOffsetToHeight(Offset globalOffset) {
     RenderBox getBox = context.findRenderObject() as RenderBox;
     Offset localPosition = getBox.globalToLocal(globalOffset);
     double dy = localPosition.dy;
     dy = dy - marginTopAdapted(context) - labelsFontSize / 2;
-    int height = widget.maxHeight - (dy ~/ _pixelsPerUnit);
+    double height = widget.maxHeight - (dy / _pixelsPerUnit);
     return height;
   }
 
   void _onDragStart(DragStartDetails dragStartDetails) {
-    int newHeight = _globalOffsetToHeight(dragStartDetails.globalPosition);
+    double newHeight = _globalOffsetToHeight(dragStartDetails.globalPosition);
     widget.onChange(newHeight);
     setState(() {
       startDragYOffset = dragStartDetails.globalPosition.dy;
@@ -94,8 +93,8 @@ class _HeightPickerState extends State<HeightPicker> {
   void _onDragUpdate(DragUpdateDetails dragUpdateDetails) {
     double currentYOffset = dragUpdateDetails.globalPosition.dy;
     double verticalDifference = startDragYOffset - currentYOffset;
-    int diffHeight = verticalDifference ~/ _pixelsPerUnit;
-    int height = _normalizeHeight(startDragHeight + diffHeight);
+    double diffHeight = verticalDifference / _pixelsPerUnit;
+    double height = _normalizeHeight(startDragHeight + diffHeight);
     setState(() => widget.onChange(height));
   }
 
@@ -111,12 +110,12 @@ class _HeightPickerState extends State<HeightPicker> {
   }
 
   Widget _drawLabels() {
-    int labelsToDisplay = widget.totalUnits ~/ 5 + 1;
+    int labelsToDisplay = (widget.totalUnits ~/ 5) + 1;
     List<Widget> labels = List.generate(
       labelsToDisplay,
       (idx) {
         return Text(
-          "${widget.maxHeight - 5 * idx}",
+          "${(widget.maxHeight - 5 * idx).toStringAsFixed(1)}", // Show decimals
           style: labelsTextStyle,
         );
       },
@@ -140,12 +139,28 @@ class _HeightPickerState extends State<HeightPicker> {
     );
   }
 
+  // Widget _drawPersonImage() {
+  //   double personImageHeight = _sliderPosition + marginBottomAdapted(context);
+  //   return Align(
+  //     alignment: Alignment.bottomCenter,
+  //     child: SvgPicture.asset(
+  //       "assets/icons/person.svg",
+  //       height: personImageHeight,
+  //       width: personImageHeight / 3,
+  //     ),
+  //   );
+  // }
   Widget _drawPersonImage() {
     double personImageHeight = _sliderPosition + marginBottomAdapted(context);
+    // Ensure the height is always positive and meets a minimum threshold
+    personImageHeight = personImageHeight > 0
+        ? personImageHeight
+        : 100.0; // Set a minimum height
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: SvgPicture.asset(
-        "assets/img/person.svg",
+        "assets/icons/person.svg",
         height: personImageHeight,
         width: personImageHeight / 3,
       ),

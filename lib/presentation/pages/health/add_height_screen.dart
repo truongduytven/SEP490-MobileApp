@@ -41,6 +41,7 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
   }
 
   void onSubmit(num updatedValue) {
+    print("chieu cao ne $updatedValue");
     setState(() {
       currentValue = updatedValue;
       showHeightWidget = true;
@@ -67,7 +68,7 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
             ),
           ),
           title: Text(
-            "Cân nặng",
+            "Chiều cao",
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w700,
@@ -97,10 +98,11 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
             ),
           ],
         ),
-        body: showHeightWidget ? Text("Đay nè, chieu cao") : HeightCard());
-    // HeightSlider(
-    //     height: height,
-    //     onChange: (val) => setState(() => height = val),
-    //   ));
+        body: showHeightWidget
+            ? Text("Đay nè, chieu cao")
+            : HeightCard(
+                height: currentValue.toDouble(),
+                onSubmit: onSubmit,
+              ));
   }
 }
