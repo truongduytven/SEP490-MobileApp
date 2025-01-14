@@ -70,6 +70,8 @@ class WeightDisplayWidget extends StatelessWidget {
     final String bmiClassification = getBMIClassification(bmi);
     final Color classificationColor =
         getBMIClassificationColor(bmiClassification);
+    bool isButtonDisabled = !isToday(dateTime) && !isDraft;
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -244,9 +246,11 @@ class WeightDisplayWidget extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
             child: ElevatedButton(
-              onPressed: () {
-                print('hehe $weight $bmi $dateTime');
-              },
+              onPressed: isButtonDisabled
+                  ? null
+                  : () {
+                      print('hehe $weight $bmi $dateTime');
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondaryColor,
                 padding: EdgeInsets.all(12),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class HealthMonitoringBook extends StatefulWidget {
@@ -139,6 +140,69 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
       groupedData[date]!.add(item);
     }
     return groupedData;
+  }
+
+  void navigateToCardDetail(Map<String, String> item) {
+    print("Vo dya");
+
+    // Switch case for different titles
+    switch (item["title"]) {
+      case "Nhịp tim":
+        // Navigate to NhịpTimCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              appBar: AppBar(title: Text("Nhịp Tim")),
+              body: Text("Nhịp tim details: ${item['title']}"),
+            ),
+          ),
+        );
+        break;
+
+      case "Huyết Áp":
+        // Navigate to HuyetApCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              appBar: AppBar(title: Text("Huyết Áp")),
+              body: Text("Huyết Áp details: ${item['title']}"),
+            ),
+          ),
+        );
+        break;
+
+      case "Cân nặng":
+        // Navigate to CanNangCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddWeight(
+                  date: item['date'],
+                  currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+                  showWeightWidget: true,
+                  isDraft: false)),
+        );
+        break;
+
+      case "Chiều cao":
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              appBar: AppBar(title: Text("Chiều Cao")),
+              body: Text("Chiều Cao details: ${item['title']}"),
+            ),
+          ),
+        );
+        break;
+
+      default:
+        // Handle case where the title doesn't match any of the above
+        print("No card detail screen for ${item['title']}");
+    }
   }
 
   @override
@@ -296,6 +360,10 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
                                         fontSize: 22,
                                         fontWeight: FontWeight.w600),
                                   ),
+                                  onTap: () {
+                                    // Navigate to the card detail screen when tapped
+                                    navigateToCardDetail(item);
+                                  },
                                   trailing: item["title"] == "Thuốc"
                                       ? null
                                       : Column(

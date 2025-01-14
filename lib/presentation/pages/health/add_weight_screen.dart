@@ -8,11 +8,14 @@ class AddWeight extends StatefulWidget {
   final num currentValue;
   final bool showWeightWidget;
   final bool isDraft;
+  final String? date;
+
   const AddWeight({
     super.key,
     required this.currentValue,
     required this.showWeightWidget,
     required this.isDraft,
+    this.date,
   });
 
   @override
@@ -21,13 +24,17 @@ class AddWeight extends StatefulWidget {
 
 class _AddWeightState extends State<AddWeight> {
   late String formattedDateTime;
+  late String date;
   late num currentValue;
   late bool showWeightWidget;
   late bool isDraft;
   @override
   void initState() {
     super.initState();
-    formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    // formattedDateTime =  DateFormat('dd-MM-yyyy').format(DateTime.now());
+    formattedDateTime = widget.date != null
+        ? widget.date!
+        : DateFormat('dd-MM-yyyy').format(DateTime.now());
     currentValue = widget.currentValue;
     showWeightWidget = widget.showWeightWidget;
     isDraft = widget.isDraft;
