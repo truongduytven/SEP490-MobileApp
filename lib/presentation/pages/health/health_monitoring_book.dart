@@ -148,13 +148,17 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
       if (selectedTopic == "all") {
         return true; // Show all topics
       }
+      String normalizeString(String str) {
+        return str.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '');
+      }
 
       // Get the label corresponding to the selected topic value
       String? selectedLabel = topics.firstWhere(
           (topic) => topic["value"] == selectedTopic,
           orElse: () => {"label": ""})["label"];
-      return item["title"] ==
-          selectedLabel; // Compare title with the selected label
+      return normalizeString(item["title"]!) ==
+          normalizeString(
+              selectedLabel!); // Compare title with the selected label
     }).toList();
 
     // Group filtered data by date
@@ -217,7 +221,7 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
           ),
           // Wrap the ListView inside Expanded to avoid layout issues
           Expanded(
-            child: filteredGroupedData.length > 0
+            child: filteredGroupedData.isNotEmpty
                 ? ListView(
                     children: filteredGroupedData.entries.map((entry) {
                       final date = entry.key;
@@ -256,13 +260,34 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
                                     width: 50,
                                     height: 50,
                                   ),
-                                  title: Text(
-                                    "${item["result"]}",
-                                    style: const TextStyle(
-                                      color: AppColors.grayColor5,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
-                                    ),
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${item["result"]}",
+                                        style: const TextStyle(
+                                          color: AppColors.grayColor5,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      item["title"] == "Thuốc"
+                                          ? Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left:
+                                                      8.0), // Add space between result and time
+                                              child: Text(
+                                                "${item["time"]}",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  color:
+                                                      AppColors.secondaryColor,
+                                                ),
+                                              ),
+                                            )
+                                          : SizedBox(),
+                                    ],
                                   ),
                                   subtitle: Text(
                                     "${item["data"]} ${item['unit']}",
