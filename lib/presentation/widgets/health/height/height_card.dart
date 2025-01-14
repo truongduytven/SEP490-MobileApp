@@ -28,54 +28,78 @@ class HeightCardState extends State<HeightCard> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: 300.0, // Added a minimum height constraint
-        maxHeight: 700.0, // Keeping the maximum height constraint as is
+      constraints: const BoxConstraints(
+        minHeight: 300.0,
+        maxHeight: 800.0,
       ),
-      child: Card(
-        elevation: 3,
-        color: AppColors.bgColor,
-        child: Padding(
-          padding: EdgeInsets.only(top: screenAwareSize(16.0, context)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                textAlign: TextAlign.center,
-                "Kéo thanh trượt lên xuống để xác định chiều cao chính xác",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(screenAwareSize(8.0, context)),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      // Ensure we have valid constraints
-                      final double maxHeight = constraints.maxHeight > 0
-                          ? constraints.maxHeight
-                          : 300.0; // Use fallback value
-                      final double maxWidth = constraints.maxWidth > 0
-                          ? constraints.maxWidth
-                          : 400.0; // Fallback for width
+      child: Column(
+        children: [
+          Expanded(
+            child: Card(
+              elevation: 3,
+              color: AppColors.bgColor,
+              child: Padding(
+                padding: EdgeInsets.only(top: screenAwareSize(16.0, context)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "Kéo thanh trượt lên xuống để xác định chiều cao chính xác",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w500),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(screenAwareSize(8.0, context)),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final double maxHeight = constraints.maxHeight > 0
+                                ? constraints.maxHeight
+                                : 300.0;
 
-                      return HeightPicker(
-                        widgetHeight: maxHeight,
-                        height: height,
-                        onChange: (val) => setState(() => height = val),
-                      );
-                    },
-                  ),
+                            return HeightPicker(
+                              widgetHeight: maxHeight,
+                              height: height,
+                              onChange: (val) => setState(() => height = val),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  widget.onSubmit(height); // Notify parent of updated height
-                },
-                child: const Text("Xác nhận"),
-              ),
-            ],
+            ),
           ),
-        ),
+          SizedBox(
+            height: 20,
+          ),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(16),
+            child: ElevatedButton(
+              onPressed: () {
+                widget.onSubmit(height);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondaryColor,
+                padding: EdgeInsets.all(12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+              child: Text(
+                'Tiếp tục',
+                style: TextStyle(
+                  fontSize: 28,
+                  color: AppColors.bgColor,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

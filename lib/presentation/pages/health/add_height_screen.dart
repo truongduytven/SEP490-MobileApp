@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/presentation/widgets/health/height/height_card.dart';
-import 'package:sep490/presentation/widgets/health/height/height_slider.dart';
+import 'package:sep490/presentation/widgets/health/height/height_display_widget.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddHeightScreen extends StatefulWidget {
@@ -50,7 +49,6 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
 
   @override
   Widget build(BuildContext context) {
-    int height = 170;
     return Scaffold(
         appBar: AppBar(
           leading: Padding(
@@ -99,7 +97,13 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
           ],
         ),
         body: showHeightWidget
-            ? Text("Đay nè, chieu cao")
+            ? HeightDisplayWidget(
+                weight: 50,
+                height: currentValue,
+                dateTime: formattedDateTime,
+                onEdit: onEdit,
+                isDraft: isDraft,
+                typeData: "Thủ công")
             : HeightCard(
                 height: currentValue.toDouble(),
                 onSubmit: onSubmit,

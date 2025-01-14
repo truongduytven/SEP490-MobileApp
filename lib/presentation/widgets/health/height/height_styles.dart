@@ -19,6 +19,6 @@ const TextStyle labelsTextStyle = TextStyle(
 const double circleSize = 32.0;
 const double marginBottom = circleSize / 2;
 const double marginTop = 26.0;
-const double selectedLabelFontSize = 14.0;
+const double selectedLabelFontSize = 18.0;
 const double labelsFontSize = 13.0;
 const Color labelsGrey = AppColors.grayColor5;
