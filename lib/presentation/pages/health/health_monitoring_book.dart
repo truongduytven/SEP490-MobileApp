@@ -217,48 +217,109 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
           ),
           // Wrap the ListView inside Expanded to avoid layout issues
           Expanded(
-            child: ListView(
-              children: filteredGroupedData.entries.map((entry) {
-                final date = entry.key;
-                final items = entry.value;
+            child: filteredGroupedData.length > 0
+                ? ListView(
+                    children: filteredGroupedData.entries.map((entry) {
+                      final date = entry.key;
+                      final items = entry.value;
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        date,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    ...items.map((item) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: ListTile(
-                          leading: Image.asset(
-                            getImagePath(item["title"]!),
-                            width: 40,
-                            height: 40,
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              date,
+                              style: const TextStyle(
+                                  color: AppColors.grayColor5,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500),
+                            ),
                           ),
-                          title: Text(
-                            item["title"]!,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle:
-                              Text("${item["result"]} - ${item["dateTime"]}"),
-                          trailing: item["title"] == "Thuốc"
-                              ? null
-                              : const Icon(Icons.arrow_forward_ios),
-                        ),
+                          ...items.map((item) {
+                            return Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                    color: AppColors.secondaryColor,
+                                    width: 0.1),
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              color: AppColors.bgColor,
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: ListTile(
+                                  leading: Image.asset(
+                                    getImagePath(item["title"]!),
+                                    width: 50,
+                                    height: 50,
+                                  ),
+                                  title: Text(
+                                    "${item["result"]}",
+                                    style: const TextStyle(
+                                      color: AppColors.grayColor5,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    "${item["data"]} ${item['unit']}",
+                                    style: TextStyle(
+                                        color: AppColors.textColor,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  trailing: item["title"] == "Thuốc"
+                                      ? null
+                                      : Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              " ${item["time"]}",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color:
+                                                      AppColors.secondaryColor),
+                                            ),
+                                            const Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 20,
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ],
                       );
                     }).toList(),
-                  ],
-                );
-              }).toList(),
-            ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/img3D/nodata.webp",
+                        width: 250,
+                        height: 250,
+                      ),
+                      Text(
+                        "Chưa có dữ liệu",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600),
+                      )
+                    ],
+                  ),
+          ),
+          SizedBox(
+            height: 40,
           ),
         ],
       ),
