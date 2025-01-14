@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:sep490/presentation/pages/health/add_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
+import 'package:sep490/presentation/pages/health/add_height_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -19,8 +20,8 @@ class HealthFloatingActionButton extends StatelessWidget {
       animatedIcon: AnimatedIcons.menu_close,
       openCloseDial: isDialOpen,
       backgroundColor: AppColors.grayColor2,
-      overlayColor: const Color.fromARGB(255, 73, 71, 71),
-      overlayOpacity: 0.5,
+      overlayColor: AppColors.secondaryColor,
+      overlayOpacity: 0.95,
       spacing: 5,
       foregroundColor: AppColors.secondaryColor,
       spaceBetweenChildren: 10,
@@ -262,6 +263,18 @@ class HealthFloatingActionButton extends StatelessWidget {
           ),
         ),
         SpeedDialChild(
+          onTap: () {
+            isDialOpen.value = false;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddHeightScreen(
+                        isDraft: true,
+                        currentValue: 40,
+                        showHeightWidget: false,
+                      )),
+            );
+          },
           labelWidget: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
             child: IntrinsicWidth(
