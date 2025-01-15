@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
@@ -183,11 +184,12 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Scaffold(
-              appBar: AppBar(title: Text("Nhịp Tim")),
-              body: Text("Nhịp tim details: ${item['title']}"),
-            ),
-          ),
+              builder: (context) => AddHeartBeatScreen(
+                  date: item['date'],
+
+                  currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+                  showHeartBeatWidget: true,
+                  isDraft: false)),
         );
         break;
 

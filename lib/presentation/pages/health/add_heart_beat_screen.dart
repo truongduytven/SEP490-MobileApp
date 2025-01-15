@@ -6,6 +6,8 @@ import 'package:sep490/presentation/widgets/health/heartBeat/heart_beat_input_wi
 import 'package:sep490/theme/color.dart';
 
 class AddHeartBeatScreen extends StatefulWidget {
+  final String? date;
+
   final num currentValue;
   final bool showHeartBeatWidget;
   final bool isDraft;
@@ -14,6 +16,7 @@ class AddHeartBeatScreen extends StatefulWidget {
     required this.currentValue,
     required this.showHeartBeatWidget,
     required this.isDraft,
+    this.date,
   });
 
   @override
@@ -28,7 +31,10 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
   @override
   void initState() {
     super.initState();
-    formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    // formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    formattedDateTime = widget.date != null
+        ? widget.date!
+        : DateFormat('dd-MM-yyyy').format(DateTime.now());
     currentValue = widget.currentValue;
     showHeartBeatWidget = widget.showHeartBeatWidget;
     isDraft = widget.isDraft;
