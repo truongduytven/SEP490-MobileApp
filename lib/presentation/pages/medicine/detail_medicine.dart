@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/medicine/edit_dosage.dart';
 import 'package:sep490/presentation/pages/medicine/edit_form_medical.dart';
+import 'package:sep490/presentation/pages/medicine/edit_frequency.dart';
 import 'package:sep490/presentation/pages/medicine/edit_name.dart';
 import 'package:sep490/presentation/pages/medicine/edit_remaining.dart';
 import 'package:sep490/presentation/pages/medicine/edit_treatment.dart';
@@ -30,7 +31,9 @@ class _DetailMedicineState extends State<DetailMedicine> {
           'form': '',
           'treatment': '',
           'remaining': '',
-          'frequency': '',
+          'typeFrequency': '',
+          'frequencyEvery': '',
+          'frequencySelect': [],
           'mealTime': '',
           'schedule': [],
         };
@@ -129,6 +132,29 @@ class _DetailMedicineState extends State<DetailMedicine> {
             });
           }
         }
+        break;
+      case 'Tần suất':
+        {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditFrequency(
+                initialFrequencyData: {
+                  'typeFrequency': medicineData['typeFrequency'],
+                  'frequencyEvery': medicineData['frequencyEvery'],
+                  'frequencySelect': medicineData['frequencySelect'],
+                },
+              ),
+            ),
+          );
+          if (result != null) {
+            setState(() {
+              medicineData['typeFrequency'] = result['typeFrequency'];
+              medicineData['frequencyEvery'] = result['frequencyEvery'];
+              medicineData['frequencySelect'] = result['frequencySelect'];
+            });
+          }
+        }
     }
   }
 
@@ -147,6 +173,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         elevation: 0,
+        scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -288,10 +315,12 @@ class _DetailMedicineState extends State<DetailMedicine> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           children: [
-            _buildDetailRow(
+            _buildFrequencyRow(
               iconPath: 'assets/icons/calendar_sync.svg',
               title: 'Tần suất',
-              value: medicineData['frequency'],
+              value: medicineData['typeFrequency'],
+              frequencyEvery: medicineData['frequencyEvery'],
+              frequencySelect: medicineData['frequencySelect'],
             ),
             _buildDivider(),
             _buildDetailRow(
@@ -347,8 +376,9 @@ class _DetailMedicineState extends State<DetailMedicine> {
             ),
             Row(
               children: [
-                if (title == 'Dạng') _buildImgForm(value),
-                if (title == 'Điều trị') _buildImgTreatment(value),
+                if (title == 'Dạng' && value.isNotEmpty) _buildImgForm(value),
+                if (title == 'Điều trị' && value.isNotEmpty)
+                  _buildImgTreatment(value),
                 SizedBox(
                   width: 10,
                 ),
@@ -363,6 +393,98 @@ class _DetailMedicineState extends State<DetailMedicine> {
                   color: Colors.grey,
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFrequencyRow({
+    required String iconPath,
+    required String title,
+    required String value,
+    required String frequencyEvery,
+    required List<dynamic> frequencySelect,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        _handleClickMedicineData(title, value);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                SvgPicture.asset(
+                  iconPath,
+                  width: 30,
+                  height: 30,
+                  colorFilter:
+                      ColorFilter.mode(AppColors.iconColor, BlendMode.srcIn),
+                ),
+                const SizedBox(width: 15),
+                Text(
+                  title,
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (value == 'Cách ngày')
+                    Text(
+                      'Mỗi $frequencyEvery ngày',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryColor,
+                      ),
+                    ),
+                  if (value == 'Ngày cụ thể trong tuần')
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children: frequencySelect.map((day) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLowColor.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Text(
+                            day,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  if (value.isEmpty)
+                    const Text(
+                      '-',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryColor,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey,
             ),
           ],
         ),
