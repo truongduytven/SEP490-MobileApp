@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/add_height_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -221,11 +222,11 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Scaffold(
-              appBar: AppBar(title: Text("Chiều Cao")),
-              body: Text("Chiều Cao details: ${item['title']}"),
-            ),
-          ),
+              builder: (context) => AddHeightScreen(
+                  date: item['date'],
+                  currentValue: num.tryParse(item['data'] ?? "") ?? 0,
+                  showHeightWidget: true,
+                  isDraft: false)),
         );
         break;
 

@@ -70,6 +70,8 @@ class HeightDisplayWidget extends StatelessWidget {
     final String bmiClassification = getBMIClassification(bmi);
     final Color classificationColor =
         getBMIClassificationColor(bmiClassification);
+    bool isButtonDisabled = !isToday(dateTime) && !isDraft;
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -243,26 +245,28 @@ class HeightDisplayWidget extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-            child: ElevatedButton(
-              onPressed: () {
-                print('hehe $weight $bmi $dateTime');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondaryColor,
-                padding: EdgeInsets.all(12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-              child: Text(
-                'Lưu',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: AppColors.bgColor,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
+            child: isButtonDisabled
+                ? SizedBox.shrink() // Use an empty widget when disabled
+                : ElevatedButton(
+                    onPressed: () {
+                      print('hehe $weight $bmi $dateTime');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor,
+                      padding: EdgeInsets.all(12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    child: Text(
+                      'Lưu',
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: AppColors.bgColor,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),

@@ -5,6 +5,8 @@ import 'package:sep490/presentation/widgets/health/height/height_display_widget.
 import 'package:sep490/theme/color.dart';
 
 class AddHeightScreen extends StatefulWidget {
+  final String? date;
+
   final num currentValue;
   final bool showHeightWidget;
   final bool isDraft;
@@ -13,6 +15,7 @@ class AddHeightScreen extends StatefulWidget {
     required this.currentValue,
     required this.showHeightWidget,
     required this.isDraft,
+    this.date,
   });
 
   @override
@@ -21,13 +24,17 @@ class AddHeightScreen extends StatefulWidget {
 
 class _AddHeightScreenState extends State<AddHeightScreen> {
   late String formattedDateTime;
+
   late num currentValue;
   late bool showHeightWidget;
   late bool isDraft;
   @override
   void initState() {
     super.initState();
-    formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    // formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    formattedDateTime = widget.date != null
+        ? widget.date!
+        : DateFormat('dd-MM-yyyy').format(DateTime.now());
     currentValue = widget.currentValue;
     showHeightWidget = widget.showHeightWidget;
     isDraft = widget.isDraft;
