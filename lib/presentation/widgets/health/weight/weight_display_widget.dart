@@ -245,29 +245,29 @@ class WeightDisplayWidget extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-            child: ElevatedButton(
-              onPressed: isButtonDisabled
-                  ? null
-                  : () {
+            child: isButtonDisabled
+                ? SizedBox.shrink() // Use an empty widget when disabled
+                : ElevatedButton(
+                    onPressed: () {
                       print('hehe $weight $bmi $dateTime');
                     },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondaryColor,
-                padding: EdgeInsets.all(12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-              child: Text(
-                'Lưu',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: AppColors.bgColor,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor,
+                      padding: EdgeInsets.all(12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    child: Text(
+                      'Lưu',
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: AppColors.bgColor,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+          )
         ],
       ),
     );

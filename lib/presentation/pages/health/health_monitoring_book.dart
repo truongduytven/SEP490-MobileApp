@@ -11,6 +11,7 @@ class HealthMonitoringBook extends StatefulWidget {
 }
 
 class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
+  final ScrollController _scrollController = ScrollController();
   final List<Map<String, String>> topics = [
     {"label": "Tất cả", "value": "all"},
     {"label": "Huyết áp", "value": "blood_pressure"},
@@ -65,8 +66,18 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
       "title": "Cân nặng",
       "result": "Thấp",
       "dateTime": "1 th02  2:44",
-      "date": "01-02-2025",
+      "date": "01-02-2024",
       "time": "2:44",
+      "data": "45",
+      "unit": "kg",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Cân nặng",
+      "result": "Bình Thường",
+      "dateTime": "15 th01  12:44",
+      "date": "15-01-2025",
+      "time": "12:44",
       "data": "45",
       "unit": "kg",
       "dataType": "Thủ công"
@@ -88,6 +99,9 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelectedTopic();
+    });
     selectedTopic = widget.initialTopic;
     // Sort the listData by date and time from newest to oldest
     listData.sort((a, b) {
@@ -108,6 +122,22 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
           '${convertDateFormat(b["date"]!)} ${formatTime(b["time"]!)}');
       return dateTimeB.compareTo(dateTimeA); // Descending order
     });
+  }
+
+  void _scrollToSelectedTopic() {
+    int selectedIndex =
+        topics.indexWhere((topic) => topic["value"] == selectedTopic);
+
+    if (selectedIndex != -1) {
+      // Calculate the scroll position dynamically
+      double scrollPosition =
+          selectedIndex * 80.0; // Adjust 80.0 to match item width
+      _scrollController.animateTo(
+        scrollPosition,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   // Function to get the image path based on the title
@@ -231,6 +261,9 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
 
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Text(
           "Sổ theo dõi",
           style: TextStyle(
@@ -245,6 +278,7 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            controller: _scrollController,
             child: Row(
               children: topics
                   .map(
