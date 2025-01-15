@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/marker_pointer_chart.dart';
 import 'package:sep490/theme/color.dart';
 
 class InfoCard extends StatelessWidget {
@@ -25,144 +26,112 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: AppColors.bgColor,
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: AppColors.secondaryColor, width: 0.1),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Image.asset(
-                    imageUrl,
-                    width: 45,
-                    height: 45,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    ConstrainedBox(
-                      constraints:
-                          const BoxConstraints(maxWidth: 130, minWidth: 90),
-                      child: IntrinsicWidth(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: _getBadgeBackgroundColor(result),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: _getBadgeBorderColor(result),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              result,
-                              maxLines: 1,
-                              style: const TextStyle(
-                                overflow: TextOverflow.ellipsis,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-              child: const Divider(
-                thickness: 0.2,
-                color: AppColors.secondaryColor,
-                height: 16,
-              ),
-            ),
-            SizedBox(
-              height: 70,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MarkerPointerChart(value: 70)));
+      },
+      child: Card(
+        color: AppColors.bgColor,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          side: const BorderSide(color: AppColors.secondaryColor, width: 0.1),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        dateTime,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: AppColors.grayColor5,
-                          fontWeight: FontWeight.w500,
-                        ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset(
+                      imageUrl,
+                      width: 45,
+                      height: 45,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const SizedBox(height: 8),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: data,
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      ConstrainedBox(
+                        constraints:
+                            const BoxConstraints(maxWidth: 130, minWidth: 90),
+                        child: IntrinsicWidth(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: _getBadgeBackgroundColor(result),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: _getBadgeBorderColor(result),
+                                width: 1.5,
                               ),
                             ),
-                            TextSpan(
-                              text: "  $unit",
-                              style: const TextStyle(
-                                  fontSize: 20,
-                                  color: AppColors.grayColor5,
-                                  fontWeight: FontWeight.w500),
+                            child: Center(
+                              child: Text(
+                                result,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                          ],
+                          ),
                         ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 20,
                       ),
                     ],
                   ),
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                child: const Divider(
+                  thickness: 0.2,
+                  color: AppColors.secondaryColor,
+                  height: 16,
+                ),
+              ),
+              SizedBox(
+                height: 70,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          average,
-                          maxLines: 1,
+                          dateTime,
                           style: TextStyle(
-                            overflow: TextOverflow.ellipsis,
                             fontSize: 18,
                             color: AppColors.grayColor5,
                             fontWeight: FontWeight.w500,
@@ -173,15 +142,15 @@ class InfoCard extends StatelessWidget {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: dataAverage,
+                                text: data,
                                 style: const TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
                               ),
                               TextSpan(
-                                text: " $unit",
+                                text: "  $unit",
                                 style: const TextStyle(
                                     fontSize: 20,
                                     color: AppColors.grayColor5,
@@ -192,11 +161,51 @@ class InfoCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            average,
+                            maxLines: 1,
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 18,
+                              color: AppColors.grayColor5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: dataAverage,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: " $unit",
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.grayColor5,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -46,6 +46,7 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   flutter_ruler_picker: ^1.0.6
   intl: ^0.20.1
+  gauge_indicator: ^0.4.3
 
 dev_dependencies:
   flutter_test:
