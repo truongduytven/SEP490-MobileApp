@@ -63,6 +63,8 @@ class BloodPressureDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isButtonDisabled = !isToday(dateTime) && !isDraft;
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -277,26 +279,28 @@ class BloodPressureDisplayWidget extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-            child: ElevatedButton(
-              onPressed: () {
-                print('hehe $systolic $diastolic $dateTime');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondaryColor,
-                padding: EdgeInsets.all(12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-              child: Text(
-                'Lưu',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: AppColors.bgColor,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
+            child: isButtonDisabled
+                ? SizedBox.shrink() // Use an empty widget when disabled
+                : ElevatedButton(
+                    onPressed: () {
+                      print('hehe $systolic $diastolic $dateTime');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor,
+                      padding: EdgeInsets.all(12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    child: Text(
+                      'Lưu',
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: AppColors.bgColor,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/add_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
@@ -186,7 +187,6 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
           MaterialPageRoute(
               builder: (context) => AddHeartBeatScreen(
                   date: item['date'],
-
                   currentValue: num.tryParse(item["data"] ?? "") ?? 0,
                   showHeartBeatWidget: true,
                   isDraft: false)),
@@ -194,15 +194,27 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
         break;
 
       case "Huyết Áp":
-        // Navigate to HuyetApCard
+        String? data = item['data']; // Get the data
+        String systolic = "N/A"; // Default value
+        String diastolic = "N/A"; // Default value
+
+        if (data != null && data.contains("/")) {
+          // Safely split the string
+          List<String> parts = data.split("/");
+          if (parts.length == 2) {
+            systolic = parts[0]; // First part
+            diastolic = parts[1]; // Second part
+          }
+        }
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Scaffold(
-              appBar: AppBar(title: Text("Huyết Áp")),
-              body: Text("Huyết Áp details: ${item['title']}"),
-            ),
-          ),
+              builder: (context) => AddBloodPressureScreen(
+                  date: item['date'],
+                  currentValueSystolic: num.tryParse(systolic ?? "") ?? 0,
+                  currentValueDiastolic: num.tryParse(diastolic ?? "") ?? 0,
+                  showBloodPressuretWidget: true,
+                  isDraft: false)),
         );
         break;
 

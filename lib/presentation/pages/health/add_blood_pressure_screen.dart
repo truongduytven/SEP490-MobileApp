@@ -5,6 +5,8 @@ import 'package:sep490/presentation/widgets/health/bloodPressure/blood_pressure_
 import 'package:sep490/theme/color.dart';
 
 class AddBloodPressureScreen extends StatefulWidget {
+  final String? date;
+
   final num currentValueSystolic;
   final num currentValueDiastolic;
   final bool showBloodPressuretWidget;
@@ -16,6 +18,7 @@ class AddBloodPressureScreen extends StatefulWidget {
     required this.currentValueDiastolic,
     required this.showBloodPressuretWidget,
     required this.isDraft,
+    this.date,
   });
 
   @override
@@ -32,7 +35,10 @@ class _AddBloodPressureScreenState extends State<AddBloodPressureScreen> {
   @override
   void initState() {
     super.initState();
-    formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    // formattedDateTime = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    formattedDateTime = widget.date != null
+        ? widget.date!
+        : DateFormat('dd-MM-yyyy').format(DateTime.now());
     currentValueSystolic = widget.currentValueSystolic;
     currentValueDiastolic = widget.currentValueDiastolic;
     showBloodPressuretWidget = widget.showBloodPressuretWidget;
