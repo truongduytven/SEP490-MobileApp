@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mrx_charts/mrx_charts.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
-import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_weight_widget.dart';
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
@@ -22,13 +22,13 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
   final Map<String, double?> chartData = {
-    "Monday": 150,
-    "Tuesday": null, // null value for demonstration
-    "Wednesday": 180,
-    "Thursday": 160,
-    "Friday": null, // another null value
-    "Saturday": 140,
-    "Sunday": 170,
+    "T2": 150,
+    "T3": null, // null value for demonstration
+    "T4": 180,
+    "T5": 160,
+    "T6": null, // another null value
+    "T7": 140,
+    "CN": 170,
   };
   @override
   void initState() {
@@ -96,69 +96,68 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                     .toList(),
               ),
             ),
-            const SizedBox(height: 16),
             // Use Expanded for TabBarView
             SizedBox(
-              height: 500, // Adjust the height for better scrolling experience
+              height: 350, // Adjust the height for better scrolling experience
               child: TabBarView(
                 controller: _tabController,
                 children: [
                   // Content for 'Ngày' tab (Daily)
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Daily content goes here!',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(
-                          height: 200,
-                          child: Chart(
-                            layers: [
-                              ChartAxisLayer(
-                                settings: ChartAxisSettings(
-                                  x: ChartAxisSettingsAxis(
-                                    frequency: 1.0,
-                                    max: 13.0,
-                                    min: 7.0,
-                                    textStyle: TextStyle(
-                                      color: Colors.black.withOpacity(0.6),
-                                      fontSize: 10.0,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 30, horizontal: 10),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            // height: 250,
+                            child: Chart(
+                              layers: [
+                                ChartAxisLayer(
+                                  settings: ChartAxisSettings(
+                                    x: ChartAxisSettingsAxis(
+                                      frequency: 1.0,
+                                      max: 13.0,
+                                      min: 7.0,
+                                      textStyle: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontSize: 10.0,
+                                      ),
+                                    ),
+                                    y: ChartAxisSettingsAxis(
+                                      frequency: 100.0,
+                                      max: 300.0,
+                                      min: 0.0,
+                                      textStyle: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontSize: 10.0,
+                                      ),
                                     ),
                                   ),
-                                  y: ChartAxisSettingsAxis(
-                                    frequency: 100.0,
-                                    max: 300.0,
-                                    min: 0.0,
-                                    textStyle: TextStyle(
-                                      color: Colors.black.withOpacity(0.6),
-                                      fontSize: 10.0,
+                                  labelX: (value) => value.toInt().toString(),
+                                  labelY: (value) => value.toInt().toString(),
+                                ),
+                                ChartBarLayer(
+                                  items: List.generate(
+                                    13 - 7 + 1,
+                                    (index) => ChartBarDataItem(
+                                      color: AppColors.primaryColor,
+                                      value: Random().nextInt(280) + 20,
+                                      x: index.toDouble() + 7,
                                     ),
                                   ),
-                                ),
-                                labelX: (value) => value.toInt().toString(),
-                                labelY: (value) => value.toInt().toString(),
-                              ),
-                              ChartBarLayer(
-                                items: List.generate(
-                                  13 - 7 + 1,
-                                  (index) => ChartBarDataItem(
-                                    color: const Color(0xFF8043F9),
-                                    value: Random().nextInt(280) + 20,
-                                    x: index.toDouble() + 7,
+                                  settings: const ChartBarSettings(
+                                    thickness: 8.0,
+                                    radius:
+                                        BorderRadius.all(Radius.circular(4.0)),
                                   ),
                                 ),
-                                settings: const ChartBarSettings(
-                                  thickness: 8.0,
-                                  radius:
-                                      BorderRadius.all(Radius.circular(4.0)),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   // Content for 'Tuần' tab (Weekly)
@@ -172,7 +171,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                         ),
                         SizedBox(height: 20),
                         SizedBox(
-                          height: 200,
+                          height: 300,
                           child: LineChartWidget(data: chartData),
                         ),
                       ],

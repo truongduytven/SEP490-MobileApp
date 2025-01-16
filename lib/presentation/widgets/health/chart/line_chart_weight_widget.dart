@@ -40,8 +40,8 @@ class LineChartWidget extends StatelessWidget {
             ),
             y: ChartAxisSettingsAxis(
               frequency: 20.0,
-              max: 260.0, // Maximum heart rate value
-              min: 40.0, // Minimum heart rate value
+              max: 210.0, // Maximum heart rate value
+              min: 10.0, // Minimum heart rate value
               textStyle: const TextStyle(
                 color: Colors.black54,
                 fontSize: 12.0,
@@ -49,7 +49,7 @@ class LineChartWidget extends StatelessWidget {
             ),
           ),
           labelX: (value) => xValues[value.toInt()], // Labels for days
-          labelY: (value) => '${value.toInt()} BPM', // Labels for heart rate
+          labelY: (value) => '${value.toInt()} kg', // Labels for heart rate
         ),
         // Line layer with skipped null values
         ChartLineLayer(
