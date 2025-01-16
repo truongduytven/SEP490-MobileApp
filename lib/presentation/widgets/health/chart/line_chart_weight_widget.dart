@@ -14,7 +14,8 @@ class LineChartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final xValues = data.keys.toList(); // Days of the week
     final yValues = data.values.toList(); // Heart rate data (nullable)
-
+    final minY = yValues.whereType<double>().reduce((a, b) => a < b ? a : b);
+    final maxY = yValues.whereType<double>().reduce((a, b) => a > b ? a : b);
     if (xValues.isEmpty || yValues.isEmpty) {
       return Center(
         child: Text(
@@ -34,16 +35,16 @@ class LineChartWidget extends StatelessWidget {
               max: (xValues.length - 1).toDouble(),
               min: 0.0,
               textStyle: const TextStyle(
-                color: Colors.black54,
-                fontSize: 12.0,
+                color: AppColors.secondaryColor,
+                fontSize: 14.0,
               ),
             ),
             y: ChartAxisSettingsAxis(
-              frequency: 20.0,
-              max: 210.0, // Maximum heart rate value
-              min: 10.0, // Minimum heart rate value
+              frequency: 2.0,
+              max: maxY + 5.0, // Set max slightly higher than the actual max
+              min: minY - 5.0,
               textStyle: const TextStyle(
-                color: Colors.black54,
+                color: AppColors.grayColor5,
                 fontSize: 12.0,
               ),
             ),

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mrx_charts/mrx_charts.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
+import 'package:sep490/presentation/widgets/health/chart/column_chart_medicine.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_weight_widget.dart';
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
@@ -21,14 +22,33 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
 
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
-  final Map<String, double?> chartData = {
-    "T2": 150,
-    "T3": null, // null value for demonstration
-    "T4": 180,
-    "T5": 160,
-    "T6": null, // another null value
-    "T7": 140,
-    "CN": 170,
+  final Map<String, double?> chartDataDate = {
+    "T2": 75,
+    "T3": null,
+    "T4": 76,
+    "T5": 74.5,
+    "T6": null,
+    "T7": 75,
+    "Hôm nay": 75,
+  };
+  final Map<String, double?> chartDataMonth = {
+    "11/2024": 74.5,
+    "12/2024": 72,
+    "T1": null,
+    "Tháng này": 78,
+  };
+  final Map<String, double?> chartDataYear = {
+    "2023": 65,
+    "2024": null,
+    "Năm nay": 46,
+  };
+  final Map<String, double?> chartDataWeek = {
+    "t-5": 70,
+    "t-4": null,
+    "t-3": 66,
+    "t-2": 64.5,
+    "t-1": null,
+    "Tuần này": 65,
   };
   @override
   void initState() {
@@ -103,61 +123,15 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                 controller: _tabController,
                 children: [
                   // Content for 'Ngày' tab (Daily)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 30, horizontal: 10),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            // height: 250,
-                            child: Chart(
-                              layers: [
-                                ChartAxisLayer(
-                                  settings: ChartAxisSettings(
-                                    x: ChartAxisSettingsAxis(
-                                      frequency: 1.0,
-                                      max: 13.0,
-                                      min: 7.0,
-                                      textStyle: TextStyle(
-                                        color: Colors.black.withOpacity(0.6),
-                                        fontSize: 10.0,
-                                      ),
-                                    ),
-                                    y: ChartAxisSettingsAxis(
-                                      frequency: 100.0,
-                                      max: 300.0,
-                                      min: 0.0,
-                                      textStyle: TextStyle(
-                                        color: Colors.black.withOpacity(0.6),
-                                        fontSize: 10.0,
-                                      ),
-                                    ),
-                                  ),
-                                  labelX: (value) => value.toInt().toString(),
-                                  labelY: (value) => value.toInt().toString(),
-                                ),
-                                ChartBarLayer(
-                                  items: List.generate(
-                                    13 - 7 + 1,
-                                    (index) => ChartBarDataItem(
-                                      color: AppColors.primaryColor,
-                                      value: Random().nextInt(280) + 20,
-                                      x: index.toDouble() + 7,
-                                    ),
-                                  ),
-                                  settings: const ChartBarSettings(
-                                    thickness: 8.0,
-                                    radius:
-                                        BorderRadius.all(Radius.circular(4.0)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 300,
+                          child: LineChartWidget(data: chartDataDate),
+                        ),
+                      ],
                     ),
                   ),
                   // Content for 'Tuần' tab (Weekly)
@@ -165,48 +139,45 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Weekly content goes here!',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 20),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartData),
+                          child: LineChartWidget(data: chartDataWeek),
                         ),
                       ],
                     ),
                   ),
-                  // Content for 'Tháng' tab (Monthly)
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          'Monthly content goes here!',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 20),
-                        MarkerPointerChart(
-                          value: 18.9,
-                          result: "Bình Thường",
-                        ),
-                      ],
-                    ),
-                  ),
+                  // // Content for 'Tháng' tab (Monthly)
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       vertical: 30, horizontal: 10),
+                  //   child: Center(
+                  //     child: Column(
+                  //       mainAxisAlignment: MainAxisAlignment.center,
+                  //       children: const [
+                  //         Expanded(child: ColumnChartMedicine())
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   // Content for 'Năm' tab (Yearly)
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          'Yearly content goes here!',
-                          style: TextStyle(fontSize: 18),
+                      children: [
+                        SizedBox(
+                          height: 300,
+                          child: LineChartWidget(data: chartDataMonth),
                         ),
-                        SizedBox(height: 20),
-                        MarkerPointerChart(
-                          value: 18.9,
-                          result: "Bình Thường",
+                      ],
+                    ),
+                  ),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 300,
+                          child: LineChartWidget(data: chartDataYear),
                         ),
                       ],
                     ),
@@ -337,11 +308,4 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
       ),
     );
   }
-}
-
-class ChartData {
-  final int x;
-  final double y;
-
-  ChartData(this.x, this.y);
 }
