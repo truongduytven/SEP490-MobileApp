@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:mrx_charts/mrx_charts.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DetailWeightScreen extends StatefulWidget {
   const DetailWeightScreen({Key? key}) : super(key: key);
@@ -18,14 +21,17 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
 
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
-  final List<ChartData> _chartData = [
-    ChartData(0, 5),
-    ChartData(1, 10),
-    ChartData(2, 8),
-    ChartData(3, 15),
-    ChartData(4, 18),
-    ChartData(5, 22),
+  final List<String> xValues = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
   ];
+  // Simulated heart rate data for each day
+  final List<double> yValues = [70, 80, 85, 75, 90, 95, 88]; // Heart rate data
   @override
   void initState() {
     super.initState();
@@ -108,32 +114,52 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                           'Daily content goes here!',
                           style: TextStyle(fontSize: 18),
                         ),
-                        SizedBox(height: 20),
-                        MarkerPointerChart(
-                          value: 18.9,
-                          result: "Bình Thường",
-                        ),
-                        // 'Ngày' tab
-                        Center(
-                          child: SfCartesianChart(
-                            primaryXAxis: NumericAxis(
-                              title: AxisTitle(text: 'Days'),
-                            ),
-                            primaryYAxis: NumericAxis(
-                              title: AxisTitle(text: 'Weight (kg)'),
-                            ),
-                            series: <CartesianSeries>[
-                              LineSeries<ChartData, int>(
-                                dataSource: _chartData,
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.y,
-                                markerSettings:
-                                    const MarkerSettings(isVisible: true),
-                                // color: Colors.blue,
+                        SizedBox(
+                          height: 200,
+                          child: Chart(
+                            layers: [
+                              ChartAxisLayer(
+                                settings: ChartAxisSettings(
+                                  x: ChartAxisSettingsAxis(
+                                    frequency: 1.0,
+                                    max: 13.0,
+                                    min: 7.0,
+                                    textStyle: TextStyle(
+                                      color: Colors.black.withOpacity(0.6),
+                                      fontSize: 10.0,
+                                    ),
+                                  ),
+                                  y: ChartAxisSettingsAxis(
+                                    frequency: 100.0,
+                                    max: 300.0,
+                                    min: 0.0,
+                                    textStyle: TextStyle(
+                                      color: Colors.black.withOpacity(0.6),
+                                      fontSize: 10.0,
+                                    ),
+                                  ),
+                                ),
+                                labelX: (value) => value.toInt().toString(),
+                                labelY: (value) => value.toInt().toString(),
+                              ),
+                              ChartBarLayer(
+                                items: List.generate(
+                                  13 - 7 + 1,
+                                  (index) => ChartBarDataItem(
+                                    color: const Color(0xFF8043F9),
+                                    value: Random().nextInt(280) + 20,
+                                    x: index.toDouble() + 7,
+                                  ),
+                                ),
+                                settings: const ChartBarSettings(
+                                  thickness: 8.0,
+                                  radius:
+                                      BorderRadius.all(Radius.circular(4.0)),
+                                ),
                               ),
                             ],
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -141,15 +167,18 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           'Weekly content goes here!',
                           style: TextStyle(fontSize: 18),
                         ),
                         SizedBox(height: 20),
-                        MarkerPointerChart(
-                          value: 18.9,
-                          result: "Bình Thường",
+                        SizedBox(
+                          height: 200,
+                          child: LineChartWidget(
+                            xValues: xValues,
+                            yValues: yValues,
+                          ),
                         ),
                       ],
                     ),
