@@ -3,6 +3,7 @@ import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DetailWeightScreen extends StatefulWidget {
   const DetailWeightScreen({Key? key}) : super(key: key);
@@ -17,7 +18,14 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
 
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
-
+  final List<ChartData> _chartData = [
+    ChartData(0, 5),
+    ChartData(1, 10),
+    ChartData(2, 8),
+    ChartData(3, 15),
+    ChartData(4, 18),
+    ChartData(5, 22),
+  ];
   @override
   void initState() {
     super.initState();
@@ -90,12 +98,12 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
               height: 500, // Adjust the height for better scrolling experience
               child: TabBarView(
                 controller: _tabController,
-                children: const [
+                children: [
                   // Content for 'Ngày' tab (Daily)
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           'Daily content goes here!',
                           style: TextStyle(fontSize: 18),
@@ -104,6 +112,27 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                         MarkerPointerChart(
                           value: 18.9,
                           result: "Bình Thường",
+                        ),
+                        // 'Ngày' tab
+                        Center(
+                          child: SfCartesianChart(
+                            primaryXAxis: NumericAxis(
+                              title: AxisTitle(text: 'Days'),
+                            ),
+                            primaryYAxis: NumericAxis(
+                              title: AxisTitle(text: 'Weight (kg)'),
+                            ),
+                            series: <CartesianSeries>[
+                              LineSeries<ChartData, int>(
+                                dataSource: _chartData,
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                markerSettings:
+                                    const MarkerSettings(isVisible: true),
+                                // color: Colors.blue,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -285,4 +314,11 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
       ),
     );
   }
+}
+
+class ChartData {
+  final int x;
+  final double y;
+
+  ChartData(this.x, this.y);
 }
