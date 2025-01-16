@@ -21,17 +21,15 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
 
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
-  final List<String> xValues = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday"
-  ];
-  // Simulated heart rate data for each day
-  final List<double> yValues = [70, 80, 85, 75, 90, 95, 88]; // Heart rate data
+  final Map<String, double?> chartData = {
+    "Monday": 150,
+    "Tuesday": null, // null value for demonstration
+    "Wednesday": 180,
+    "Thursday": 160,
+    "Friday": null, // another null value
+    "Saturday": 140,
+    "Sunday": 170,
+  };
   @override
   void initState() {
     super.initState();
@@ -175,10 +173,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                         SizedBox(height: 20),
                         SizedBox(
                           height: 200,
-                          child: LineChartWidget(
-                            xValues: xValues,
-                            yValues: yValues,
-                          ),
+                          child: LineChartWidget(data: chartData),
                         ),
                       ],
                     ),
