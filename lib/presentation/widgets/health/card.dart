@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/health/marker_pointer_chart.dart';
+import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
+import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/theme/color.dart';
 
-class InfoCard extends StatelessWidget {
+class InfoCard extends StatefulWidget {
   final String title;
   final String imageUrl;
   final String result;
@@ -25,13 +26,47 @@ class InfoCard extends StatelessWidget {
   });
 
   @override
+  State<InfoCard> createState() => _InfoCardState();
+}
+
+class _InfoCardState extends State<InfoCard> {
+  void navigateToCardDetail(String title) {
+    // Switch case for different titles
+    switch (title) {
+      case "Nhịp tim":
+        // Navigate to NhịpTimCard
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        break;
+
+      case "Huyết Áp":
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        break;
+
+      case "Cân nặng":
+        // Navigate to CanNangCard
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        break;
+
+      case "Chiều cao":
+        // Navigate to ChieuCaoCard
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        break;
+
+      default:
+        // Handle case where the title doesn't match any of the above
+        print("No card detail screen for ${title}}");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MarkerPointerChart(value: 70)));
+        navigateToCardDetail(widget.title);
       },
       child: Card(
         color: AppColors.bgColor,
@@ -52,7 +87,7 @@ class InfoCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Image.asset(
-                      imageUrl,
+                      widget.imageUrl,
                       width: 45,
                       height: 45,
                       fit: BoxFit.cover,
@@ -61,7 +96,7 @@ class InfoCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      title,
+                      widget.title,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
@@ -78,16 +113,16 @@ class InfoCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 3),
                             decoration: BoxDecoration(
-                              color: _getBadgeBackgroundColor(result),
+                              color: _getBadgeBackgroundColor(widget.result),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: _getBadgeBorderColor(result),
+                                color: _getBadgeBorderColor(widget.result),
                                 width: 1.5,
                               ),
                             ),
                             child: Center(
                               child: Text(
-                                result,
+                                widget.result,
                                 maxLines: 1,
                                 style: const TextStyle(
                                   overflow: TextOverflow.ellipsis,
@@ -130,7 +165,7 @@ class InfoCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          dateTime,
+                          widget.dateTime,
                           style: TextStyle(
                             fontSize: 18,
                             color: AppColors.grayColor5,
@@ -142,7 +177,7 @@ class InfoCard extends StatelessWidget {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: data,
+                                text: widget.data,
                                 style: const TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
@@ -150,7 +185,7 @@ class InfoCard extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: "  $unit",
+                                text: "  ${widget.unit}",
                                 style: const TextStyle(
                                     fontSize: 20,
                                     color: AppColors.grayColor5,
@@ -167,7 +202,7 @@ class InfoCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            average,
+                            widget.average,
                             maxLines: 1,
                             style: TextStyle(
                               overflow: TextOverflow.ellipsis,
@@ -181,7 +216,7 @@ class InfoCard extends StatelessWidget {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: dataAverage,
+                                  text: widget.dataAverage,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -189,7 +224,7 @@ class InfoCard extends StatelessWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: " $unit",
+                                  text: " ${widget.unit}",
                                   style: const TextStyle(
                                       fontSize: 20,
                                       color: AppColors.grayColor5,

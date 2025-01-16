@@ -17,7 +17,9 @@ class HealthFloatingActionButton extends StatelessWidget {
     return SpeedDial(
       elevation: 0,
       buttonSize: const Size(48, 48),
-      animatedIcon: AnimatedIcons.menu_close,
+      icon: Icons.add,
+      activeIcon: Icons.close,
+      // animatedIcon: AnimatedIcons.menu_close,
       openCloseDial: isDialOpen,
       backgroundColor: AppColors.grayColor2,
       overlayColor: AppColors.secondaryColor,

@@ -10,9 +10,6 @@ class MarkerPointerChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Marker Pointer Chart'),
-      ),
       body: Center(
         child: AnimatedRadialGauge(
           /// The animation duration.
@@ -54,12 +51,12 @@ class MarkerPointerChart extends StatelessWidget {
             progressBar: GaugeProgressBar.rounded(
               color: Colors.transparent,
               gradient: GaugeAxisGradient(
-                colors: [
+                colors: const [
                   AppColors.errorColor, // Red (low range)
                   Colors.orange, // Orange (middle range)
                   Colors.green, // Green (high range)
                 ],
-                colorStops: [0.0, 0.5, 1.0], // Define transition stops
+                colorStops: const [0.0, 0.2, 1.0], // Define transition stops
               ),
             ),
 
@@ -86,7 +83,7 @@ class MarkerPointerChart extends StatelessWidget {
           /// Define the child builder to display value label or other widgets (optional).
           builder: (context, child, gaugeValue) => Center(
             child: Text(
-              '${gaugeValue.toStringAsFixed(1)}',
+              gaugeValue.toStringAsFixed(1),
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
