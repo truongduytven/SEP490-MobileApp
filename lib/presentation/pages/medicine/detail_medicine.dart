@@ -4,6 +4,7 @@ import 'package:sep490/presentation/pages/medicine/edit_form_medical.dart';
 import 'package:sep490/presentation/pages/medicine/edit_frequency.dart';
 import 'package:sep490/presentation/pages/medicine/edit_name.dart';
 import 'package:sep490/presentation/pages/medicine/edit_remaining.dart';
+import 'package:sep490/presentation/pages/medicine/edit_schedule.dart';
 import 'package:sep490/presentation/pages/medicine/edit_treatment.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -39,14 +40,14 @@ class _DetailMedicineState extends State<DetailMedicine> {
         };
   }
 
-  void _handleClickMedicineData(String name, String value) async {
+  void _handleClickMedicineData(String name) async {
     switch (name) {
       case 'Tên':
         {
           final newName = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditNameScreen(currentName: value),
+              builder: (context) => EditNameScreen(currentName: medicineData['name']),
             ),
           );
 
@@ -60,16 +61,16 @@ class _DetailMedicineState extends State<DetailMedicine> {
         break;
       case 'Hàm lượng':
         {
-          final firstSpaceIndex = value.indexOf(' ');
+          final firstSpaceIndex = medicineData['dosage'].indexOf(' ');
           final String currentDosage;
           final String currentUnit;
 
           if (firstSpaceIndex != -1) {
-            currentDosage = value.substring(0, firstSpaceIndex).trim();
-            currentUnit = value.substring(firstSpaceIndex + 1).trim();
+            currentDosage = medicineData['dosage'].substring(0, firstSpaceIndex).trim();
+            currentUnit = medicineData['dosage'].substring(firstSpaceIndex + 1).trim();
           } else {
-            currentDosage = value.trim();
-            currentUnit = 'mL';
+            currentDosage = medicineData['dosage'].trim();
+            currentUnit = 'viên';
           }
 
           final result = await Navigator.push(
@@ -93,7 +94,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditFormMedical(currentForm: value),
+              builder: (context) => EditFormMedical(currentForm: medicineData['form']),
             ),
           );
           if (result != null) {
@@ -108,7 +109,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final newTreatment = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditTreatment(currentTreatment: value),
+              builder: (context) => EditTreatment(currentTreatment: medicineData['treatment']),
             ),
           );
           if (newTreatment != null && newTreatment is String) {
@@ -123,7 +124,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final newRemaining = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditRemaining(currentRemaining: value),
+              builder: (context) => EditRemaining(currentRemaining: medicineData['remaining']),
             ),
           );
           if (newRemaining != null && newRemaining is String) {
@@ -155,6 +156,89 @@ class _DetailMedicineState extends State<DetailMedicine> {
             });
           }
         }
+      case 'Cữ uống':
+        {
+          final result = await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              String selectedOption = medicineData['mealTime'].isNotEmpty ? medicineData['mealTime'] : '';
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Title
+                      const Text(
+                        'Cữ uống',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Nên uống vào khoảng nào của bữa ăn?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Options
+                      _buildOption(
+                        title: 'Trước khi ăn',
+                        isSelected: selectedOption == 'Trước khi ăn',
+                        onTap: () {
+                          selectedOption = 'Trước khi ăn';
+                          Navigator.pop(context, selectedOption);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      _buildOption(
+                        title: 'Sau khi ăn',
+                        isSelected: selectedOption == 'Sau khi ăn',
+                        onTap: () {
+                          selectedOption = 'Sau khi ăn';
+                          Navigator.pop(context, selectedOption);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+
+          if (result != null) {
+            setState(() {
+              medicineData['mealTime'] = result; // Update the meal time
+            });
+          }
+        }
+        break;
+      case 'Đặt lịch':
+        {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditSchedule(
+                schedules: List<String>.from(medicineData['schedule']),
+              ),
+            ),
+          );
+
+          if (result != null) {
+            setState(() {
+              medicineData['schedule'] = result;
+            });
+          }
+        }
+        break;
     }
   }
 
@@ -329,12 +413,10 @@ class _DetailMedicineState extends State<DetailMedicine> {
               value: medicineData['mealTime'],
             ),
             _buildDivider(),
-            _buildDetailRow(
+            _buildSheduleRow(
               iconPath: 'assets/icons/alarm_clock.svg',
               title: 'Đặt lịch',
-              value: medicineData['schedule'].isNotEmpty
-                  ? medicineData['schedule'].join(', ')
-                  : '-',
+              value: medicineData['schedule'],
             ),
           ],
         ),
@@ -349,7 +431,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
   }) {
     return GestureDetector(
       onTap: () {
-        _handleClickMedicineData(title, value);
+        _handleClickMedicineData(title);
       },
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -400,6 +482,86 @@ class _DetailMedicineState extends State<DetailMedicine> {
     );
   }
 
+  Widget _buildSheduleRow({
+    required String iconPath,
+    required String title,
+    required List<dynamic> value,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        _handleClickMedicineData(title);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                SvgPicture.asset(
+                  iconPath,
+                  width: 30,
+                  height: 30,
+                  colorFilter:
+                      ColorFilter.mode(AppColors.iconColor, BlendMode.srcIn),
+                ),
+                const SizedBox(width: 15),
+                Text(
+                  title,
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children: value.map((day) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLowColor.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Text(
+                            day,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  if (value.isEmpty)
+                    const Text(
+                      '-',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryColor,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildFrequencyRow({
     required String iconPath,
     required String title,
@@ -409,7 +571,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
   }) {
     return GestureDetector(
       onTap: () {
-        _handleClickMedicineData(title, value);
+        _handleClickMedicineData(title);
       },
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -546,6 +708,48 @@ class _DetailMedicineState extends State<DetailMedicine> {
       child: Divider(
         color: Colors.grey,
         thickness: 1,
+      ),
+    );
+  }
+
+  Widget _buildOption({
+    required String title,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: isSelected
+              ? AppColors.primaryLowColor.withOpacity(0.4)
+              : Colors.white,
+          border: Border.all(
+            color: isSelected ? AppColors.primaryColor : Colors.grey,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? AppColors.primaryColor : Colors.black,
+              ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle,
+                color: AppColors.primaryColor,
+                size: 20,
+              ),
+          ],
+        ),
       ),
     );
   }
