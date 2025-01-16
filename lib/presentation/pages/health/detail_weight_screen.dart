@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
@@ -53,7 +54,8 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
               child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
+        // Wrap the body with SingleChildScrollView
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -62,9 +64,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
               height: 55,
               decoration: BoxDecoration(
                 color: AppColors.borderColor,
-                borderRadius: BorderRadius.circular(
-                  25.0,
-                ),
+                borderRadius: BorderRadius.circular(25.0),
               ),
               child: TabBar(
                 dividerHeight: 0,
@@ -86,26 +86,200 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
             ),
             const SizedBox(height: 16),
             // Use Expanded for TabBarView
-            Expanded(
+            SizedBox(
+              height: 500, // Adjust the height for better scrolling experience
               child: TabBarView(
                 controller: _tabController,
-                children: tabs.map((tab) {
-                  return Center(
-                    child: Text(
-                      'Content for $tab',
-                      style: const TextStyle(fontSize: 18),
+                children: const [
+                  // Content for 'Ngày' tab (Daily)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          'Daily content goes here!',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 20),
+                        MarkerPointerChart(
+                          value: 18.9,
+                          result: "Bình Thường",
+                        ),
+                      ],
                     ),
-                  );
-                }).toList(),
+                  ),
+                  // Content for 'Tuần' tab (Weekly)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          'Weekly content goes here!',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 20),
+                        MarkerPointerChart(
+                          value: 18.9,
+                          result: "Bình Thường",
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Content for 'Tháng' tab (Monthly)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          'Monthly content goes here!',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 20),
+                        MarkerPointerChart(
+                          value: 18.9,
+                          result: "Bình Thường",
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Content for 'Năm' tab (Yearly)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          'Yearly content goes here!',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 20),
+                        MarkerPointerChart(
+                          value: 18.9,
+                          result: "Bình Thường",
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
             // Marker Pointer Chart
-            // Wrap with Flexible or SizedBox to avoid unconstrained rendering issues
-            SizedBox(
-              height: 150, // Ensure it has a fixed height
-              child: MarkerPointerChart(value: 50),
+            Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey
+                        .withOpacity(0.5), // Shadow color (light pink)
+                    blurRadius: 0.05, // Blur radius for the shadow
+                    offset: Offset(
+                        1, 1), // Offset for the shadow (horizontal, vertical)
+                  ),
+                ],
+                color: AppColors.bgColor,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: AppColors.secondaryColor, // Pink border color
+                  width: 0.05, // Adjust the border width as needed
+                ),
+              ),
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    "Tỉ số khối cơ thể(BMI)",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 15),
+                    child: Text(
+                      "11 tháng 2 năm 2025",
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.grayColor5,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 150, // Ensure it has a fixed height
+                    child: MarkerPointerChart(
+                      value: 18.9,
+                      result: "Bình Thường",
+                    ),
+                  ),
+                ],
+              ),
             ),
+
+            const SizedBox(height: 20),
+
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              color: AppColors.bgColor,
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(
+                    color: AppColors.secondaryColor, width: 0.05),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HealthMonitoringBook(
+                                    initialTopic: "weight",
+                                  )),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(18),
+                            child: Image.asset(
+                              'assets/img3D/sotheodoi.png',
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Sổ theo dõi',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Xem tất cả số lần đo của bạn.',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),

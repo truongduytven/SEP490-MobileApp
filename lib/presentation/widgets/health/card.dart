@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
-import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/theme/color.dart';
 
 class InfoCard extends StatefulWidget {
@@ -35,13 +34,13 @@ class _InfoCardState extends State<InfoCard> {
     switch (title) {
       case "Nhịp tim":
         // Navigate to NhịpTimCard
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        // Navigator.push(context,
+        //     MaterialPageRoute(builder: (context) => DetailWeightScreen()));
         break;
 
       case "Huyết Áp":
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        // Navigator.push(context,
+        //     MaterialPageRoute(builder: (context) => DetailWeightScreen()));
         break;
 
       case "Cân nặng":
@@ -52,13 +51,13 @@ class _InfoCardState extends State<InfoCard> {
 
       case "Chiều cao":
         // Navigate to ChieuCaoCard
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        // Navigator.push(context,
+        //     MaterialPageRoute(builder: (context) => DetailWeightScreen()));
         break;
 
       default:
         // Handle case where the title doesn't match any of the above
-        print("No card detail screen for ${title}}");
+        print("No card detail screen for ${title}");
     }
   }
 
