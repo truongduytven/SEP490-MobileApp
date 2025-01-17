@@ -50,7 +50,8 @@ class SignUpScreen extends StatelessWidget {
                         Text(
                           "Chào mừng đã đến với Senior Essentials, nơi kết nối các thành viên trong gia đình cũng như dễ quản lí sức khỏe của người cao tuổi",
                           textAlign: TextAlign.start,
-                          style: TextStyle(color: AppColors.textColor, fontSize: 16),
+                          style: TextStyle(
+                              color: AppColors.textColor, fontSize: 16),
                         ),
                       ],
                     ),
@@ -105,8 +106,3 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 }
-
-const authOutlineInputBorder = OutlineInputBorder(
-  borderSide: BorderSide(color: Color(0xFF757575)),
-  borderRadius: BorderRadius.all(Radius.circular(100)),
-);
