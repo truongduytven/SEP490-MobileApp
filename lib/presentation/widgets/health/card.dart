@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
+import 'package:sep490/presentation/pages/health/detail_heart_beat_screen.dart';
+import 'package:sep490/presentation/pages/health/detail_height_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -34,13 +37,15 @@ class _InfoCardState extends State<InfoCard> {
     switch (title) {
       case "Nhịp tim":
         // Navigate to NhịpTimCard
-        // Navigator.push(context,
-        //     MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailHeartBeatScreen()));
         break;
 
       case "Huyết Áp":
-        // Navigator.push(context,
-        //     MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailBloodPressureScreen()));
         break;
 
       case "Cân nặng":
@@ -51,8 +56,8 @@ class _InfoCardState extends State<InfoCard> {
 
       case "Chiều cao":
         // Navigate to ChieuCaoCard
-        // Navigator.push(context,
-        //     MaterialPageRoute(builder: (context) => DetailWeightScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailHeightScreen()));
         break;
 
       default:

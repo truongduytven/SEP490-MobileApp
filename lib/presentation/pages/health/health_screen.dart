@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/presentation/widgets/health/card.dart';

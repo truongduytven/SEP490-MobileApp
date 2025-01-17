@@ -26,61 +26,104 @@ class GroupBarChartWidget extends StatelessWidget {
       );
     }
 
-    return Chart(
-      layers: [
-        // X and Y axes
-        ChartAxisLayer(
-          settings: ChartAxisSettings(
-            x: ChartAxisSettingsAxis(
-              frequency: 1.0,
-              max: (xValues.length - 1).toDouble(),
-              min: 0.0,
-              textStyle: const TextStyle(
-                color: AppColors.secondaryColor,
-                fontSize: 14.0,
-              ),
-            ),
-            y: ChartAxisSettingsAxis(
-              frequency: 10.0,
-              max: barData.expand((e) => e).reduce((a, b) => a > b ? a : b) +
-                  10.0, // Set max slightly higher
-              min: barData.expand((e) => e).reduce((a, b) => a < b ? a : b) -
-                  10.0,
-              textStyle: const TextStyle(
-                color: AppColors.grayColor5,
-                fontSize: 12.0,
-              ),
-            ),
-          ),
-          labelX: (value) => xValues[value.toInt()], // Labels for categories
-          labelY: (value) => '${value.toInt()} units', // Labels for the values
-        ),
-        // Grouped Bar Layer
-        ChartBarLayer(
-          items: List.generate(
-            xValues.length,
-            (index) {
-              final group =
-                  barData[index]; // Group data (multiple bars per category)
-              return [
-                for (int i = 0; i < group.length; i++)
-                  ChartBarDataItem(
-                    x: index.toDouble() +
-                        0.2 * i, // Slightly offset bars within the group
-                    value: group[i],
-                    color: i.isEven
-                        ? AppColors.primaryColor
-                        : AppColors.secondaryColor, // Alternate bar colors
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Legend
+
+        // Chart
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+          height: 300,
+          child: Chart(
+            layers: [
+              // X and Y axes
+              ChartAxisLayer(
+                settings: ChartAxisSettings(
+                  x: ChartAxisSettingsAxis(
+                    frequency: 1.0,
+                    max: (xValues.length - 1).toDouble(),
+                    min: 0.0,
+                    textStyle: const TextStyle(
+                      color: AppColors.primaryColor,
+                      fontSize: 14.0,
+                    ),
                   ),
-              ];
-            },
-          )
-              .expand((element) => element)
-              .toList(), // Flatten list of bars per category
-          settings: const ChartBarSettings(
-            thickness: 8.0,
-            radius: BorderRadius.all(Radius.circular(4.0)),
+                  y: ChartAxisSettingsAxis(
+                    frequency: 10.0,
+                    max: barData
+                            .expand((e) => e)
+                            .reduce((a, b) => a > b ? a : b) +
+                        10.0,
+                    min: barData
+                            .expand((e) => e)
+                            .reduce((a, b) => a < b ? a : b) -
+                        10.0,
+                    textStyle: const TextStyle(
+                      color: AppColors.grayColor5,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ),
+                labelX: (value) => xValues[value.toInt()],
+                labelY: (value) => '${value.toInt()} BPM',
+              ),
+              // Grouped Bar Layer
+              ChartBarLayer(
+                items: List.generate(
+                  xValues.length,
+                  (index) {
+                    final group = barData[index];
+                    return [
+                      for (int i = 0; i < group.length; i++)
+                        ChartBarDataItem(
+                          x: index.toDouble() + (i * 0.2),
+                          value: group[i],
+                          color: i.isEven
+                              ? const Color.fromARGB(255, 80, 218, 87)
+                              : const Color.fromARGB(255, 81, 86, 194),
+                        ),
+                    ];
+                  },
+                ).expand((element) => element).toList(),
+                settings: const ChartBarSettings(
+                  thickness: 8.0,
+                  radius: BorderRadius.all(Radius.circular(4.0)),
+                ),
+              ),
+            ],
           ),
+        ),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildLegendItem(Color.fromARGB(255, 80, 218, 87), "Tâm thu"),
+            const SizedBox(width: 16),
+            _buildLegendItem(Color.fromARGB(255, 81, 86, 194), "Tâm trương"),
+          ],
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  /// Helper method to create a legend item
+  Widget _buildLegendItem(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14),
         ),
       ],
     );

@@ -1,50 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
-import 'package:sep490/presentation/widgets/health/chart/line_chart_weight_widget.dart';
-import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_heart_beat_widget.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
-class DetailWeightScreen extends StatefulWidget {
-  const DetailWeightScreen({Key? key}) : super(key: key);
+class DetailHeartBeatScreen extends StatefulWidget {
+  const DetailHeartBeatScreen({super.key});
 
   @override
-  State<DetailWeightScreen> createState() => _DetailWeightScreenState();
+  State<DetailHeartBeatScreen> createState() => _DetailHeartBeatScreenState();
 }
 
-class _DetailWeightScreenState extends State<DetailWeightScreen>
+class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
     with SingleTickerProviderStateMixin {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
   final Map<String, double?> chartDataDate = {
-    "T2": 75,
+    "T2": 115,
     "T3": null,
-    "T4": 76,
-    "T5": 74.5,
+    "T4": 116,
+    "T5": 114,
     "T6": null,
-    "T7": 75,
-    "Hôm nay": 75,
+    "T7": 125,
+    "Hôm nay": 115,
   };
   final Map<String, double?> chartDataMonth = {
-    "11/2024": 74.5,
-    "12/2024": 72,
+    "11/2024": 116,
+    "12/2024": 112,
     "T1": null,
-    "Tháng này": 78,
+    "Tháng này": 118,
   };
   final Map<String, double?> chartDataYear = {
-    "2023": 65,
+    "2023": 165,
     "2024": null,
-    "Năm nay": 46,
+    "Năm nay": 146,
   };
   final Map<String, double?> chartDataWeek = {
-    "t-5": 70,
+    "t-5": 120,
     "t-4": null,
-    "t-3": 66,
-    "t-2": 64.5,
+    "t-3": 116,
+    "t-2": 125,
     "t-1": null,
-    "Tuần này": 65,
+    "Tuần này": 115,
   };
   @override
   void initState() {
@@ -68,7 +66,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "Cân nặng",
+          "Nhịp tim",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -83,7 +81,6 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
         ],
       ),
       body: SingleChildScrollView(
-        // Wrap the body with SingleChildScrollView
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -142,20 +139,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                       ],
                     ),
                   ),
-                  // // Content for 'Tháng' tab (Monthly)
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(
-                  //       vertical: 30, horizontal: 10),
-                  //   child: Center(
-                  //     child: Column(
-                  //       mainAxisAlignment: MainAxisAlignment.center,
-                  //       children: const [
-                  //         Expanded(child: ColumnChartMedicine())
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                  // Content for 'Năm' tab (Yearly)
+
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -183,52 +167,6 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
             ),
             const SizedBox(height: 20),
             // Marker Pointer Chart
-            Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey
-                        .withOpacity(0.5), // Shadow color (light pink)
-                    blurRadius: 0.05, // Blur radius for the shadow
-                    offset: Offset(
-                        1, 1), // Offset for the shadow (horizontal, vertical)
-                  ),
-                ],
-                color: AppColors.bgColor,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: AppColors.secondaryColor, // Pink border color
-                  width: 0.05, // Adjust the border width as needed
-                ),
-              ),
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    "Tỉ số khối cơ thể(BMI)",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 15),
-                    child: Text(
-                      "11 tháng 2 năm 2025",
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: AppColors.grayColor5,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 150, // Ensure it has a fixed height
-                    child: MarkerPointerChart(
-                      value: 18.9,
-                      result: "Bình Thường",
-                    ),
-                  ),
-                ],
-              ),
-            ),
 
             const SizedBox(height: 20),
 
@@ -252,7 +190,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                           context,
                           MaterialPageRoute(
                               builder: (context) => HealthMonitoringBook(
-                                    initialTopic: "weight",
+                                    initialTopic: "heart_rate",
                                   )),
                         );
                       },

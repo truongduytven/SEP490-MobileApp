@@ -50,7 +50,7 @@ class LineChartWidget extends StatelessWidget {
             ),
           ),
           labelX: (value) => xValues[value.toInt()], // Labels for days
-          labelY: (value) => '${value.toInt()} kg', // Labels for heart rate
+          labelY: (value) => '${value.toInt()} BMP', // Labels for heart rate
         ),
         // Line layer with skipped null values
         ChartLineLayer(

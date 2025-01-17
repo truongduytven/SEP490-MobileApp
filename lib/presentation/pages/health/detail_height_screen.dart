@@ -1,50 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
-import 'package:sep490/presentation/widgets/health/chart/line_chart_weight_widget.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_height_widget.dart';
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
-class DetailWeightScreen extends StatefulWidget {
-  const DetailWeightScreen({Key? key}) : super(key: key);
+class DetailHeightScreen extends StatefulWidget {
+  const DetailHeightScreen({super.key});
 
   @override
-  State<DetailWeightScreen> createState() => _DetailWeightScreenState();
+  State<DetailHeightScreen> createState() => _DetailHeightScreenState();
 }
 
-class _DetailWeightScreenState extends State<DetailWeightScreen>
+class _DetailHeightScreenState extends State<DetailHeightScreen>
     with SingleTickerProviderStateMixin {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
   final Map<String, double?> chartDataDate = {
-    "T2": 75,
+    "T2": 175,
     "T3": null,
-    "T4": 76,
-    "T5": 74.5,
+    "T4": 176,
+    "T5": 174.5,
     "T6": null,
-    "T7": 75,
-    "Hôm nay": 75,
+    "T7": 175,
+    "Hôm nay": 175,
   };
   final Map<String, double?> chartDataMonth = {
-    "11/2024": 74.5,
-    "12/2024": 72,
+    "11/2024": 174.5,
+    "12/2024": 172,
     "T1": null,
-    "Tháng này": 78,
+    "Tháng này": 178,
   };
   final Map<String, double?> chartDataYear = {
-    "2023": 65,
+    "2023": 165,
     "2024": null,
-    "Năm nay": 46,
+    "Năm nay": 146,
   };
   final Map<String, double?> chartDataWeek = {
-    "t-5": 70,
+    "t-5": 170,
     "t-4": null,
-    "t-3": 66,
-    "t-2": 64.5,
+    "t-3": 166,
+    "t-2": 164.5,
     "t-1": null,
-    "Tuần này": 65,
+    "Tuần này": 165,
   };
   @override
   void initState() {
@@ -68,7 +67,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "Cân nặng",
+          "Chiều cao",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -83,7 +82,6 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
         ],
       ),
       body: SingleChildScrollView(
-        // Wrap the body with SingleChildScrollView
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -142,20 +140,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                       ],
                     ),
                   ),
-                  // // Content for 'Tháng' tab (Monthly)
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(
-                  //       vertical: 30, horizontal: 10),
-                  //   child: Center(
-                  //     child: Column(
-                  //       mainAxisAlignment: MainAxisAlignment.center,
-                  //       children: const [
-                  //         Expanded(child: ColumnChartMedicine())
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                  // Content for 'Năm' tab (Yearly)
+
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -252,7 +237,7 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                           context,
                           MaterialPageRoute(
                               builder: (context) => HealthMonitoringBook(
-                                    initialTopic: "weight",
+                                    initialTopic: "height",
                                   )),
                         );
                       },
