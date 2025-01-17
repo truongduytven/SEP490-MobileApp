@@ -111,7 +111,7 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
             ),
             // Use Expanded for TabBarView
             SizedBox(
-              height: 350, // Adjust the height for better scrolling experience
+              height: 400, // Adjust the height for better scrolling experience
               child: TabBarView(
                 controller: _tabController,
                 children: [
@@ -120,6 +120,35 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình ngày",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "111 nhịp/phút",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Bình Thường",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 300,
                           child: LineChartWidget(data: chartDataDate),
@@ -132,6 +161,35 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình tuần",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "101 nhịp/phút",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Bình thường",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 300,
                           child: LineChartWidget(data: chartDataWeek),
@@ -144,6 +202,35 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình tháng",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "120 nhịp/phút",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Cao",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 300,
                           child: LineChartWidget(data: chartDataMonth),
@@ -155,6 +242,35 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình năm",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "90 nhịp/phút",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Bình Thường",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 300,
                           child: LineChartWidget(data: chartDataYear),

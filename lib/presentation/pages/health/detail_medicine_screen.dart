@@ -118,6 +118,37 @@ class _DetailMedicineScreenState extends State<DetailMedicineScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Trung bình ngày",
+                                      style: TextStyle(
+                                          color: AppColors.grayColor5),
+                                    ),
+                                    Text(
+                                      "76% tuân thủ uống thuốc",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "11 th2,2024",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
                           Expanded(
                               child: ColumnChartMedicine(
                             data: chartDataDate,
@@ -133,6 +164,37 @@ class _DetailMedicineScreenState extends State<DetailMedicineScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Trung bình tuần",
+                                      style: TextStyle(
+                                          color: AppColors.grayColor5),
+                                    ),
+                                    Text(
+                                      "56% tuân thủ uống thuốc",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "11-16 th2,2024",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
                           Expanded(
                               child: ColumnChartMedicine(
                             data: chartDataWeek,
@@ -149,6 +211,37 @@ class _DetailMedicineScreenState extends State<DetailMedicineScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Trung bình tháng",
+                                      style: TextStyle(
+                                          color: AppColors.grayColor5),
+                                    ),
+                                    Text(
+                                      "80% tuân thủ uống thuốc",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "tháng 2,2024",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
                           Expanded(
                               child: ColumnChartMedicine(
                             data: chartDataMonth,

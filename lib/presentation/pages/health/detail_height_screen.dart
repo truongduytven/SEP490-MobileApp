@@ -112,15 +112,43 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
             ),
             // Use Expanded for TabBarView
             SizedBox(
-              height: 350, // Adjust the height for better scrolling experience
+              height: 400, // Adjust the height for better scrolling experience
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  // Content for 'Ngày' tab (Daily)
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình ngày",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "163cm",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "BMI: 18.1",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 300,
                           child: LineChartWidget(data: chartDataDate),
@@ -133,6 +161,35 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình tuần",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "164.5cm",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "BMI: 17.1",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 300,
                           child: LineChartWidget(data: chartDataWeek),
@@ -145,6 +202,35 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình tháng",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "166.6cm",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "BMI: 19.1",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 300,
                           child: LineChartWidget(data: chartDataMonth),
@@ -156,6 +242,35 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình năm",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "161cm",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "BMI: 16.1",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 300,
                           child: LineChartWidget(data: chartDataYear),

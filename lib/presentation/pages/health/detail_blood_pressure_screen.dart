@@ -112,7 +112,7 @@ class _DetailBloodPressureScreenState extends State<DetailBloodPressureScreen>
             ),
             // Tab Bar View
             SizedBox(
-              height: 350,
+              height: 450,
               child: TabBarView(
                 controller: _tabController,
                 children: [
@@ -121,6 +121,35 @@ class _DetailBloodPressureScreenState extends State<DetailBloodPressureScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình ngày",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "110/90",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Bình Thường",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 350,
                           child: Center(
@@ -135,6 +164,35 @@ class _DetailBloodPressureScreenState extends State<DetailBloodPressureScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình tuần",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "112/87",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Cao",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 350,
                           child: Center(
@@ -149,6 +207,35 @@ class _DetailBloodPressureScreenState extends State<DetailBloodPressureScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình tháng",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "110/98",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Bình Thường",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 350,
                           child: Center(
@@ -163,6 +250,35 @@ class _DetailBloodPressureScreenState extends State<DetailBloodPressureScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Trung bình năm",
+                                    style:
+                                        TextStyle(color: AppColors.grayColor5),
+                                  ),
+                                  Text(
+                                    "120/90",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "Thấp",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 350,
                           child: Center(
