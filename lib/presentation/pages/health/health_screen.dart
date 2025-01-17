@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/presentation/widgets/health/card.dart';
-import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
 class HealthScreen extends StatefulWidget {
@@ -214,9 +213,6 @@ class _HealthScreenState extends State<HealthScreen> {
             ],
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-        floatingActionButton:
-            HealthFloatingActionButton(isDialOpen: isDialOpen),
       ),
     );
   }

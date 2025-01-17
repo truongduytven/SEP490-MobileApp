@@ -4,6 +4,7 @@ import 'package:sep490/presentation/pages/health/add_blood_pressure_screen.dart'
 import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
+import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/theme/color.dart';
 
 class HealthFloatingActionButton extends StatelessWidget {
@@ -155,6 +156,14 @@ class HealthFloatingActionButton extends StatelessWidget {
           ),
         ),
         SpeedDialChild(
+          onTap: () {
+            isDialOpen.value = false;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomeMedicine()),
+            );
+          },
           labelWidget: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
             child: IntrinsicWidth(

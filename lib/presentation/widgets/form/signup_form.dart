@@ -17,6 +17,7 @@ class _SignUpFormState extends State<SignUpForm> {
   String _selectedDate = '';
   String _selectedGender = '';
   late DateTime _focusedDay; // This stores the focused date
+  // ignore: unused_field
   CalendarFormat _calendarFormat = CalendarFormat.month;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form key
   final TextEditingController emailController = TextEditingController();
@@ -139,6 +140,7 @@ class _SignUpFormState extends State<SignUpForm> {
             textInputAction: TextInputAction.next,
             readOnly: true,
             onTap: () async {
+              // ignore: unused_local_variable
               DateTime? pickedDate = await showDialog(
                 context: context,
                 builder: (context) {

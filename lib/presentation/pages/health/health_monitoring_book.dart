@@ -176,7 +176,6 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
   }
 
   void navigateToCardDetail(Map<String, String> item) {
-    print("Vo dya");
 
     // Switch case for different titles
     switch (item["title"]) {
@@ -211,8 +210,8 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
           MaterialPageRoute(
               builder: (context) => AddBloodPressureScreen(
                   date: item['date'],
-                  currentValueSystolic: num.tryParse(systolic ?? "") ?? 0,
-                  currentValueDiastolic: num.tryParse(diastolic ?? "") ?? 0,
+                  currentValueSystolic: num.tryParse(systolic) ?? 0,
+                  currentValueDiastolic: num.tryParse(diastolic) ?? 0,
                   showBloodPressuretWidget: true,
                   isDraft: false)),
         );

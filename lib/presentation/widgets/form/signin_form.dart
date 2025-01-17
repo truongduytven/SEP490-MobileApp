@@ -79,10 +79,6 @@ class _SignInFormState extends State<SignInForm> {
           const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: () {
-              // if (_formKey.currentState!.validate()) {
-              //   print('Email/Số điện thoại: ${emailController.text}');
-              //   print('Mật khẩu: ${passwordController.text}');
-              // }
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
                 return NavigationMenu();
               }));

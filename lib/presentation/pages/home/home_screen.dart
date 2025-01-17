@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
+import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/presentation/widgets/health_card.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -18,7 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize locale formatting
     initializeDateFormatting('vi', null).then((_) {
       setState(() {
         today = DateFormat('EEEE, dd MMMM yyyy', 'vi').format(DateTime.now());
@@ -39,116 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage:
-                                AssetImage('assets/img/avatar.jpg'),
-                            radius: 25,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                color: AppColors.bgColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.edit,
-                                size: 15,
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 10),
-                      Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const <Widget>[
-                            Text(
-                              "Xin chào,",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: AppColors.textColor,
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: 1,
-                                wordSpacing: 2,
-                              ),
-                            ),
-                            Text(
-                              'Nguyễn Văn A',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: AppColors.textColor,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1,
-                                wordSpacing: 2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        // padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.grayColor4.withOpacity(0.3),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.notifications,
-                            color: AppColors.textColor,
-                          ),
-                          iconSize: 25,
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Container(
-                        // padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.grayColor4
-                              .withOpacity(0.3), // Gray background
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.add,
-                            color: AppColors.textColor,
-                          ),
-                          iconSize: 30,
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Header(),
+              const SizedBox(height: 20),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -160,7 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      print("Xem tất cả clicked!");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HealthMonitoringBook(initialTopic: "all",),
+                        ),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -177,16 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-            ),
-            // Container(
-            //   height: 1, // Thickness of the line
-            //   width: double.infinity, // Full width
-            //   color: AppColors.textColor.withOpacity(0.2), // Line color
-            // ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: SingleChildScrollView(
+              const SizedBox(height: 20),
+              SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
@@ -218,11 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 40),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+              const SizedBox(height: 40),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -251,19 +145,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-            ),
-            SizedBox(height: 15),
-            Center(
-              child: Text(today,
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryColor)),
-            ),
-            SizedBox(height: 150),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+              SizedBox(height: 15),
+              Center(
+                child: Text(today,
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryColor)),
+              ),
+              SizedBox(height: 150),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -273,63 +164,46 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.w600,
                         color: AppColors.textColor),
                   ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     print("Xem tất cả clicked!");
-                  //   },
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.symmetric(
-                  //         horizontal: 5, vertical: 2),
-                  //     child: Text(
-                  //       'Xem tất cả',
-                  //       style: TextStyle(
-                  //         fontSize: 18,
-                  //         decoration: TextDecoration.underline,
-                  //         color: AppColors.textColor,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildCategoryCard(
-                  icon:
-                      'assets/img3D/thuoc.png', // Replace with your asset path
-                  label: 'Thuốc',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeMedicine(),
-                      ),
-                    );
-                  },
-                ),
-                _buildCategoryCard(
-                  icon:
-                      'assets/img3D/bacsi.png', // Replace with your asset path
-                  label: 'Tư vấn bác sĩ',
-                  onTap: () {
-                    print("Thuốc clicked");
-                  },
-                ),
-                _buildCategoryCard(
-                  icon:
-                      'assets/img3D/thietbideotay.png', // Replace with your asset path
-                  label: 'Thiết bị đeo tay',
-                  onTap: () {
-                    print("Thuốc clicked");
-                  },
-                ),
-              ],
-            )
-          ],
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCategoryCard(
+                    icon:
+                        'assets/img3D/thuoc.png', // Replace with your asset path
+                    label: 'Thuốc',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeMedicine(),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildCategoryCard(
+                    icon:
+                        'assets/img3D/bacsi.png', // Replace with your asset path
+                    label: 'Tư vấn bác sĩ',
+                    onTap: () {
+                      print("Thuốc clicked");
+                    },
+                  ),
+                  _buildCategoryCard(
+                    icon:
+                        'assets/img3D/thietbideotay.png', // Replace with your asset path
+                    label: 'Thiết bị đeo tay',
+                    onTap: () {
+                      print("Thuốc clicked");
+                    },
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

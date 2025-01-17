@@ -208,10 +208,10 @@ class _EditFrequencyState extends State<EditFrequency> {
             margin: const EdgeInsets.symmetric(vertical: 5),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primaryLowColor.withOpacity(0.5) : Colors.white,
+              color: isSelected ? Color(0xFF00d688) : Colors.white,
               borderRadius: BorderRadius.circular(30),
               border: Border.all(
-                color: isSelected ? AppColors.primaryColor : Colors.grey,
+                color: isSelected ? Color(0xFF00d688): Colors.grey,
               ),
             ),
             child: Row(
@@ -221,13 +221,13 @@ class _EditFrequencyState extends State<EditFrequency> {
                     day,
                     style: TextStyle(
                       fontSize: 22,
-                      color: isSelected ? AppColors.primaryColor : Colors.black,
+                      color: isSelected ? AppColors.secondaryColor : Colors.black,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
                 ),
                 if (isSelected)
-                  const Icon(Icons.check_circle, color: AppColors.primaryColor),
+                  const Icon(Icons.check_circle, color: AppColors.secondaryColor),
               ],
             ),
           ),

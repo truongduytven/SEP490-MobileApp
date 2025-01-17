@@ -47,7 +47,8 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final newName = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditNameScreen(currentName: medicineData['name']),
+              builder: (context) =>
+                  EditNameScreen(currentName: medicineData['name']),
             ),
           );
 
@@ -59,15 +60,17 @@ class _DetailMedicineState extends State<DetailMedicine> {
           }
         }
         break;
-      case 'Hàm lượng':
+      case 'Liều dùng':
         {
           final firstSpaceIndex = medicineData['dosage'].indexOf(' ');
           final String currentDosage;
           final String currentUnit;
 
           if (firstSpaceIndex != -1) {
-            currentDosage = medicineData['dosage'].substring(0, firstSpaceIndex).trim();
-            currentUnit = medicineData['dosage'].substring(firstSpaceIndex + 1).trim();
+            currentDosage =
+                medicineData['dosage'].substring(0, firstSpaceIndex).trim();
+            currentUnit =
+                medicineData['dosage'].substring(firstSpaceIndex + 1).trim();
           } else {
             currentDosage = medicineData['dosage'].trim();
             currentUnit = 'viên';
@@ -94,7 +97,8 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditFormMedical(currentForm: medicineData['form']),
+              builder: (context) =>
+                  EditFormMedical(currentForm: medicineData['form']),
             ),
           );
           if (result != null) {
@@ -109,7 +113,8 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final newTreatment = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditTreatment(currentTreatment: medicineData['treatment']),
+              builder: (context) =>
+                  EditTreatment(currentTreatment: medicineData['treatment']),
             ),
           );
           if (newTreatment != null && newTreatment is String) {
@@ -124,7 +129,8 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final newRemaining = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditRemaining(currentRemaining: medicineData['remaining']),
+              builder: (context) =>
+                  EditRemaining(currentRemaining: medicineData['remaining']),
             ),
           );
           if (newRemaining != null && newRemaining is String) {
@@ -161,7 +167,9 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final result = await showDialog(
             context: context,
             builder: (BuildContext context) {
-              String selectedOption = medicineData['mealTime'].isNotEmpty ? medicineData['mealTime'] : '';
+              String selectedOption = medicineData['mealTime'].isNotEmpty
+                  ? medicineData['mealTime']
+                  : '';
               return Dialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -198,7 +206,10 @@ class _DetailMedicineState extends State<DetailMedicine> {
                           Navigator.pop(context, selectedOption);
                         },
                       ),
-                      const SizedBox(height: 10),
+                      Divider(
+                        color: Colors.grey,
+                        thickness: 1,
+                      ),
                       _buildOption(
                         title: 'Sau khi ăn',
                         isSelected: selectedOption == 'Sau khi ăn',
@@ -360,7 +371,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
             _buildDivider(),
             _buildDetailRow(
               iconPath: 'assets/icons/droplets.svg',
-              title: 'Hàm lượng',
+              title: 'Liều dùng',
               value: medicineData['dosage'],
             ),
             _buildDivider(),
@@ -518,27 +529,28 @@ class _DetailMedicineState extends State<DetailMedicine> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                    Wrap(
-                      spacing: 8.0,
-                      runSpacing: 8.0,
-                      children: value.map((day) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryLowColor.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(15),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    children: value.map((day) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF00d688),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text(
+                          day,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: AppColors.secondaryColor,
+                            fontWeight: FontWeight.w600,
                           ),
-                          child: Text(
-                            day,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                   if (value.isEmpty)
                     const Text(
                       '-',
@@ -618,14 +630,15 @@ class _DetailMedicineState extends State<DetailMedicine> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryLowColor.withOpacity(0.4),
+                            color: Color(0xFF00d688),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Text(
                             day,
                             style: const TextStyle(
                               fontSize: 18,
-                              color: AppColors.primaryColor,
+                              color: AppColors.secondaryColor,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         );
@@ -723,13 +736,13 @@ class _DetailMedicineState extends State<DetailMedicine> {
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: isSelected
-              ? AppColors.primaryLowColor.withOpacity(0.4)
-              : Colors.white,
-          border: Border.all(
-            color: isSelected ? AppColors.primaryColor : Colors.grey,
-            width: 1.5,
-          ),
+          // color: isSelected
+          //     ? AppColors.primaryLowColor.withOpacity(0.4)
+          //     : Colors.white,
+          // border: Border.all(
+          //   color: isSelected ? AppColors.primaryColor : Colors.grey,
+          //   width: 1.5,
+          // ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -737,8 +750,8 @@ class _DetailMedicineState extends State<DetailMedicine> {
             Text(
               title,
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
                 color: isSelected ? AppColors.primaryColor : Colors.black,
               ),
             ),

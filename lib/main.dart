@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/theme/color.dart';
 
