@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_height_screen.dart';
+import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -58,6 +59,11 @@ class _InfoCardState extends State<InfoCard> {
         // Navigate to ChieuCaoCard
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => DetailHeightScreen()));
+        break;
+      case "Tuân thủ uống thuốc":
+        // Navigate to ChieuCaoCard
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => DetailMedicineScreen()));
         break;
 
       default:
