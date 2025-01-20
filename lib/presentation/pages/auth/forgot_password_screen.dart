@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/auth/signup_screen.dart';
+import 'package:sep490/presentation/pages/opening/select_role.dart';
 import 'package:sep490/presentation/widgets/form/forgor_password_form.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -42,7 +42,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   const ForgotPasswordForm(),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Row(
@@ -57,7 +57,8 @@ class ForgotPasswordScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignUpScreen(),
+                              builder: (context) =>
+                                  SelectRoleScreen(sign: 'signup'),
                             ),
                           );
                         },
@@ -79,8 +80,3 @@ class ForgotPasswordScreen extends StatelessWidget {
     );
   }
 }
-
-const authOutlineInputBorder = OutlineInputBorder(
-  borderSide: BorderSide(color: Color(0xFF757575)),
-  borderRadius: BorderRadius.all(Radius.circular(20)),
-);

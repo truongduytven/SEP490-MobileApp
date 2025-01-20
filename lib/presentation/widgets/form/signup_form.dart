@@ -17,6 +17,7 @@ class _SignUpFormState extends State<SignUpForm> {
   String _selectedDate = '';
   String _selectedGender = '';
   late DateTime _focusedDay; // This stores the focused date
+  // ignore: unused_field
   CalendarFormat _calendarFormat = CalendarFormat.month;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form key
   final TextEditingController emailController = TextEditingController();
@@ -63,28 +64,26 @@ class _SignUpFormState extends State<SignUpForm> {
 
           // Gender Field using DropdownButton2
           DropdownButtonFormField2<String>(
+            value: _selectedGender.isNotEmpty ? _selectedGender : null,
             items: const [
               DropdownMenuItem(
-                value: "Male",
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.0), // Apply margin to left
-                  child: Text("Nam"),
-                ),
-              ),
+                  value: "Male",
+                  child: Text(
+                    'Nam',
+                    style: TextStyle(fontSize: 20),
+                  )),
               DropdownMenuItem(
-                value: "Female",
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.0), // Apply margin to left
-                  child: Text("Nữ"),
-                ),
-              ),
+                  value: "Female",
+                  child: Text(
+                    'Nữ',
+                    style: TextStyle(fontSize: 20),
+                  )),
               DropdownMenuItem(
-                value: "Other",
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.0), // Apply margin to left
-                  child: Text("Khác"),
-                ),
-              ),
+                  value: "Other",
+                  child: Text(
+                    'Khác',
+                    style: TextStyle(fontSize: 20),
+                  )),
             ],
             onChanged: (gender) {
               setState(() {
@@ -100,7 +99,8 @@ class _SignUpFormState extends State<SignUpForm> {
             decoration: InputDecoration(
               hintText: "Chọn giới tính",
               labelText: "Giới tính",
-              labelStyle: TextStyle(color: AppColors.textColor),
+              labelStyle: TextStyle(color: AppColors.textColor, fontSize: 19),
+              hintStyle: TextStyle(fontSize: 20, color: AppColors.grayColor3),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 24,
@@ -140,6 +140,7 @@ class _SignUpFormState extends State<SignUpForm> {
             textInputAction: TextInputAction.next,
             readOnly: true,
             onTap: () async {
+              // ignore: unused_local_variable
               DateTime? pickedDate = await showDialog(
                 context: context,
                 builder: (context) {
@@ -180,10 +181,6 @@ class _SignUpFormState extends State<SignUpForm> {
                         ),
                         availableGestures: AvailableGestures.all,
                         calendarStyle: CalendarStyle(
-                          todayDecoration: BoxDecoration(
-                            color: AppColors.primaryColor,
-                            shape: BoxShape.circle,
-                          ),
                           selectedDecoration: BoxDecoration(
                             color: AppColors.primaryColor,
                             shape: BoxShape.circle,
@@ -215,8 +212,8 @@ class _SignUpFormState extends State<SignUpForm> {
             decoration: InputDecoration(
               hintText: "Chọn ngày sinh",
               labelText: "Ngày sinh",
-              labelStyle: TextStyle(color: AppColors.textColor),
-              hintStyle: TextStyle(color: AppColors.grayColor3),
+              labelStyle: TextStyle(color: AppColors.textColor, fontSize: 19),
+              hintStyle: TextStyle(color: AppColors.grayColor3, fontSize: 20),
               suffix: SvgPicture.asset('assets/icons/calendarIcon.svg'),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               contentPadding: const EdgeInsets.symmetric(
