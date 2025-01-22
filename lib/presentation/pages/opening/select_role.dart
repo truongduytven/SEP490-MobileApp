@@ -26,16 +26,9 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
           'Quản lý sức khỏe người cao tuổi, nhận thông báo khẩn cấp, ...',
       'image': 'assets/img/role2.jpg',
     },
-    // {
-    //   'role': 'doctor',
-    //   'title': 'Bác sĩ',
-    //   'description':
-    //       'Nhận lịch tư vấn bệnh nhân, xem thông tin sức khỏe, gửi lời cảnh báo, ...',
-    //   'image': 'assets/img/role3.jpg',
-    // },
   ];
 
-  int? _selectedRole;
+  int? _selectedRole = 0;
 
   void _selectRole(int index) {
     setState(() {
@@ -164,7 +157,7 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         )),
-                    child: const Text('Tiếp tục',
+                    child: Text('Tiếp tục',
                         style: TextStyle(
                           fontSize: 28,
                           color: AppColors.bgColor,
