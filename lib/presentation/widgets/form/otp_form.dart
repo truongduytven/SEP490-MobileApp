@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:sep490/presentation/pages/auth/signup_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class OtpForm extends StatefulWidget {
@@ -37,8 +38,6 @@ class _OtpFormState extends State<OtpForm> {
               });
             },
             onSubmit: (String code) {
-              // Handle OTP submission
-              print("Submitted OTP: $code");
               setState(() {
                 _otpCode = code;
                 _errorMessage = null;
@@ -61,7 +60,12 @@ class _OtpFormState extends State<OtpForm> {
             onPressed: isButtonEnabled ?
             () {
               if (_otpCode.length == 6) {
-                print("OTP Code entered: $_otpCode");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SignUpScreen(typeIn: 'email',),
+                  ),
+                );
                 // Proceed with OTP submission logic
               } else {
                 setState(() {

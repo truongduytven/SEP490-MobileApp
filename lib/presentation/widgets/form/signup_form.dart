@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sep490/presentation/pages/auth/otp_screen.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({super.key});
+  final String typeIn;
+  const SignUpForm({super.key, required this.typeIn});
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();
@@ -16,18 +16,27 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   String _selectedDate = '';
   String _selectedGender = '';
-  late DateTime _focusedDay; // This stores the focused date
+  late DateTime _focusedDay;
+  bool isButtonEnabled = false;
   // ignore: unused_field
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form key
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   @override
   void initState() {
     super.initState();
     _focusedDay = DateTime.now();
+    fullNameController.addListener(_onTextChanged);
+    emailController.addListener(_onTextChanged);
+    passwordController.addListener(_onTextChanged);
+    phoneController.addListener(_onTextChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
   }
 
   @override
@@ -36,7 +45,18 @@ class _SignUpFormState extends State<SignUpForm> {
     fullNameController.dispose();
     passwordController.dispose();
     phoneController.dispose();
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onTextChanged() {
+    setState(() {
+      isButtonEnabled = fullNameController.text.isNotEmpty &&
+          (emailController.text.isNotEmpty || phoneController.text.isNotEmpty) &&
+          passwordController.text.isNotEmpty &&
+          _selectedDate.isNotEmpty &&
+          _selectedGender.isNotEmpty;
+    });
   }
 
   @override
@@ -49,19 +69,30 @@ class _SignUpFormState extends State<SignUpForm> {
             labelText: "Họ và tên",
             hintText: "Nhập họ tên",
             controller: fullNameController,
+            focusNode: _focusNode,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
 
           // Email Field
-          AuthField(
-            labelText: "Email",
-            hintText: "Nhập email",
-            controller: emailController,
-            suffixIcon: SvgPicture.asset('assets/icons/mailIcon.svg'),
-            keyboardType: TextInputType.emailAddress, // Optional keyboard type
-          ),
-          const SizedBox(height: 16),
-
+          if (widget.typeIn == 'phone')
+            AuthField(
+              labelText: "Email",
+              hintText: "Nhập email",
+              controller: emailController,
+              suffixIcon: SvgPicture.asset('assets/icons/mailIcon.svg'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+          if (widget.typeIn == 'email')
+            AuthField(
+              labelText: "Số điện thoại",
+              hintText: "Nhập số điện thoại",
+              controller: phoneController,
+              keyboardType: TextInputType.numberWithOptions(),
+              suffixIcon: SizedBox(
+                  height: 20,
+                  child: SvgPicture.asset('assets/icons/phoneIcon.svg')),
+            ),
+          const SizedBox(height: 24),
           // Gender Field using DropdownButton2
           DropdownButtonFormField2<String>(
             value: _selectedGender.isNotEmpty ? _selectedGender : null,
@@ -131,12 +162,10 @@ class _SignUpFormState extends State<SignUpForm> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
 
           TextFormField(
-            controller: TextEditingController(
-                text: _selectedDate), // Set the selected date here
-
+            controller: TextEditingController(text: _selectedDate),
             textInputAction: TextInputAction.next,
             readOnly: true,
             onTap: () async {
@@ -157,7 +186,6 @@ class _SignUpFormState extends State<SignUpForm> {
                           CalendarFormat.month: 'Month',
                           CalendarFormat.twoWeeks: 'Year',
                         },
-
                         selectedDayPredicate: (day) {
                           if (_selectedDate.isNotEmpty) {
                             final parsedDate = DateTime.parse(
@@ -171,10 +199,9 @@ class _SignUpFormState extends State<SignUpForm> {
                           }
                           return false;
                         },
-                        calendarFormat:
-                            CalendarFormat.month, // Basic month view
+                        calendarFormat: CalendarFormat.month,
                         headerStyle: HeaderStyle(
-                          formatButtonVisible: false, // Hide format button
+                          formatButtonVisible: false,
                           titleCentered: true,
                           leftChevronVisible: true,
                           rightChevronVisible: true,
@@ -199,8 +226,7 @@ class _SignUpFormState extends State<SignUpForm> {
                         },
                         onFormatChanged: (format) {
                           setState(() {
-                            _calendarFormat =
-                                format; // Toggle between month and year view
+                            _calendarFormat = format;
                           });
                         },
                       ),
@@ -240,20 +266,7 @@ class _SignUpFormState extends State<SignUpForm> {
               return null;
             },
           ),
-
-          // Phone Number Field
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: AuthField(
-              labelText: "Số điện thoại",
-              hintText: "Nhập số điện thoại",
-              controller: phoneController,
-              keyboardType: TextInputType.numberWithOptions(),
-              suffixIcon: SizedBox(
-                  height: 20,
-                  child: SvgPicture.asset('assets/icons/phoneIcon.svg')),
-            ),
-          ),
+          const SizedBox(height: 24),
 
           // Password Field
           AuthField(
@@ -268,22 +281,23 @@ class _SignUpFormState extends State<SignUpForm> {
 
           // Submit Button
           ElevatedButton(
-            onPressed: () {
+            onPressed: isButtonEnabled ?
+            () {
               if (_formKey.currentState!.validate()) {
-                print('Email/Số điện thoại: ${emailController.text}');
+                print('Số điện thoại: ${phoneController.text}');
                 print('Mật khẩu: ${passwordController.text}');
                 print('Họ tên: ${fullNameController.text}');
                 print('Email: ${emailController.text}');
                 print('Ngày sinh: $_selectedDate');
                 print('Giới tính: $_selectedGender');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OtpScreen(),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => OtpScreen(),
+                //   ),
+                // );
               }
-            },
+            } : null,
             style: ElevatedButton.styleFrom(
               elevation: 0,
               backgroundColor: AppColors.secondaryColor,

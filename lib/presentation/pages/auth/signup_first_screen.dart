@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/auth/signin_screen.dart';
 import 'package:sep490/presentation/widgets/form/sign_up_first.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -46,6 +47,33 @@ class SignupFirstScreen extends StatelessWidget {
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
               SignUpFirst(),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Đã có tài khoản?",
+                    style: TextStyle(color: Color(0xFF757575)),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SignInScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      " Đăng nhập",
+                      style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
