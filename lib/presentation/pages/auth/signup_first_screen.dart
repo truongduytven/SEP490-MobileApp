@@ -36,8 +36,8 @@ class SignupFirstScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Chào mừng đã đến với Senior Essentials, nơi kết nối các thành viên trong gia đình cũng như dễ quản lí sức khỏe của người cao tuổi",
-                      textAlign: TextAlign.start,
+                      "Vui lòng nhập email hoặc số điện thoại để tiếp tục tạo tài khoản với SE",
+                      textAlign: TextAlign.center,
                       style:
                           TextStyle(color: AppColors.textColor, fontSize: 16),
                     ),

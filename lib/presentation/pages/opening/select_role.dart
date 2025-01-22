@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/auth/signup_screen.dart';
+import 'package:sep490/presentation/pages/auth/signup_first_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class SelectRoleScreen extends StatefulWidget {
@@ -47,8 +47,7 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        // builder: (context) => SignUpScreen(role: roleData[_selectedRole!]['role']),
-        builder: (context) => SignUpScreen(role: roleData[_selectedRole!]['role']),
+        builder: (context) => SignupFirstScreen(role: roleData[_selectedRole!]['role']),
       ),
     );
   }

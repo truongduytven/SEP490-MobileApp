@@ -10,6 +10,7 @@ class AuthField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final int? maxLength;
+  final FocusNode? focusNode;
 
   const AuthField({
     super.key,
@@ -21,6 +22,7 @@ class AuthField extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.maxLength,
+    this.focusNode,
   });
 
   @override
@@ -45,11 +47,12 @@ class AuthField extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20.0),
-            borderSide: const BorderSide(color: AppColors.primaryColor),
+            borderSide: const BorderSide(color: AppColors.secondaryColor, width: 1.4),
           ),
         ),
       ),
       child: TextFormField(
+        focusNode: focusNode,
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
