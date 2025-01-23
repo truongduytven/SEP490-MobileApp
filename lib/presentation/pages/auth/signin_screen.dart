@@ -37,15 +37,6 @@ class SignInScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Text(
-                        //   "Chào mừng",
-                        //   style: TextStyle(
-                        //     color: Colors.black,
-                        //     fontSize: 24,
-                        //     fontWeight: FontWeight.bold,
-                        //   ),
-                        // ),
-                        // SizedBox(height: 8),
                         Text(
                           "Chào mừng đã đến với Senior Essentials, nơi kết nối các thành viên trong gia đình cũng như dễ quản lí sức khỏe của người cao tuổi",
                           textAlign:

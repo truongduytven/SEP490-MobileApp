@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sep490/presentation/pages/auth/medical_record.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -65,6 +66,10 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _formKey,
       child: Column(
         children: [
+          // Image.asset(
+          //   'assets/img3D/businessman.png',
+          //   height: 150,
+          // ),
           AuthField(
             labelText: "Họ và tên",
             hintText: "Nhập họ tên",
@@ -290,12 +295,12 @@ class _SignUpFormState extends State<SignUpForm> {
                 print('Email: ${emailController.text}');
                 print('Ngày sinh: $_selectedDate');
                 print('Giới tính: $_selectedGender');
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => OtpScreen(),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MedicalRecordScreen(),
+                  ),
+                );
               }
             } : null,
             style: ElevatedButton.styleFrom(
