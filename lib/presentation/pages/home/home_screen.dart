@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
+import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
 import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/presentation/widgets/health_card.dart';
 import 'package:sep490/theme/color.dart';
@@ -128,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      print("Xem tất cả clicked!");
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ScheduleScreen()),);
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

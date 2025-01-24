@@ -6,7 +6,9 @@ class AuthField extends StatelessWidget {
   final String labelText;
   final TextEditingController controller;
   final bool isObscureText;
+  final bool isRequired;
   final Widget? suffixIcon;
+  final String? suffixText;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final int? maxLength;
@@ -18,7 +20,9 @@ class AuthField extends StatelessWidget {
     required this.labelText,
     required this.controller,
     this.isObscureText = false,
+    this.isRequired = false,
     this.suffixIcon,
+    this.suffixText,
     this.keyboardType,
     this.textInputAction,
     this.maxLength,
@@ -55,9 +59,11 @@ class AuthField extends StatelessWidget {
         focusNode: focusNode,
         controller: controller,
         decoration: InputDecoration(
-          labelText: labelText,
+          labelText: labelText + (isRequired ? '*' : ''),
+          labelStyle: TextStyle(color: AppColors.textColor, fontSize: 22),
           hintText: hintText,
           suffix: suffixIcon,
+          suffixText: suffixText,
         ),
         validator: (value) {
           if (value!.isEmpty) {

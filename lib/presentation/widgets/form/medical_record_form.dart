@@ -75,17 +75,17 @@ class _MedicalRecordFormState extends State<MedicalRecordForm> {
             );
           },
         ),
-        if (selectedTreatments.any((treatmean) =>
-            treatmean['name'] == 'Khác')) // If "Khác" is selected
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Nhập thêm điều trị',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              additionalTreatment = value;
-            },
-          ),
+        // if (selectedTreatments.any((treatmean) =>
+        //     treatmean['name'] == 'Khác')) // If "Khác" is selected
+        //   TextField(
+        //     decoration: InputDecoration(
+        //       labelText: 'Nhập thêm điều trị',
+        //       border: OutlineInputBorder(),
+        //     ),
+        //     onChanged: (value) {
+        //       additionalTreatment = value;
+        //     },
+        //   ),
       ],
     );
   }
