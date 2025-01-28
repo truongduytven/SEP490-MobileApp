@@ -13,14 +13,17 @@ class SignInForm extends StatefulWidget {
 }
 
 class _SignInFormState extends State<SignInForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form key
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  bool isButtonEnabled = false;
 
   @override
   void initState() {
     super.initState();
+    emailController.addListener(_onTextChanged);
+    passwordController.addListener(_onTextChanged);
   }
 
   @override
@@ -28,6 +31,12 @@ class _SignInFormState extends State<SignInForm> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void _onTextChanged() {
+    setState(() {
+      isButtonEnabled = emailController.text.isNotEmpty && passwordController.text.isNotEmpty;
+    });
   }
 
   @override

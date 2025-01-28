@@ -31,15 +31,6 @@ class OtpScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 16),
                   const Text(
-                    "Xác thực OTP",
-                    style: TextStyle(
-                      color: AppColors.textColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
                     "Chúng tôi đã gửi mã code tới +1 898 860 *** \nVui lòng kiểm tra, mã code sẽ hết hạn lúc 08:24",
                     textAlign: TextAlign.center,
                     style: TextStyle(color: AppColors.textColor),

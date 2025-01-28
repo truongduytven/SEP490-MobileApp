@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/chat/chat_screen.dart';
 import 'package:sep490/presentation/pages/health/health_screen.dart';
 import 'package:sep490/presentation/pages/home/home_screen.dart';
-import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
 import 'package:sep490/presentation/pages/ultility/ultility_screen.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:flutter/services.dart';// Ensure you import the LoginPage
@@ -91,13 +91,13 @@ class _NavigationMenuState extends State<NavigationMenu> {
                 label: "Trò chuyện",
               ),
               NavigationDestination(
-                icon: Icon(Icons.calendar_month_outlined, size: 30),
+                icon: Icon(Icons.local_hospital_outlined, size: 30),
                 selectedIcon: Icon(
-                  Icons.calendar_month_outlined,
+                  Icons.local_hospital_outlined,
                   color: AppColors.primaryColor,
                   size: 30,
                 ),
-                label: "Lịch trình",
+                label: "Tư vấn",
               ),
               NavigationDestination(
                 icon: Icon(Icons.grid_view_outlined, size: 30),
@@ -133,7 +133,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
       case 2:
         return ChatScreen();
       case 3:
-        return ScheduleScreen();
+        return HomeDoctorAdviseScreen();
       case 4:
         return UltilityScreen();
       default:

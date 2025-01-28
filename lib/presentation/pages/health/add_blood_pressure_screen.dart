@@ -106,7 +106,10 @@ class _AddBloodPressureScreenState extends State<AddBloodPressureScreen> {
                 ),
               ),
               onPressed: () {
-                Navigator.pop(context);
+                FocusScope.of(context).unfocus();
+                Future.delayed(Duration(milliseconds: 500), () {
+                  Navigator.pop(context);
+                });
               },
             ),
           ),
