@@ -21,7 +21,9 @@ class SignInScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       body: SafeArea(
         child: SizedBox(

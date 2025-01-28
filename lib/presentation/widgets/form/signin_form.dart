@@ -89,7 +89,7 @@ class _SignInFormState extends State<SignInForm> {
           ElevatedButton(
             onPressed: () {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                return NavigationMenu();
+                return NavigationMenu(keyIndex: 0,);
               }));
             },
             style: ElevatedButton.styleFrom(

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
+    SystemUiOverlay.top,
+    SystemUiOverlay.bottom,
+  ]);
   runApp(const MyApp());
 }
 

@@ -74,7 +74,7 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => NavigationMenu(),
+                            builder: (context) => NavigationMenu(keyIndex: 0,),
                           ),
                         );
                       }
