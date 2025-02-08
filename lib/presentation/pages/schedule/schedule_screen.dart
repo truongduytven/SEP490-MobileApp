@@ -119,7 +119,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     return DropdownMenuItem<int>(
                       value: month,
                       child: Text('Tháng $month',
-                          style: const TextStyle(fontSize: 20)),
+                          style: TextStyle(fontSize: 20, color: selectedMonth == month ? AppColors.primaryColor : AppColors.textColor)),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -127,7 +127,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       selectedMonth = value!;
                       selectedDay = 1;
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _scrollToSelectedDay(); // Scroll to day 1
+                        _scrollToSelectedDay(); 
                       });
                     });
                   },
@@ -141,7 +141,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     return DropdownMenuItem<int>(
                       value: year,
                       child: Text('Năm $year',
-                          style: const TextStyle(fontSize: 20)),
+                          style: TextStyle(fontSize: 20, color: selectedYear == year ? AppColors.primaryColor : AppColors.textColor)),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -259,97 +259,119 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ListView.builder(
-                controller: _scrollControllerActivity,
-                itemCount: activities.length,
-                itemBuilder: (context, index) {
-                  final activity = activities[index];
-                  final startTime =
-                      DateFormat('h:mm a').format(activity['StartTime']);
-                  final endTime =
-                      DateFormat('h:mm a').format(activity['EndTime']);
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Time Column
-                      SizedBox(
-                        width: 60,
-                        child: Column(
-                          children: [
-                            Text(
-                              startTime,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textColor),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: 4,
-                              height: 60,
-                              color: AppColors.primaryColor,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // Activity Card
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              // Activity Icon
-                              _getActivityIcon(activity['ActivityName']),
-                              const SizedBox(width: 12),
-                              // Activity Details
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      activity['ActivityName'],
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.textColor),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      activity['ActivityDescription'],
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      '$startTime - $endTime',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColors.textColor),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+              child: Builder(builder: (context) {
+                final filteredActivities = activities.where((activity) {
+                  DateTime startTime = activity['StartTime'];
+                  return startTime.year == selectedYear &&
+                      startTime.month == selectedMonth &&
+                      startTime.day == selectedDay;
+                }).toList();
+
+                if(filteredActivities.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Image.asset('assets/img3D/empty.png', width: 200, height: 200),
+                        const SizedBox(height: 20),
+                        Text('Không có hoạt động nào', style: TextStyle(fontSize: 20, color: AppColors.textColor)),
+                      ],
+                    ),
                   );
-                },
-              ),
+                }
+                return ListView.builder(
+                  controller: _scrollControllerActivity,
+                  itemCount: activities.length,
+                  itemBuilder: (context, index) {
+                    final activity = activities[index];
+                    final startTime =
+                        DateFormat('h:mm a').format(activity['StartTime']);
+                    final endTime =
+                        DateFormat('h:mm a').format(activity['EndTime']);
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Time Column
+                        SizedBox(
+                          width: 60,
+                          child: Column(
+                            children: [
+                              Text(
+                                startTime,
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textColor),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                width: 4,
+                                height: 60,
+                                color: AppColors.primaryColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Activity Card
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                // Activity Icon
+                                _getActivityIcon(activity['ActivityName']),
+                                const SizedBox(width: 12),
+                                // Activity Details
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        activity['ActivityName'],
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.textColor),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        activity['ActivityDescription'],
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        '$startTime - $endTime',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.textColor),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }),
             ),
           ),
           const SizedBox(height: 30),
