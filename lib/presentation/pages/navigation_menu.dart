@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/chat/chat_screen.dart';
 import 'package:sep490/presentation/pages/health/health_screen.dart';
 import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/ultility/ultility_screen.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:flutter/services.dart';// Ensure you import the LoginPage
+import 'package:flutter/services.dart';
 
 class NavigationMenu extends StatefulWidget {
-  const NavigationMenu({super.key});
+  final int keyIndex;
+  const NavigationMenu({super.key, required this.keyIndex});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -16,10 +18,20 @@ class NavigationMenu extends StatefulWidget {
 }
 
 class _NavigationMenuState extends State<NavigationMenu> {
-  int _selectedIndex = 0; // Currently selected index, starts with Home
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.keyIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
+      SystemUiOverlay.top,
+      SystemUiOverlay.bottom,
+    ]);
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
@@ -33,24 +45,24 @@ class _NavigationMenuState extends State<NavigationMenu> {
         //   return false; // Prevent default back navigation
         // }
         await _showOutDialog();
-        return false; // Show logout dialog
+        return false;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
         bottomNavigationBar: NavigationBarTheme(
           data: NavigationBarThemeData(
-            indicatorColor: Colors.transparent, // No background indicator
+            indicatorColor: Colors.transparent,
             labelTextStyle: WidgetStateProperty.resolveWith<TextStyle?>(
               (states) {
                 if (states.contains(WidgetState.selected)) {
                   return const TextStyle(
-                    fontSize: 14, // Larger font for selected labels
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryColor,
                   );
                 }
                 return const TextStyle(
-                  fontSize: 0, // Hide label when not selected
+                  fontSize: 0,
                 );
               },
             ),
@@ -62,7 +74,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
             elevation: 0,
             selectedIndex: _selectedIndex,
             onDestinationSelected: _onItemTapped,
-            destinations: const [
+            destinations: [
               NavigationDestination(
                 icon: Icon(Icons.home, size: 30),
                 selectedIcon: Icon(
@@ -91,12 +103,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
                 label: "Trò chuyện",
               ),
               NavigationDestination(
-                icon: Icon(Icons.local_hospital_outlined, size: 30),
-                selectedIcon: Icon(
-                  Icons.local_hospital_outlined,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
+                icon: SvgPicture.asset('assets/icons/stethoscope.svg', height: 30, width: 30),
+                selectedIcon: SvgPicture.asset('assets/icons/stethoscope_selected.svg', height: 30, width: 30),
                 label: "Tư vấn",
               ),
               NavigationDestination(
@@ -150,7 +158,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
           title: Text('Thoát ứng dụng'),
           content: SingleChildScrollView(
             child: ListBody(
-              children: const <Widget> [
+              children: const <Widget>[
                 Text('Bạn có chắc chắn muốn thoát ứng dụng không?'),
               ],
             ),
@@ -165,7 +173,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
             TextButton(
               child: Text('Thoát ngay'),
               onPressed: () async {
-                SystemNavigator.pop(); // Navigate to login page and remove all previous routes
+                SystemNavigator
+                    .pop(); // Navigate to login page and remove all previous routes
               },
             ),
           ],
