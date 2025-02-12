@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/auth/signup_first_screen.dart';
-import 'package:sep490/presentation/pages/auth/signup_screen.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,7 +52,6 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => SignupFirstScreen(role: roleData[_selectedRole!]['role']),
-        // builder: (context) => SignUpScreen(typeIn: 'Email'),
       ),
     );
   }

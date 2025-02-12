@@ -2,11 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/presentation/pages/auth/signin_screen.dart';
-import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,8 +59,8 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
             ));
           });
       // Lấy data
-      final WeightIndex = weightController.text.trim();
-      final HeightIndex = heightController.text.trim();
+      final weightIndex = weightController.text.trim();
+      final heightIndex = heightController.text.trim();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final accountId = prefs.getInt('accountId');
       final fullName = prefs.getString('fullName');
@@ -73,34 +71,23 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
       final numberPhone = type == 'Phone'
           ? prefs.getString('emailOrPhoneSignUp')
           : prefs.getString('emailOrPhoneSignUpLater');
-      final RoleId = prefs.getString('role') == 'Elderly' ? 2 : 3;
+      final roleId = prefs.getString('role') == 'Elderly' ? 2 : 3;
       final gender = prefs.getString('gender');
       final dob = prefs.getString('dateOfBirth') ?? '';
       String formatDOB = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
           .format(DateFormat("d/M/yyyy").parse(dob));
-      final MedicalRecord = prefs.getStringList('medicalRecord') ?? [];
-      String MedicalApi =
-          MedicalRecord.map((e) => "MedicalRecord=$e").join("&");
+      final medicalRecord = prefs.getStringList('medicalRecord') ?? [];
+      String medicalApi =
+          medicalRecord.map((e) => "MedicalRecord=$e").join("&");
 
-      final Image =
+      final image =
           prefs.getString('avatar') ?? "assets/img/default_avatar.png";
-      File avatarFile = File(Image);
+      File avatarFile = File(image);
 
       // Gửi data
-      print(WeightIndex);
-      print(HeightIndex);
-      print(accountId);
-      print(fullName);
-      print(type);
-      print(email);
-      print(numberPhone);
-      print(RoleId);
-      print(gender);
-      print(formatDOB);
-      print(MedicalApi);
 
       var response = await ApiService.postRequestSignUp(
-          "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$RoleId&$MedicalApi&Height=$HeightIndex&Weight=$WeightIndex",
+          "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$roleId&$medicalApi&Height=$heightIndex&Weight=$weightIndex",
           avatarFile);
 
       Navigator.of(context).pop();

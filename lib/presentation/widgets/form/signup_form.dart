@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/presentation/pages/auth/medical_record.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
@@ -10,7 +9,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 
 class SignUpForm extends StatefulWidget {
   final String typeIn;
@@ -79,16 +78,16 @@ class _SignUpFormState extends State<SignUpForm> {
     }
   }
 
-  Future<File> _getDefaultAvatar() async {
-    Directory appDir = await getApplicationDocumentsDirectory();
-    File defaultAvatar = File('${appDir.path}/default_avatar.png');
-    if (!defaultAvatar.existsSync()) {
-      ByteData data = await rootBundle.load('assets/img/default_avatar.png');
-      List<int> bytes = data.buffer.asUint8List();
-      await defaultAvatar.writeAsBytes(bytes);
-    }
-    return defaultAvatar;
-  }
+  // Future<File> _getDefaultAvatar() async {
+  //   Directory appDir = await getApplicationDocumentsDirectory();
+  //   File defaultAvatar = File('${appDir.path}/default_avatar.png');
+  //   if (!defaultAvatar.existsSync()) {
+  //     ByteData data = await rootBundle.load('assets/img/default_avatar.png');
+  //     List<int> bytes = data.buffer.asUint8List();
+  //     await defaultAvatar.writeAsBytes(bytes);
+  //   }
+  //   return defaultAvatar;
+  // }
 
   void _onTextChanged() {
     setState(() {

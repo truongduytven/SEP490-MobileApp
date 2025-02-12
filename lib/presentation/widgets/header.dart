@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/notification/notification_screen.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
@@ -12,6 +13,22 @@ class Header extends StatefulWidget {
 
 class _HeaderState extends State<Header> {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
+  late String fullName = '';
+  late String avatar = 'https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg';
+
+  @override
+  void initState() {
+    super.initState();
+    _getDataUser();
+  }
+
+  void _getDataUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      fullName = prefs.getString('fullName') ?? '';
+      avatar = prefs.getString('avatar') ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +48,8 @@ class _HeaderState extends State<Header> {
             Row(
               children: [
                 ClipOval(
-                  child: Image.asset(
-                    "assets/img/avatar.jpg",
+                  child: Image.network(
+                    avatar,
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
@@ -41,18 +58,19 @@ class _HeaderState extends State<Header> {
                 SizedBox(
                   width: 20,
                 ),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "Xin chào",
-                      style: TextStyle(color: AppColors.textColor, fontSize: 18),
+                      style:
+                          TextStyle(color: AppColors.textColor, fontSize: 18),
                     ),
                     Text(
-                      "Trần Trung Quân",
+                      fullName,
                       style: TextStyle(
                         color: AppColors.textColor,
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -61,7 +79,7 @@ class _HeaderState extends State<Header> {
               ],
             ),
             Row(
-              children: [ 
+              children: [
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: Container(

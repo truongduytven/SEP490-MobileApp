@@ -6,6 +6,7 @@ import 'package:sep490/presentation/pages/auth/forgot_password_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
@@ -56,22 +57,52 @@ class _SignInFormState extends State<SignInForm> {
         "deviceToken": "string",
       });
       if (response['success'] && response['data']['isSuccess']) {
-        Navigator.of(context).pop();
-        Fluttertoast.showToast(
-          msg: "Đăng nhập thành công!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-          return NavigationMenu(
-            keyIndex: 0,
+        final String accessToken = response['data']['data'];
+        var responseToken = await ApiService.getRequest("auth-management",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": 'Bearer $accessToken'
+            });
+
+        if (responseToken['success']) {
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+
+          prefs.setInt('accountId', responseToken['data']['user']['accountId']);
+          prefs.setInt('roleId', responseToken['data']['user']['roleId']);
+          prefs.setString('fullName', responseToken['data']['user']['fullName']);
+          prefs.setString('avatar', responseToken['data']['user']['avatar']);
+          prefs.setString('gender', responseToken['data']['user']['gender']);
+
+          Navigator.of(context).pop();
+          Fluttertoast.showToast(
+            msg: "Đăng nhập thành công!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0,
           );
-        }));
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return NavigationMenu(
+              keyIndex: 0,
+            );
+          }));
+        } else {
+          Navigator.of(context).pop();
+          Fluttertoast.showToast(
+            msg: responseToken['data']['data'] ??
+                "Có lỗi trong quá trình xử lý!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        }
       } else {
         Navigator.of(context).pop();
         Fluttertoast.showToast(

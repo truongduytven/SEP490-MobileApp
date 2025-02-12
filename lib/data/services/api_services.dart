@@ -7,19 +7,19 @@ import 'package:path/path.dart';
 class ApiService {
   static const String _baseUrl = "https://api.diavan-valuation.asia";
 
-  static Future<dynamic> getRequest(String endpoint) async {
+  static Future<Map<String, dynamic>> getRequest(String endpoint, {Map<String, String>? headers}) async {
     final Uri url = Uri.parse("$_baseUrl/$endpoint");
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers ?? {"Content-Type": "application/json"});
 
       if (response.statusCode == 200) {
-        return response.body;
+        return { 'success': true, 'data': jsonDecode(response.body) };
       } else {
-        throw Exception("Failed to load data: ${response.statusCode}");
+        return { 'success': false, 'data': jsonDecode(response.body) };
       }
     } catch (e) {
-      throw Exception("Error: $e");
+      return { 'success': false, 'data': 'Có lỗi trong quá trình xử lý!' }; 
     }
   }
 
