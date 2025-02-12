@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/auth/signup_first_screen.dart';
+import 'package:sep490/presentation/pages/auth/signup_screen.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectRoleScreen extends StatefulWidget {
   final String sign;
@@ -13,14 +15,14 @@ class SelectRoleScreen extends StatefulWidget {
 class _SelectRoleScreenState extends State<SelectRoleScreen> {
   final List roleData = [
     {
-      'role': 'user',
+      'role': 'Elderly',
       'title': 'Người cao tuổi',
       'description':
           'Quản lý sức khỏe, lịch uống thuốc, lịch khám bệnh, trò chơi giải trí, ...',
       'image': 'assets/img/role1.jpg',
     },
     {
-      'role': 'caregiver',
+      'role': 'Member',
       'title': 'Người thân',
       'description':
           'Quản lý sức khỏe người cao tuổi, nhận thông báo khẩn cấp, ...',
@@ -36,7 +38,7 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
     });
   }
 
-  void _continue() {
+  void _continue() async {
     if (_selectedRole == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a role to continue')),
@@ -44,10 +46,14 @@ class _SelectRoleScreenState extends State<SelectRoleScreen> {
       return;
     }
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('role', roleData[_selectedRole!]['role']);
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => SignupFirstScreen(role: roleData[_selectedRole!]['role']),
+        // builder: (context) => SignUpScreen(typeIn: 'Email'),
       ),
     );
   }

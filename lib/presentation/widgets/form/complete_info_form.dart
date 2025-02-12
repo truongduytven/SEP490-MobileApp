@@ -1,7 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
+import 'package:intl/intl.dart';
+import 'package:sep490/data/services/api_services.dart';
+import 'package:sep490/presentation/pages/auth/signin_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CompleteInfoForm extends StatefulWidget {
   const CompleteInfoForm({super.key});
@@ -42,6 +50,91 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
     }
   }
 
+  void handleSubmit() async {
+    if (_formKey.currentState!.validate()) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(
+                child: CircularProgressIndicator(
+              color: AppColors.primaryColor,
+            ));
+          });
+      // Lấy data
+      final WeightIndex = weightController.text.trim();
+      final HeightIndex = heightController.text.trim();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final accountId = prefs.getInt('accountId');
+      final fullName = prefs.getString('fullName');
+      final type = prefs.getString('typeSignUp');
+      final email = type == 'Email'
+          ? prefs.getString('emailOrPhoneSignUp')
+          : prefs.getString('emailOrPhoneSignUpLater');
+      final numberPhone = type == 'Phone'
+          ? prefs.getString('emailOrPhoneSignUp')
+          : prefs.getString('emailOrPhoneSignUpLater');
+      final RoleId = prefs.getString('role') == 'Elderly' ? 2 : 3;
+      final gender = prefs.getString('gender');
+      final dob = prefs.getString('dateOfBirth') ?? '';
+      String formatDOB = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+          .format(DateFormat("d/M/yyyy").parse(dob));
+      final MedicalRecord = prefs.getStringList('medicalRecord') ?? [];
+      String MedicalApi =
+          MedicalRecord.map((e) => "MedicalRecord=$e").join("&");
+
+      final Image =
+          prefs.getString('avatar') ?? "assets/img/default_avatar.png";
+      File avatarFile = File(Image);
+
+      // Gửi data
+      print(WeightIndex);
+      print(HeightIndex);
+      print(accountId);
+      print(fullName);
+      print(type);
+      print(email);
+      print(numberPhone);
+      print(RoleId);
+      print(gender);
+      print(formatDOB);
+      print(MedicalApi);
+
+      var response = await ApiService.postRequestSignUp(
+          "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$RoleId&$MedicalApi&Height=$HeightIndex&Weight=$WeightIndex",
+          avatarFile);
+
+      Navigator.of(context).pop();
+
+      if (response['success'] && response['data']['isSuccess']) {
+        Fluttertoast.showToast(
+          msg: "Xác nhận thông tin thành công!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignInScreen(),
+          ),
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Cõ lỗi trong quá trình xử lí",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -69,15 +162,7 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
             ElevatedButton(
               onPressed: isButtonEnabled
                   ? () {
-                      if (_formKey.currentState!.validate()) {
-                        FocusScope.of(context).unfocus();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NavigationMenu(keyIndex: 0,),
-                          ),
-                        );
-                      }
+                      handleSubmit();
                     }
                   : null,
               style: ElevatedButton.styleFrom(
