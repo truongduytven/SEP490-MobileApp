@@ -7,6 +7,7 @@ import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
 import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/presentation/widgets/health_card.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     });
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HealthMonitoringBook(initialTopic: "all",),
+                          builder: (context) => HealthMonitoringBook(
+                            initialTopic: "all",
+                          ),
                         ),
                       );
                     },
@@ -129,7 +134,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ScheduleScreen()),);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ScheduleScreen()),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

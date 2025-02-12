@@ -1,9 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sep490/presentation/widgets/form/otp_form.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class OtpScreen extends StatelessWidget {
-  const OtpScreen({super.key});
+class OtpScreen extends StatefulWidget {
+  OtpScreen({super.key});
+
+  @override
+  _OtpScreenState createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> {
+  late String method = '';
+  Intl intl = Intl();
+  String timeEnd = DateFormat('HH:mm').format(DateTime.now().add(Duration(minutes: 5)));
+
+  @override
+  void initState() {
+    super.initState();
+    getMethod();
+  }
+
+  void getMethod() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      method = prefs.getString('emailOrPhoneSignUp')!;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +55,10 @@ class OtpScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-                  const Text(
-                    "Chúng tôi đã gửi mã code tới +1 898 860 *** \nVui lòng kiểm tra, mã code sẽ hết hạn lúc 08:24",
+                  Text(
+                    "Chúng tôi đã gửi mã code tới $method \nVui lòng kiểm tra, mã code sẽ hết hạn lúc $timeEnd",
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textColor),
+                    style: const TextStyle(color: AppColors.textColor),
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   const OtpForm(),
