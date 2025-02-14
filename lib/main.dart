@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -9,7 +10,11 @@ void main() async {
     SystemUiOverlay.top,
     SystemUiOverlay.bottom,
   ]);
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

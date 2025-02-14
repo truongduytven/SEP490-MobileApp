@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/chat/chat_screen.dart';
 import 'package:sep490/presentation/pages/health/health_screen.dart';
@@ -103,8 +104,12 @@ class _NavigationMenuState extends State<NavigationMenu> {
                 label: "Trò chuyện",
               ),
               NavigationDestination(
-                icon: SvgPicture.asset('assets/icons/stethoscope.svg', height: 30, width: 30),
-                selectedIcon: SvgPicture.asset('assets/icons/stethoscope_selected.svg', height: 30, width: 30),
+                icon: SvgPicture.asset('assets/icons/stethoscope.svg',
+                    height: 30, width: 30),
+                selectedIcon: SvgPicture.asset(
+                    'assets/icons/stethoscope_selected.svg',
+                    height: 30,
+                    width: 30),
                 label: "Tư vấn",
               ),
               NavigationDestination(
@@ -139,7 +144,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
       case 1:
         return HealthScreen();
       case 2:
-        return ChatScreen();
+        return MobileLayoutScreen();
       case 3:
         return HomeDoctorAdviseScreen();
       case 4:
