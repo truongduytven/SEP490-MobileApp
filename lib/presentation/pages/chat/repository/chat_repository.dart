@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -52,6 +51,47 @@ class ChatRepository {
     }
   }
 
+//fetch message in room chat
+
+  final StreamController<List<Message>> _chatStreamController =
+      StreamController.broadcast();
+
+  Stream<List<Message>> getChatStream(String roomId) {
+    _fetchMessages(roomId);
+    return _chatStreamController.stream;
+  }
+
+  Future<void> _fetchMessages(String roomId) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/chat-management/$roomId/messages'),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['status'] == 1 && jsonResponse.containsKey('data')) {
+          List<Message> messages = (jsonResponse['data'] as List)
+              .map((msg) => Message.fromJson(msg))
+              .toList();
+
+          _chatStreamController.add(messages);
+        } else {
+          print('No messages found or incorrect response format.');
+        }
+      } else {
+        print('Failed to fetch messages. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching chat messages: $e');
+    }
+  }
+
+  void dispose() {
+    _chatStreamController.close();
+  }
+
   /// Stream for chat contacts
   Stream<List<ChatContact>> getContactsStream(String userId) {
     _fetchContacts(userId);
@@ -95,15 +135,15 @@ class ChatRepository {
     }
   }
 
-  /// Stream for private chat messages
-  Stream<List<Message>> getChatStream(String senderId, String receiverId) {
-    String chatKey = '$senderId-$receiverId';
-    if (!_chatStreams.containsKey(chatKey)) {
-      _chatStreams[chatKey] = StreamController<List<Message>>.broadcast();
-      _fetchChatMessages(senderId, receiverId);
-    }
-    return _chatStreams[chatKey]!.stream;
-  }
+  // /// Stream for private chat messages
+  // Stream<List<Message>> getChatStream(String senderId, String receiverId) {
+  //   String chatKey = '$senderId-$receiverId';
+  //   if (!_chatStreams.containsKey(chatKey)) {
+  //     _chatStreams[chatKey] = StreamController<List<Message>>.broadcast();
+  //     _fetchChatMessages(senderId, receiverId);
+  //   }
+  //   return _chatStreams[chatKey]!.stream;
+  // }
 
   Future<void> _fetchChatMessages(String senderId, String receiverId) async {
     String chatKey = '$senderId-$receiverId';
@@ -112,7 +152,7 @@ class ChatRepository {
           .get(Uri.parse('$baseUrl/chats/$senderId/$receiverId/messages'));
       if (response.statusCode == 200) {
         List data = json.decode(response.body);
-        List<Message> messages = data.map((e) => Message.fromMap(e)).toList();
+        List<Message> messages = data.map((e) => Message.fromJson(e)).toList();
         // messages.sort((a, b) =>
         //     b.timestamp.compareTo(a.timestamp)); // Sort by latest first
         _chatStreams[chatKey]!.add(messages);
@@ -139,7 +179,7 @@ class ChatRepository {
           await http.get(Uri.parse('$baseUrl/groups/$groupId/messages'));
       if (response.statusCode == 200) {
         List data = json.decode(response.body);
-        List<Message> messages = data.map((e) => Message.fromMap(e)).toList();
+        List<Message> messages = data.map((e) => Message.fromJson(e)).toList();
         // messages.sort((a, b) =>
         //     b.timestamp.compareTo(a.timestamp)); // Sort by latest first
         _groupChatStreams[groupId]!.add(messages);
@@ -176,7 +216,7 @@ class ChatRepository {
           'isGroupChat': isGroupChat,
           'repliedMessage': messageReply?.messsage ?? '',
           'repliedTo': messageReply?.isMe == true ? senderUser.fullName : '',
-          'messageType': MessageEnum.text.toString(),
+          'messageType': MessageEnum.Text.toString(),
         }),
       );
 

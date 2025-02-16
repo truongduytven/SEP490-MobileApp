@@ -39,14 +39,20 @@ class MyMessageCard extends StatelessWidget {
           ),
           child: Card(
             elevation: 1,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            color: AppColors.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+                bottomLeft: Radius.circular(15),
+                bottomRight: Radius.zero,
+              ),
+            ),
+            color: AppColors.secondaryColor,
             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
             child: Stack(
               children: [
                 Padding(
-                  padding: type == MessageEnum.text
+                  padding: type == MessageEnum.Text
                       ? const EdgeInsets.only(
                           left: 10,
                           right: 30,
@@ -112,7 +118,7 @@ class MyMessageCard extends StatelessWidget {
                         width: 5,
                       ),
                       Icon(
-                        isSeen ? Icons.done_all : Icons.done,
+                        isSeen ? Icons.done_all : Icons.done_all,
                         size: 20,
                         color: isSeen ? Colors.blue : Colors.white60,
                       ),

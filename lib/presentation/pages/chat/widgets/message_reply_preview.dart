@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/presentation/pages/chat/widgets/display_text_image_gif.dart';
+import 'package:sep490/theme/color.dart';
 
 class MessageReplyPreview extends ConsumerWidget {
   const MessageReplyPreview({super.key});
@@ -22,13 +23,16 @@ class MessageReplyPreview extends ConsumerWidget {
             topRight: Radius.circular(12),
           )),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Expanded(
                 child: Text(
-                  messageReply!.isMe ? 'Me' : 'Opposite',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  messageReply!.isMe ? 'Bạn' : 'Người khác',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor),
                 ),
               ),
               GestureDetector(
@@ -44,6 +48,7 @@ class MessageReplyPreview extends ConsumerWidget {
             height: 8,
           ),
           DisplayTextImageGif(
+            isMe: false,
             message: messageReply.messsage,
             type: messageReply.messageEnum,
           )

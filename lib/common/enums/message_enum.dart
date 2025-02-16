@@ -1,31 +1,21 @@
-enum MessageEnum {
-  text("text"),
-  image('image'),
-  audio('audio'),
-  video('video'),
-  gif('gif');
+enum MessageEnum { Text, Image, Video, Audio, Gif }
 
-  const MessageEnum(this.type);
-  final String type;
-}
-
-//using an extension
-//enhanced enums
-extension ConverMessage on String {
-  MessageEnum toEnum() {
-    switch (this) {
-      case 'audio':
-        return MessageEnum.audio;
-      case 'image':
-        return MessageEnum.image;
+// ✅ Extension for converting String to MessageEnum
+extension MessageEnumExtension on MessageEnum {
+  static MessageEnum fromString(String value) {
+    switch (value.toLowerCase()) {
       case 'text':
-        return MessageEnum.text;
-      case 'gif':
-        return MessageEnum.gif;
+        return MessageEnum.Text;
+      case 'image':
+        return MessageEnum.Image;
       case 'video':
-        return MessageEnum.video;
+        return MessageEnum.Video;
+      case 'audio':
+        return MessageEnum.Audio;
+      case 'file':
+        return MessageEnum.Gif;
       default:
-        return MessageEnum.text;
+        return MessageEnum.Text; // Default to text if unknown type
     }
   }
 }

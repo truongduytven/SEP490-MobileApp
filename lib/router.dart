@@ -28,7 +28,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case MobileChatScreen.routeName:
       final arguments = settings.arguments as Map<String, dynamic>;
       final name = arguments["name"];
-      final uid = int.tryParse(arguments["uid"].toString()) ?? 0;
+      final uid = arguments["uid"];
       final isGroupChat = arguments["isGroupChat"];
       final profilePic = arguments["profilePic"];
       return MaterialPageRoute(

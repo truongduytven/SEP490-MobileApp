@@ -40,8 +40,9 @@ class ChatController {
     return chatRepository.getGroupsStream(userId);
   }
 
-  Stream<List<Message>> chatStream(String senderId, String recieverUserId) {
-    return chatRepository.getChatStream(senderId, recieverUserId);
+  Stream<List<Message>> getChatStream(String roomId) {
+    print("getchat scree $roomId");
+    return chatRepository.getChatStream(roomId);
   }
 
   Stream<List<Message>> groupGhatStream(String groupId) {

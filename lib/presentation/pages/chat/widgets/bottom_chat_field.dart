@@ -14,11 +14,11 @@ import 'package:sep490/presentation/pages/chat/widgets/message_reply_preview.dar
 import 'package:sep490/theme/color.dart';
 
 class BottomChatField extends ConsumerStatefulWidget {
-  final String recieverUserId;
+  final String roomId;
   final bool isGroupChat;
   const BottomChatField({
     super.key,
-    required this.recieverUserId,
+    required this.roomId,
     required this.isGroupChat,
   });
 
@@ -57,7 +57,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
       ref.read(chatControllerProvider).sendTextMessage(
             context,
             _messageController.text.trim(),
-            widget.recieverUserId,
+            widget.roomId,
             widget.isGroupChat,
           );
       setState(() {
@@ -73,7 +73,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
       }
       if (isRecording) {
         await _soundRecorder!.stopRecorder();
-        sendFileMessage(File(path), MessageEnum.audio);
+        sendFileMessage(File(path), MessageEnum.Audio);
       } else {
         await _soundRecorder!.startRecorder(toFile: path);
       }
@@ -92,7 +92,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
     ref.read(chatControllerProvider).sendFileMessage(
           context,
           file,
-          widget.recieverUserId,
+          widget.roomId,
           messageEnum,
           widget.isGroupChat,
         );
@@ -101,14 +101,14 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void selectImage() async {
     File? image = await pickImageFromGallery(context);
     if (image != null) {
-      sendFileMessage(image, MessageEnum.image);
+      sendFileMessage(image, MessageEnum.Image);
     }
   }
 
   void selectVideo() async {
     File? video = await pickVideoFromGallery(context);
     if (video != null) {
-      sendFileMessage(video, MessageEnum.video);
+      sendFileMessage(video, MessageEnum.Video);
     }
   }
 
@@ -207,7 +207,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: AppColors.primaryColor,
+                  fillColor: AppColors.bgColor,
                   prefixIcon: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: SizedBox(
@@ -218,14 +218,14 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                             onPressed: toggleEmojiContainer,
                             icon: Icon(
                               Icons.emoji_emotions,
-                              color: Colors.grey,
+                              color: Colors.orangeAccent,
                             ),
                           ),
                           IconButton(
                             onPressed: selectGIF,
                             icon: Icon(
                               Icons.gif,
-                              color: Colors.grey,
+                              color: AppColors.primaryColor,
                             ),
                           ),
                         ],
@@ -241,20 +241,20 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                           onPressed: selectImage,
                           icon: Icon(
                             Icons.camera_alt,
-                            color: Colors.grey,
+                            color: AppColors.primaryColor,
                           ),
                         ),
                         IconButton(
                           onPressed: selectVideo,
                           icon: Icon(
                             Icons.attach_file,
-                            color: Colors.grey,
+                            color: AppColors.primaryColor,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  hintText: 'Type a message!',
+                  hintText: 'Soạn tin nhắn...',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: const BorderSide(
@@ -266,24 +266,27 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-                right: 2,
-                left: 2,
-              ),
-              child: CircleAvatar(
-                backgroundColor: const Color(0xFF128C7E),
-                radius: 25,
-                child: GestureDetector(
-                  onTap: sendTextMessage,
-                  child: Icon(
-                    isShowSendButton
-                        ? Icons.send
-                        : isRecording
-                            ? Icons.close
-                            : Icons.mic,
-                    color: Colors.white,
+            SizedBox(
+              height: 50,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 5,
+                  right: 5,
+                  left: 5,
+                ),
+                child: CircleAvatar(
+                  backgroundColor: AppColors.primaryColor,
+                  radius: 25,
+                  child: GestureDetector(
+                    onTap: sendTextMessage,
+                    child: Icon(
+                      isShowSendButton
+                          ? Icons.send
+                          : isRecording
+                              ? Icons.close
+                              : Icons.mic,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

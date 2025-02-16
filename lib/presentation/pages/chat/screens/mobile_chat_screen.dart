@@ -10,7 +10,7 @@ import 'package:sep490/theme/color.dart';
 class MobileChatScreen extends ConsumerWidget {
   static const String routeName = '/mobile-chat-screen';
   final String name;
-  final int uid;
+  final String uid;
   final bool isGroupChat;
   final String profilePic;
   const MobileChatScreen({
@@ -25,12 +25,13 @@ class MobileChatScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: Colors.white,
-        backgroundColor: AppColors.primaryColor,
+        toolbarHeight: 80,
+        foregroundColor: AppColors.secondaryColor,
+        backgroundColor: AppColors.bgColor,
         title: isGroupChat
             ? Text(name)
             : StreamBuilder<UserModel?>(
-                stream: ref.read(authControllerProvider).userData(uid),
+                stream: ref.read(authControllerProvider).userData(1),
                 builder: (context, snapshort) {
                   if (snapshort.connectionState == ConnectionState.waiting) {
                     return Loader();
@@ -71,19 +72,22 @@ class MobileChatScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ChatList(
-              recieverUserId: uid.toString(),
-              isGroupChat: isGroupChat,
+      body: Container(
+        color: const Color.fromARGB(255, 240, 242, 245),
+        child: Column(
+          children: [
+            Expanded(
+              child: ChatList(
+                roomId: uid.toString(),
+                isGroupChat: isGroupChat,
+              ),
             ),
-          ),
-          BottomChatField(
-            recieverUserId: uid.toString(),
-            isGroupChat: isGroupChat,
-          )
-        ],
+            BottomChatField(
+              roomId: uid.toString(),
+              isGroupChat: isGroupChat,
+            )
+          ],
+        ),
       ),
     );
   }
