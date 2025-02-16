@@ -106,6 +106,8 @@ class _ChatListState extends ConsumerState<ChatList> {
                 }
 
                 return SenderMessageCard(
+                  isGroupChat: widget.isGroupChat,
+                  senderName: messageData.senderName,
                   avatar: messageData.senderAvatar,
                   message: messageData.message,
                   date: messageData.sentTime,

@@ -7,6 +7,8 @@ import 'package:swipe_to/swipe_to.dart';
 class SenderMessageCard extends StatelessWidget {
   const SenderMessageCard({
     Key? key,
+    required this.isGroupChat,
+    required this.senderName,
     required this.avatar,
     required this.message,
     required this.date,
@@ -16,7 +18,8 @@ class SenderMessageCard extends StatelessWidget {
     required this.username,
     required this.repliedMessageType,
   }) : super(key: key);
-
+  final bool isGroupChat;
+  final String senderName;
   final String avatar;
   final String message;
   final String date;
@@ -46,88 +49,103 @@ class SenderMessageCard extends StatelessWidget {
             const SizedBox(width: 8), // Space between avatar and message
 
             // Message Card
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: 100,
-
-                maxWidth: MediaQuery.of(context).size.width -
-                    120, // Adjust for larger avatar
-              ),
-              child: Card(
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                    bottomLeft: Radius.zero,
-                    bottomRight: Radius.circular(15),
-                  ),
-                ),
-                color: AppColors.bgColor,
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                child: Stack(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Padding(
-                      padding: type == MessageEnum.Text
-                          ? const EdgeInsets.only(
-                              left: 10,
-                              right: 30,
-                              top: 5,
-                              bottom: 20,
-                            )
-                          : const EdgeInsets.only(
-                              left: 5,
-                              top: 5,
-                              right: 5,
-                              bottom: 25,
-                            ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (isReplying) ...[
-                            Text(
-                              username,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 3),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryColor.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: DisplayTextImageGif(
-                                isMe: false,
-                                message: repliedText,
-                                type: repliedMessageType,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                          ],
-                          DisplayTextImageGif(
-                            isMe: false,
-                            message: message,
-                            type: type,
-                          ),
-                        ],
-                      ),
+                    SizedBox(
+                      width: 10,
                     ),
-                    Positioned(
-                      bottom: 2,
-                      left: 10,
-                      child: Text(
-                        date,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ),
+                    Text(isGroupChat ? senderName : ""),
                   ],
                 ),
-              ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: 100,
+
+                    maxWidth: MediaQuery.of(context).size.width -
+                        120, // Adjust for larger avatar
+                  ),
+                  child: Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
+                        bottomLeft: Radius.zero,
+                        bottomRight: Radius.circular(15),
+                      ),
+                    ),
+                    color: AppColors.bgColor,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: type == MessageEnum.Text
+                              ? const EdgeInsets.only(
+                                  left: 10,
+                                  right: 30,
+                                  top: 5,
+                                  bottom: 20,
+                                )
+                              : const EdgeInsets.only(
+                                  left: 5,
+                                  top: 5,
+                                  right: 5,
+                                  bottom: 25,
+                                ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (isReplying) ...[
+                                Text(
+                                  username,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        AppColors.primaryColor.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: DisplayTextImageGif(
+                                    isMe: false,
+                                    message: repliedText,
+                                    type: repliedMessageType,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              DisplayTextImageGif(
+                                isMe: false,
+                                message: message,
+                                type: type,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 2,
+                          left: 10,
+                          child: Text(
+                            date,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
