@@ -302,10 +302,10 @@ class _SignUpFormState extends State<SignUpForm> {
                   )),
             ],
             onChanged: (gender) {
-              _onTextChanged();
               setState(() {
                 _selectedGender = gender ?? '';
               });
+              _onTextChanged();
             },
             validator: (value) {
               if (value == null || value.isEmpty) {

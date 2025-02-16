@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/presentation/pages/home/group_member_screen.dart';
+import 'package:sep490/presentation/pages/home/profile_screen.dart';
 import 'package:sep490/presentation/pages/notification/notification_screen.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
@@ -13,22 +16,23 @@ class Header extends StatefulWidget {
 
 class _HeaderState extends State<Header> {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-  late String fullName = '';
-  late String avatar = 'https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg';
+  late String fullName = SharedPrefsHelper().getString('fullName') ?? '';
+  late String avatar = SharedPrefsHelper().getString('avatar') ??
+      'https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg';
 
-  @override
-  void initState() {
-    super.initState();
-    _getDataUser();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _getDataUser();
+  // }
 
-  void _getDataUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      fullName = prefs.getString('fullName') ?? '';
-      avatar = prefs.getString('avatar') ?? '';
-    });
-  }
+  // void _getDataUser() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     fullName = prefs.getString('fullName') ?? '';
+  //     avatar = prefs.getString('avatar') ?? '';
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -41,48 +45,105 @@ class _HeaderState extends State<Header> {
         return true;
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                ClipOval(
-                  child: Image.network(
-                    avatar,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Xin chào",
-                      style:
-                          TextStyle(color: AppColors.textColor, fontSize: 18),
-                    ),
-                    Text(
-                      fullName,
-                      style: TextStyle(
-                        color: AppColors.textColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
+              },
+              child: Row(
+                children: [
+                  Stack(children: [
+                    ClipOval(
+                      child: Image.network(
+                        avatar,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ],
-                ),
-              ],
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: Colors
+                              .white, // Background color for better visibility
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.format_list_bulleted,
+                          size: 12,
+                          color: AppColors
+                              .textColor, // Adjust color based on theme
+                        ),
+                      ),
+                    ),
+                  ]),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Xin chào",
+                        style:
+                            TextStyle(color: AppColors.textColor, fontSize: 18),
+                      ),
+                      Text(
+                        fullName,
+                        style: TextStyle(
+                          color: AppColors.textColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             Row(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.grayColor2,
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GroupMemberScreen()),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.group,
+                          color: AppColors.textColor,
+                          size: 20,
+                        )),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: Container(
+                    height: 40,
+                    width: 40,
                     decoration: BoxDecoration(
                       color: AppColors.grayColor2,
                       shape: BoxShape.circle,
@@ -97,8 +158,8 @@ class _HeaderState extends State<Header> {
                       },
                       icon: Image.asset(
                         "assets/img/notification_active.png",
-                        width: 25,
-                        height: 25,
+                        width: 20,
+                        height: 20,
                         fit: BoxFit.fitHeight,
                       ),
                     ),

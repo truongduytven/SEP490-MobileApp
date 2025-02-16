@@ -21,20 +21,26 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     {
       "ActivityName": "Uống thuốc",
       "ActivityDescription": "Penicilin v kali 500mg\nDùng 1 vào 8:00 (sau ăn)",
-      "StartTime": DateTime(2025, 1, 28, 9, 0),
-      "EndTime": DateTime(2025, 1, 28, 10, 0),
+      "StartTime": DateTime(2025, 2, 16, 9, 0),
+      "EndTime": DateTime(2025, 2, 16, 10, 0),
     },
     {
       "ActivityName": "Tư vấn với bác sĩ",
       "ActivityDescription": "Bác sĩ Phan Văn Anh",
-      "StartTime": DateTime(2025, 1, 28, 11, 0),
-      "EndTime": DateTime(2025, 1, 28, 12, 0),
+      "StartTime": DateTime(2025, 2, 16, 11, 0),
+      "EndTime": DateTime(2025, 2, 16, 12, 0),
     },
     {
       "ActivityName": "Tập luyện",
       "ActivityDescription": "Bài tập cổ vai gáy",
-      "StartTime": DateTime(2025, 1, 28, 13, 0),
-      "EndTime": DateTime(2025, 1, 28, 14, 0),
+      "StartTime": DateTime(2025, 2, 16, 13, 0),
+      "EndTime": DateTime(2025, 2, 16, 14, 0),
+    },
+    {
+      "ActivityName": "Sự kiện gia đình",
+      "ActivityDescription": "Tiệc tất niên",
+      "StartTime": DateTime(2025, 2, 16, 13, 0),
+      "EndTime": DateTime(2025, 2, 16, 14, 0),
     },
   ];
 
@@ -76,13 +82,26 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget _getActivityIcon(String activityName) {
     switch (activityName) {
       case "Uống thuốc":
-        return Image.asset('assets/img3D/thuoc.png', width: 40, height: 40);
+        return Image.asset('assets/img3D/thuoc.png', width: 50, height: 50);
       case "Tư vấn với bác sĩ":
-        return Image.asset('assets/img3D/bacsi.png', width: 40, height: 40);
+        return Image.asset('assets/img3D/bacsi.png', width: 50, height: 50);
       case "Tập luyện":
-        return Image.asset('assets/img3D/cannang.png', width: 40, height: 40);
+        return Image.asset('assets/img3D/cannang.png', width: 50, height: 50);
       default:
-        return Icon(Icons.event, color: AppColors.secondaryColor, size: 40);
+        return Icon(Icons.event, color: AppColors.secondaryColor, size: 50);
+    }
+  }
+
+  Color? getColors (String activityName) {
+    switch (activityName) {
+      case "Uống thuốc":
+        return Colors.yellow[400];
+      case "Tư vấn với bác sĩ":
+        return Colors.blue[400];
+      case "Tập luyện":
+        return Colors.green[400];
+      default:
+        return Colors.orange[400];
     }
   }
 
@@ -97,7 +116,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgColor,
         title: Text(
-          'Lịch thuốc của tôi',
+          'Lịch của tôi',
           style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w600,
@@ -272,7 +291,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Image.asset('assets/img3D/empty.png', width: 200, height: 200),
                         const SizedBox(height: 20),
                         Text('Không có hoạt động nào', style: TextStyle(fontSize: 20, color: AppColors.textColor)),
                       ],
@@ -305,7 +323,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               ),
                               const SizedBox(height: 8),
                               Container(
-                                width: 4,
+                                width: 2,
                                 height: 60,
                                 color: AppColors.primaryColor,
                               ),
@@ -319,11 +337,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             margin: const EdgeInsets.symmetric(vertical: 8),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: getColors(activity['ActivityName']),
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  // color: Colors.black.withOpacity(0.1),
+                                  color: AppColors.secondaryColor.withOpacity(0.3),
                                   blurRadius: 4,
                                   offset: const Offset(0, 4),
                                 ),

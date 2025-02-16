@@ -35,17 +35,17 @@ class _NavigationMenuState extends State<NavigationMenu> {
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
-        // if (_selectedIndex != 0) {
-        //   setState(() {
-        //     _selectedIndex = 0;
-        //   });
-        //   return false; // Prevent default back navigation
-        // } else {
-        //   await _showOutDialog(); // Show logout dialog
-        //   return false; // Prevent default back navigation
-        // }
-        await _showOutDialog();
-        return false;
+        if (_selectedIndex != 0) {
+          setState(() {
+            _selectedIndex = 0;
+          });
+          return false; // Prevent default back navigation
+        } else {
+          await _showOutDialog(); // Show logout dialog
+          return false; // Prevent default back navigation
+        }
+        // await _showOutDialog();
+        // return false;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
