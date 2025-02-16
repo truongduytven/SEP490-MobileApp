@@ -55,6 +55,10 @@ dependencies:
   flutter_riverpod: ^2.6.1
   uuid: ^4.5.1
   giphy_picker: ^3.0.2
+  permission_handler: ^11.3.1
+  camera: ^0.11.1
+  geolocator: ^13.0.2
+  record: ^5.2.0
 
 dev_dependencies:
   flutter_test:

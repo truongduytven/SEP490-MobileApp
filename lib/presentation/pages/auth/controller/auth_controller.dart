@@ -71,6 +71,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/models/user_model.dart';
 import 'package:sep490/presentation/pages/auth/repository/auth_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final authControllerProvider = Provider((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
@@ -81,7 +82,10 @@ final userDataAuthProvider = FutureProvider((ref) {
   final authController = ref.watch(authControllerProvider);
   return authController.getUserData( );
 });
-
+final accountIdProvider = FutureProvider<int?>((ref) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getInt('accountId');
+});
 class AuthController {
   final AuthRepository authRepository;
   final ProviderRef ref;

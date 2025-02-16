@@ -415,6 +415,7 @@ import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/models/chat_contact.dart';
 import 'package:sep490/models/group.dart';
 import 'package:sep490/models/message.dart';
+import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/models/user_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -430,6 +431,30 @@ class ChatRepository {
       StreamController.broadcast();
   final Map<String, StreamController<List<Message>>> _chatStreams = {};
   final Map<String, StreamController<List<Message>>> _groupChatStreams = {};
+
+  ///fetch roomChat
+  Stream<List<RoomChat>> getRoomChatStream(String userId) async* {
+    while (true) {
+      try {
+        final response = await http.get(Uri.parse(
+            'https://api.diavan-valuation.asia/chat-management/$userId/room-chat'));
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> responseBody = jsonDecode(response.body);
+          if (responseBody['status'] == 1) {
+            List<dynamic> data = responseBody['data'];
+            yield data.map((json) => RoomChat.fromJson(json)).toList();
+          } else {
+            yield [];
+          }
+        } else {
+          yield [];
+        }
+      } catch (e) {
+        yield [];
+      }
+      await Future.delayed(const Duration(seconds: 5)); // Poll every 5 seconds
+    }
+  }
 
   /// Stream for chat contacts
   Stream<List<ChatContact>> getContactsStream(String userId) {

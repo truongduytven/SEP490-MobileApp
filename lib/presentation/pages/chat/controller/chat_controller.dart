@@ -7,6 +7,7 @@ import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/models/chat_contact.dart';
 import 'package:sep490/models/group.dart';
 import 'package:sep490/models/message.dart';
+import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/chat/repository/chat_repository.dart';
 
@@ -26,6 +27,10 @@ class ChatController {
     required this.chatRepository,
     required this.ref,
   });
+
+  Stream<List<RoomChat>> getRoomChatStream(String userId) {
+    return chatRepository.getRoomChatStream(userId);
+  }
 
   Stream<List<ChatContact>> chatContacts(String userId) {
     return chatRepository.getContactsStream(userId);

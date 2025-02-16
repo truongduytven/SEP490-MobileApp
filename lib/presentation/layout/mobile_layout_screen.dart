@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/presentation/pages/chat/widgets/contacts_list.dart';
 import 'package:sep490/theme/color.dart';
-
 class MobileLayoutScreen extends ConsumerStatefulWidget {
   const MobileLayoutScreen({Key? key}) : super(key: key);
 
@@ -118,8 +115,8 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
           ContactsList(),
           // StatusContactsScreen(),
           // const Text("COntact list"),
-          const Text("Status"),
-          const Text("Call"),
+          const Text("Dòng trạng thái"),
+          const Text("Lời mời kết bạn"),
         ]),
         floatingActionButton: FloatingActionButton(
           // onPressed: () async {
@@ -139,7 +136,7 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
           onPressed: () {},
           backgroundColor: AppColors.primaryColor,
           child: const Icon(
-            Icons.add_comment_outlined,
+            Icons.add,
             color: Colors.white,
           ),
         ),
