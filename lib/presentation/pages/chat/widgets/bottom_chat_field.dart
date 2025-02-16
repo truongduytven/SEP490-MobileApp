@@ -187,111 +187,114 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
     return Column(
       children: [
         isShowMessagReply ? const MessageReplyPreview() : const SizedBox(),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                focusNode: focusNode,
-                controller: _messageController,
-                onChanged: (val) {
-                  if (val.isNotEmpty) {
-                    setState(() {
-                      isShowSendButton = true;
-                    });
-                  } else {
-                    setState(() {
-                      isShowSendButton = false;
-                    });
-                  }
-                },
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: AppColors.bgColor,
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: SizedBox(
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  focusNode: focusNode,
+                  controller: _messageController,
+                  onChanged: (val) {
+                    if (val.isNotEmpty) {
+                      setState(() {
+                        isShowSendButton = true;
+                      });
+                    } else {
+                      setState(() {
+                        isShowSendButton = false;
+                      });
+                    }
+                  },
+                  style: TextStyle(color: AppColors.secondaryColor),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: AppColors.bgColor,
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: SizedBox(
+                        width: 100,
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: toggleEmojiContainer,
+                              icon: Icon(
+                                Icons.emoji_emotions,
+                                color: Colors.orangeAccent,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: selectGIF,
+                              icon: Icon(
+                                Icons.gif,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    suffixIcon: SizedBox(
                       width: 100,
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                            onPressed: toggleEmojiContainer,
+                            onPressed: selectImage,
                             icon: Icon(
-                              Icons.emoji_emotions,
-                              color: Colors.orangeAccent,
+                              Icons.camera_alt,
+                              color: AppColors.primaryColor,
                             ),
                           ),
                           IconButton(
-                            onPressed: selectGIF,
+                            onPressed: selectVideo,
                             icon: Icon(
-                              Icons.gif,
+                              Icons.attach_file,
                               color: AppColors.primaryColor,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  suffixIcon: SizedBox(
-                    width: 100,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          onPressed: selectImage,
-                          icon: Icon(
-                            Icons.camera_alt,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: selectVideo,
-                          icon: Icon(
-                            Icons.attach_file,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                      ],
+                    hintText: 'Soạn tin nhắn...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      borderSide: const BorderSide(
+                        width: 0,
+                        style: BorderStyle.none,
+                      ),
                     ),
+                    contentPadding: const EdgeInsets.all(10),
                   ),
-                  hintText: 'Soạn tin nhắn...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                    borderSide: const BorderSide(
-                      width: 0,
-                      style: BorderStyle.none,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.all(10),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 50,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 5,
-                  right: 5,
-                  left: 5,
-                ),
-                child: CircleAvatar(
-                  backgroundColor: AppColors.primaryColor,
-                  radius: 25,
-                  child: GestureDetector(
-                    onTap: sendTextMessage,
-                    child: Icon(
-                      isShowSendButton
-                          ? Icons.send
-                          : isRecording
-                              ? Icons.close
-                              : Icons.mic,
-                      color: Colors.white,
+              SizedBox(
+                height: 50,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 5,
+                    right: 5,
+                    left: 5,
+                  ),
+                  child: CircleAvatar(
+                    backgroundColor: AppColors.primaryColor,
+                    radius: 25,
+                    child: GestureDetector(
+                      onTap: sendTextMessage,
+                      child: Icon(
+                        isShowSendButton
+                            ? Icons.send
+                            : isRecording
+                                ? Icons.close
+                                : Icons.mic,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         isShowEmojiContainer
             ? SizedBox(
@@ -309,6 +312,9 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                 ),
               )
             : SizedBox(),
+        SizedBox(
+          height: 10,
+        )
       ],
     );
   }

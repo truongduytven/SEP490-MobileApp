@@ -29,7 +29,7 @@ class MessageReplyPreview extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  messageReply!.isMe ? 'Bạn' : 'Người khác',
+                  messageReply!.isMe ? 'Trả lời' : 'Trả lời',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.primaryColor),

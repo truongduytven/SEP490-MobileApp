@@ -37,6 +37,7 @@ class SenderMessageCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            const SizedBox(width: 10),
             // Avatar on the left
             CircleAvatar(
               radius: 20,

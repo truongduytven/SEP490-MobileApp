@@ -6,7 +6,6 @@ import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:sep490/presentation/pages/chat/screens/mobile_chat_screen.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactsList extends ConsumerWidget {
   const ContactsList({Key? key}) : super(key: key);

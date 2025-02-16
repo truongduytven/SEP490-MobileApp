@@ -8,6 +8,7 @@ import 'package:sep490/common/enums/message_enum.dart';
 import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/models/chat_contact.dart';
+import 'package:sep490/models/chat_room_status.dart';
 import 'package:sep490/models/group.dart';
 import 'package:sep490/models/message.dart';
 import 'package:sep490/models/room_chat.dart';
@@ -19,8 +20,10 @@ final chatRepositoryProvider = Provider((ref) => ChatRepository());
 class ChatRepository {
   final String baseUrl =
       'https://your-api.com/api'; // Replace with your API base URL
-
+  Timer? _statusTimer;
   final StreamController<List<ChatContact>> _chatContactsController =
+      StreamController.broadcast();
+  final StreamController<ChatRoomStatus> _statusStreamController =
       StreamController.broadcast();
   final StreamController<List<Group>> _chatGroupsController =
       StreamController.broadcast();
@@ -89,7 +92,45 @@ class ChatRepository {
   }
 
   void dispose() {
+    _statusTimer?.cancel();
     _chatStreamController.close();
+    _statusStreamController.close();
+  }
+
+  //get status online oorr offline of roomchat
+  Stream<ChatRoomStatus> getStatusRoomChatStream(
+      String roomId, int currentUserId) {
+    _startChatStatusPolling(roomId, currentUserId);
+    return _statusStreamController.stream;
+  }
+
+  void _startChatStatusPolling(String roomId, int currentUserId) {
+    // Cancel existing timer if running to prevent multiple loops
+    _statusTimer?.cancel();
+
+    _statusTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      try {
+        final response = await http.get(
+          Uri.parse(
+            'https://api.diavan-valuation.asia/chat-management/status-in-room-chat?roomId=$roomId&currentUserId=$currentUserId',
+          ),
+        );
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+          if (jsonResponse['status'] == 1 && jsonResponse.containsKey('data')) {
+            bool isOnline = jsonResponse['data']['isOnline'];
+            _statusStreamController.add(ChatRoomStatus(isOnline: isOnline));
+          } else {
+            _statusStreamController.add(ChatRoomStatus(isOnline: false));
+          }
+        } else {
+          _statusStreamController.add(ChatRoomStatus(isOnline: false));
+        }
+      } catch (e) {
+        _statusStreamController.add(ChatRoomStatus(isOnline: false));
+      }
+    });
   }
 
   /// Stream for chat contacts
