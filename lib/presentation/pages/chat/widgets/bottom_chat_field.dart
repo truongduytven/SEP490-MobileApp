@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sep490/common/enums/message_enum.dart';
 import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/common/utils/utils.dart';
+import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:sep490/presentation/pages/chat/widgets/message_reply_preview.dart';
 import 'package:sep490/theme/color.dart';
@@ -53,13 +54,17 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   }
 
   void sendTextMessage() async {
+    final senderId = await ref.read(accountIdProvider.future);
+
+    if (senderId == null) {
+      print("Sender ID is null");
+      return;
+    }
+    print(
+        "data send ${widget.roomId} ${_messageController.text.trim()} $senderId");
     if (isShowSendButton) {
-      ref.read(chatControllerProvider).sendTextMessage(
-            context,
-            _messageController.text.trim(),
-            widget.roomId,
-            widget.isGroupChat,
-          );
+      ref.read(chatControllerProvider).sendTextMessage(context, widget.roomId,
+          _messageController.text.trim(), senderId, MessageEnum.Text);
       setState(() {
         _messageController.text = '';
         isShowSendButton = false;

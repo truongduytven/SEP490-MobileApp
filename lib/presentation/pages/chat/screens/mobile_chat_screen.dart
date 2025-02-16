@@ -81,8 +81,8 @@ class MobileChatScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.only(top: 5.0),
                                 child: Text(
                                   snapshot.data!.isOnline
-                                      ? "online"
-                                      : "offline",
+                                      ? "Đang hoạt động"
+                                      : "Không hoạt động",
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.normal,

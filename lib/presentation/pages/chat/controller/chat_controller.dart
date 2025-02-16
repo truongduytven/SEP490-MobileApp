@@ -60,19 +60,19 @@ class ChatController {
 
   void sendTextMessage(
     BuildContext context,
-    String text,
-    String recieverUserId,
-    bool isGroupChat,
+    String roomId,
+    String message,
+    int senderId,
+    MessageEnum messageType,
   ) {
-    final messageReply = ref.read(messsageReplyProvider);
+    // final messageReply = ref.read(messsageReplyProvider);
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendTextMessage(
             context: context,
-            text: text,
-            receiverUserId: recieverUserId,
-            senderUser: value!,
-            messageReply: messageReply,
-            isGroupChat: isGroupChat,
+            roomId: roomId,
+            message: message,
+            senderId: senderId,
+            messageType: messageType,
           ),
         );
     ref.read(messsageReplyProvider.state).update((state) => null);

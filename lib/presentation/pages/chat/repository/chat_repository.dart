@@ -21,6 +21,7 @@ class ChatRepository {
   final String baseUrl =
       'https://your-api.com/api'; // Replace with your API base URL
   Timer? _statusTimer;
+  Timer? _fetchTimer;
   final StreamController<List<ChatContact>> _chatContactsController =
       StreamController.broadcast();
   final StreamController<ChatRoomStatus> _statusStreamController =
@@ -60,8 +61,17 @@ class ChatRepository {
       StreamController.broadcast();
 
   Stream<List<Message>> getChatStream(String roomId) {
-    _fetchMessages(roomId);
+    print("✅ getChatStream called for roomId: $roomId");
+    startFetchingMessages(roomId);
     return _chatStreamController.stream;
+  }
+
+  void startFetchingMessages(String roomId) {
+    _fetchMessages(roomId); // Fetch initially
+    _fetchTimer?.cancel(); // Prevent multiple timers
+    _fetchTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+      _fetchMessages(roomId); // Fetch every 5 seconds
+    });
   }
 
   Future<void> _fetchMessages(String roomId) async {
@@ -93,6 +103,7 @@ class ChatRepository {
 
   void dispose() {
     _statusTimer?.cancel();
+    _fetchTimer?.cancel();
     _chatStreamController.close();
     _statusStreamController.close();
   }
@@ -233,39 +244,78 @@ class ChatRepository {
   }
 
   /// Send text message
+  // Future<void> sendTextMessage({
+  //   required BuildContext context,
+  //   required String text,
+  //   required String receiverUserId,
+  //   required UserModel senderUser,
+  //   required MessageReply? messageReply,
+  //   required bool isGroupChat,
+  // }) async {
+  //   try {
+  //     var timeSent = DateTime.now().toIso8601String();
+  //     var messageId = const Uuid().v1();
+
+  //     final response = await http.post(
+  //       Uri.parse('$baseUrl/messages/send'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode({
+  //         'senderId': senderUser.accountId,
+  //         'receiverId': receiverUserId,
+  //         'text': text,
+  //         'timeSent': timeSent,
+  //         'messageId': messageId,
+  //         'isGroupChat': isGroupChat,
+  //         'repliedMessage': messageReply?.messsage ?? '',
+  //         'repliedTo': messageReply?.isMe == true ? senderUser.fullName : '',
+  //         'messageType': MessageEnum.Text.toString(),
+  //       }),
+  //     );
+
+  //     if (response.statusCode != 200) {
+  //       throw Exception('Failed to send message');
+  //     }
+  //   } catch (e) {
+  //     showSnackBar(context: context, content: e.toString());
+  //   }
+  // }
+
   Future<void> sendTextMessage({
     required BuildContext context,
-    required String text,
-    required String receiverUserId,
-    required UserModel senderUser,
-    required MessageReply? messageReply,
-    required bool isGroupChat,
+    required int senderId,
+    required String roomId,
+    required String message,
+    required MessageEnum messageType,
   }) async {
     try {
-      var timeSent = DateTime.now().toIso8601String();
-      var messageId = const Uuid().v1();
-
-      final response = await http.post(
-        Uri.parse('$baseUrl/messages/send'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'senderId': senderUser.accountId,
-          'receiverId': receiverUserId,
-          'text': text,
-          'timeSent': timeSent,
-          'messageId': messageId,
-          'isGroupChat': isGroupChat,
-          'repliedMessage': messageReply?.messsage ?? '',
-          'repliedTo': messageReply?.isMe == true ? senderUser.fullName : '',
-          'messageType': MessageEnum.Text.toString(),
-        }),
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(
+            'https://api.diavan-valuation.asia/chat-management/send-message'),
       );
 
-      if (response.statusCode != 200) {
-        throw Exception('Failed to send message');
+      request.fields['SenderId'] = senderId.toString();
+      request.fields['RoomId'] = roomId;
+      request.fields['Message'] = message;
+      request.fields['MessageType'] = "Text";
+      // request.fields['FileMessage'] = ''; // Empty for now
+
+      // request.headers['accept'] = '*/*';
+      request.headers['Content-Type'] = 'multipart/form-data';
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      var jsonResponse = jsonDecode(responseBody);
+
+      if (response.statusCode == 200 && jsonResponse['status'] == 1) {
+        print("✅ Message sent successfully");
+      } else {
+        print("❌ Failed to send message: ${jsonResponse['message']}");
       }
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
+
+      print("🚨 Error sending message: $e");
     }
   }
 
@@ -298,14 +348,14 @@ class ChatRepository {
         var data = json.decode(responseData);
         var fileUrl = data['fileUrl'];
 
-        sendTextMessage(
-          context: context,
-          text: fileUrl,
-          receiverUserId: receiverUserId,
-          senderUser: senderUserData,
-          messageReply: messageReply,
-          isGroupChat: isGroupChat,
-        );
+        // sendTextMessage(
+        //   context: context,
+        //   text: fileUrl,
+        //   receiverUserId: receiverUserId,
+        //   senderUser: senderUserData,
+        //   messageReply: messageReply,
+        //   isGroupChat: isGroupChat,
+        // );
       } else {
         throw Exception('Failed to upload file');
       }

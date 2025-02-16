@@ -46,69 +46,6 @@ class _ChatListState extends ConsumerState<ChatList> {
         );
   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final accountId = ref.watch(accountIdProvider);
-//     return StreamBuilder<List<Message>>(
-//         stream: ref.read(chatControllerProvider).getChatStream(widget.roomId),
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             return const Loader();
-//           }
-
-//           SchedulerBinding.instance.addPostFrameCallback((_) {
-//             messageController
-//                 .jumpTo(messageController.position.maxScrollExtent);
-//           });
-//           return ListView.builder(
-//             controller: messageController,
-//             itemCount: snapshot.data!.length,
-//             itemBuilder: (context, index) {
-//               final messageData = snapshot.data![index];
-//               // var timeSent = DateFormat.Hm().format(messageData.timeSent);
-
-//               // if (!messageData.isSeen &&
-//               //     messageData.recieverid ==
-//               //         FirebaseAuth.instance.currentUser!.uid) {
-//               //   ref.read(chatControllerProvider).setChatMessaageSeen(
-//               //         context,
-//               //         widget.recieverUserId,
-//               //         messageData.messageId,
-//               //       );
-//               // }
-//               if (messageData.senderId == accountId) {
-//                 return MyMessageCard(
-//                   message: messageData.message,
-//                   date: messageData.sentTime,
-//                   type: messageData.messageType,
-//                   repliedText: messageData.repliedMessage,
-//                   username: messageData.replyTo,
-//                   repliedMessageType: messageData.repliedMessageType,
-//                   onLeftSwipe: (details) => onMessageSwipe(
-//                     messageData.message,
-//                     true,
-//                     messageData.messageType,
-//                   ),
-//                   isSeen: messageData.isSeen,
-//                 );
-//               }
-//               return SenderMessageCard(
-//                 message: messageData.message,
-//                 date: messageData.sentTime,
-//                 type: messageData.messageType,
-//                 username: messageData.replyTo,
-//                 repliedMessageType: messageData.repliedMessageType,
-//                 onRightSwipe: (details) => onMessageSwipe(
-//                   messageData.message,
-//                   false,
-//                   messageData.messageType,
-//                 ),
-//                 repliedText: messageData.repliedMessage,
-//               );
-//             },
-//           );
-//         });
-//   }
   @override
   Widget build(BuildContext context) {
     final accountIdAsync =
@@ -127,7 +64,15 @@ class _ChatListState extends ConsumerState<ChatList> {
               messageController
                   .jumpTo(messageController.position.maxScrollExtent);
             });
-
+            // SchedulerBinding.instance.addPostFrameCallback((_) {
+            //   if (messageController.hasClients) {
+            //     messageController.animateTo(
+            //       messageController.position.maxScrollExtent,
+            //       duration: const Duration(milliseconds: 300),
+            //       curve: Curves.easeOut,
+            //     );
+            //   }
+            // });
             return ListView.builder(
               controller: messageController,
               itemCount: snapshot.data!.length,

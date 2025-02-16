@@ -35,6 +35,7 @@ class MyMessageCard extends StatelessWidget {
         alignment: Alignment.centerRight,
         child: ConstrainedBox(
           constraints: BoxConstraints(
+            minWidth: 100,
             maxWidth: MediaQuery.of(context).size.width - 45,
           ),
           child: Card(
