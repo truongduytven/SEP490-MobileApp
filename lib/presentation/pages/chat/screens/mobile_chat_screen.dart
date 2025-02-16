@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/widgets/loader.dart';
 import 'package:sep490/models/user_model.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
+import 'package:sep490/presentation/pages/chat/widgets/bottom_chat_field.dart';
+import 'package:sep490/presentation/pages/chat/widgets/chat_list.dart';
 import 'package:sep490/theme/color.dart';
 
 class MobileChatScreen extends ConsumerWidget {
   static const String routeName = '/mobile-chat-screen';
   final String name;
-  final String uid;
+  final int uid;
   final bool isGroupChat;
   final String profilePic;
   const MobileChatScreen({
@@ -19,23 +21,11 @@ class MobileChatScreen extends ConsumerWidget {
     required this.profilePic,
   }) : super(key: key);
 
-  // void makeCall(
-  //   WidgetRef ref,
-  //   BuildContext context,
-  // ) {
-  //   ref.read(callControllerProvider).makeCall(
-  //         context,
-  //         name,
-  //         uid,
-  //         profilePic,
-  //         isGroupChat,
-  //       );
-  // }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         backgroundColor: AppColors.primaryColor,
         title: isGroupChat
             ? Text(name)
@@ -44,6 +34,10 @@ class MobileChatScreen extends ConsumerWidget {
                 builder: (context, snapshort) {
                   if (snapshort.connectionState == ConnectionState.waiting) {
                     return Loader();
+                  }
+                  if (!snapshort.hasData || snapshort.data == null) {
+                    return Text(
+                        name); // Fallback UI when user data is not available
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +58,7 @@ class MobileChatScreen extends ConsumerWidget {
             //   ref,
             //   context,
             // ),
-            onPressed: (){},
+            onPressed: () {},
             icon: const Icon(Icons.video_call),
           ),
           IconButton(
@@ -79,16 +73,16 @@ class MobileChatScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          // Expanded(
-          //   child: ChatList(
-          //     recieverUserId: uid,
-          //     isGroupChat: isGroupChat,
-          //   ),
-          // ),
-          // BottomChatField(
-          //   recieverUserId: uid,
-          //   isGroupChat: isGroupChat,
-          // )
+          Expanded(
+            child: ChatList(
+              recieverUserId: uid.toString(),
+              isGroupChat: isGroupChat,
+            ),
+          ),
+          BottomChatField(
+            recieverUserId: uid.toString(),
+            isGroupChat: isGroupChat,
+          )
         ],
       ),
     );

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/presentation/pages/chat/widgets/contacts_list.dart';
+import 'package:sep490/presentation/pages/chat/widgets/expandable_fab.dart';
 import 'package:sep490/theme/color.dart';
+
 class MobileLayoutScreen extends ConsumerStatefulWidget {
   const MobileLayoutScreen({Key? key}) : super(key: key);
 
@@ -89,26 +91,30 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
               ],
             )
           ],
-          bottom: TabBar(
-            controller: tabBarController,
-            indicatorColor: AppColors.primaryColor,
-            indicatorWeight: 4,
-            labelColor: AppColors.primaryColor,
-            unselectedLabelColor: AppColors.secondaryColor,
-            labelStyle: TextStyle(
-              fontWeight: FontWeight.bold,
+          bottom: PreferredSize(
+            preferredSize: Size(0, 60),
+            child: TabBar(
+              controller: tabBarController,
+              indicatorColor: AppColors.primaryColor,
+              indicatorWeight: 4,
+              labelColor: AppColors.primaryColor,
+              unselectedLabelColor: AppColors.secondaryColor,
+              labelStyle: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+              tabs: [
+                Tab(
+                  text: 'Đoạn chat',
+                ),
+                Tab(
+                  text: 'Dòng trạng thái',
+                ),
+                Tab(
+                  text: 'Lời mời kết bạn',
+                ),
+              ],
             ),
-            tabs: [
-              Tab(
-                text: 'Đoạn chat',
-              ),
-              Tab(
-                text: 'Dòng trạng thái',
-              ),
-              Tab(
-                text: 'Lời mời kết bạn',
-              ),
-            ],
           ),
         ),
         body: TabBarView(controller: tabBarController, children: [
@@ -118,28 +124,29 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
           const Text("Dòng trạng thái"),
           const Text("Lời mời kết bạn"),
         ]),
-        floatingActionButton: FloatingActionButton(
-          // onPressed: () async {
-          //   if (tabBarController.index == 0) {
-          //     Navigator.pushNamed(context, SelectContactsScreen.routeName);
-          //   } else {
-          //     File? pickedImage = await pickImageFromGallery(context);
-          //     if (pickedImage != null) {
-          //       Navigator.pushNamed(
-          //         context,
-          //         ConfirmStatusScreen.routeName,
-          //         arguments: pickedImage,
-          //       );
-          //     }
-          //   }
-          // },
-          onPressed: () {},
-          backgroundColor: AppColors.primaryColor,
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        // onPressed: () async {
+        //   if (tabBarController.index == 0) {
+        //     Navigator.pushNamed(context, SelectContactsScreen.routeName);
+        //   } else {
+        //     File? pickedImage = await pickImageFromGallery(context);
+        //     if (pickedImage != null) {
+        //       Navigator.pushNamed(
+        //         context,
+        //         ConfirmStatusScreen.routeName,
+        //         arguments: pickedImage,
+        //       );
+        //     }
+        //   }
+        // },
+        // onPressed: () {},
+        // backgroundColor: AppColors.primaryColor,
+        // child: const Icon(
+        //   Icons.add,
+        //   color: Colors.white,
+        // ),
+        // ),
+        floatingActionButton: ExpandableFab(),
       ),
     );
   }

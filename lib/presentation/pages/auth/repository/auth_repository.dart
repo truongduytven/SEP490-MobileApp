@@ -135,13 +135,10 @@
 //   }
 // }
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/models/user_model.dart';
-import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(baseUrl: 'https://your-api.com/api'),
@@ -150,6 +147,28 @@ final authRepositoryProvider = Provider(
 class AuthRepository {
   final String baseUrl;
   AuthRepository({required this.baseUrl});
+  Stream<UserModel?> getUserDataStream(int userId) async* {
+    while (true) {
+      try {
+        final response = await http.get(Uri.parse(
+            'https://api.diavan-valuation.asia/account-management/userId?userId=$userId'));
+        if (response.statusCode == 200) {
+
+          final Map<String, dynamic> responseBody = jsonDecode(response.body);
+          if (responseBody['status'] == 1) {
+            yield UserModel.fromJson(responseBody['data']);
+          } else {
+            yield null;
+          }
+        } else {
+          yield null;
+        }
+      } catch (e) {
+        yield null;
+      }
+      await Future.delayed(const Duration(seconds: 5)); // Poll every 5 seconds
+    }
+  }
 
   Future<UserModel?> getCurrentUserData() async {
     try {
@@ -158,109 +177,12 @@ class AuthRepository {
         // headers: {'Authorization': 'Bearer $token'},
       );
       if (response.statusCode == 200) {
-        return UserModel.fromMap(jsonDecode(response.body));
+        return UserModel.fromJson(jsonDecode(response.body));
       }
     } catch (e) {
       debugPrint('Error fetching user data: $e');
     }
     return null;
-  }
-
-  Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/send-otp'),
-        body: jsonEncode({'phoneNumber': phoneNumber}),
-        headers: {'Content-Type': 'application/json'},
-      );
-      if (response.statusCode == 200) {
-        final verificationId = jsonDecode(response.body)['verificationId'];
-        // Navigator.pushNamed(
-        //   context,
-        //   OTPScreen.routeName,
-        //   arguments: verificationId,
-        // );
-      } else {
-        showSnackBar(context: context, content: 'Failed to send OTP');
-      }
-    } catch (e) {
-      showSnackBar(context: context, content: e.toString());
-    }
-  }
-
-  Future<void> verifyOTP({
-    required BuildContext context,
-    required String verificationId,
-    required String userOTP,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/verify-otp'),
-        body: jsonEncode({'verificationId': verificationId, 'otp': userOTP}),
-        headers: {'Content-Type': 'application/json'},
-      );
-      if (response.statusCode == 200) {
-        // Navigator.pushNamedAndRemoveUntil(
-        //   context,
-        //   UserInformationScreen.routeName,
-        //   (route) => false,
-        // );
-      } else {
-        showSnackBar(context: context, content: 'Invalid OTP');
-      }
-    } catch (e) {
-      showSnackBar(context: context, content: e.toString());
-    }
-  }
-
-  Future<void> saveUserDataToApi({
-    required String name,
-    required File? profilePic,
-    // required String token,
-    required BuildContext context,
-  }) async {
-    try {
-      String photoUrl =
-          "https://cdn-icons-png.flaticon.com/512/3607/3607444.png";
-      if (profilePic != null) {
-        // Upload file and get URL (Assume an API endpoint for this)
-        var request = http.MultipartRequest(
-          'POST',
-          Uri.parse('$baseUrl/upload/profile-pic'),
-        );
-        // request.headers['Authorization'] = 'Bearer $token';
-        request.files
-            .add(await http.MultipartFile.fromPath('file', profilePic.path));
-        var res = await request.send();
-        if (res.statusCode == 200) {
-          final responseData = jsonDecode(await res.stream.bytesToString());
-          photoUrl = responseData['url'];
-        }
-      }
-
-      final response = await http.post(
-        Uri.parse('$baseUrl/user/update-profile'),
-        body: jsonEncode({
-          'name': name,
-          'profilePic': photoUrl,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode == 200) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const MobileLayoutScreen()),
-          (route) => false,
-        );
-      } else {
-        showSnackBar(context: context, content: 'Failed to save user data');
-      }
-    } catch (e) {
-      showSnackBar(context: context, content: e.toString());
-    }
   }
 
   Stream<UserModel?> userData(String userId) async* {
@@ -272,7 +194,7 @@ class AuthRepository {
         );
 
         if (response.statusCode == 200) {
-          yield UserModel.fromMap(jsonDecode(response.body));
+          yield UserModel.fromJson(jsonDecode(response.body));
         } else {
           yield null;
         }

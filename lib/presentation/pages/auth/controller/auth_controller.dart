@@ -80,12 +80,13 @@ final authControllerProvider = Provider((ref) {
 
 final userDataAuthProvider = FutureProvider((ref) {
   final authController = ref.watch(authControllerProvider);
-  return authController.getUserData( );
+  return authController.getUserData();
 });
 final accountIdProvider = FutureProvider<int?>((ref) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getInt('accountId');
 });
+
 class AuthController {
   final AuthRepository authRepository;
   final ProviderRef ref;
@@ -98,33 +99,10 @@ class AuthController {
     return await authRepository.getCurrentUserData();
   }
 
-  void signInWithPhone(BuildContext context, String phoneNumber) {
-    authRepository.signInWithPhone(context, phoneNumber);
-  }
 
-  void verifyOTP(
-    BuildContext context,
-    String verificationId,
-    String userOTP,
-  ) {
-    authRepository.verifyOTP(
-      context: context,
-      verificationId: verificationId,
-      userOTP: userOTP,
-    );
-  }
-
-  void saveUserDataToApi(BuildContext context, String name, File? profilePic) {
-    authRepository.saveUserDataToApi(
-      name: name,
-      profilePic: profilePic,
-      // ref: ref,
-      context: context,
-    );
-  }
-
-  Stream<UserModel?> userData(String userId) {
-    return authRepository.userData(userId);
+  Stream<UserModel?> userData(int userId) {
+    print("vo controller");
+    return authRepository.getUserDataStream(userId);
   }
 
   void setUserState(bool isOnline) {
