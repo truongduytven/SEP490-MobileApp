@@ -16,7 +16,7 @@ extension MessageEnumExtension on MessageEnum {
         return MessageEnum.Video;
       case 'audio':
         return MessageEnum.Audio;
-      case 'file':
+      case 'gif':
         return MessageEnum.Gif;
       default:
         return MessageEnum.Text; // Default to text if unknown type

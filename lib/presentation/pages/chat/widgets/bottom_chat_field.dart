@@ -63,8 +63,13 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
     print(
         "data send ${widget.roomId} ${_messageController.text.trim()} $senderId");
     if (isShowSendButton) {
-      ref.read(chatControllerProvider).sendTextMessage(context, widget.roomId,
-          _messageController.text.trim(), senderId, MessageEnum.Text);
+      ref.read(chatControllerProvider).sendTextMessage(
+            context,
+            widget.roomId,
+            _messageController.text.trim(),
+            senderId,
+            MessageEnum.Text,
+          );
       setState(() {
         _messageController.text = '';
         isShowSendButton = false;
@@ -128,6 +133,12 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   //   }
   // }
   void selectGIF() async {
+    final senderId = await ref.read(accountIdProvider.future);
+
+    if (senderId == null) {
+      print("Sender ID is null");
+      return;
+    }
     print("chọn igg");
     final gif = await pickGIF(context);
 
@@ -145,12 +156,13 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
 
     // debugPrint("Selected GIF URL: $gifUrl"); // Debugging log
 
-    // ref.read(chatControllerProvider).sendGIFMessage(
-    //       context,
-    //       gifUrl,
-    //       widget.recieverUserId,
-    //       widget.isGroupChat,
-    //     );
+    ref.read(chatControllerProvider).sendTextMessage(
+          context,
+          widget.roomId,
+          gifUrl,
+          senderId,
+          MessageEnum.Gif,
+        );
   }
 
   void hideEmojiContainer() {
