@@ -67,7 +67,6 @@ class _InfoCardState extends State<InfoCard> {
         break;
 
       default:
-        // Handle case where the title doesn't match any of the above
         print("No card detail screen for ${title}");
     }
   }

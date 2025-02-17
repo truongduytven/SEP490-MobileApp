@@ -6,10 +6,13 @@ class AuthField extends StatelessWidget {
   final String labelText;
   final TextEditingController controller;
   final bool isObscureText;
+  final bool isRequired;
   final Widget? suffixIcon;
+  final String? suffixText;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final int? maxLength;
+  final FocusNode? focusNode;
 
   const AuthField({
     super.key,
@@ -17,10 +20,13 @@ class AuthField extends StatelessWidget {
     required this.labelText,
     required this.controller,
     this.isObscureText = false,
+    this.isRequired = false,
     this.suffixIcon,
+    this.suffixText,
     this.keyboardType,
     this.textInputAction,
     this.maxLength,
+    this.focusNode,
   });
 
   @override
@@ -45,16 +51,19 @@ class AuthField extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20.0),
-            borderSide: const BorderSide(color: AppColors.primaryColor),
+            borderSide: const BorderSide(color: AppColors.secondaryColor, width: 1.4),
           ),
         ),
       ),
       child: TextFormField(
+        focusNode: focusNode,
         controller: controller,
         decoration: InputDecoration(
-          labelText: labelText,
+          labelText: labelText + (isRequired ? '*' : ''),
+          labelStyle: TextStyle(color: AppColors.textColor, fontSize: 22),
           hintText: hintText,
           suffix: suffixIcon,
+          suffixText: suffixText,
         ),
         validator: (value) {
           if (value!.isEmpty) {

@@ -3,6 +3,7 @@ import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/presentation/widgets/health/card.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HealthScreen extends StatefulWidget {
   const HealthScreen({super.key});
@@ -12,8 +13,6 @@ class HealthScreen extends StatefulWidget {
 }
 
 class _HealthScreenState extends State<HealthScreen> {
- 
-
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   final ScrollController _scrollController = ScrollController();
   static List<Map<String, String>> listData = [
@@ -81,136 +80,148 @@ class _HealthScreenState extends State<HealthScreen> {
         }
       },
       child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Header(),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  ClipOval(
-                    child: Image.asset(
-                      "assets/img/Logo.png",
-                      width: 30,
-                      height: 30,
-                      fit: BoxFit.cover,
+        body: Container(
+          height: double.infinity,
+          width: double.infinity,
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/img/background_app.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Header(),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    ClipOval(
+                      child: Image.asset(
+                        "assets/img/Logo.png",
+                        width: 30,
+                        height: 30,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  const Text(
-                    "Sức khỏe của tôi",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        _showAccountDialog(context);
-                      },
-                      icon: Icon(
-                        color: AppColors.textPrimary,
-                        Icons.autorenew_rounded,
-                        size: 28,
-                      ))
-                ],
-              ),
-              Expanded(
-                child: ListView.separated(
-                  controller: _scrollController,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 10),
-                  itemCount: listData.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == listData.length) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 4),
-                        color: AppColors.bgColor,
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                              color: AppColors.secondaryColor, width: 0.1),
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            HealthMonitoringBook(
-                                              initialTopic: "all",
-                                            )),
-                                  );
-                                },
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(18),
-                                      child: Image.asset(
-                                        'assets/img3D/sotheodoi.png',
-                                        width: 60,
-                                        height: 60,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: const [
-                                        Text(
-                                          'Sổ theo dõi',
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          'Xem tất cả số lần đo của bạn.',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                    final item = listData[index];
-
-                    return InfoCard(
-                      title: item['title']!,
-                      imageUrl: item['imageUrl']!,
-                      result: item['result']!,
-                      dateTime: item['dateTime']!,
-                      data: item['data']!,
-                      unit: item['unit']!,
-                      average: item['average']!,
-                      dataAverage: item['dataAverage']!,
-                    );
-                  },
+                    SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      "Sức khỏe của tôi",
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          _showAccountDialog(context);
+                        },
+                        icon: Icon(
+                          color: AppColors.textPrimary,
+                          Icons.autorenew_rounded,
+                          size: 28,
+                        ))
+                  ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: ListView.separated(
+                    controller: _scrollController,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
+                    itemCount: listData.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == listData.length) {
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 4),
+                          color: AppColors.bgColor,
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            side: const BorderSide(
+                                color: AppColors.secondaryColor, width: 0.1),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              HealthMonitoringBook(
+                                                initialTopic: "all",
+                                              )),
+                                    );
+                                  },
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: Image.asset(
+                                          'assets/img3D/sotheodoi.png',
+                                          width: 60,
+                                          height: 60,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: const [
+                                          Text(
+                                            'Sổ theo dõi',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            'Xem tất cả số lần đo của bạn.',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      final item = listData[index];
+
+                      return InfoCard(
+                        title: item['title']!,
+                        imageUrl: item['imageUrl']!,
+                        result: item['result']!,
+                        dateTime: item['dateTime']!,
+                        data: item['data']!,
+                        unit: item['unit']!,
+                        average: item['average']!,
+                        dataAverage: item['dataAverage']!,
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

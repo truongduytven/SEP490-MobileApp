@@ -17,7 +17,7 @@ class HealthFloatingActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SpeedDial(
       elevation: 0,
-      buttonSize: const Size(48, 48),
+      buttonSize: const Size(40, 40),
       icon: Icons.add,
       activeIcon: Icons.close,
       // animatedIcon: AnimatedIcons.menu_close,
