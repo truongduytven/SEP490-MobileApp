@@ -1,4 +1,3 @@
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +26,10 @@ class _DisplayTextImageGifState extends State<DisplayTextImageGif> {
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
+  String getLowResVideoUrl(String originalUrl) {
+    return originalUrl.replaceFirst(
+        '/upload/', '/upload/q_auto:low,w_1280,h_720/');
+  }
 
   @override
   void initState() {
@@ -130,7 +133,9 @@ class _DisplayTextImageGifState extends State<DisplayTextImageGif> {
                 ),
               )
             : widget.type == MessageEnum.Video
-                ? VideoPlayerItem(videoUrl: widget.message)
+                ? VideoPlayerItem(
+                    videoUrl: getLowResVideoUrl(widget.message),
+                  )
                 : CachedNetworkImage(imageUrl: widget.message);
   }
 }
