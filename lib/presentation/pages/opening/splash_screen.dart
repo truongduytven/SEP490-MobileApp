@@ -28,6 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateNext() async {
+    final String token = SharedPrefsHelper().getString('accessToken') ?? '';
     final String email = SharedPrefsHelper().getString('email') ?? '';
     final String password = SharedPrefsHelper().getString('password') ?? '';
     if (email.isNotEmpty && password.isNotEmpty) {

@@ -72,6 +72,7 @@ class _SignInFormState extends State<SignInForm> {
           prefs.setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
           prefs.setString('email', emailController.text);
           prefs.setString('password', passwordController.text);
+          prefs.setString('accessToken', accessToken);
           prefs.setString('fullName', responseToken['data']['user']['fullName'] ?? '');
           prefs.setString('avatar', responseToken['data']['user']['avatar'] ?? '');
           prefs.setString('gender', responseToken['data']['user']['gender'] ?? "");
