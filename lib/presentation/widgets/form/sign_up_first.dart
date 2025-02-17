@@ -82,7 +82,7 @@ class _SignUpFirstState extends State<SignUpFirst> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('typeSignUp', response['data']['data']['method']);
           prefs.setString('emailOrPhoneSignUp', input);
-          prefs.setInt('accountId', response['data']['data']['accountId']);
+          prefs.setInt('accountId', response['data']['data']['accountId'] ?? 0);
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return OtpScreen();
           }));

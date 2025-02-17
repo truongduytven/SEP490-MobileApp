@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/theme/color.dart';
@@ -13,6 +15,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   int selectedYear = DateTime.now().year;
   int selectedMonth = DateTime.now().month;
   int selectedDay = DateTime.now().day;
+  late Timer _timer;
+  late DateTime _currentTime = DateTime.now();
   final ScrollController _scrollControllerDay = ScrollController();
   final ScrollController _scrollControllerActivity = ScrollController();
 
@@ -21,20 +25,32 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     {
       "ActivityName": "Uống thuốc",
       "ActivityDescription": "Penicilin v kali 500mg\nDùng 1 vào 8:00 (sau ăn)",
-      "StartTime": DateTime(2025, 1, 28, 9, 0),
-      "EndTime": DateTime(2025, 1, 28, 10, 0),
+      "StartTime": DateTime(2025, 2, 16, 9, 0),
+      "EndTime": DateTime(2025, 2, 16, 10, 0),
     },
     {
       "ActivityName": "Tư vấn với bác sĩ",
       "ActivityDescription": "Bác sĩ Phan Văn Anh",
-      "StartTime": DateTime(2025, 1, 28, 11, 0),
-      "EndTime": DateTime(2025, 1, 28, 12, 0),
+      "StartTime": DateTime(2025, 2, 16, 9, 0),
+      "EndTime": DateTime(2025, 2, 16, 10, 0),
+    },
+    {
+      "ActivityName": "Tư vấn với bác sĩ",
+      "ActivityDescription": "Bác sĩ Phan Văn Anh",
+      "StartTime": DateTime(2025, 2, 16, 11, 0),
+      "EndTime": DateTime(2025, 2, 16, 12, 0),
     },
     {
       "ActivityName": "Tập luyện",
       "ActivityDescription": "Bài tập cổ vai gáy",
-      "StartTime": DateTime(2025, 1, 28, 13, 0),
-      "EndTime": DateTime(2025, 1, 28, 14, 0),
+      "StartTime": DateTime(2025, 2, 16, 13, 0),
+      "EndTime": DateTime(2025, 2, 16, 14, 0),
+    },
+    {
+      "ActivityName": "Sự kiện gia đình",
+      "ActivityDescription": "Tiệc tất niên",
+      "StartTime": DateTime(2025, 2, 16, 21, 0),
+      "EndTime": DateTime(2025, 2, 16, 22, 0),
     },
   ];
 
@@ -47,6 +63,18 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToNextActivity();
     });
+    _currentTime = DateTime.now();
+    _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
+      setState(() {
+        _currentTime = DateTime.now();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   void _scrollToNextActivity() {
@@ -76,13 +104,26 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget _getActivityIcon(String activityName) {
     switch (activityName) {
       case "Uống thuốc":
-        return Image.asset('assets/img3D/thuoc.png', width: 40, height: 40);
+        return Image.asset('assets/img3D/thuoc.png', width: 50, height: 50);
       case "Tư vấn với bác sĩ":
-        return Image.asset('assets/img3D/bacsi.png', width: 40, height: 40);
+        return Image.asset('assets/img3D/bacsi.png', width: 50, height: 50);
       case "Tập luyện":
-        return Image.asset('assets/img3D/cannang.png', width: 40, height: 40);
+        return Image.asset('assets/img3D/cannang.png', width: 50, height: 50);
       default:
-        return Icon(Icons.event, color: AppColors.secondaryColor, size: 40);
+        return Icon(Icons.event, color: AppColors.secondaryColor, size: 50);
+    }
+  }
+
+  Color? getColors(String activityName) {
+    switch (activityName) {
+      case "Uống thuốc":
+        return Colors.yellow[400];
+      case "Tư vấn với bác sĩ":
+        return Colors.blue[400];
+      case "Tập luyện":
+        return Colors.green[400];
+      default:
+        return Colors.orange[400];
     }
   }
 
@@ -97,13 +138,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgColor,
         title: Text(
-          'Lịch thuốc của tôi',
+          'Lịch của tôi',
           style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w600,
               color: AppColors.textColor),
         ),
         centerTitle: true,
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       body: Column(
         children: [
@@ -119,7 +162,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     return DropdownMenuItem<int>(
                       value: month,
                       child: Text('Tháng $month',
-                          style: TextStyle(fontSize: 20, color: selectedMonth == month ? AppColors.primaryColor : AppColors.textColor)),
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: selectedMonth == month
+                                  ? AppColors.primaryColor
+                                  : AppColors.textColor)),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -127,7 +174,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       selectedMonth = value!;
                       selectedDay = 1;
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _scrollToSelectedDay(); 
+                        _scrollToSelectedDay();
                       });
                     });
                   },
@@ -141,7 +188,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     return DropdownMenuItem<int>(
                       value: year,
                       child: Text('Năm $year',
-                          style: TextStyle(fontSize: 20, color: selectedYear == year ? AppColors.primaryColor : AppColors.textColor)),
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: selectedYear == year
+                                  ? AppColors.primaryColor
+                                  : AppColors.textColor)),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -216,15 +267,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           ? AppColors.secondaryColor
                           : AppColors.bgColor,
                       borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: isSelected
-                              ? Colors.transparent
-                              : AppColors.secondaryColor.withOpacity(0.3),
-                          blurRadius: 1,
-                          offset: const Offset(0, 0),
-                        )
-                      ],
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.secondaryColor
+                            : AppColors.secondaryColor.withOpacity(0.3),
+                        width: 1,
+                      ),
                     ),
                     child: Column(
                       children: [
@@ -254,127 +302,183 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               }),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
 
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Builder(builder: (context) {
-                final filteredActivities = activities.where((activity) {
-                  DateTime startTime = activity['StartTime'];
-                  return startTime.year == selectedYear &&
-                      startTime.month == selectedMonth &&
-                      startTime.day == selectedDay;
-                }).toList();
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                    children: List.generate(24, (index) {
+                  DateTime hour =
+                      DateTime(selectedYear, selectedMonth, selectedDay, index);
+                  bool haveActivity = false;
+                  final filteredActivities = activities.where((activity) {
+                    DateTime startTime = activity['StartTime'];
+                    return startTime.hour == index;
+                  }).toList();
+                  bool isCurrentHour = _currentTime.hour == index;
+                  double percentHeight = _currentTime.minute / 60;
+                  double hourBlockHeight = 100;
 
-                if(filteredActivities.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Image.asset('assets/img3D/empty.png', width: 200, height: 200),
-                        const SizedBox(height: 20),
-                        Text('Không có hoạt động nào', style: TextStyle(fontSize: 20, color: AppColors.textColor)),
-                      ],
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  controller: _scrollControllerActivity,
-                  itemCount: activities.length,
-                  itemBuilder: (context, index) {
-                    final activity = activities[index];
-                    final startTime =
-                        DateFormat('h:mm a').format(activity['StartTime']);
-                    final endTime =
-                        DateFormat('h:mm a').format(activity['EndTime']);
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Time Column
-                        SizedBox(
-                          width: 60,
-                          child: Column(
+                  if (filteredActivities.isEmpty) {
+                    haveActivity = false;
+                  } else {
+                    haveActivity = true;
+                    hourBlockHeight = 66 +
+                        130 * filteredActivities.length.toDouble() +
+                        15 * (filteredActivities.length.toDouble() - 1);
+                  }
+
+                  return Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Row(
                             children: [
-                              Text(
-                                startTime,
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.textColor),
+                              SizedBox(
+                                width: 70, // Adjust width as needed
+                                child: Text(
+                                  DateFormat.jm().format(hour),
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
                               ),
-                              const SizedBox(height: 8),
-                              Container(
-                                width: 4,
-                                height: 60,
-                                color: AppColors.primaryColor,
+                              const SizedBox(
+                                  width: 10), // Spacing between text and line
+
+                              // Right side: Full-width line
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width -
+                                    120, // Trừ đi phần text và spacing
+                                child: Container(
+                                  height: 1,
+                                  color: Colors.grey.withOpacity(0.5),
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        // Activity Card
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                          SizedBox(height: 10),
+                          if (!haveActivity)
+                            SizedBox(
+                              height: 40,
                             ),
-                            child: Row(
-                              children: [
-                                // Activity Icon
-                                _getActivityIcon(activity['ActivityName']),
-                                const SizedBox(width: 12),
-                                // Activity Details
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        activity['ActivityName'],
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.textColor),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        activity['ActivityDescription'],
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        '$startTime - $endTime',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: AppColors.textColor),
-                                      ),
-                                    ],
-                                  ),
+                          if (haveActivity)
+                            ...List.generate(filteredActivities.length,
+                                (index) {
+                              final activity = filteredActivities[index];
+                              String startTime = DateFormat.jm()
+                                  .format(activity['StartTime'] as DateTime);
+                              String endTime = DateFormat.jm()
+                                  .format(activity['EndTime'] as DateTime);
+
+                              return Container(
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 16),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: getColors(activity['ActivityName']),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.secondaryColor
+                                          .withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              }),
+                                child: Row(
+                                  children: [
+                                    // Activity Icon
+                                    _getActivityIcon(activity['ActivityName']),
+                                    const SizedBox(width: 12),
+                                    // Activity Details
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            activity['ActivityName'],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.textColor),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            activity['ActivityDescription'],
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            '$startTime - $endTime',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColors.textColor),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          SizedBox(height: 20),
+                        ],
+                      ),
+                      _buildCurrentTimeIndicator(
+                          percentHeight, isCurrentHour, hourBlockHeight)
+                    ],
+                  );
+                })),
+              ),
             ),
           ),
-          const SizedBox(height: 30),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Xử lý khi nhấn vào nút
+          print("Floating Button Pressed");
+        },
+        backgroundColor: AppColors.primaryColor,
+        shape: const CircleBorder(),
+        child: Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildCurrentTimeIndicator(
+      double percentHeight, bool isCurrentHour, double hourBlockHeight) {
+    if (!isCurrentHour) return SizedBox.shrink();
+
+    return Positioned(
+      top: hourBlockHeight *
+          percentHeight, // Adjust based on the available height
+      left: 0,
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Container(
+            width: 40,
+            height: 2, // Make the line more visible
+            color: AppColors.primaryColor,
+          ),
         ],
       ),
     );

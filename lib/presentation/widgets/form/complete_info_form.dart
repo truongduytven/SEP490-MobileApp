@@ -68,7 +68,7 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
       final email = type == 'Email'
           ? prefs.getString('emailOrPhoneSignUp')
           : prefs.getString('emailOrPhoneSignUpLater');
-      final numberPhone = type == 'Phone'
+      final numberPhone = type == 'Phone number'
           ? prefs.getString('emailOrPhoneSignUp')
           : prefs.getString('emailOrPhoneSignUpLater');
       final roleId = prefs.getString('role') == 'Elderly' ? 2 : 3;
