@@ -2,6 +2,10 @@ enum MessageEnum { Text, Image, Video, Audio, Gif }
 
 // ✅ Extension for converting String to MessageEnum
 extension MessageEnumExtension on MessageEnum {
+  String toJson() {
+    return name; // Returns 'Text', 'Image', 'Video', etc.
+  }
+
   static MessageEnum fromString(String value) {
     switch (value.toLowerCase()) {
       case 'text':

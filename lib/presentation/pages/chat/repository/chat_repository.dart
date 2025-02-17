@@ -297,7 +297,7 @@ class ChatRepository {
       request.fields['SenderId'] = senderId.toString();
       request.fields['RoomId'] = roomId;
       request.fields['Message'] = message;
-      request.fields['MessageType'] = "Text";
+      request.fields['MessageType'] = messageType.toJson();
       // request.fields['FileMessage'] = ''; // Empty for now
 
       // request.headers['accept'] = '*/*';
