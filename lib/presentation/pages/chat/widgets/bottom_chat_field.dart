@@ -83,7 +83,14 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
       }
       if (isRecording) {
         await _soundRecorder!.stopRecorder();
-        sendFileMessage(File(path), MessageEnum.Audio);
+        // sendFileMessage(File(path), MessageEnum.Audio);
+        ref.read(chatControllerProvider).sendTextMessage(
+              context,
+              widget.roomId,
+              File(path),
+              senderId,
+              MessageEnum.Audio,
+            );
       } else {
         await _soundRecorder!.startRecorder(toFile: path);
       }
