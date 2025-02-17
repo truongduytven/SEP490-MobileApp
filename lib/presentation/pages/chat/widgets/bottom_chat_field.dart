@@ -98,13 +98,20 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void sendFileMessage(
     File file,
     MessageEnum messageEnum,
-  ) {
-    ref.read(chatControllerProvider).sendFileMessage(
+  ) async {
+    print("send file $file");
+    final senderId = await ref.read(accountIdProvider.future);
+
+    if (senderId == null) {
+      print("Sender ID is null");
+      return;
+    }
+    ref.read(chatControllerProvider).sendTextMessage(
           context,
-          file,
           widget.roomId,
-          messageEnum,
-          widget.isGroupChat,
+          file,
+          senderId,
+          MessageEnum.Image,
         );
   }
 

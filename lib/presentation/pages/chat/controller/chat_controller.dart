@@ -61,7 +61,7 @@ class ChatController {
   void sendTextMessage(
     BuildContext context,
     String roomId,
-    String message,
+    dynamic message,
     int senderId,
     MessageEnum messageType,
   ) {

@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart';
 import 'package:sep490/common/enums/message_enum.dart';
 import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/common/utils/utils.dart';
@@ -280,11 +283,58 @@ class ChatRepository {
   //   }
   // }
 
+  // Future<void> sendTextMessage({
+  //   required BuildContext context,
+  //   required int senderId,
+  //   required String roomId,
+  //   required dynamic  message,
+  //   required MessageEnum messageType,
+  // }) async {
+  //   try {
+  //     var request = http.MultipartRequest(
+  //       'POST',
+  //       Uri.parse(
+  //           'https://api.diavan-valuation.asia/chat-management/send-message'),
+  //     );
+
+  //     request.fields['SenderId'] = senderId.toString();
+  //     request.fields['RoomId'] = roomId;
+  //     request.fields['MessageType'] = messageType.toJson();
+  //     request.fields['Message'] = message;
+
+  //   if (message is String) {
+  //     request.fields['Message'] = message;
+  //   } else if (message is File) {
+  //     request.files.add(await http.MultipartFile.fromPath(
+  //       'FileMessage', // Key for the file
+  //       message.path,
+  //     ));
+  //   } else {
+  //     throw Exception("Invalid message type: must be a String or File");
+  //   }
+  //     request.headers['Content-Type'] = 'multipart/form-data';
+
+  //     var response = await request.send();
+  //     var responseBody = await response.stream.bytesToString();
+  //     var jsonResponse = jsonDecode(responseBody);
+
+  //     if (response.statusCode == 200 && jsonResponse['status'] == 1) {
+  //       print("✅ Message sent successfully");
+  //     } else {
+  //       print("❌ Failed to send message: ${jsonResponse['message']}");
+  //     }
+  //   } catch (e) {
+  //     showSnackBar(context: context, content: e.toString());
+
+  //     print("🚨 Error sending message: $e");
+  //   }
+  // }
+
   Future<void> sendTextMessage({
     required BuildContext context,
     required int senderId,
     required String roomId,
-    required String message,
+    required dynamic message, // Can be String or File
     required MessageEnum messageType,
   }) async {
     try {
@@ -296,11 +346,26 @@ class ChatRepository {
 
       request.fields['SenderId'] = senderId.toString();
       request.fields['RoomId'] = roomId;
-      request.fields['Message'] = message;
-      request.fields['MessageType'] = messageType.toJson();
-      // request.fields['FileMessage'] = ''; // Empty for now
+      request.fields['MessageType'] =
+          messageType.toJson(); // ✅ Convert enum to string
 
-      // request.headers['accept'] = '*/*';
+      if (message is String) {
+        // ✅ Handle text message
+        request.fields['Message'] = message;
+      } else if (message is File) {
+        // ✅ Handle file message
+        String fileName = basename(message.path);
+        String? mimeType = lookupMimeType(message.path);
+
+        request.files.add(await http.MultipartFile.fromPath(
+          'FileMessage', // ✅ Key for file in API request
+          message.path,
+          contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+        ));
+      } else {
+        throw Exception("Invalid message type: must be a String or File");
+      }
+
       request.headers['Content-Type'] = 'multipart/form-data';
 
       var response = await request.send();
@@ -314,7 +379,6 @@ class ChatRepository {
       }
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
-
       print("🚨 Error sending message: $e");
     }
   }

@@ -65,6 +65,8 @@ dependencies:
   cached_network_image: ^3.4.1
   swipe_to: ^1.0.6
   emoji_picker_flutter: ^4.3.0
+  mime: ^2.0.0
+  http_parser: ^4.1.2
 
 dev_dependencies:
   flutter_test:
