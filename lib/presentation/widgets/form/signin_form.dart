@@ -68,11 +68,14 @@ class _SignInFormState extends State<SignInForm> {
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
 
-          prefs.setInt('accountId', responseToken['data']['user']['accountId']);
-          prefs.setInt('roleId', responseToken['data']['user']['roleId']);
-          prefs.setString('fullName', responseToken['data']['user']['fullName']);
-          prefs.setString('avatar', responseToken['data']['user']['avatar']);
-          prefs.setString('gender', responseToken['data']['user']['gender']);
+          prefs.setInt('accountId', responseToken['data']['user']['accountId'] ?? 0);
+          prefs.setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
+          prefs.setString('email', emailController.text);
+          prefs.setString('password', passwordController.text);
+          prefs.setString('accessToken', accessToken);
+          prefs.setString('fullName', responseToken['data']['user']['fullName'] ?? '');
+          prefs.setString('avatar', responseToken['data']['user']['avatar'] ?? '');
+          prefs.setString('gender', responseToken['data']['user']['gender'] ?? "");
 
           Navigator.of(context).pop();
           Fluttertoast.showToast(
@@ -129,7 +132,7 @@ class _SignInFormState extends State<SignInForm> {
             hintText: "Nhập email hoặc số điện thoại",
             controller: emailController,
             suffixIcon: SvgPicture.asset('assets/icons/mailIcon.svg'),
-            keyboardType: TextInputType.emailAddress, // Optional keyboard type
+            // keyboardType: TextInputType.emailAddress, // Optional keyboard type
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 24),

@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/data/repositories/user_pref_repository_impl.dart';
+import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/data/services/local_storage_service.dart';
 import 'package:sep490/domain/use_cases/user_pref_repository.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/pages/opening/select_sign.dart';
 import 'package:sep490/presentation/pages/opening/welcome_screen.dart';
 import 'package:sep490/theme/color.dart';
@@ -24,22 +28,110 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateNext() async {
-    final localStorageService = LocalStorageService();
-    final userPrefRepository = UserPrefRepositoryImpl(localStorageService);
-    final CheckUserOnboardingUseCase checkUserOnboardingUseCase =
-        CheckUserOnboardingUseCase(userPrefRepository);
-
-    final isFirstTime = await checkUserOnboardingUseCase.execute();
-    if (!mounted) return;
-    if (isFirstTime) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => WelcomeScreen(
-        userOnboardingUseCase: checkUserOnboardingUseCase,
-      )));
+    final String token = SharedPrefsHelper().getString('accessToken') ?? '';
+    final String email = SharedPrefsHelper().getString('email') ?? '';
+    final String password = SharedPrefsHelper().getString('password') ?? '';
+    if (email.isNotEmpty && password.isNotEmpty) {
+      _handleGetUserDetail(email, password);
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const SelectSignScreen()),
+      final localStorageService = LocalStorageService();
+      final userPrefRepository = UserPrefRepositoryImpl(localStorageService);
+      final CheckUserOnboardingUseCase checkUserOnboardingUseCase =
+          CheckUserOnboardingUseCase(userPrefRepository);
+
+      final isFirstTime = await checkUserOnboardingUseCase.execute();
+      if (!mounted) return;
+      if (isFirstTime) {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (_) => WelcomeScreen(
+                      userOnboardingUseCase: checkUserOnboardingUseCase,
+                    )));
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const SelectSignScreen()),
+        );
+      }
+    }
+  }
+
+  void _handleGetUserDetail(String email, String password) async {
+    var response =
+        await ApiService.postRequest("auth-management/managed-auths/sign-ins", {
+      "email": email,
+      "password": password,
+      "deviceToken": "string",
+    });
+    if (response['success'] && response['data']['isSuccess']) {
+      final String accessToken = response['data']['data'];
+      var responseToken = await ApiService.getRequest("auth-management",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": 'Bearer $accessToken'
+          });
+
+      if (responseToken['success']) {
+
+        await SharedPrefsHelper().setInt(
+            'accountId', responseToken['data']['user']['accountId'] ?? 0);
+        await SharedPrefsHelper().setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
+        await SharedPrefsHelper().setString('email', email);
+        await SharedPrefsHelper().setString('password', password);
+        await SharedPrefsHelper().setString(
+            'fullName', responseToken['data']['user']['fullName'] ?? '');
+        await SharedPrefsHelper().setString(
+            'avatar', responseToken['data']['user']['avatar'] ?? '');
+        await SharedPrefsHelper().setString(
+            'gender', responseToken['data']['user']['gender'] ?? "");
+
+        Fluttertoast.showToast(
+          msg: "Đăng nhập thành công!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return NavigationMenu(
+            keyIndex: 0,
+          );
+        }));
+      } else {
+        await SharedPrefsHelper().clear();
+
+        Navigator.of(context).pop();
+
+        Fluttertoast.showToast(
+          msg: responseToken['data']['data'] ?? "Có lỗi trong quá trình xử lý!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } else {
+      Navigator.of(context).pop();
+      Fluttertoast.showToast(
+        msg: response['data']['data'] ?? "Có lỗi trong quá trình xử lý!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
       );
+
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return SelectSignScreen();
+      }));
     }
   }
 
