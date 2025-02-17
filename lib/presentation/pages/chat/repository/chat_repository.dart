@@ -337,6 +337,7 @@ class ChatRepository {
     required dynamic message, // Can be String or File
     required MessageEnum messageType,
   }) async {
+    print("loại tn ${messageType.toJson()}");
     try {
       var request = http.MultipartRequest(
         'POST',

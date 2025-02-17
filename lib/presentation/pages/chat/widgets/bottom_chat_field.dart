@@ -118,7 +118,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
           widget.roomId,
           file,
           senderId,
-          MessageEnum.Image,
+          messageEnum,
         );
   }
 
