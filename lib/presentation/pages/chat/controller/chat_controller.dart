@@ -78,6 +78,22 @@ class ChatController {
     ref.read(messsageReplyProvider.state).update((state) => null);
   }
 
+  void setChatMessaageSeen(
+    BuildContext context,
+    String roomId,
+    int curentUserId,
+  ) {
+    // final messageReply = ref.read(messsageReplyProvider);
+    ref.read(userDataAuthProvider).whenData(
+          (value) => chatRepository.setChatMessaageSeen(
+            context: context,
+            roomId: roomId,
+            currentUserID: curentUserId,
+          ),
+        );
+    ref.read(messsageReplyProvider.state).update((state) => null);
+  }
+
   void sendFileMessage(
     BuildContext context,
     File file,

@@ -119,9 +119,9 @@ class MyMessageCard extends StatelessWidget {
                         width: 5,
                       ),
                       Icon(
-                        isSeen ? Icons.done_all : Icons.done_all,
+                        isSeen ? Icons.remove_red_eye_outlined : Icons.done_all,
                         size: 20,
-                        color: isSeen ? Colors.blue : Colors.white60,
+                        color: isSeen ? AppColors.primaryColor : Colors.white60,
                       ),
                     ],
                   ),

@@ -428,4 +428,40 @@ class ChatRepository {
       showSnackBar(context: context, content: e.toString());
     }
   }
+
+  Future<void> setChatMessaageSeen({
+    required BuildContext context,
+    required String roomId,
+    required int currentUserID,
+  }) async {
+    final String apiUrl =
+        "https://api.diavan-valuation.asia/chat-management/seen";
+    try {
+      final response = await http.put(
+        Uri.parse("$apiUrl?roomId=$roomId&currentUserId=$currentUserID"),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        if (response.body.isNotEmpty) {
+          final Map<String, dynamic> responseData = json.decode(response.body);
+
+          if (responseData["status"] == 1) {
+            // showSnackBar(context: context, content: responseData["message"]);
+          } else {
+            showSnackBar(
+                context: context, content: "Error: ${responseData["message"]}");
+          }
+        } else {
+          showSnackBar(
+              context: context, content: "Error: Empty response from server.");
+        }
+      } else {
+        showSnackBar(
+            context: context, content: "HTTP Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      showSnackBar(context: context, content: "Exception: ${e.toString()}");
+    }
+  }
 }

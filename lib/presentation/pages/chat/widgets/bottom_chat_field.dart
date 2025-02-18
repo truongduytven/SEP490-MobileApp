@@ -273,14 +273,14 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                           IconButton(
                             onPressed: selectImage,
                             icon: Icon(
-                              Icons.camera_alt,
+                              Icons.image,
                               color: AppColors.primaryColor,
                             ),
                           ),
                           IconButton(
                             onPressed: selectVideo,
                             icon: Icon(
-                              Icons.attach_file,
+                              Icons.video_collection_outlined,
                               color: AppColors.primaryColor,
                             ),
                           ),

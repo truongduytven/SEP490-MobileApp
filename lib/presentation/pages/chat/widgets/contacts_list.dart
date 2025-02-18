@@ -135,6 +135,26 @@ class ContactsList extends ConsumerWidget {
                                               ),
                                             ),
                                           ),
+                                        if (groupData.isGroupChat)
+                                          Positioned(
+                                            top: 2,
+                                            right: 2,
+                                            child: Container(
+                                              width: 22,
+                                              height: 22,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              child: Image.asset(
+                                                'assets/img/group_chat.png',
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                     trailing: Text(

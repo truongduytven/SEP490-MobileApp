@@ -138,6 +138,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/models/user_model.dart';
 
 final authRepositoryProvider = Provider(
@@ -153,7 +154,6 @@ class AuthRepository {
         final response = await http.get(Uri.parse(
             'https://api.diavan-valuation.asia/account-management/userId?userId=$userId'));
         if (response.statusCode == 200) {
-
           final Map<String, dynamic> responseBody = jsonDecode(response.body);
           if (responseBody['status'] == 1) {
             yield UserModel.fromJson(responseBody['data']);
@@ -207,22 +207,24 @@ class AuthRepository {
     }
   }
 
-  void setUserState(bool isOnline) async {
+  Future<void> setUserState(int currentUserId, bool isOnline) async {
+    final String apiUrl =
+        "https://api.diavan-valuation.asia/chat-management/change-status";
+
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/user/update-status'),
-        body: jsonEncode({'isOnline': isOnline}),
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Authorization': 'Bearer $token',
-        },
+      final response = await http.put(
+        Uri.parse("$apiUrl?userId=$currentUserId&isOnline=$isOnline"),
+        headers: {"Content-Type": "application/json"},
       );
 
-      if (response.statusCode != 200) {
-        debugPrint('Failed to update user state');
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        print(responseData["message"]);
+      } else {
+        print("HTTP Error: ${response.statusCode}");
       }
     } catch (e) {
-      debugPrint('Error updating user state: $e');
+      print("Exception: ${e.toString()}");
     }
   }
 }
