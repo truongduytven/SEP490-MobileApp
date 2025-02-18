@@ -29,7 +29,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         'frequencySelect': [],
         'mealTime': 'Trước ăn',
         'schedule': ['8h', '12h', '18h'],
-        'usedInDay': ['8h', '12h'],
       },
       {
         "id": 2,
@@ -37,81 +36,13 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         'dosage': '1 viên',
         'form': 'Viên',
         'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
-      },
-      {
-        "id": 3,
-        'name': 'Thuốc C',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
-      },
-      {
-        "id": 1,
-        'name': 'Thuốc A',
-        'dosage': '1 viên',
-        'form': 'Viên nhộng',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
-      },
-      {
-        "id": 2,
-        'name': 'Thuốc B',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
-      },
-      {
-        "id": 3,
-        'name': 'Thuốc C',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
-      },
-      {
-        "id": 1,
-        'name': 'Thuốc A',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
-      },
-      {
-        "id": 2,
-        'name': 'Thuốc B',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
+        'typeFrequency': 'Select',
+        'frequencyEvery': '',
+        'frequencySelect': [
+          'Thứ 2',
+          'Thứ 3',
+          'Thứ 4',
+        ],
         'mealTime': 'Trước ăn',
         'schedule': ['8h', '12h', '18h'],
       },
@@ -129,6 +60,53 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
       },
     ]
   };
+  @override
+  void initState() {
+    super.initState();
+    getPrescription();
+  }
+
+  void getPrescription() async {}
+
+  void handlePressMedicineCard(int id) async {
+    for (var medicine in prescription["medicines"]) {
+      if (medicine["id"] == id) {
+        final updatedMedicine = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailMedicine(
+              medicineData: medicine,
+            ),
+          ),
+        );
+        if (updatedMedicine != null &&
+            updatedMedicine is Map<String, dynamic>) {
+          setState(() {
+            medicine = updatedMedicine;
+          });
+        }
+      }
+    }
+  }
+
+  void handleAddMedicine() async {
+    final newMedicine = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailMedicine(
+          medicineData: null,
+        ),
+      ),
+    );
+    if (newMedicine != null && newMedicine is Map<String, dynamic>) {
+      if (newMedicine['id'] == null) {
+        newMedicine['id'] = DateTime.now().millisecondsSinceEpoch;
+      }
+      setState(() {
+        prescription['medicines'].add(newMedicine);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +194,6 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                 ],
                               ),
                             ),
-                      
                             const SizedBox(height: 10),
                             RichText(
                               text: TextSpan(
@@ -230,7 +207,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                         "Điều trị: ", // Phần này giữ bình thường
                                   ),
                                   TextSpan(
-                                    text: prescription['treatment'], // Chỉ phần ngày bắt đầu
+                                    text: prescription[
+                                        'treatment'], // Chỉ phần ngày bắt đầu
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 18), // In đậm phần này
@@ -252,19 +230,23 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                 itemCount: prescription['medicines'].length,
                                 itemBuilder: (context, index) {
                                   return buildMedicineCard(
-                                    prescription['medicines'][index]['id'],
                                     prescription['medicines'][index]['name'],
                                     prescription['medicines'][index]['dosage'],
                                     prescription['medicines'][index]['form'],
-                                    prescription['medicines'][index]['remaining'],
+                                    prescription['medicines'][index]
+                                        ['remaining'],
                                     prescription['medicines'][index]
                                         ['typeFrequency'],
                                     prescription['medicines'][index]
                                         ['frequencyEvery'],
                                     prescription['medicines'][index]
                                         ['frequencySelect'],
-                                    prescription['medicines'][index]['mealTime'],
-                                    prescription['medicines'][index]['schedule'],
+                                    prescription['medicines'][index]
+                                        ['mealTime'],
+                                    prescription['medicines'][index]
+                                        ['schedule'],
+                                    () => handlePressMedicineCard(
+                                        prescription['medicines'][index]['id']),
                                   );
                                 },
                               ),
@@ -275,12 +257,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               color: Colors.transparent,
                               child: ElevatedButton.icon(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailMedicine(),
-                                    ),
-                                  );
+                                  handleAddMedicine();
                                 },
                                 icon: Icon(Icons.add_circle,
                                     size: 25, color: AppColors.iconColor),
@@ -297,7 +274,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                   backgroundColor: AppColors.bgColor,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(25),
-                                      side: BorderSide(color: AppColors.iconColor)),
+                                      side: BorderSide(
+                                          color: AppColors.iconColor)),
                                   shadowColor: Colors.transparent,
                                 ),
                               ),

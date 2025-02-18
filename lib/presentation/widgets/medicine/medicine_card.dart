@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/theme/color.dart';
 
 Widget buildMedicineCard(
-  int id,
   String name,
   String dosage,
   String form,
@@ -13,6 +13,7 @@ Widget buildMedicineCard(
   List<dynamic> frequencySelect,
   String mealTime,
   List<String> schedule,
+  Function() onPressed,
 ) {
   return Container(
     margin: const EdgeInsets.only(bottom: 16),
@@ -80,9 +81,7 @@ Widget buildMedicineCard(
                             fontSize: 15,
                             color: AppColors.grayColor3),
                         children: [
-                          const TextSpan(
-                            text: "Vào lúc: "
-                          ),
+                          const TextSpan(text: "Vào lúc: "),
                           TextSpan(
                             text: schedule.join(', '),
                             style: const TextStyle(
@@ -99,7 +98,9 @@ Widget buildMedicineCard(
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              onPressed();
+            },
             icon: const Icon(Icons.keyboard_arrow_right_rounded),
           )
         ],

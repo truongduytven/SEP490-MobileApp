@@ -73,18 +73,18 @@ class _SplashScreenState extends State<SplashScreen> {
           });
 
       if (responseToken['success']) {
-
         await SharedPrefsHelper().setInt(
             'accountId', responseToken['data']['user']['accountId'] ?? 0);
-        await SharedPrefsHelper().setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
+        await SharedPrefsHelper()
+            .setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
         await SharedPrefsHelper().setString('email', email);
         await SharedPrefsHelper().setString('password', password);
         await SharedPrefsHelper().setString(
             'fullName', responseToken['data']['user']['fullName'] ?? '');
-        await SharedPrefsHelper().setString(
-            'avatar', responseToken['data']['user']['avatar'] ?? '');
-        await SharedPrefsHelper().setString(
-            'gender', responseToken['data']['user']['gender'] ?? "");
+        await SharedPrefsHelper()
+            .setString('avatar', responseToken['data']['user']['avatar'] ?? '');
+        await SharedPrefsHelper()
+            .setString('gender', responseToken['data']['user']['gender'] ?? "");
 
         Fluttertoast.showToast(
           msg: "Đăng nhập thành công!",
@@ -105,10 +105,13 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         await SharedPrefsHelper().clear();
 
-        Navigator.of(context).pop();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return SelectSignScreen();
+        }));
 
         Fluttertoast.showToast(
-          msg: responseToken['data']['data'] ?? "Có lỗi trong quá trình xử lý!",
+          msg: "Có lỗi trong quá trình xử lý!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -128,10 +131,6 @@ class _SplashScreenState extends State<SplashScreen> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return SelectSignScreen();
-      }));
     }
   }
 

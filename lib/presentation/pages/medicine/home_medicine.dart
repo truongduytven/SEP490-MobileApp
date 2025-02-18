@@ -100,6 +100,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       }
     ]
   };
+
   Map<String, List<Map<String, dynamic>>> categorizeMedicines() {
     Map<String, List<Map<String, dynamic>>> categorized = {
       "morning": [],
@@ -130,7 +131,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
       ;
     }
     ;
-    print(categorized);
     return categorized;
   }
 
@@ -388,12 +388,12 @@ class _HomeMedicineState extends State<HomeMedicine> {
                     );
                   },
                   icon: const Icon(
-                    Icons.medical_services_outlined,
+                    Icons.assignment,
                     size: 20,
                     color: AppColors.bgColor,
                   ),
                   label: const Text(
-                    'Chỉnh sửa hộp thuốc',
+                    'Chi tiết toa thuốc',
                     style: TextStyle(fontSize: 22, color: AppColors.bgColor),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -463,7 +463,29 @@ class _HomeMedicineState extends State<HomeMedicine> {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    List<dynamic> updatedMedicines =
+                        prescription["medicines"].map((med) {
+                      List<dynamic> updatedSchedules =
+                          med["schedule"].map((sched) {
+                        bool shouldUpdate = medicines.any((sessionMed) =>
+                            sessionMed["id"] == med["id"] &&
+                            sessionMed["time"]["time"] == sched["time"]);
+                        if (shouldUpdate) {
+                          return {...sched, "status": "used"};
+                        }
+                        return sched;
+                      }).toList();
+                      return {...med, "schedule": updatedSchedules};
+                    }).toList();
+
+                    prescription = {
+                      ...prescription,
+                      "medicines": updatedMedicines
+                    };
+                  });
+                },
                 child: Text(
                   "UỐNG TẤT CẢ",
                   style: TextStyle(
@@ -487,6 +509,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
   Widget buildMedicineCard(Map<String, dynamic> medicine) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -495,51 +518,125 @@ class _HomeMedicineState extends State<HomeMedicine> {
           width: 1,
         ),
       ),
-      child: ListTile(
-        leading: buildImgForm(medicine["form"]),
-        title: Text(
-          medicine["name"],
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-                "Dùng ${medicine['dosage']} vào ${medicine['time']} (${medicine['mealTime']})"),
-            Text("${medicine['remaining']} viên còn lại"),
-          ],
-        ),
-        trailing: medicine['time']['status'] != 'unUsed'
-            ? (medicine['time']['status'] == 'used'
-                ? Icon(Icons.check_circle, color: Colors.green)
-                : Icon(Icons.cancel, color: Colors.red))
-            : Row(
-                mainAxisSize: MainAxisSize.min,
+      child: Row(
+        children: [
+          buildImgForm(medicine["form"]),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.cancel_outlined,
-                        color: AppColors.secondaryColor),
-                    onPressed: () {
-                      setState(() {
-                        medicine["usedInDay"].addAll(medicine["schedule"]);
-                      });
-                    },
+                  Text(
+                    medicine["name"],
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.check_circle_outline,
-                        color: AppColors.secondaryColor),
-                    onPressed: () {
-                      setState(() {
-                        medicine["usedInDay"].addAll(medicine["schedule"]);
-                      });
-                    },
+                  Text(
+                    "Dùng ${medicine['dosage']} vào ${medicine['time']['time']} (${medicine['mealTime']})",
+                    style: const TextStyle(
+                        fontSize: 14, color: AppColors.grayColor5),
+                  ),
+                  Text(
+                    "${medicine['remaining']} viên còn lại",
+                    style: const TextStyle(
+                        fontSize: 14, color: AppColors.grayColor5),
                   ),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          medicine['time']['status'] != 'unUsed'
+              ? (medicine['time']['status'] == 'used'
+                  ? Icon(Icons.check_circle, color: Colors.green)
+                  : Icon(Icons.cancel, color: Colors.red))
+              : Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          prescription = {
+                            ...prescription,
+                            "medicines": prescription["medicines"].map((med) {
+                              if (med["id"] == medicine["id"]) {
+                                return {
+                                  ...med,
+                                  "schedule": med["schedule"].map((sched) {
+                                    if (sched["time"] ==
+                                        medicine["time"]["time"]) {
+                                      return {
+                                        ...sched,
+                                        "status": "skip",
+                                      };
+                                    }
+                                    return sched;
+                                  }).toList(),
+                                };
+                              }
+                              return med;
+                            }).toList(),
+                          };
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Icon(
+                          Icons.cancel_outlined,
+                          color: AppColors.secondaryColor,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          prescription = {
+                            ...prescription,
+                            "medicines": prescription["medicines"].map((med) {
+                              if (med["id"] == medicine["id"]) {
+                                return {
+                                  ...med,
+                                  "schedule": med["schedule"].map((sched) {
+                                    if (sched["time"] ==
+                                        medicine["time"]["time"]) {
+                                      return {
+                                        ...sched,
+                                        "status": "used",
+                                      };
+                                    }
+                                    return sched;
+                                  }).toList(),
+                                };
+                              }
+                              return med;
+                            }).toList(),
+                          };
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Icon(
+                          Icons.check_circle,
+                          color: AppColors.secondaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+        ],
       ),
     );
   }
