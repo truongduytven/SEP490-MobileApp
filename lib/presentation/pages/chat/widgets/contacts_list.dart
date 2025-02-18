@@ -94,7 +94,7 @@ class ContactsList extends ConsumerWidget {
                                       padding: const EdgeInsets.only(top: 6.0),
                                       child: Text(
                                         (groupData.lastMessage.isEmpty)
-                                            ? "Let's Start The Chat 👋"
+                                            ? "Hãy bắt đầu cuộc trò chuyện 👋"
                                             : groupData.lastMessage,
                                         style: const TextStyle(fontSize: 15),
                                       ),
