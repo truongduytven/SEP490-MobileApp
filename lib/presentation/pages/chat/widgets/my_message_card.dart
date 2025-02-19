@@ -72,8 +72,8 @@ class MyMessageCard extends StatelessWidget {
                         Text(
                           username,
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.bgColor),
                         ),
                         const SizedBox(
                           height: 3,
@@ -81,7 +81,7 @@ class MyMessageCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.5),
+                              color: AppColors.bgColor.withOpacity(0.3),
                               borderRadius: BorderRadius.all(
                                 Radius.circular(
                                   5,

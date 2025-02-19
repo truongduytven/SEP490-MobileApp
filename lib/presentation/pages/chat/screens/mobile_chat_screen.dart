@@ -61,10 +61,10 @@ class MobileChatScreen extends ConsumerWidget {
                                   width: 18,
                                   height: 18,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: Colors.transparent,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 2,
                                     ),
                                   ),

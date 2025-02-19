@@ -33,12 +33,14 @@ class _ChatListState extends ConsumerState<ChatList> {
   }
 
   void onMessageSwipe(
+    String messageId,
     String message,
     bool isMe,
     MessageEnum messageEnum,
   ) {
     ref.read(messsageReplyProvider.state).update(
           (state) => MessageReply(
+            messageId,
             message,
             isMe,
             messageEnum,
@@ -94,6 +96,7 @@ class _ChatListState extends ConsumerState<ChatList> {
                     username: messageData.replyTo,
                     repliedMessageType: messageData.repliedMessageType,
                     onLeftSwipe: (details) => onMessageSwipe(
+                      messageData.messageId,
                       messageData.message,
                       true,
                       messageData.messageType,
@@ -112,6 +115,7 @@ class _ChatListState extends ConsumerState<ChatList> {
                   username: messageData.replyTo,
                   repliedMessageType: messageData.repliedMessageType,
                   onRightSwipe: (details) => onMessageSwipe(
+                    messageData.messageId,
                     messageData.message,
                     false,
                     messageData.messageType,

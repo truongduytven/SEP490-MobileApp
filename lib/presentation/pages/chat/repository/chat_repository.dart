@@ -336,15 +336,25 @@ class ChatRepository {
     required String roomId,
     required dynamic message, // Can be String or File
     required MessageEnum messageType,
+    String? repliedMessageId,
   }) async {
-    print("loại tn ${messageType.toJson()}");
+    print("loại tn ${messageType.toJson()} repliy ${repliedMessageId}");
     try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            'https://api.diavan-valuation.asia/chat-management/send-message'),
-      );
+      // var request = http.MultipartRequest(
+      //   'POST',
+      //   Uri.parse(
+      //       'https://api.diavan-valuation.asia/chat-management/send-message'),
+      // );
 
+      String apiUrl = repliedMessageId != null
+          ? 'https://api.diavan-valuation.asia/chat-management/reply-message'
+          : 'https://api.diavan-valuation.asia/chat-management/send-message';
+
+      var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+      if (repliedMessageId != null) {
+        print("gưi reply $repliedMessageId");
+        request.fields['RepliedMessageId'] = repliedMessageId.toString();
+      }
       request.fields['SenderId'] = senderId.toString();
       request.fields['RoomId'] = roomId;
       request.fields['MessageType'] =

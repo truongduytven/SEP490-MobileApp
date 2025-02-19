@@ -95,7 +95,10 @@ class ContactsList extends ConsumerWidget {
                                       child: Text(
                                         (groupData.lastMessage.isEmpty)
                                             ? "Hãy bắt đầu cuộc trò chuyện 👋"
-                                            : groupData.lastMessage,
+                                            : (groupData.lastMessage
+                                                    .startsWith('https'))
+                                                ? "🚀File phương tiện"
+                                                : groupData.lastMessage,
                                         style: const TextStyle(fontSize: 15),
                                       ),
                                     ),
