@@ -78,6 +78,7 @@ class ContactsList extends ConsumerWidget {
                                         'uid': groupData.roomId,
                                         'isGroupChat': groupData.isGroupChat,
                                         'profilePic': groupData.roomAvatar,
+                                        "users": groupData.users
                                       });
                                 },
                                 child: Padding(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:sep490/common/widgets/loader.dart';
+import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:sep490/presentation/pages/chat/widgets/bottom_chat_field.dart';
@@ -15,6 +16,7 @@ class MobileChatScreen extends ConsumerWidget {
   final String uid;
   final bool isGroupChat;
   final String profilePic;
+  final List<User> users;
 
   const MobileChatScreen({
     Key? key,
@@ -22,6 +24,7 @@ class MobileChatScreen extends ConsumerWidget {
     required this.uid,
     required this.isGroupChat,
     required this.profilePic,
+    required this.users,
   }) : super(key: key);
 
   @override
@@ -105,12 +108,12 @@ class MobileChatScreen extends ConsumerWidget {
         actions: [
           sendCallButton(
             isVideoCall: false,
-            inviteeUserID: uid,
+            inviteeUsers: users,
             onCallFinished: onSendCallInvitationFinished,
           ),
           sendCallButton(
             isVideoCall: true,
-            inviteeUserID: uid,
+            inviteeUsers: users,
             onCallFinished: onSendCallInvitationFinished,
           ),
           IconButton(
@@ -140,16 +143,21 @@ class MobileChatScreen extends ConsumerWidget {
   }
 }
 
-// ✅ Fix: Convert inviteeUsersID to List<ZegoUIKitUser>
 Widget sendCallButton({
   required bool isVideoCall,
-  required String inviteeUserID,
+  required List<User> inviteeUsers,
   void Function(String code, String message, List<String>)? onCallFinished,
 }) {
-  List<ZegoUIKitUser> invitees = [
-    ZegoUIKitUser(id: inviteeUserID, name: 'User $inviteeUserID')
-  ];
-  print("callllllllllllll $inviteeUserID");
+  // Convert List<User> to List<ZegoUIKitUser>
+  List<ZegoUIKitUser> invitees = inviteeUsers.map((user) {
+    return ZegoUIKitUser(
+      id: user.id.toString(), // Ensure ID is a string
+      name: user.name,
+    );
+  }).toList();
+
+  print("Calling users: ${invitees.map((e) => e.name).join(', ')}");
+
   return ZegoSendCallInvitationButton(
     isVideoCall: isVideoCall,
     invitees: invitees,
@@ -157,6 +165,11 @@ Widget sendCallButton({
     iconSize: const Size(40, 40),
     buttonSize: const Size(50, 50),
     onPressed: onCallFinished,
+    icon: ButtonIcon(
+      icon: isVideoCall
+          ? Icon(Icons.video_call, color: AppColors.primaryColor)
+          : Icon(Icons.phone, color: AppColors.primaryColor),
+    ),
   );
 }
 
