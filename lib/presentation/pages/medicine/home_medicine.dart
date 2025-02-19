@@ -35,15 +35,15 @@ class _HomeMedicineState extends State<HomeMedicine> {
         'mealTime': 'Trước ăn',
         'schedule': [
           {
-            'time': '8h',
+            'time': '8:00',
             'status': 'skip',
           },
           {
-            'time': '12h',
+            'time': '12:00',
             'status': 'used',
           },
           {
-            'time': '18h',
+            'time': '18:00',
             'status': 'unUsed',
           }
         ],
@@ -60,15 +60,15 @@ class _HomeMedicineState extends State<HomeMedicine> {
         'mealTime': 'Trước ăn',
         'schedule': [
           {
-            'time': '8h',
+            'time': '8:00',
             'status': 'skip',
           },
           {
-            'time': '12h',
+            'time': '12:00',
             'status': 'used',
           },
           {
-            'time': '18h',
+            'time': '18:00',
             'status': 'unUsed',
           }
         ],
@@ -85,15 +85,15 @@ class _HomeMedicineState extends State<HomeMedicine> {
         'mealTime': 'Trước ăn',
         'schedule': [
           {
-            'time': '8h',
+            'time': '8:00',
             'status': 'skip',
           },
           {
-            'time': '12h',
+            'time': '12:00',
             'status': 'used',
           },
           {
-            'time': '18h',
+            'time': '18:00',
             'status': 'unUsed',
           }
         ],
@@ -135,7 +135,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
   }
 
   int convertToMinutes(String time) {
-    final match = RegExp(r'(\d+)h(\d+)?').firstMatch(time);
+    final match = RegExp(r'(\d+):(\d+)?').firstMatch(time);
     if (match == null) return -1; // Invalid format
     int hours = int.parse(match.group(1)!);
     int minutes = match.group(2) != null ? int.parse(match.group(2)!) : 0;

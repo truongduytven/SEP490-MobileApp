@@ -15,9 +15,10 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   late Map<String, dynamic> prescription = {
     "id": 1,
     "name": "Toa thuốc 1",
+    // "treatment": "viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng",
     "treatment": "viêm họng",
     "start_date": "2022-10-10",
-    "medicines": [
+    "medicines": <Map<String, dynamic>>[
       {
         "id": 1,
         'name': 'Paracetamol 500mg Paracetamol 500mg',
@@ -28,7 +29,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         'frequencyEvery': '2',
         'frequencySelect': [],
         'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
+        'schedule': ['8:00', '12:00', '18:00'],
       },
       {
         "id": 2,
@@ -44,7 +45,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
           'Thứ 4',
         ],
         'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
+        'schedule': ['8:00', '12:00', '18:00'],
       },
       {
         "id": 3,
@@ -56,7 +57,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         'frequencyEvery': '2',
         'frequencySelect': [],
         'mealTime': 'Trước ăn',
-        'schedule': ['8h', '12h', '18h'],
+        'schedule': ['8:00', '12:00', '18:00'],
       },
     ]
   };
@@ -98,6 +99,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         ),
       ),
     );
+    print(newMedicine);
     if (newMedicine != null && newMedicine is Map<String, dynamic>) {
       if (newMedicine['id'] == null) {
         newMedicine['id'] = DateTime.now().millisecondsSinceEpoch;

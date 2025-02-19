@@ -29,7 +29,6 @@ class _EditFrequencyState extends State<EditFrequency> {
   @override
   void initState() {
     super.initState();
-    print(widget.initialFrequencyData);
     _frequencyData = Map.from(widget.initialFrequencyData);
     _selectedFrequency = _frequencyData['typeFrequency'] ?? 'Every';
 
