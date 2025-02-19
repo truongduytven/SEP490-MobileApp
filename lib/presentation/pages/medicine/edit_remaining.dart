@@ -30,7 +30,7 @@ class _EditRemainingState extends State<EditRemaining> {
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         scrolledUnderElevation: 0,
         centerTitle: true,

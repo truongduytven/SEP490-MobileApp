@@ -47,8 +47,9 @@ class _EditScheduleState extends State<EditSchedule> {
               color: AppColors.secondaryColor),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xFFFFF6FC),
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {

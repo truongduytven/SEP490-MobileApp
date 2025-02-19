@@ -416,15 +416,15 @@ class _DetailMedicineState extends State<DetailMedicine> {
             ),
             _buildDivider(),
             _buildDetailRow(
-              iconPath: 'assets/icons/droplets.svg',
-              title: 'Liều dùng',
-              value: medicineData['dosage'],
-            ),
-            _buildDivider(),
-            _buildDetailRow(
               iconPath: 'assets/icons/shapes.svg',
               title: 'Dạng',
               value: medicineData['form'],
+            ),
+            _buildDivider(),
+            _buildDetailRow(
+              iconPath: 'assets/icons/droplets.svg',
+              title: 'Liều dùng',
+              value: medicineData['dosage'],
             ),
             _buildDivider(),
             _buildDetailRow(
@@ -519,7 +519,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
                   ),
                   if (title == 'Tên')
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.55,
+                      width: MediaQuery.of(context).size.width * 0.5,
                       child: Text(
                         value.isNotEmpty ? value : '-',
                         style: const TextStyle(

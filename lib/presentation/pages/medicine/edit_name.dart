@@ -36,9 +36,10 @@ class _EditNameScreenState extends State<EditNameScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFF6FC),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xFFFFF6FC),
         elevation: 0,
         automaticallyImplyLeading: false,
+        scrolledUnderElevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.close, color: Colors.black),

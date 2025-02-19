@@ -47,7 +47,7 @@ class _EditFrequencyState extends State<EditFrequency> {
       backgroundColor: const Color(0xFFFFF6FC),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xFFFFF6FC),
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: true,

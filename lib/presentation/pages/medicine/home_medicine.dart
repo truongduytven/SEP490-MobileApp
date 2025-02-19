@@ -17,7 +17,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
   int selectedDay = DateTime.now().day;
   int today = DateTime.now().day;
   final ScrollController _scrollController = ScrollController();
-  late Map<String, dynamic> prescription = {
+  late Map<String, dynamic> prescription = {};
+  late Map<String, dynamic> prescriptionData = {
     "id": 1,
     "name": "Toa thuốc 1",
     "treatment": "viêm họng",
@@ -25,7 +26,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
     "medicines": [
       {
         "id": 1,
-        'name': 'Paracetamol 500mg Paracetamol 500mg',
+        'name': 'Paracetamol 500mg',
         'dosage': '1 viên',
         'form': 'Viên nhộng',
         'remaining': '31',
@@ -50,7 +51,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       },
       {
         "id": 2,
-        'name': 'Thuốc B',
+        'name': 'Amoxicillin 500mg',
         'dosage': '1 viên',
         'form': 'Viên',
         'remaining': '31',
@@ -75,7 +76,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       },
       {
         "id": 3,
-        'name': 'Thuốc C',
+        'name': 'Loratadine 10mg',
         'dosage': '1 viên',
         'form': 'Viên',
         'remaining': '31',
@@ -100,6 +101,28 @@ class _HomeMedicineState extends State<HomeMedicine> {
       }
     ]
   };
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelectedDay();
+    });
+    getDataPrescription();
+  }
+
+  void getDataPrescription() {
+    if (selectedDay == 20 && selectedMonth == 2 && selectedYear == 2025) {
+      setState(() {
+        prescription = prescriptionData;
+      });
+      categorizeMedicines();
+    } else {
+      setState(() {
+        prescription = {};
+      });
+    }
+  }
 
   Map<String, List<Map<String, dynamic>>> categorizeMedicines() {
     Map<String, List<Map<String, dynamic>>> categorized = {
@@ -140,14 +163,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
     int hours = int.parse(match.group(1)!);
     int minutes = match.group(2) != null ? int.parse(match.group(2)!) : 0;
     return hours * 60 + minutes;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelectedDay();
-    });
   }
 
   void _scrollToSelectedDay() {
@@ -292,6 +307,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                         onTap: () {
                           setState(() {
                             selectedDay = day;
+                            getDataPrescription();
                             _scrollToSelectedDay();
                           });
                         },
@@ -416,6 +432,26 @@ class _HomeMedicineState extends State<HomeMedicine> {
   }
 
   Widget buildMedicineList() {
+    if (prescription.isEmpty) {
+      return Column(
+        children: [
+          // 3D Box Illustration
+          Image.asset(
+            'assets/img3D/thuocrong.png',
+            height: 150,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Không có thuốc đặt lịch',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w500,
+              color: AppColors.grayColor3,
+            ),
+          ),
+        ],
+      );
+    }
     Map<String, List<Map<String, dynamic>>> categorizedMedicines =
         categorizeMedicines();
 
@@ -551,7 +587,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
               ),
             ),
           ),
-          const SizedBox(width: 10),
           medicine['time']['status'] != 'unUsed'
               ? (medicine['time']['status'] == 'used'
                   ? Icon(Icons.check_circle, color: Colors.green)
