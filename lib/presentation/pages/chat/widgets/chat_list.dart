@@ -61,7 +61,29 @@ class _ChatListState extends ConsumerState<ChatList> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Loader();
             }
-
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/img/no_message.webp',
+                    width: 200,
+                    height: 200,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Cuộc trò chuyện chưa có tin nhắn, hãy bắt đầu trò chuyên📩!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              );
+            }
             SchedulerBinding.instance.addPostFrameCallback((_) {
               messageController
                   .jumpTo(messageController.position.maxScrollExtent);
