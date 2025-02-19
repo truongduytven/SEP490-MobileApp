@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:sep490/common/widgets/loader.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:sep490/presentation/pages/chat/widgets/bottom_chat_field.dart';
 import 'package:sep490/presentation/pages/chat/widgets/chat_list.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class MobileChatScreen extends ConsumerWidget {
   static const String routeName = '/mobile-chat-screen';
@@ -74,9 +75,7 @@ class MobileChatScreen extends ConsumerWidget {
                                     color: Colors.green,
                                   ),
                                 ),
-                              const SizedBox(
-                                  width:
-                                      5), // Adds spacing between icon and text
+                              const SizedBox(width: 5),
                               Padding(
                                 padding: const EdgeInsets.only(top: 5.0),
                                 child: Text(
@@ -104,13 +103,15 @@ class MobileChatScreen extends ConsumerWidget {
               ),
         centerTitle: false,
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.video_call),
+          sendCallButton(
+            isVideoCall: false,
+            inviteeUserID: uid,
+            onCallFinished: onSendCallInvitationFinished,
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.call),
+          sendCallButton(
+            isVideoCall: true,
+            inviteeUserID: uid,
+            onCallFinished: onSendCallInvitationFinished,
           ),
           IconButton(
             onPressed: () {},
@@ -136,5 +137,45 @@ class MobileChatScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+// ✅ Fix: Convert inviteeUsersID to List<ZegoUIKitUser>
+Widget sendCallButton({
+  required bool isVideoCall,
+  required String inviteeUserID,
+  void Function(String code, String message, List<String>)? onCallFinished,
+}) {
+  List<ZegoUIKitUser> invitees = [
+    ZegoUIKitUser(id: inviteeUserID, name: 'User $inviteeUserID')
+  ];
+  print("callllllllllllll $inviteeUserID");
+  return ZegoSendCallInvitationButton(
+    isVideoCall: isVideoCall,
+    invitees: invitees,
+    resourceID: 'zego_data',
+    iconSize: const Size(40, 40),
+    buttonSize: const Size(50, 50),
+    onPressed: onCallFinished,
+  );
+}
+
+// ✅ Handles call invitation results
+void onSendCallInvitationFinished(
+  String code,
+  String message,
+  List<String> errorInvitees,
+) {
+  if (errorInvitees.isNotEmpty) {
+    var userIDs = errorInvitees.take(5).join(' ');
+    var errorMessage = "User doesn't exist or is offline: $userIDs";
+
+    if (code.isNotEmpty) {
+      errorMessage += ', code: $code, message:$message';
+    }
+
+    debugPrint(errorMessage);
+  } else if (code.isNotEmpty) {
+    debugPrint('Call failed: code: $code, message:$message');
   }
 }
