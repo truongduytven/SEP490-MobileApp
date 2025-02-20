@@ -17,7 +17,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
   int selectedDay = DateTime.now().day;
   int today = DateTime.now().day;
   final ScrollController _scrollController = ScrollController();
-  late Map<String, dynamic> prescription = {
+  late Map<String, dynamic> prescription = {};
+  late Map<String, dynamic> prescriptionData = {
     "id": 1,
     "name": "Toa thuốc 1",
     "treatment": "viêm họng",
@@ -25,7 +26,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
     "medicines": [
       {
         "id": 1,
-        'name': 'Paracetamol 500mg Paracetamol 500mg',
+        'name': 'Paracetamol 500mg',
         'dosage': '1 viên',
         'form': 'Viên nhộng',
         'remaining': '31',
@@ -35,22 +36,22 @@ class _HomeMedicineState extends State<HomeMedicine> {
         'mealTime': 'Trước ăn',
         'schedule': [
           {
-            'time': '8h',
+            'time': '8:00',
             'status': 'skip',
           },
           {
-            'time': '12h',
+            'time': '12:00',
             'status': 'used',
           },
           {
-            'time': '18h',
+            'time': '18:00',
             'status': 'unUsed',
           }
         ],
       },
       {
         "id": 2,
-        'name': 'Thuốc B',
+        'name': 'Amoxicillin 500mg',
         'dosage': '1 viên',
         'form': 'Viên',
         'remaining': '31',
@@ -60,22 +61,22 @@ class _HomeMedicineState extends State<HomeMedicine> {
         'mealTime': 'Trước ăn',
         'schedule': [
           {
-            'time': '8h',
+            'time': '8:00',
             'status': 'skip',
           },
           {
-            'time': '12h',
+            'time': '12:00',
             'status': 'used',
           },
           {
-            'time': '18h',
+            'time': '18:00',
             'status': 'unUsed',
           }
         ],
       },
       {
         "id": 3,
-        'name': 'Thuốc C',
+        'name': 'Loratadine 10mg',
         'dosage': '1 viên',
         'form': 'Viên',
         'remaining': '31',
@@ -85,21 +86,44 @@ class _HomeMedicineState extends State<HomeMedicine> {
         'mealTime': 'Trước ăn',
         'schedule': [
           {
-            'time': '8h',
+            'time': '8:00',
             'status': 'skip',
           },
           {
-            'time': '12h',
+            'time': '12:00',
             'status': 'used',
           },
           {
-            'time': '18h',
+            'time': '18:00',
             'status': 'unUsed',
           }
         ],
       }
     ]
   };
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelectedDay();
+    });
+    getDataPrescription();
+  }
+
+  void getDataPrescription() {
+    if (selectedDay == 20 && selectedMonth == 2 && selectedYear == 2025) {
+      setState(() {
+        prescription = prescriptionData;
+      });
+      categorizeMedicines();
+    } else {
+      setState(() {
+        prescription = {};
+      });
+    }
+  }
+
   Map<String, List<Map<String, dynamic>>> categorizeMedicines() {
     Map<String, List<Map<String, dynamic>>> categorized = {
       "morning": [],
@@ -130,24 +154,15 @@ class _HomeMedicineState extends State<HomeMedicine> {
       ;
     }
     ;
-    print(categorized);
     return categorized;
   }
 
   int convertToMinutes(String time) {
-    final match = RegExp(r'(\d+)h(\d+)?').firstMatch(time);
+    final match = RegExp(r'(\d+):(\d+)?').firstMatch(time);
     if (match == null) return -1; // Invalid format
     int hours = int.parse(match.group(1)!);
     int minutes = match.group(2) != null ? int.parse(match.group(2)!) : 0;
     return hours * 60 + minutes;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelectedDay();
-    });
   }
 
   void _scrollToSelectedDay() {
@@ -292,6 +307,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                         onTap: () {
                           setState(() {
                             selectedDay = day;
+                            getDataPrescription();
                             _scrollToSelectedDay();
                           });
                         },
@@ -388,12 +404,12 @@ class _HomeMedicineState extends State<HomeMedicine> {
                     );
                   },
                   icon: const Icon(
-                    Icons.medical_services_outlined,
+                    Icons.assignment,
                     size: 20,
                     color: AppColors.bgColor,
                   ),
                   label: const Text(
-                    'Chỉnh sửa hộp thuốc',
+                    'Chi tiết toa thuốc',
                     style: TextStyle(fontSize: 22, color: AppColors.bgColor),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -416,6 +432,26 @@ class _HomeMedicineState extends State<HomeMedicine> {
   }
 
   Widget buildMedicineList() {
+    if (prescription.isEmpty) {
+      return Column(
+        children: [
+          // 3D Box Illustration
+          Image.asset(
+            'assets/img3D/thuocrong.png',
+            height: 150,
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Không có thuốc đặt lịch',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w500,
+              color: AppColors.grayColor3,
+            ),
+          ),
+        ],
+      );
+    }
     Map<String, List<Map<String, dynamic>>> categorizedMedicines =
         categorizeMedicines();
 
@@ -463,7 +499,29 @@ class _HomeMedicineState extends State<HomeMedicine> {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    List<dynamic> updatedMedicines =
+                        prescription["medicines"].map((med) {
+                      List<dynamic> updatedSchedules =
+                          med["schedule"].map((sched) {
+                        bool shouldUpdate = medicines.any((sessionMed) =>
+                            sessionMed["id"] == med["id"] &&
+                            sessionMed["time"]["time"] == sched["time"]);
+                        if (shouldUpdate) {
+                          return {...sched, "status": "used"};
+                        }
+                        return sched;
+                      }).toList();
+                      return {...med, "schedule": updatedSchedules};
+                    }).toList();
+
+                    prescription = {
+                      ...prescription,
+                      "medicines": updatedMedicines
+                    };
+                  });
+                },
                 child: Text(
                   "UỐNG TẤT CẢ",
                   style: TextStyle(
@@ -487,6 +545,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
   Widget buildMedicineCard(Map<String, dynamic> medicine) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -495,51 +554,124 @@ class _HomeMedicineState extends State<HomeMedicine> {
           width: 1,
         ),
       ),
-      child: ListTile(
-        leading: buildImgForm(medicine["form"]),
-        title: Text(
-          medicine["name"],
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-                "Dùng ${medicine['dosage']} vào ${medicine['time']} (${medicine['mealTime']})"),
-            Text("${medicine['remaining']} viên còn lại"),
-          ],
-        ),
-        trailing: medicine['time']['status'] != 'unUsed'
-            ? (medicine['time']['status'] == 'used'
-                ? Icon(Icons.check_circle, color: Colors.green)
-                : Icon(Icons.cancel, color: Colors.red))
-            : Row(
-                mainAxisSize: MainAxisSize.min,
+      child: Row(
+        children: [
+          buildImgForm(medicine["form"]),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.cancel_outlined,
-                        color: AppColors.secondaryColor),
-                    onPressed: () {
-                      setState(() {
-                        medicine["usedInDay"].addAll(medicine["schedule"]);
-                      });
-                    },
+                  Text(
+                    medicine["name"],
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.check_circle_outline,
-                        color: AppColors.secondaryColor),
-                    onPressed: () {
-                      setState(() {
-                        medicine["usedInDay"].addAll(medicine["schedule"]);
-                      });
-                    },
+                  Text(
+                    "Dùng ${medicine['dosage']} vào ${medicine['time']['time']} (${medicine['mealTime']})",
+                    style: const TextStyle(
+                        fontSize: 14, color: AppColors.grayColor5),
+                  ),
+                  Text(
+                    "${medicine['remaining']} viên còn lại",
+                    style: const TextStyle(
+                        fontSize: 14, color: AppColors.grayColor5),
                   ),
                 ],
               ),
+            ),
+          ),
+          medicine['time']['status'] != 'unUsed'
+              ? (medicine['time']['status'] == 'used'
+                  ? Icon(Icons.check_circle, color: Colors.green)
+                  : Icon(Icons.cancel, color: Colors.red))
+              : Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          prescription = {
+                            ...prescription,
+                            "medicines": prescription["medicines"].map((med) {
+                              if (med["id"] == medicine["id"]) {
+                                return {
+                                  ...med,
+                                  "schedule": med["schedule"].map((sched) {
+                                    if (sched["time"] ==
+                                        medicine["time"]["time"]) {
+                                      return {
+                                        ...sched,
+                                        "status": "skip",
+                                      };
+                                    }
+                                    return sched;
+                                  }).toList(),
+                                };
+                              }
+                              return med;
+                            }).toList(),
+                          };
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Icon(
+                          Icons.cancel_outlined,
+                          color: AppColors.secondaryColor,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          prescription = {
+                            ...prescription,
+                            "medicines": prescription["medicines"].map((med) {
+                              if (med["id"] == medicine["id"]) {
+                                return {
+                                  ...med,
+                                  "schedule": med["schedule"].map((sched) {
+                                    if (sched["time"] ==
+                                        medicine["time"]["time"]) {
+                                      return {
+                                        ...sched,
+                                        "status": "used",
+                                      };
+                                    }
+                                    return sched;
+                                  }).toList(),
+                                };
+                              }
+                              return med;
+                            }).toList(),
+                          };
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Icon(
+                          Icons.check_circle,
+                          color: AppColors.secondaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+        ],
       ),
     );
   }

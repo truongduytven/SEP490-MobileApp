@@ -26,7 +26,7 @@ class _EditFormMedicalState extends State<EditFormMedical> {
           title: Text('Chọn dạng thuốc', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600, color: AppColors.secondaryColor)),
           centerTitle: true,
           elevation: 0,
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           scrolledUnderElevation: 0,
           actions: [
