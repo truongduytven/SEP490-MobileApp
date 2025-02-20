@@ -11,7 +11,7 @@ class EditFrequency extends StatefulWidget {
 }
 
 class _EditFrequencyState extends State<EditFrequency> {
-  late String _selectedFrequency; // Default selection
+  late String _selectedFrequency;
   late int _selectedDays = 1;
   final List<int> _days = List.generate(30, (index) => index + 1); // 1 to 30
   final List<String> _daysOfWeek = [
@@ -24,18 +24,18 @@ class _EditFrequencyState extends State<EditFrequency> {
     'Chủ nhật'
   ];
   final Set<String> _selectedDaysOfWeek = {};
-  late Map<String, dynamic> _frequencyData; // For "Ngày cụ thể trong tuần"
+  late Map<String, dynamic> _frequencyData;
 
   @override
   void initState() {
     super.initState();
     _frequencyData = Map.from(widget.initialFrequencyData);
-    _selectedFrequency = _frequencyData['typeFrequency'] ?? 'Cách ngày';
+    _selectedFrequency = _frequencyData['typeFrequency'] ?? 'Every';
 
-    if (_selectedFrequency == 'Cách ngày') {
+    if (_selectedFrequency == 'Every') {
       _selectedDays =
           int.tryParse(_frequencyData['frequencyEvery'] ?? '1') ?? 1;
-    } else if (_selectedFrequency == 'Ngày cụ thể trong tuần') {
+    } else if (_selectedFrequency == 'Select') {
       _selectedDaysOfWeek
           .addAll(List<String>.from(_frequencyData['frequencySelect'] ?? []));
     }
@@ -47,7 +47,7 @@ class _EditFrequencyState extends State<EditFrequency> {
       backgroundColor: const Color(0xFFFFF6FC),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xFFFFF6FC),
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: true,
@@ -73,25 +73,25 @@ class _EditFrequencyState extends State<EditFrequency> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedFrequency = "Cách ngày";
+                  _selectedFrequency = "Every";
                 });
               },
               child:
-                  _buildOption("Cách ngày", _selectedFrequency == "Cách ngày"),
+                  _buildOption("Cách ngày", _selectedFrequency == "Every"),
             ),
             const SizedBox(height: 10),
             GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedFrequency = "Ngày cụ thể trong tuần";
+                  _selectedFrequency = "Select";
                 });
               },
               child: _buildOption("Ngày cụ thể trong tuần",
-                  _selectedFrequency == "Ngày cụ thể trong tuần"),
+                  _selectedFrequency == "Select"),
             ),
             const SizedBox(height: 30),
-            if (_selectedFrequency == "Cách ngày") _buildEveryFewDaysPicker(),
-            if (_selectedFrequency == "Ngày cụ thể trong tuần")
+            if (_selectedFrequency == "Every") _buildEveryFewDaysPicker(),
+            if (_selectedFrequency == "Select")
               _buildDaysOfWeekSelection(),
             const Spacer(),
             Row(
@@ -238,10 +238,10 @@ class _EditFrequencyState extends State<EditFrequency> {
 
   void _saveFrequencyData() {
     _frequencyData['typeFrequency'] = _selectedFrequency;
-    if (_selectedFrequency == "Cách ngày") {
+    if (_selectedFrequency == "Every") {
       _frequencyData['frequencyEvery'] = _selectedDays.toString();
       _frequencyData['frequencySelect'] = [];
-    } else if (_selectedFrequency == "Ngày cụ thể trong tuần") {
+    } else if (_selectedFrequency == "Select") {
       _frequencyData['frequencyEvery'] = '';
       _frequencyData['frequencySelect'] = _selectedDaysOfWeek.toList();
     }

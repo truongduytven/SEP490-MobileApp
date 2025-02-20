@@ -65,7 +65,12 @@ class ChatController {
     int senderId,
     MessageEnum messageType,
   ) {
-    // final messageReply = ref.read(messsageReplyProvider);
+    final messageReply = ref.read(messsageReplyProvider);
+    String? repliedMessageId;
+    if (messageReply != null) {
+      repliedMessageId = messageReply.messsageId;
+      print("Reply message ID: $repliedMessageId");
+    }
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendTextMessage(
             context: context,
@@ -73,9 +78,25 @@ class ChatController {
             message: message,
             senderId: senderId,
             messageType: messageType,
+            repliedMessageId: repliedMessageId,
           ),
         );
     ref.read(messsageReplyProvider.state).update((state) => null);
+  }
+
+  void setChatMessaageSeen(
+    BuildContext context,
+    String roomId,
+    int curentUserId,
+  ) {
+    // final messageReply = ref.read(messsageReplyProvider);
+    ref.read(userDataAuthProvider).whenData(
+          (value) => chatRepository.setChatMessaageSeen(
+            context: context,
+            roomId: roomId,
+            currentUserID: curentUserId,
+          ),
+        );
   }
 
   void sendFileMessage(

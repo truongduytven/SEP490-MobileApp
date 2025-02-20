@@ -22,6 +22,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String today = '';
+  final Map<String, dynamic> activity = {
+    "ActivityName": "Uống thuốc",
+    "ActivityDescription": "Penicilin v kali 500mg\nDùng 1 vào 8:00 (sau ăn)",
+    "StartTime": DateTime(2025, 2, 16, 9, 0),
+    "EndTime": DateTime(2025, 2, 16, 10, 0),
+  };
+  String startTime = '';
+  String endTime = '';
 
   @override
   void initState() {
@@ -31,6 +39,34 @@ class _HomeScreenState extends State<HomeScreen> {
         today = DateFormat('EEEE, dd MMMM yyyy', 'vi').format(DateTime.now());
       });
     });
+    startTime = DateFormat.jm().format(activity['StartTime'] as DateTime);
+    endTime = DateFormat.jm().format(activity['EndTime'] as DateTime);
+  }
+
+  Widget _getActivityIcon(String activityName) {
+    switch (activityName) {
+      case "Uống thuốc":
+        return Image.asset('assets/img3D/thuoc.png', width: 50, height: 50);
+      case "Tư vấn với bác sĩ":
+        return Image.asset('assets/img3D/bacsi.png', width: 50, height: 50);
+      case "Tập luyện":
+        return Image.asset('assets/img3D/cannang.png', width: 50, height: 50);
+      default:
+        return Icon(Icons.event, color: AppColors.secondaryColor, size: 50);
+    }
+  }
+
+  Color? getColors(String activityName) {
+    switch (activityName) {
+      case "Uống thuốc":
+        return Colors.yellow[400];
+      case "Tư vấn với bác sĩ":
+        return Colors.blue[400];
+      case "Tập luyện":
+        return Colors.green[400];
+      default:
+        return Colors.orange[400];
+    }
   }
 
   @override
@@ -223,7 +259,59 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.primaryColor)),
                           ),
-                          SizedBox(height: 150),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 16),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: getColors(activity['ActivityName']),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      AppColors.secondaryColor.withOpacity(0.3),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                // Activity Icon
+                                _getActivityIcon(activity['ActivityName']),
+                                const SizedBox(width: 12),
+                                // Activity Details
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        activity['ActivityName'],
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.textColor),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        activity['ActivityDescription'],
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        '$startTime - $endTime',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.textColor),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

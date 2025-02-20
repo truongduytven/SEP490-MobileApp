@@ -33,12 +33,14 @@ class _ChatListState extends ConsumerState<ChatList> {
   }
 
   void onMessageSwipe(
+    String messageId,
     String message,
     bool isMe,
     MessageEnum messageEnum,
   ) {
     ref.read(messsageReplyProvider.state).update(
           (state) => MessageReply(
+            messageId,
             message,
             isMe,
             messageEnum,
@@ -59,7 +61,29 @@ class _ChatListState extends ConsumerState<ChatList> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Loader();
             }
-
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/img/no_message.webp',
+                    width: 200,
+                    height: 200,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Cuộc trò chuyện chưa có tin nhắn, hãy bắt đầu trò chuyên📩!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              );
+            }
             SchedulerBinding.instance.addPostFrameCallback((_) {
               messageController
                   .jumpTo(messageController.position.maxScrollExtent);
@@ -78,15 +102,12 @@ class _ChatListState extends ConsumerState<ChatList> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final messageData = snapshot.data![index];
-                // if (!messageData.isSeen &&
-//               //     messageData.recieverid ==
-//               //         FirebaseAuth.instance.currentUser!.uid) {
-//               //   ref.read(chatControllerProvider).setChatMessaageSeen(
-//               //         context,
-//               //         widget.recieverUserId,
-//               //         messageData.messageId,
-//               //       );
-//               // }
+
+                ref.read(chatControllerProvider).setChatMessaageSeen(
+                      context,
+                      widget.roomId,
+                      accountId ?? 0,
+                    );
                 if (accountId != null && messageData.senderId == accountId) {
                   // ✅ Compare safely
                   return MyMessageCard(
@@ -97,6 +118,7 @@ class _ChatListState extends ConsumerState<ChatList> {
                     username: messageData.replyTo,
                     repliedMessageType: messageData.repliedMessageType,
                     onLeftSwipe: (details) => onMessageSwipe(
+                      messageData.messageId,
                       messageData.message,
                       true,
                       messageData.messageType,
@@ -115,6 +137,7 @@ class _ChatListState extends ConsumerState<ChatList> {
                   username: messageData.replyTo,
                   repliedMessageType: messageData.repliedMessageType,
                   onRightSwipe: (details) => onMessageSwipe(
+                    messageData.messageId,
                     messageData.message,
                     false,
                     messageData.messageType,

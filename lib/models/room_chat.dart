@@ -13,6 +13,7 @@ class RoomChat {
   final String? sentDate;
   final String? sentTime;
   final String? sentDateTime;
+  final List<User> users;
 
   RoomChat({
     required this.roomId,
@@ -27,6 +28,7 @@ class RoomChat {
     this.sentDate,
     this.sentTime,
     this.sentDateTime,
+    required this.users,
   });
 
   factory RoomChat.fromJson(Map<String, dynamic> json) {
@@ -43,6 +45,9 @@ class RoomChat {
       sentDate: json['sentDate'],
       sentTime: json['sentTime'],
       sentDateTime: json['sentDateTime'],
+      users: (json['users'] as List<dynamic>)
+          .map((userJson) => User.fromJson(userJson))
+          .toList(),
     );
   }
 
@@ -67,5 +72,26 @@ class RoomChat {
     final decoded = jsonDecode(jsonString);
     final List<dynamic> dataList = decoded['data'];
     return dataList.map((data) => RoomChat.fromJson(data)).toList();
+  }
+}
+
+class User {
+  final int id;
+  final String name;
+
+  User({required this.id, required this.name});
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
   }
 }

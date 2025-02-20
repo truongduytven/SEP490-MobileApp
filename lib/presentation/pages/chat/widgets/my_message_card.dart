@@ -72,8 +72,8 @@ class MyMessageCard extends StatelessWidget {
                         Text(
                           username,
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.bgColor),
                         ),
                         const SizedBox(
                           height: 3,
@@ -81,7 +81,7 @@ class MyMessageCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.5),
+                              color: AppColors.bgColor.withOpacity(0.3),
                               borderRadius: BorderRadius.all(
                                 Radius.circular(
                                   5,
@@ -119,9 +119,9 @@ class MyMessageCard extends StatelessWidget {
                         width: 5,
                       ),
                       Icon(
-                        isSeen ? Icons.done_all : Icons.done_all,
+                        isSeen ? Icons.remove_red_eye_outlined : Icons.done_all,
                         size: 20,
-                        color: isSeen ? Colors.blue : Colors.white60,
+                        color: isSeen ? AppColors.primaryColor : Colors.white60,
                       ),
                     ],
                   ),

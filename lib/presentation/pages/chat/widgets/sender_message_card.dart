@@ -110,8 +110,8 @@ class SenderMessageCard extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color:
-                                        AppColors.primaryColor.withOpacity(0.5),
+                                    color: AppColors.secondaryColor
+                                        .withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                   child: DisplayTextImageGif(

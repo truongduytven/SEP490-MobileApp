@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/chat/widgets/contacts_list.dart';
 import 'package:sep490/presentation/pages/chat/widgets/expandable_fab.dart';
 import 'package:sep490/theme/color.dart';
@@ -33,15 +34,15 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
     switch (state) {
       case AppLifecycleState.resumed:
         print("resumed");
-        // ref.read(authControllerProvider).setUserState(true);
+        ref.read(authControllerProvider).setUserState(true);
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
       case AppLifecycleState.paused:
-        // ref.read(authControllerProvider).setUserState(false);
+        ref.read(authControllerProvider).setUserState(false);
         break;
       default:
-        // ref.read(authControllerProvider).setUserState(false);
+        ref.read(authControllerProvider).setUserState(false);
         break;
     }
   }

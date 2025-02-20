@@ -32,7 +32,6 @@ class _DetailMedicineState extends State<DetailMedicine> {
           'name': '',
           'dosage': '',
           'form': '',
-          'treatment': '',
           'remaining': '',
           'typeFrequency': '',
           'frequencyEvery': '',
@@ -54,7 +53,6 @@ class _DetailMedicineState extends State<DetailMedicine> {
             ),
           );
 
-          // Update the name if the user provided a new one
           if (newName != null && newName is String) {
             setState(() {
               medicineData['name'] = newName;
@@ -62,6 +60,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
           }
         }
         break;
+
       case 'Liều dùng':
         {
           final firstSpaceIndex = medicineData['dosage'].indexOf(' ');
@@ -110,22 +109,22 @@ class _DetailMedicineState extends State<DetailMedicine> {
           }
         }
         break;
-      case 'Điều trị':
-        {
-          final newTreatment = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  EditTreatment(currentTreatment: medicineData['treatment']),
-            ),
-          );
-          if (newTreatment != null && newTreatment is String) {
-            setState(() {
-              medicineData['treatment'] = newTreatment;
-            });
-          }
-        }
-        break;
+      // case 'Điều trị':
+      //   {
+      //     final newTreatment = await Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) =>
+      //             EditTreatment(currentTreatment: medicineData['treatment']),
+      //       ),
+      //     );
+      //     if (newTreatment != null && newTreatment is String) {
+      //       setState(() {
+      //         medicineData['treatment'] = newTreatment;
+      //       });
+      //     }
+      //   }
+      //   break;
       case 'Trong hộp còn':
         {
           final newRemaining = await Navigator.push(
@@ -201,10 +200,10 @@ class _DetailMedicineState extends State<DetailMedicine> {
                       const SizedBox(height: 20),
                       // Options
                       _buildOption(
-                        title: 'Trước khi ăn',
-                        isSelected: selectedOption == 'Trước khi ăn',
+                        title: 'Trước ăn',
+                        isSelected: selectedOption == 'Trước ăn',
                         onTap: () {
-                          selectedOption = 'Trước khi ăn';
+                          selectedOption = 'Trước ăn';
                           Navigator.pop(context, selectedOption);
                         },
                       ),
@@ -213,8 +212,8 @@ class _DetailMedicineState extends State<DetailMedicine> {
                         thickness: 1,
                       ),
                       _buildOption(
-                        title: 'Sau khi ăn',
-                        isSelected: selectedOption == 'Sau khi ăn',
+                        title: 'Sau ăn',
+                        isSelected: selectedOption == 'Sau ăn',
                         onTap: () {
                           selectedOption = 'Sau khi ăn';
                           Navigator.pop(context, selectedOption);
@@ -267,7 +266,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
               fontWeight: FontWeight.w600,
               color: AppColors.textColor),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xFFFFF6FC),
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -307,46 +306,91 @@ class _DetailMedicineState extends State<DetailMedicine> {
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            width: double.infinity,
-            color: Colors.transparent,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailMedicine(),
-                  ),
-                );
-              },
-              icon: Icon(
-                hasData ? Icons.pause_circle_outline : Icons.add_circle_outline,
-                size: 25,
-                color: hasData ? AppColors.secondaryColor : AppColors.bgColor,
-              ),
-              label: Text(
-                hasData ? 'Cập nhật thuốc' : 'Thêm thuốc',
-                style: TextStyle(
-                    fontSize: 25,
+          Column(
+            children: [
+              if(hasData)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                width: double.infinity,
+                color: Colors.transparent,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailMedicine(),
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    hasData
+                        ? Icons.pause_circle_outline
+                        : Icons.add_circle_outline,
+                    size: 25,
                     color:
-                        hasData ? AppColors.secondaryColor : AppColors.bgColor),
-              ),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 25,
-                ),
-                backgroundColor:
-                    hasData ? AppColors.bgColor : AppColors.secondaryColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    side: BorderSide(
+                        hasData ? AppColors.secondaryColor : AppColors.bgColor,
+                  ),
+                  label: Text(
+                    'Ngưng thuốc',
+                    style: TextStyle(
+                        fontSize: 25,
                         color: hasData
                             ? AppColors.secondaryColor
-                            : Colors.transparent)),
+                            : AppColors.bgColor),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 25,
+                    ),
+                    backgroundColor:
+                        hasData ? AppColors.bgColor : AppColors.secondaryColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        side: BorderSide(
+                            color: hasData
+                                ? AppColors.secondaryColor
+                                : Colors.transparent)),
+                  ),
+                ),
               ),
-            ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                width: double.infinity,
+                color: Colors.transparent,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context, medicineData);
+                  },
+                  icon: Icon(
+                    hasData
+                        ? Icons.sync_rounded
+                        : Icons.add_circle_outline,
+                    size: 25,
+                    color: AppColors.bgColor,
+                  ),
+                  label: Text(
+                    hasData ? 'Cập nhật thuốc' : 'Thêm thuốc',
+                    style: TextStyle(
+                        fontSize: 25,
+                        color: AppColors.bgColor),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 25,
+                    ),
+                    backgroundColor: AppColors.secondaryColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        side: BorderSide(
+                            color: Colors.transparent)),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -372,21 +416,15 @@ class _DetailMedicineState extends State<DetailMedicine> {
             ),
             _buildDivider(),
             _buildDetailRow(
-              iconPath: 'assets/icons/droplets.svg',
-              title: 'Liều dùng',
-              value: medicineData['dosage'],
-            ),
-            _buildDivider(),
-            _buildDetailRow(
               iconPath: 'assets/icons/shapes.svg',
               title: 'Dạng',
               value: medicineData['form'],
             ),
             _buildDivider(),
             _buildDetailRow(
-              iconPath: 'assets/icons/hospital.svg',
-              title: 'Điều trị',
-              value: medicineData['treatment'],
+              iconPath: 'assets/icons/droplets.svg',
+              title: 'Liều dùng',
+              value: medicineData['dosage'],
             ),
             _buildDivider(),
             _buildDetailRow(
@@ -469,25 +507,41 @@ class _DetailMedicineState extends State<DetailMedicine> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                if (title == 'Dạng' && value.isNotEmpty) buildImgForm(value),
-                if (title == 'Điều trị' && value.isNotEmpty)
-                  buildImgTreatment(value),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  value.isNotEmpty ? value : '-',
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(width: 10),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.grey,
-                ),
-              ],
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (title == 'Dạng' && value.isNotEmpty) buildImgForm(value),
+                  if (title == 'Điều trị' && value.isNotEmpty)
+                    buildImgTreatment(value),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  if (title == 'Tên')
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: Text(
+                        value.isNotEmpty ? value : '-',
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  if (title != 'Tên')
+                    Text(
+                      value.isNotEmpty ? value : '-',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w600),
+                    ),
+                  const SizedBox(width: 10),
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -614,7 +668,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  if (value == 'Cách ngày')
+                  if (value == 'Every')
                     Text(
                       'Mỗi $frequencyEvery ngày',
                       style: const TextStyle(
@@ -623,7 +677,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
                         color: AppColors.secondaryColor,
                       ),
                     ),
-                  if (value == 'Ngày cụ thể trong tuần')
+                  if (value == 'Select')
                     Wrap(
                       spacing: 8.0,
                       runSpacing: 8.0,
@@ -690,13 +744,6 @@ class _DetailMedicineState extends State<DetailMedicine> {
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          // color: isSelected
-          //     ? AppColors.primaryLowColor.withOpacity(0.4)
-          //     : Colors.white,
-          // border: Border.all(
-          //   color: isSelected ? AppColors.primaryColor : Colors.grey,
-          //   width: 1.5,
-          // ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
