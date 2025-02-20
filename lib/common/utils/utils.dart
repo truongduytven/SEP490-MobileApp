@@ -5,11 +5,14 @@ import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
 void showSnackBar({required BuildContext context, required String content}) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(content),
-    ),
-  );
+  if (context.mounted) {
+    // Check if the widget is still in the tree
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(content),
+      ),
+    );
+  }
 }
 
 Future<File?> pickImageFromGallery(BuildContext context) async {

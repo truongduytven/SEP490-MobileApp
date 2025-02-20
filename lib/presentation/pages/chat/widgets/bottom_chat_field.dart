@@ -224,6 +224,8 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
             children: [
               Expanded(
                 child: TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                   focusNode: focusNode,
                   controller: _messageController,
                   onChanged: (val) {
@@ -242,12 +244,13 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                     filled: true,
                     fillColor: AppColors.bgColor,
                     prefixIcon: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
                       child: SizedBox(
                         width: 100,
                         child: Row(
                           children: [
                             IconButton(
+                              padding: const EdgeInsets.all(0.0),
                               onPressed: toggleEmojiContainer,
                               icon: Icon(
                                 Icons.emoji_emotions,
@@ -255,6 +258,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                               ),
                             ),
                             IconButton(
+                              padding: const EdgeInsets.all(0.0),
                               onPressed: selectGIF,
                               icon: Icon(
                                 Icons.gif,
@@ -272,15 +276,17 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                         children: [
                           IconButton(
                             onPressed: selectImage,
+                            padding: const EdgeInsets.all(0.0),
                             icon: Icon(
-                              Icons.camera_alt,
+                              Icons.image,
                               color: AppColors.primaryColor,
                             ),
                           ),
                           IconButton(
                             onPressed: selectVideo,
+                            padding: const EdgeInsets.all(0.0),
                             icon: Icon(
-                              Icons.attach_file,
+                              Icons.video_collection_outlined,
                               color: AppColors.primaryColor,
                             ),
                           ),

@@ -47,10 +47,13 @@ class MessageReplyPreview extends ConsumerWidget {
           const SizedBox(
             height: 8,
           ),
-          DisplayTextImageGif(
-            isMe: false,
-            message: messageReply.messsage,
-            type: messageReply.messageEnum,
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 150), // Set max height
+            child: DisplayTextImageGif(
+              isMe: false,
+              message: messageReply.messsage,
+              type: messageReply.messageEnum,
+            ),
           )
         ],
       ),

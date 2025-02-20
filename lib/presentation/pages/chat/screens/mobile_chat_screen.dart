@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:sep490/common/widgets/loader.dart';
+import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:sep490/presentation/pages/chat/widgets/bottom_chat_field.dart';
 import 'package:sep490/presentation/pages/chat/widgets/chat_list.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class MobileChatScreen extends ConsumerWidget {
   static const String routeName = '/mobile-chat-screen';
@@ -14,6 +16,7 @@ class MobileChatScreen extends ConsumerWidget {
   final String uid;
   final bool isGroupChat;
   final String profilePic;
+  final List<User> users;
 
   const MobileChatScreen({
     Key? key,
@@ -21,6 +24,7 @@ class MobileChatScreen extends ConsumerWidget {
     required this.uid,
     required this.isGroupChat,
     required this.profilePic,
+    required this.users,
   }) : super(key: key);
 
   @override
@@ -61,10 +65,10 @@ class MobileChatScreen extends ConsumerWidget {
                                   width: 18,
                                   height: 18,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: Colors.transparent,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       width: 2,
                                     ),
                                   ),
@@ -74,9 +78,7 @@ class MobileChatScreen extends ConsumerWidget {
                                     color: Colors.green,
                                   ),
                                 ),
-                              const SizedBox(
-                                  width:
-                                      5), // Adds spacing between icon and text
+                              const SizedBox(width: 5),
                               Padding(
                                 padding: const EdgeInsets.only(top: 5.0),
                                 child: Text(
@@ -104,13 +106,15 @@ class MobileChatScreen extends ConsumerWidget {
               ),
         centerTitle: false,
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.video_call),
+          sendCallButton(
+            isVideoCall: false,
+            inviteeUsers: users,
+            onCallFinished: onSendCallInvitationFinished,
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.call),
+          sendCallButton(
+            isVideoCall: true,
+            inviteeUsers: users,
+            onCallFinished: onSendCallInvitationFinished,
           ),
           IconButton(
             onPressed: () {},
@@ -136,5 +140,55 @@ class MobileChatScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+Widget sendCallButton({
+  required bool isVideoCall,
+  required List<User> inviteeUsers,
+  void Function(String code, String message, List<String>)? onCallFinished,
+}) {
+  // Convert List<User> to List<ZegoUIKitUser>
+  List<ZegoUIKitUser> invitees = inviteeUsers.map((user) {
+    return ZegoUIKitUser(
+      id: user.id.toString(), // Ensure ID is a string
+      name: user.name,
+    );
+  }).toList();
+
+  print("Calling users: ${invitees.map((e) => e.name).join(', ')}");
+
+  return ZegoSendCallInvitationButton(
+    isVideoCall: isVideoCall,
+    invitees: invitees,
+    resourceID: 'zego_data',
+    iconSize: const Size(40, 40),
+    buttonSize: const Size(50, 50),
+    onPressed: onCallFinished,
+    icon: ButtonIcon(
+      icon: isVideoCall
+          ? Icon(Icons.video_call, color: AppColors.primaryColor)
+          : Icon(Icons.phone, color: AppColors.primaryColor),
+    ),
+  );
+}
+
+// ✅ Handles call invitation results
+void onSendCallInvitationFinished(
+  String code,
+  String message,
+  List<String> errorInvitees,
+) {
+  if (errorInvitees.isNotEmpty) {
+    var userIDs = errorInvitees.take(5).join(' ');
+    var errorMessage = "User doesn't exist or is offline: $userIDs";
+
+    if (code.isNotEmpty) {
+      errorMessage += ', code: $code, message:$message';
+    }
+
+    debugPrint(errorMessage);
+  } else if (code.isNotEmpty) {
+    debugPrint('Call failed: code: $code, message:$message');
   }
 }

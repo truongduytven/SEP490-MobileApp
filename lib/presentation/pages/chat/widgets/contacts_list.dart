@@ -78,6 +78,7 @@ class ContactsList extends ConsumerWidget {
                                         'uid': groupData.roomId,
                                         'isGroupChat': groupData.isGroupChat,
                                         'profilePic': groupData.roomAvatar,
+                                        "users": groupData.users
                                       });
                                 },
                                 child: Padding(
@@ -94,8 +95,11 @@ class ContactsList extends ConsumerWidget {
                                       padding: const EdgeInsets.only(top: 6.0),
                                       child: Text(
                                         (groupData.lastMessage.isEmpty)
-                                            ? "Let's Start The Chat 👋"
-                                            : groupData.lastMessage,
+                                            ? "Hãy bắt đầu cuộc trò chuyện 👋"
+                                            : (groupData.lastMessage
+                                                    .startsWith('https'))
+                                                ? "🚀File phương tiện"
+                                                : groupData.lastMessage,
                                         style: const TextStyle(fontSize: 15),
                                       ),
                                     ),
@@ -132,6 +136,26 @@ class ContactsList extends ConsumerWidget {
                                                 Icons.online_prediction,
                                                 size: 18,
                                                 color: Colors.green,
+                                              ),
+                                            ),
+                                          ),
+                                        if (groupData.isGroupChat)
+                                          Positioned(
+                                            top: 2,
+                                            right: 2,
+                                            child: Container(
+                                              width: 22,
+                                              height: 22,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              child: Image.asset(
+                                                'assets/img/group_chat.png',
                                               ),
                                             ),
                                           ),
