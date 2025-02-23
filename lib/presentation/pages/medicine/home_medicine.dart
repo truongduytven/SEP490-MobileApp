@@ -270,6 +270,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                                 WidgetsBinding.instance
                                     .addPostFrameCallback((_) {
                                   _scrollToSelectedDay();
+                                  getDataPrescription();
                                 });
                               });
                             }

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
@@ -20,7 +23,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String today = '';
   final Map<String, dynamic> activity = {
     "ActivityName": "Uống thuốc",
@@ -69,6 +72,24 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void handleClickLoading() {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GifView.asset(
+          'assets/img3D/a.gif',
+          width: 100,
+          height: 100,
+          frameRate: 90,
+        )
+      ),
+    );
+    Timer(Duration(seconds: 3), () {
+      Navigator.of(context).pop();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Header(),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       Column(
                         children: [
                           Row(
@@ -217,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -312,6 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
+                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -354,9 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon:
                                     'assets/img3D/thietbideotay.png', // Replace with your asset path
                                 label: 'Thiết bị đeo tay',
-                                onTap: () {
-                                  print("Thuốc clicked");
-                                },
+                                onTap: handleClickLoading,
                               ),
                             ],
                           ),

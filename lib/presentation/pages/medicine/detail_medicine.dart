@@ -5,7 +5,6 @@ import 'package:sep490/presentation/pages/medicine/edit_frequency.dart';
 import 'package:sep490/presentation/pages/medicine/edit_name.dart';
 import 'package:sep490/presentation/pages/medicine/edit_remaining.dart';
 import 'package:sep490/presentation/pages/medicine/edit_schedule.dart';
-import 'package:sep490/presentation/pages/medicine/edit_treatment.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/presentation/widgets/medicine/img_treatment.dart';
 import 'package:sep490/theme/color.dart';

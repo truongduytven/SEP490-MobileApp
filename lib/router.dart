@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:sep490/common/widgets/error.dart';
 import 'package:sep490/presentation/pages/chat/screens/mobile_chat_screen.dart';

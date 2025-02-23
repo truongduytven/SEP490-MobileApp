@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/theme/color.dart';
 
