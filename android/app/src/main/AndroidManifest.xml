@@ -16,9 +16,9 @@
     <!--for bring app to foreground from background in Android 10 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <application
-        android:label="sepp490"
+        android:label="Senior Essentials"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_ic">
         <activity
             android:name=".MainActivity"
             android:exported="true"
