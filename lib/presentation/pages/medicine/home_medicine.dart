@@ -1,4 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:gif_view/gif_view.dart';
+import 'package:sep490/common/utils/utils.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/models/medicine/medicine.dart';
+import 'package:sep490/presentation/pages/medicine/controller/medicine_controller.dart';
 import 'package:sep490/presentation/pages/medicine/prescription_screen.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/theme/color.dart';
@@ -17,90 +24,10 @@ class _HomeMedicineState extends State<HomeMedicine> {
   int selectedDay = DateTime.now().day;
   int today = DateTime.now().day;
   final ScrollController _scrollController = ScrollController();
-  late Map<String, dynamic> prescription = {};
-  late Map<String, dynamic> prescriptionData = {
-    "id": 1,
-    "name": "Toa thuốc 1",
-    "treatment": "viêm họng",
-    "start_date": "2022-10-10",
-    "medicines": [
-      {
-        "id": 1,
-        'name': 'Paracetamol 500mg',
-        'dosage': '1 viên',
-        'form': 'Viên nhộng',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': [
-          {
-            'time': '8:00',
-            'status': 'skip',
-          },
-          {
-            'time': '12:00',
-            'status': 'used',
-          },
-          {
-            'time': '18:00',
-            'status': 'unUsed',
-          }
-        ],
-      },
-      {
-        "id": 2,
-        'name': 'Amoxicillin 500mg',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': [
-          {
-            'time': '8:00',
-            'status': 'skip',
-          },
-          {
-            'time': '12:00',
-            'status': 'used',
-          },
-          {
-            'time': '18:00',
-            'status': 'unUsed',
-          }
-        ],
-      },
-      {
-        "id": 3,
-        'name': 'Loratadine 10mg',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': [
-          {
-            'time': '8:00',
-            'status': 'skip',
-          },
-          {
-            'time': '12:00',
-            'status': 'used',
-          },
-          {
-            'time': '18:00',
-            'status': 'unUsed',
-          }
-        ],
-      }
-    ]
-  };
+  Prescription? prescription;
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int userId = sharedPrefsHelper.getInt('accountId')!;
+  late bool isLoading = true;
 
   @override
   void initState() {
@@ -111,17 +38,28 @@ class _HomeMedicineState extends State<HomeMedicine> {
     getDataPrescription();
   }
 
-  void getDataPrescription() {
-    if (selectedDay == 20 && selectedMonth == 2 && selectedYear == 2025) {
+  void _scrollToSelectedDay() {
+    double scrollPosition = (selectedDay - 1) * 80;
+    _scrollController.animateTo(
+      scrollPosition,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void getDataPrescription() async {
+    setState(() {
+      isLoading = true;
+    });
+    MedicineController medicineController = MedicineController();
+    await medicineController.getMedicines(userId,
+        DateTime(selectedYear, selectedMonth, selectedDay).toIso8601String());
+    Timer(Duration(seconds: 2), () {
       setState(() {
-        prescription = prescriptionData;
+        prescription = medicineController.prescription;
+        isLoading = false;
       });
-      categorizeMedicines();
-    } else {
-      setState(() {
-        prescription = {};
-      });
-    }
+    });
   }
 
   Map<String, List<Map<String, dynamic>>> categorizeMedicines() {
@@ -132,28 +70,27 @@ class _HomeMedicineState extends State<HomeMedicine> {
       "night": []
     };
 
-    for (var medicine in prescription["medicines"]) {
-      for (var schedule in medicine["schedule"]) {
-        int minutes = convertToMinutes(schedule["time"]);
+    if (prescription == null) return categorized;
+    for (var medicine in prescription!.medicines) {
+      for (var schedule in medicine.schedule) {
+        int minutes = convertToMinutes(schedule.time);
 
         Map<String, dynamic> data = {
-          "time": schedule["time"],
-          "status": schedule["status"],
+          "time": convertTime(schedule.time),
+          "status": schedule.status,
         };
 
         if (minutes >= 5 * 60 && minutes < 12 * 60) {
-          categorized["morning"]!.add({...medicine, "time": data});
+          categorized["morning"]!.add({...medicine.toJson(), "time": data});
         } else if (minutes >= 12 * 60 && minutes < 15 * 60) {
-          categorized["lunch"]!.add({...medicine, "time": data});
+          categorized["lunch"]!.add({...medicine.toJson(), "time": data});
         } else if (minutes >= 15 * 60 && minutes < 19 * 60) {
-          categorized["afternoon"]!.add({...medicine, "time": data});
+          categorized["afternoon"]!.add({...medicine.toJson(), "time": data});
         } else {
-          categorized["night"]!.add({...medicine, "time": data});
+          categorized["night"]!.add({...medicine.toJson(), "time": data});
         }
       }
-      ;
     }
-    ;
     return categorized;
   }
 
@@ -163,15 +100,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
     int hours = int.parse(match.group(1)!);
     int minutes = match.group(2) != null ? int.parse(match.group(2)!) : 0;
     return hours * 60 + minutes;
-  }
-
-  void _scrollToSelectedDay() {
-    double scrollPosition = (selectedDay - 1) * 80;
-    _scrollController.animateTo(
-      scrollPosition,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
   }
 
   @override
@@ -229,6 +157,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                         selectedDay = 1;
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           _scrollToSelectedDay(); // Scroll to day 1
+                          getDataPrescription();
                         });
                       });
                     },
@@ -251,6 +180,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                         selectedDay = 1;
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           _scrollToSelectedDay(); // Scroll to day 1
+                          getDataPrescription();
                         });
                       });
                     },
@@ -375,23 +305,17 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 ),
               ),
               const SizedBox(height: 20),
-              // 3D Box Illustration
-              // Image.asset(
-              //   'assets/img3D/thuocrong.png',
-              //   height: 150,
-              // ),
-              // const SizedBox(height: 20),
-              // Text(
-              //   'Không có thuốc đặt lịch',
-              //   style: TextStyle(
-              //     fontSize: 22,
-              //     fontWeight: FontWeight.w500,
-              //     color: AppColors.grayColor3,
-              //   ),
-              // ),
-              // const Spacer(),
               Expanded(
-                  child: SingleChildScrollView(child: buildMedicineList())),
+                  child: isLoading
+                      ? Center(
+                          child: GifView.asset(
+                            'assets/img3D/a.gif',
+                            width: 100,
+                            height: 100,
+                            frameRate: 90,
+                          ),
+                        )
+                      : SingleChildScrollView(child: buildMedicineList())),
               // Button
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -433,10 +357,10 @@ class _HomeMedicineState extends State<HomeMedicine> {
   }
 
   Widget buildMedicineList() {
-    if (prescription.isEmpty) {
+    if (prescription?.medicines.length == 0) {
       return Column(
         children: [
-          // 3D Box Illustration
+          const SizedBox(height: 50),
           Image.asset(
             'assets/img3D/thuocrong.png',
             height: 150,
@@ -453,6 +377,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
         ],
       );
     }
+
     Map<String, List<Map<String, dynamic>>> categorizedMedicines =
         categorizeMedicines();
 
@@ -500,29 +425,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {
-                  setState(() {
-                    List<dynamic> updatedMedicines =
-                        prescription["medicines"].map((med) {
-                      List<dynamic> updatedSchedules =
-                          med["schedule"].map((sched) {
-                        bool shouldUpdate = medicines.any((sessionMed) =>
-                            sessionMed["id"] == med["id"] &&
-                            sessionMed["time"]["time"] == sched["time"]);
-                        if (shouldUpdate) {
-                          return {...sched, "status": "used"};
-                        }
-                        return sched;
-                      }).toList();
-                      return {...med, "schedule": updatedSchedules};
-                    }).toList();
-
-                    prescription = {
-                      ...prescription,
-                      "medicines": updatedMedicines
-                    };
-                  });
-                },
+                onPressed: () {},
                 child: Text(
                   "UỐNG TẤT CẢ",
                   style: TextStyle(
@@ -595,31 +498,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
               : Row(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          prescription = {
-                            ...prescription,
-                            "medicines": prescription["medicines"].map((med) {
-                              if (med["id"] == medicine["id"]) {
-                                return {
-                                  ...med,
-                                  "schedule": med["schedule"].map((sched) {
-                                    if (sched["time"] ==
-                                        medicine["time"]["time"]) {
-                                      return {
-                                        ...sched,
-                                        "status": "skip",
-                                      };
-                                    }
-                                    return sched;
-                                  }).toList(),
-                                };
-                              }
-                              return med;
-                            }).toList(),
-                          };
-                        });
-                      },
+                      onTap: () {},
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
@@ -629,35 +508,12 @@ class _HomeMedicineState extends State<HomeMedicine> {
                         child: const Icon(
                           Icons.cancel_outlined,
                           color: AppColors.secondaryColor,
+                          size: 30,
                         ),
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          prescription = {
-                            ...prescription,
-                            "medicines": prescription["medicines"].map((med) {
-                              if (med["id"] == medicine["id"]) {
-                                return {
-                                  ...med,
-                                  "schedule": med["schedule"].map((sched) {
-                                    if (sched["time"] ==
-                                        medicine["time"]["time"]) {
-                                      return {
-                                        ...sched,
-                                        "status": "used",
-                                      };
-                                    }
-                                    return sched;
-                                  }).toList(),
-                                };
-                              }
-                              return med;
-                            }).toList(),
-                          };
-                        });
-                      },
+                      onTap: () {},
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
@@ -667,6 +523,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                         child: const Icon(
                           Icons.check_circle,
                           color: AppColors.secondaryColor,
+                          size: 30,
                         ),
                       ),
                     ),

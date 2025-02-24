@@ -59,3 +59,22 @@ Future<GiphyGif?> pickGIF(BuildContext context) async {
   debugPrint("Returning GIF: $gif");
   return gif;
 }
+
+String convertDate (String date) {
+  // '2025-01-25' to '25/01/2025'
+  var dateParts = date.split('-');
+  var day = dateParts[2];
+  var month = dateParts[1];
+  var year = dateParts[0];
+  var formattedDate = '$day/$month/$year';
+  return formattedDate;
+}
+
+String convertTime (String time) {
+  // '12:00:00' to '12:00'
+  var timeParts = time.split(':');
+  var hour = timeParts[0];
+  var minute = timeParts[1];
+  var formattedTime = '$hour:$minute';
+  return formattedTime;
+}
