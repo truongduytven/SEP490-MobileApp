@@ -79,9 +79,9 @@ class _InfoCardState extends State<InfoCard> {
       },
       child: Card(
         color: AppColors.bgColor,
-        elevation: 4,
+        elevation: 2,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppColors.secondaryColor, width: 0.1),
+          // side: const BorderSide(color: AppColors.secondaryColor, width: 0.1),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Padding(
@@ -158,7 +158,7 @@ class _InfoCardState extends State<InfoCard> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                 child: const Divider(
-                  thickness: 0.2,
+                  thickness: 0.1,
                   color: AppColors.secondaryColor,
                   height: 16,
                 ),
