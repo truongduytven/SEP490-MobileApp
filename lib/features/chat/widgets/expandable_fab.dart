@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/features/group/screens/create_group_screen.dart';
 import 'package:sep490/features/select_contacts/screens/select_contacts_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -67,10 +68,19 @@ class _ExpandableFabState extends State<ExpandableFab> {
             visible: _isExpanded,
             child: FloatingActionButton.extended(
               heroTag: "btn2",
+              // onPressed: () {
+              //   // Handle Add Group action
+              //   print("Add Group Clicked");
+              //   _toggleFab();
+              // },
               onPressed: () {
-                // Handle Add Group action
-                print("Add Group Clicked");
-                _toggleFab();
+                // Navigate to CreateGroupScreen
+                Navigator.pushNamed(
+                  context,
+                  CreateGroupScreen.routeName,
+                ).then((_) {
+                  _toggleFab(); // Close FAB after returning from the screen
+                });
               },
               backgroundColor: AppColors.primaryColor,
               icon: Icon(Icons.group_add, color: Colors.white),

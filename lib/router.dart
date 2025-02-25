@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sep490/common/widgets/error.dart';
 import 'package:sep490/features/chat/screens/mobile_chat_screen.dart';
+import 'package:sep490/features/group/screens/create_group_screen.dart';
 import 'package:sep490/features/select_contacts/screens/select_contacts_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -58,10 +59,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     //       status: status,
     //     ),
     //   );
-    // case CreateGroupScreen.routeName:
-    //   return MaterialPageRoute(
-    //     builder: (context) => CreateGroupScreen(),
-    //   );
+    case CreateGroupScreen.routeName:
+      return MaterialPageRoute(
+        builder: (context) => CreateGroupScreen(),
+      );
     default:
       return MaterialPageRoute(
         builder: (context) => const Scaffold(
