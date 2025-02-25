@@ -15,10 +15,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   late Map<String, dynamic> prescriptionData = {};
   late Map<String, dynamic> prescription = {
     "id": 1,
-    "name": "Toa thuốc 1",
-    //"treatment": "viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng viêm họng",
     "treatment": "viêm họng",
     "start_date": "2022-10-10",
+    "end_date": "2022-10-20",
     "medicines": <Map<String, dynamic>>[
       {
         "id": 1,

@@ -23,6 +23,8 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Position? _currentPosition;
   Timer? _locationTimer;
   final record = AudioRecorder();
+  int _countdown = 10;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -30,11 +32,30 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     _requestPermissions().then((granted) {
       if (granted) {
         _initCamera();
-        _startLocationTracking();
+        // _startLocationTracking();
       } else {
         print("Permissions denied!");
       }
     });
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_countdown > 1) {
+        setState(() {
+          _countdown--;
+        });
+      } else {
+        _timer?.cancel();
+        print('Gọi khẩn cấp!');
+      }
+    });
+  }
+
+  void _cancelEmergency() {
+    _timer?.cancel();
+    Navigator.pop(context);
   }
 
   // 🔹 1. Request necessary permissions
@@ -198,7 +219,6 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     }
   }
 
-  // 🔥 Xử lý khi nhấn nút gọi khẩn cấp
   Future<void> _handleEmergency() async {
     await _captureImages();
     await _recordAudio();
@@ -208,6 +228,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _cameraController?.dispose();
     record.dispose();
     _locationTimer?.cancel();
@@ -217,13 +238,94 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: _handleEmergency,
-          child: Text("🚨 GỌI KHẨN CẤP"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      backgroundColor: Colors.blueGrey[50],
+      body: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 🔹 Tiêu đề
+              Text(
+                "Tiến hành gọi khẩn cấp",
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+          
+              SizedBox(height: 10),
+          
+              // 🔹 Mô tả
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  "Bạn đã kích hoạt cuộc gọi khẩn cấp và nó sẽ được thực hiện sau:",
+                  style: TextStyle(fontSize: 22, color: Colors.black54),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+          
+              SizedBox(height: 40),
+          
+              // 🔹 Nút đếm ngược
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Colors.orangeAccent, Colors.redAccent],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.5),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '$_countdown',
+                      style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.redAccent),
+                    ),
+                  ),
+                ],
+              ),
+          
+              SizedBox(height: 50),
+          
+              // 🔹 Nút "Hủy"
+              ElevatedButton(
+                onPressed: _cancelEmergency,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text(
+                  "Hủy",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ),
       ),
