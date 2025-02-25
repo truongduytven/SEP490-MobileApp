@@ -108,38 +108,87 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
                 .toList();
             final sortedContacts = [...selectedContacts, ...unselectedContacts];
 
-            return Expanded(
-              child: ListView.builder(
-                itemCount: sortedContacts.length,
-                itemBuilder: (context, index) {
-                  final contact = sortedContacts[index];
-                  final isSelected = selectedContacts.contains(contact);
-
-                  return InkWell(
-                    onTap: () => selectContact(contact),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.grey[300],
-                          child: contact.photo != null
-                              ? ClipOval(
-                                  child: Image.memory(contact.photo!,
-                                      fit: BoxFit.cover, width: 40, height: 40),
-                                )
-                              : Icon(Icons.person, size: 24),
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (selectedContacts.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: SizedBox(
+                        height: 70, // Limit row height
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: selectedContacts.length,
+                          itemBuilder: (context, index) {
+                            final contact = selectedContacts[index];
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: Colors.grey[300],
+                                    child: contact.photo != null
+                                        ? ClipOval(
+                                            child: Image.memory(contact.photo!,
+                                                fit: BoxFit.cover,
+                                                width: 50,
+                                                height: 50),
+                                          )
+                                        : Icon(Icons.person, size: 30),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    contact.displayName.split(' ').first,
+                                    style: TextStyle(fontSize: 12),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
-                        title: Text(
-                          contact.displayName,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        trailing: isSelected
-                            ? Icon(Icons.done, color: Colors.green)
-                            : null,
                       ),
                     ),
-                  );
-                },
+                  SizedBox(
+                    height: 300, // Set a fixed height
+                    child: ListView.builder(
+                      itemCount: sortedContacts.length,
+                      itemBuilder: (context, index) {
+                        final contact = sortedContacts[index];
+                        final isSelected = selectedContacts.contains(contact);
+
+                        return InkWell(
+                          onTap: () => selectContact(contact),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.grey[300],
+                                child: contact.photo != null
+                                    ? ClipOval(
+                                        child: Image.memory(contact.photo!,
+                                            fit: BoxFit.cover,
+                                            width: 40,
+                                            height: 40),
+                                      )
+                                    : Icon(Icons.person, size: 24),
+                              ),
+                              title: Text(
+                                contact.displayName,
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              trailing: isSelected
+                                  ? Icon(Icons.done, color: Colors.green)
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             );
           },

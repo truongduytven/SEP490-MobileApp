@@ -51,15 +51,13 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
       appBar: AppBar(
         title: Text('Tạo mới nhóm'),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
+          mainAxisSize: MainAxisSize.min, // Ensures it takes only needed space
           children: [
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Stack(
-              alignment:
-                  Alignment.center, // Centering all children inside the Stack
+              alignment: Alignment.center,
               children: [
                 CircleAvatar(
                   backgroundImage: image == null
@@ -70,8 +68,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black
-                        .withOpacity(0.6), // Semi-transparent background
+                    color: Colors.black.withOpacity(0.6),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -82,15 +79,6 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                 ),
               ],
             ),
-            // Padding(
-            //   padding: const EdgeInsets.all(10.0),
-            //   child: TextField(
-            //     controller: groupNameController,
-            //     decoration: InputDecoration(
-            //       hintText: "Enter group name",
-            //     ),
-            //   ),
-            // ),
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: TextField(
@@ -113,13 +101,12 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
               padding: const EdgeInsets.all(8),
               child: const Text(
                 "Chọn liên hệ",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ),
-            SelectContactsGroup(),
+            SizedBox(
+                height: 300,
+                child: SelectContactsGroup()), // Ensure fixed height
           ],
         ),
       ),
