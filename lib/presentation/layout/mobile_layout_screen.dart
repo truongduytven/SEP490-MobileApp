@@ -65,33 +65,33 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
               fontWeight: FontWeight.bold,
             ),
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search, color: AppColors.secondaryColor),
-              onPressed: () {},
-            ),
-            // IconButton(
-            //   icon: const Icon(Icons.more_vert, color: Colors.grey),
-            //   onPressed: () {},
-            // ),
-            PopupMenuButton(
-              icon:
-                  const Icon(Icons.more_vert, color: AppColors.secondaryColor),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  child: const Text(
-                    "Create Group",
-                  ),
-                  // onTap: () => Future(
-                  //   () => Navigator.pushNamed(
-                  //     context,
-                  //     CreateGroupScreen.routeName,
-                  //   ),
-                  // ),
-                )
-              ],
-            )
-          ],
+          // actions: [
+          //   IconButton(
+          //     icon: const Icon(Icons.search, color: AppColors.secondaryColor),
+          //     onPressed: () {},
+          //   ),
+          //   // IconButton(
+          //   //   icon: const Icon(Icons.more_vert, color: Colors.grey),
+          //   //   onPressed: () {},
+          //   // ),
+          //   PopupMenuButton(
+          //     icon:
+          //         const Icon(Icons.more_vert, color: AppColors.secondaryColor),
+          //     itemBuilder: (context) => [
+          //       PopupMenuItem(
+          //         child: const Text(
+          //           "Create Group",
+          //         ),
+          //         // onTap: () => Future(
+          //         //   () => Navigator.pushNamed(
+          //         //     context,
+          //         //     CreateGroupScreen.routeName,
+          //         //   ),
+          //         // ),
+          //       )
+          //     ],
+          //   )
+          // ],
           bottom: PreferredSize(
             preferredSize: Size(0, 60),
             child: TabBar(

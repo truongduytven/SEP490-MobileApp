@@ -37,6 +37,115 @@ void main() async {
     plugins: [
       ZegoUIKitSignalingPlugin()
     ], // Ensure the signaling plugin is added
+
+    //limited for duration call
+    requireConfig: (ZegoCallInvitationData data) {
+      var config = (data.invitees.length > 1)
+          ? ZegoCallType.videoCall == data.type
+              ? ZegoUIKitPrebuiltCallConfig.groupVideoCall()
+              : ZegoUIKitPrebuiltCallConfig.groupVoiceCall()
+          : ZegoCallType.videoCall == data.type
+              ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
+              : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
+
+      // Modify your custom configurations here.
+      config.duration.isVisible = true;
+      config.duration.onDurationUpdate = (Duration duration) {
+        if (duration.inSeconds == 60 * 60) {
+          ZegoUIKitPrebuiltCallController()
+              .hangUp(navigatorKey.currentState!.context);
+        }
+      };
+      return config;
+    },
+
+    invitationEvents: ZegoUIKitPrebuiltCallInvitationEvents(
+      onInvitationUserStateChanged: (List) {
+        ///  Add your custom logic here.
+        print("onInvitationUserStateChanged nè");
+      },
+      onIncomingCallDeclineButtonPressed: () {
+        ///  Add your custom logic here.
+        print("onIncomingCallDeclineButtonPressed nè");
+      },
+      onIncomingCallAcceptButtonPressed: () {
+        ///  Add your custom logic here.
+        print("onIncomingCallAcceptButtonPressed nè");
+      },
+      onIncomingCallReceived: (
+        String callID,
+        ZegoCallUser caller,
+        ZegoCallType callType,
+        List callees,
+        String customData,
+      ) {
+        ///  Add your custom logic here.
+        print("onIncomingCallReceived nè $callID $caller");
+      },
+      onIncomingCallCanceled: (
+        String callID,
+        ZegoCallUser caller,
+        String customData,
+      ) {
+        ///  Add your custom logic here.
+        print("onIncomingCallCanceled nè $callID $caller");
+      },
+      onIncomingCallTimeout: (String callID, ZegoCallUser caller) {
+        ///  Add your custom logic here.
+        print("onIncomingCallTimeout nè $callID $caller");
+      },
+      onOutgoingCallCancelButtonPressed: () {
+        ///  Add your custom logic here.
+        print("onOutgoingCallCancelButtonPressed nè");
+      },
+      onOutgoingCallAccepted: (String callID, ZegoCallUser callee) {
+        ///  Add your custom logic here.
+        print("onOutgoingCallAccepted nè $callID $callee");
+      },
+      onOutgoingCallRejectedCauseBusy: (
+        String callID,
+        ZegoCallUser callee,
+        String customData,
+      ) {
+        ///  Add your custom logic here.
+        print("onOutgoingCallRejectedCauseBusy nè $callID $callee");
+      },
+      onOutgoingCallDeclined: (
+        String callID,
+        ZegoCallUser callee,
+        String customData,
+      ) {
+        ///  Add your custom logic here.
+        print("onOutgoingCallDeclined nè $callID $callee");
+      },
+      onOutgoingCallTimeout: (
+        String callID,
+        List<ZegoCallUser> callees,
+        bool isVideoCall,
+      ) {
+        ///  Add your custom logic here.
+        print("onOutgoingCallDeclined nè $callID $callees");
+      },
+      onIncomingMissedCallClicked: (
+        String callID,
+        ZegoCallUser caller,
+        ZegoCallInvitationType callType,
+        List<ZegoCallUser> callees,
+        String customData,
+
+        /// The default action is to dial back the missed call
+
+        Future<void> Function() defaultAction,
+      ) async {
+        /// Add your custom logic here.
+
+        await defaultAction.call();
+      },
+      onIncomingMissedCallDialBackFailed: () {
+        /// Add your custom logic here.
+        print("onIncomingMissedCallDialBackFailed nè");
+      },
+    ),
   );
 
   /// Set navigator key for Zego Call Invitation Service
