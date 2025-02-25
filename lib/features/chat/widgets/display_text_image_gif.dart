@@ -2,7 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sep490/common/enums/message_enum.dart';
-import 'package:sep490/presentation/pages/chat/widgets/video_player_item.dart';
+import 'package:sep490/features/chat/widgets/video_player_item.dart';
 import 'package:sep490/theme/color.dart';
 
 class DisplayTextImageGif extends StatefulWidget {

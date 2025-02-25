@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/common/enums/message_enum.dart';
-import 'package:sep490/presentation/pages/chat/widgets/display_text_image_gif.dart';
+import 'package:sep490/features/chat/widgets/display_text_image_gif.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:swipe_to/swipe_to.dart';
 

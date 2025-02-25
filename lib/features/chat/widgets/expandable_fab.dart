@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/features/select_contacts/screens/select_contacts_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class ExpandableFab extends StatefulWidget {
@@ -43,6 +44,9 @@ class _ExpandableFabState extends State<ExpandableFab> {
               onPressed: () {
                 // Handle Add People action
                 print("Add People Clicked");
+
+                Navigator.pushNamed(context, SelectContactsScreen.routeName);
+
                 _toggleFab();
               },
               backgroundColor: AppColors.primaryColor,

@@ -8,9 +8,9 @@ import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/common/widgets/loader.dart';
 import 'package:sep490/models/message.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
-import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
-import 'package:sep490/presentation/pages/chat/widgets/my_message_card.dart';
-import 'package:sep490/presentation/pages/chat/widgets/sender_message_card.dart';
+import 'package:sep490/features/chat/controller/chat_controller.dart';
+import 'package:sep490/features/chat/widgets/my_message_card.dart';
+import 'package:sep490/features/chat/widgets/sender_message_card.dart';
 
 class ChatList extends ConsumerStatefulWidget {
   final String roomId;

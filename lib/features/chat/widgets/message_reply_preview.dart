@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/provider/message_reply_provider.dart';
-import 'package:sep490/presentation/pages/chat/widgets/display_text_image_gif.dart';
+import 'package:sep490/features/chat/widgets/display_text_image_gif.dart';
 import 'package:sep490/theme/color.dart';
 
 class MessageReplyPreview extends ConsumerWidget {

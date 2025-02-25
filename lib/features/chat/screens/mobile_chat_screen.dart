@@ -4,9 +4,9 @@ import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:sep490/common/widgets/loader.dart';
 import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
-import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
-import 'package:sep490/presentation/pages/chat/widgets/bottom_chat_field.dart';
-import 'package:sep490/presentation/pages/chat/widgets/chat_list.dart';
+import 'package:sep490/features/chat/controller/chat_controller.dart';
+import 'package:sep490/features/chat/widgets/bottom_chat_field.dart';
+import 'package:sep490/features/chat/widgets/chat_list.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 

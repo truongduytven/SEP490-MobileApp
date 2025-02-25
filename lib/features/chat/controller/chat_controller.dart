@@ -10,7 +10,7 @@ import 'package:sep490/models/group.dart';
 import 'package:sep490/models/message.dart';
 import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
-import 'package:sep490/presentation/pages/chat/repository/chat_repository.dart';
+import 'package:sep490/features/chat/repository/chat_repository.dart';
 
 final chatControllerProvider = Provider((ref) {
   final chatRepository = ref.watch(chatRepositoryProvider);

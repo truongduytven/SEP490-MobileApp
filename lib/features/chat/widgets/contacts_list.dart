@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/widgets/loader.dart';
 import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
-import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
-import 'package:sep490/presentation/pages/chat/screens/mobile_chat_screen.dart';
+import 'package:sep490/features/chat/controller/chat_controller.dart';
+import 'package:sep490/features/chat/screens/mobile_chat_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class ContactsList extends ConsumerWidget {

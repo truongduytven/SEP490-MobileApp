@@ -10,8 +10,8 @@ import 'package:sep490/common/enums/message_enum.dart';
 import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
-import 'package:sep490/presentation/pages/chat/controller/chat_controller.dart';
-import 'package:sep490/presentation/pages/chat/widgets/message_reply_preview.dart';
+import 'package:sep490/features/chat/controller/chat_controller.dart';
+import 'package:sep490/features/chat/widgets/message_reply_preview.dart';
 import 'package:sep490/theme/color.dart';
 
 class BottomChatField extends ConsumerStatefulWidget {
