@@ -49,7 +49,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Group'),
+        title: Text('Tạo mới nhóm'),
       ),
       body: Center(
         child: Column(
@@ -58,34 +58,53 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
               height: 10,
             ),
             Stack(
+              alignment:
+                  Alignment.center, // Centering all children inside the Stack
               children: [
-                image == null
-                    ? CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            "https://i.pinimg.com/736x/44/6d/5d/446d5df6c8837382b80c16b6cde11175.jpg"),
-                        radius: 64,
-                      )
-                    : CircleAvatar(
-                        backgroundImage: FileImage(image!),
-                        radius: 64,
-                      ),
-                Positioned(
-                  bottom: -10,
-                  left: 80,
+                CircleAvatar(
+                  backgroundImage: image == null
+                      ? const NetworkImage(
+                          "https://i.pinimg.com/736x/44/6d/5d/446d5df6c8837382b80c16b6cde11175.jpg")
+                      : FileImage(image!) as ImageProvider,
+                  radius: 64,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black
+                        .withOpacity(0.6), // Semi-transparent background
+                    shape: BoxShape.circle,
+                  ),
                   child: IconButton(
-                      onPressed: selectImage,
-                      icon: const Icon(
-                        Icons.add_a_photo,
-                      )),
-                )
+                    onPressed: selectImage,
+                    icon: const Icon(Icons.add_a_photo,
+                        color: Colors.white, size: 28),
+                  ),
+                ),
               ],
             ),
+            // Padding(
+            //   padding: const EdgeInsets.all(10.0),
+            //   child: TextField(
+            //     controller: groupNameController,
+            //     decoration: InputDecoration(
+            //       hintText: "Enter group name",
+            //     ),
+            //   ),
+            // ),
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(20.0),
               child: TextField(
                 controller: groupNameController,
                 decoration: InputDecoration(
                   hintText: "Enter group name",
+                  filled: true,
+                  fillColor: AppColors.borderColor,
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
             ),
@@ -93,7 +112,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
               alignment: Alignment.topLeft,
               padding: const EdgeInsets.all(8),
               child: const Text(
-                "Select contacts",
+                "Chọn liên hệ",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
