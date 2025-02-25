@@ -13,6 +13,7 @@ class UserInformationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: const Text(
           'Thông tin người dùng',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -29,28 +30,25 @@ class UserInformationScreen extends StatelessWidget {
               clipBehavior: Clip.none, // Ensure avatar is not clipped
               children: [
                 Container(
-                  height: 180, // Adjusted height
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  height: 200, // Adjusted height
                   width: double.infinity,
                   decoration: BoxDecoration(
+                    // image: DecorationImage(
+                    //   image: NetworkImage(
+                    //       user.avatar), // User's avatar as background
+                    //   fit: BoxFit.cover, // Cover the entire container
+                    // ),
+                    // border: Border.all(
+                    //   color: Colors.white, // Border color
+                    //   width: 4, // Border width
+                    // ),
+                    borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
-                      image: NetworkImage(
-                          user.avatar), // User's avatar as background
-                      fit: BoxFit.cover, // Cover the entire container
-                    ),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primaryColor
-                              .withOpacity(0.6), // Darker gradient with opacity
-                          AppColors.primaryColor
-                              .withOpacity(0.4), // Darker gradient with opacity
-                          // AppColors.primaryLowColor.withOpacity(0.7),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
+                      image:
+                          AssetImage('assets/img/happy_4.jpg'), // Change this
+                      fit: BoxFit.cover,
+                      opacity: 1, // Light effect
                     ),
                   ),
                 ),
@@ -78,7 +76,25 @@ class UserInformationScreen extends StatelessWidget {
               user.fullName,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-
+            const SizedBox(height: 10),
+            // Add Friend Button
+            ElevatedButton.icon(
+              onPressed: () {
+                // Add friend action
+                print("Friend request sent to ${user.fullName}");
+              },
+              icon: const Icon(Icons.person_add, color: Colors.white),
+              label: const Text("Thêm bạn",
+                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
             // User Info
             Container(
               width: double.infinity,
@@ -92,12 +108,12 @@ class UserInformationScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildInfoRow("Email", user.email),
+                  buildInfoRow("Số điện thoại", user.phoneNumber),
                   buildInfoRow("Giới tính",
                       user.gender.toLowerCase() == "female" ? "Nữ" : "Nam"),
                   buildInfoRow("Ngày sinh",
                       formatDate(user.dateOfBirth)), // Fix dob format
-                  buildInfoRow("Số điện thoại", user.phoneNumber),
+                  buildInfoRow("Email", user.email),
                   buildInfoRow(
                       "Thành viên từ ngày:", formatDate(user.createdDate)),
                 ],
