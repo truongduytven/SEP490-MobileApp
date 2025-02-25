@@ -11,10 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Check compileSdkVersion
-        run: cat android/app/build.gradle | grep "compileSdkVersion"
-
+      
       - uses: actions/setup-java@v2
         with:
           distribution: "zulu"
@@ -22,7 +19,14 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: "3.27.2"
           channel: "stable"
+
+      - name: Check Flutter and Dart Version
+        run: |
+          flutter --version
+          dart --version
+
       - run: flutter pub get
       - run: flutter build apk --release --split-per-abi
 
