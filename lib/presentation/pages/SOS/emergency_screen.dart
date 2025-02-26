@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pulsator/pulsator.dart';
 import 'package:record/record.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +27,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   final record = AudioRecorder();
   int _countdown = 10;
   Timer? _timer;
+  final int _count = 5;
+  final int _duration = 2;
+  final int _repeatCount = 0;
 
   @override
   void initState() {
@@ -240,76 +245,73 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],
       body: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
+        bottom: true,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 🔹 Tiêu đề
               Text(
                 "Tiến hành gọi khẩn cấp",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-          
+
               SizedBox(height: 10),
-          
-              // 🔹 Mô tả
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Text(
-                  "Bạn đã kích hoạt cuộc gọi khẩn cấp và nó sẽ được thực hiện sau:",
+                  "Cuộc gọi khẩn cấp sẽ được thực hiện sau:",
                   style: TextStyle(fontSize: 22, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
               ),
-          
-              SizedBox(height: 40),
-          
-              // 🔹 Nút đếm ngược
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 140,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [Colors.orangeAccent, Colors.redAccent],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.orange.withOpacity(0.5),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '$_countdown',
-                      style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.redAccent),
-                    ),
-                  ),
-                ],
+
+              SizedBox(height: 20),
+
+              Center(
+                child: Text(
+                  "$_countdown",
+                  style: TextStyle(fontSize: 50, color: Colors.red),
+                ),
               ),
-          
+
+              // 🔹 Nút đếm ngược
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Pulsator(
+                      style: const PulseStyle(color: Colors.red),
+                      count: _count,
+                      duration: Duration(seconds: _duration),
+                      repeat: _repeatCount,
+                    ),
+                    Center(
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        padding: EdgeInsets.all(20.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Lottie.asset(
+                          "assets/img/AnimationSOS.json",
+                          height: 50,
+                          width: 50,
+                          fit: BoxFit.cover,
+                          frameRate: FrameRate.max,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               SizedBox(height: 50),
-          
+
               // 🔹 Nút "Hủy"
               ElevatedButton(
                 onPressed: _cancelEmergency,

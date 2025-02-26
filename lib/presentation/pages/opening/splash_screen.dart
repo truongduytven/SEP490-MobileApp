@@ -28,7 +28,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateNext() async {
-    final String token = SharedPrefsHelper().getString('accessToken') ?? '';
     final String email = SharedPrefsHelper().getString('email') ?? '';
     final String password = SharedPrefsHelper().getString('password') ?? '';
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -123,7 +122,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       Navigator.of(context).pop();
       Fluttertoast.showToast(
-        msg: response['data']['data'] ?? "Có lỗi trong quá trình xử lý!",
+        msg: "Có lỗi trong quá trình xử lý!",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,

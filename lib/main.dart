@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/pages/SOS/emergency_screen.dart';
+import 'package:sep490/presentation/pages/SOS/record_button.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
 import 'package:sep490/theme/color.dart';

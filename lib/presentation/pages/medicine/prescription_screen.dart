@@ -211,7 +211,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               children: [
                                 Center(
                                     child: Text(
-                                  prescription['name'],
+                                  'Toa thuốc ngày ${prescription['start_date']}',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 22),
