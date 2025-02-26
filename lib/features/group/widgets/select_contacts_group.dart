@@ -81,6 +81,7 @@ class SelectContactsGroup extends ConsumerStatefulWidget {
 }
 
 class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
+  final ScrollController _scrollController = ScrollController();
   void selectContact(Contact contact) {
     final selectedContacts = ref.read(selectedGroupContacts);
 
@@ -94,6 +95,16 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
       ref
           .read(selectedGroupContacts.state)
           .update((state) => [...state, contact]);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
     }
     setState(() {}); // Refresh UI
   }
@@ -166,6 +177,7 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
                       child: SizedBox(
                         height: 90, // Limit row height
                         child: ListView.builder(
+                          controller: _scrollController,
                           scrollDirection: Axis.horizontal,
                           itemCount: selectedContacts.length,
                           itemBuilder: (context, index) {
