@@ -12,7 +12,7 @@ import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/models/chat_contact.dart';
 import 'package:sep490/models/chat_room_status.dart';
-import 'package:sep490/models/group.dart';
+import 'package:sep490/models/group_chat.dart';
 import 'package:sep490/models/message.dart';
 import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/models/user_model.dart';
@@ -29,7 +29,7 @@ class ChatRepository {
       StreamController.broadcast();
   final StreamController<ChatRoomStatus> _statusStreamController =
       StreamController.broadcast();
-  final StreamController<List<Group>> _chatGroupsController =
+  final StreamController<List<GroupChat>> _chatGroupsController =
       StreamController.broadcast();
   final Map<String, StreamController<List<Message>>> _chatStreams = {};
   final Map<String, StreamController<List<Message>>> _groupChatStreams = {};
@@ -170,7 +170,7 @@ class ChatRepository {
   }
 
   /// Stream for chat groups
-  Stream<List<Group>> getGroupsStream(String userId) {
+  Stream<List<GroupChat>> getGroupsStream(String userId) {
     _fetchGroups(userId);
     return _chatGroupsController.stream;
   }
@@ -181,7 +181,7 @@ class ChatRepository {
           await http.get(Uri.parse('$baseUrl/chats/$userId/groups'));
       if (response.statusCode == 200) {
         List data = json.decode(response.body);
-        _chatGroupsController.add(data.map((e) => Group.fromMap(e)).toList());
+        _chatGroupsController.add(data.map((e) => GroupChat.fromMap(e)).toList());
       } else {
         _chatGroupsController.addError('Failed to load chat groups');
       }

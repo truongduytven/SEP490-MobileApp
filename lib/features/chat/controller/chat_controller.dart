@@ -6,7 +6,7 @@ import 'package:sep490/common/enums/message_enum.dart';
 import 'package:sep490/common/provider/message_reply_provider.dart';
 import 'package:sep490/models/chat_contact.dart';
 import 'package:sep490/models/chat_room_status.dart';
-import 'package:sep490/models/group.dart';
+import 'package:sep490/models/group_chat.dart';
 import 'package:sep490/models/message.dart';
 import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
@@ -37,7 +37,7 @@ class ChatController {
     return chatRepository.getContactsStream(userId);
   }
 
-  Stream<List<Group>> chatGroups(String userId) {
+  Stream<List<GroupChat>> chatGroups(String userId) {
     return chatRepository.getGroupsStream(userId);
   }
 

@@ -61,7 +61,7 @@ class UserInformationScreen extends StatelessWidget {
                     backgroundColor: Colors.white,
                     child: CircleAvatar(
                       radius: 52,
-                      backgroundImage: NetworkImage(user.avatar),
+                      backgroundImage: NetworkImage(user.avatar ?? ""),
                     ),
                   ),
                 ),
@@ -73,7 +73,7 @@ class UserInformationScreen extends StatelessWidget {
 
             // Name & Location
             Text(
-              user.fullName,
+              user.fullName ?? "Không có tên",
               style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -108,14 +108,19 @@ class UserInformationScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildInfoRow("Số điện thoại", user.phoneNumber),
-                  buildInfoRow("Giới tính",
-                      user.gender.toLowerCase() == "female" ? "Nữ" : "Nam"),
-                  buildInfoRow("Ngày sinh",
-                      formatDate(user.dateOfBirth)), // Fix dob format
-                  buildInfoRow("Email", user.email),
+                  buildInfoRow("Số điện thoại", user.phoneNumber ?? "Không có"),
                   buildInfoRow(
-                      "Thành viên từ ngày:", formatDate(user.createdDate)),
+                    "Giới tính",
+                    user.gender?.toLowerCase() == "female"
+                        ? "Nữ"
+                        : user.gender?.toLowerCase() == "male"
+                            ? "Nam"
+                            : "Không rõ",
+                  ),
+                  buildInfoRow("Ngày sinh", formatDate(user.dateOfBirth)),
+                  buildInfoRow("Email", user.email ?? "Không có"),
+                  buildInfoRow(
+                      "Thành viên từ ngày", formatDate(user.createdDate)),
                 ],
               ),
             ),
@@ -125,7 +130,8 @@ class UserInformationScreen extends StatelessWidget {
     );
   }
 
-  String formatDate(DateTime dob) {
+  String formatDate(DateTime? dob) {
+    if (dob == null) return "Chưa có thông tin"; // Handle null case
     return DateFormat('dd/MM/yyyy').format(dob);
   }
 

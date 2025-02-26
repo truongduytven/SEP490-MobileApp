@@ -1,4 +1,4 @@
-class Group {
+class GroupChat {
   final String senderId;
   final String name;
   final String groupId;
@@ -6,7 +6,7 @@ class Group {
   final String groupPic;
   final List<String> membersUid;
   final DateTime timeSent;
-  Group({
+  GroupChat({
     required this.senderId,
     required this.name,
     required this.groupId,
@@ -28,7 +28,7 @@ class Group {
     };
   }
 
-  factory Group.fromMap(Map<String, dynamic> map) {
+  factory GroupChat.fromMap(Map<String, dynamic> map) {
     // return Group(
     //   senderId: map['senderId'] as String,
     //   name: map['name'] as String,
@@ -38,7 +38,7 @@ class Group {
     //   membersUid: List<String>.from(map['membersUid'] as List<String>),
     //   timeSent: DateTime.fromMillisecondsSinceEpoch(map['timeSent'] as int),
     // );
-    return Group(
+    return GroupChat(
       senderId: map['senderId'] ?? '',
       name: map['name'] ?? '',
       groupId: map['groupId'] ?? '',
