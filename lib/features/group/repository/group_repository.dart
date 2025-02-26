@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_contacts/contact.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/models/group_model.dart';
 import 'package:sep490/models/user_contact.dart';
-import 'package:uuid/uuid.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final groupRepositoryProvider = Provider(
   (ref) => GroupRepository(),
@@ -20,7 +20,6 @@ class GroupRepository {
   static const String baseUrl = "https://your-api.com";
   Future<List<GroupMember>> getGroupMembers(
       BuildContext context, int userId) async {
-    print("vo repos fetch member in group");
     try {
       final response = await http.get(
         Uri.parse(
@@ -29,11 +28,9 @@ class GroupRepository {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
-        print("data group ${jsonData}");
 
         if (jsonData['status'] == 1) {
           GroupResponse groupResponse = GroupResponse.fromJson(jsonData);
-          print("thành công ${groupResponse.toJson()}");
           return groupResponse.data;
         } else {
           showSnackBar(context: context, content: "Lỗi tải dữ liệu");
@@ -52,77 +49,77 @@ class GroupRepository {
     }
   }
 
-  Future<void> createGroup(
+  Future<bool> createGroup(
     BuildContext context,
     String name,
     File? profilePic,
     List<UserContact> selectedContacts,
   ) async {
-    // try {
-    //   // 1️⃣ Convert selected contacts to phone numbers
-    //   List<String> phoneNumbers = selectedContacts
-    //       .where((c) => c.phones.isNotEmpty)
-    //       .map((c) => c.phones[0].number.replaceAll(' ', ''))
-    //       .toList();
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final accountId = prefs.getInt('accountId');
 
-    //   // 2️⃣ Fetch user UIDs from API
-    //   final userResponse = await http.post(
-    //     Uri.parse("$baseUrl/get-users-by-phone"),
-    //     headers: {'Content-Type': 'application/json'},
-    //     body: jsonEncode({'phoneNumbers': phoneNumbers}),
-    //   );
+      if (accountId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Không tìm thấy tài khoản! Vui lòng đăng nhập lại."),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return false;
+      }
 
-    //   if (userResponse.statusCode != 200) {
-    //     throw Exception("Failed to fetch users.");
-    //   }
+      Dio dio = Dio();
+      List<Map<String, dynamic>> members = [
+        {"accountId": accountId, "isCreator": true}
+      ];
 
-    //   List<String> uids = List<String>.from(jsonDecode(userResponse.body));
+      for (var contact in selectedContacts) {
+        members.add({
+          "accountId": contact.accountId ?? 0,
+          "isCreator": false,
+        });
+      }
 
-    //   // 3️⃣ Generate group ID
-    //   var groupId = const Uuid().v1();
-    //   String profileUrl =
-    //       "https://png.pngtree.com/element_our/png_detail/20180904/group-avatar-icon-design-vector-png_75950.jpg";
+      FormData formData = FormData.fromMap({
+        "GroupId": "",
+        "GroupName": name,
+        if (profilePic != null)
+          "GroupAvatar": await MultipartFile.fromFile(
+            profilePic.path,
+            filename: profilePic.path.split('/').last,
+          ),
+        "Members": members,
+      });
 
-    //   // 4️⃣ Upload profile picture if available
-    //   if (profilePic != null) {
-    //     var request = http.MultipartRequest(
-    //       'POST',
-    //       Uri.parse("$baseUrl/upload-profile"),
-    //     );
-    //     request.files
-    //         .add(await http.MultipartFile.fromPath('file', profilePic.path));
+      Response response = await dio.post(
+        'https://api.diavan-valuation.asia/chat-management/group-chat',
+        data: formData,
+        options: Options(headers: {
+          'accept': '*/*',
+          'Content-Type': 'multipart/form-data',
+        }),
+      );
 
-    //     var response = await request.send();
-    //     if (response.statusCode == 200) {
-    //       var responseData = await response.stream.bytesToString();
-    //       profileUrl = jsonDecode(responseData)['imageUrl'];
-    //     } else {
-    //       throw Exception("Failed to upload image.");
-    //     }
-    //   }
+      final Map<String, dynamic> responseData = response.data;
 
-    //   // 5️⃣ Create group via API
-    //   final groupResponse = await http.post(
-    //     Uri.parse("$baseUrl/create-group"),
-    //     headers: {'Content-Type': 'application/json'},
-    //     body: jsonEncode({
-    //       'senderId': "your-user-id", // Replace with user ID from auth
-    //       'name': name,
-    //       'groupId': groupId,
-    //       'lastMessage': '',
-    //       'groupPic': profileUrl,
-    //       'membersUid': ["your-user-id", ...uids], // Replace with user ID
-    //       'timeSent': DateTime.now().toIso8601String(),
-    //     }),
-    //   );
-
-    //   if (groupResponse.statusCode != 201) {
-    //     throw Exception("Failed to create group.");
-    //   }
-
-    //   showSnackBar(context: context, content: "Group created successfully!");
-    // } catch (e) {
-    //   showSnackBar(context: context, content: e.toString());
-    // }
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (responseData["status"] == 1) {
+          showSnackBar(
+              context: context, content: "Tạo nhóm thành công", type: "green");
+          return true;
+        } else {
+          showSnackBar(
+              context: context, content: "Lỗi: ${responseData["message"]}");
+          return false;
+        }
+      } else {
+        showSnackBar(context: context, content: "Lỗi khi tạo nhóm");
+        return false;
+      }
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+      return false;
+    }
   }
 }

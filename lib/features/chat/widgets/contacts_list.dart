@@ -62,24 +62,35 @@ class ContactsList extends ConsumerWidget {
                           ],
                         );
                       }
+
                       return ListView.builder(
                         shrinkWrap: true,
-                        itemCount: snapshot.data!.length,
+                        physics:
+                            NeverScrollableScrollPhysics(), // Prevents double scrolling
+                        itemCount:
+                            snapshot.data!.length + 1, // Extra item for spacing
                         itemBuilder: (context, index) {
+                          if (index == snapshot.data!.length) {
+                            return const SizedBox(
+                                height: 20); // Adds 100px space at the bottom
+                          }
+
                           var groupData = snapshot.data![index];
                           return Column(
                             children: [
                               InkWell(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, MobileChatScreen.routeName,
-                                      arguments: {
-                                        'name': groupData.roomName,
-                                        'uid': groupData.roomId,
-                                        'isGroupChat': groupData.isGroupChat,
-                                        'profilePic': groupData.roomAvatar,
-                                        "users": groupData.users
-                                      });
+                                    context,
+                                    MobileChatScreen.routeName,
+                                    arguments: {
+                                      'name': groupData.roomName,
+                                      'uid': groupData.roomId,
+                                      'isGroupChat': groupData.isGroupChat,
+                                      'profilePic': groupData.roomAvatar,
+                                      "users": groupData.users
+                                    },
+                                  );
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
@@ -115,7 +126,6 @@ class ContactsList extends ConsumerWidget {
                                           ),
                                           radius: 30,
                                         ),
-                                        // Online status indicator
                                         if (!groupData.isGroupChat &&
                                             groupData.isOnline)
                                           Positioned(
@@ -169,9 +179,7 @@ class ContactsList extends ConsumerWidget {
                                   ),
                                 ),
                               ),
-                              const SizedBox(
-                                height: 10,
-                              ),
+                              const SizedBox(height: 10),
                             ],
                           );
                         },

@@ -23,18 +23,64 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
     setState(() {});
   }
 
-  void createGroup() {
-    if (groupNameController.text.trim().isNotEmpty) {
-      print("vo day");
-      ref.read(groupControllerProvider).createGroup(
+  void createGroup() async {
+    final selectedContacts = ref.read(selectedGroupContacts);
+
+    if (groupNameController.text.trim().isEmpty) {
+      // Show error if group name is empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Vui lòng nhập tên nhóm."),
+          backgroundColor: AppColors.errorColor,
+        ),
+      );
+      return;
+    }
+
+    if (selectedContacts.length < 2) {
+      // Show error if less than 2 members selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Nhóm phải có ít nhất 2 thành viên."),
+          backgroundColor: AppColors.errorColor,
+        ),
+      );
+      return;
+    }
+    if (image == null) {
+      // Check if image is null
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Vui lòng chọn ảnh nhóm."),
+          backgroundColor: AppColors.errorColor,
+        ),
+      );
+      return;
+    }
+    // // Proceed with group creation
+    // ref.read(groupControllerProvider).createGroup(
+    //       context,
+    //       groupNameController.text.trim(),
+    //       image,
+    //       selectedContacts,
+    //     );
+
+    // // Reset selected contacts after creating group
+    // ref.read(selectedGroupContacts.state).update((state) => []);
+    // ref.read(selectedGroupIdProvider.state).update((state) => null);
+
+    // Navigator.pop(context);
+
+    bool success = await ref.read(groupControllerProvider).createGroup(
           context,
           groupNameController.text.trim(),
           image,
-          ref.read(
-            selectedGroupContacts,
-          ));
-      ref.read(selectedGroupContacts.state).update((state) => []);
+          selectedContacts,
+        );
 
+    if (success) {
+      ref.read(selectedGroupContacts.state).update((state) => []);
+      ref.read(selectedGroupIdProvider.state).update((state) => null);
       Navigator.pop(context);
     }
   }
@@ -51,6 +97,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
       onWillPop: () async {
         // Reset selected contacts before leaving
         ref.read(selectedGroupContacts.state).update((state) => []);
+        ref.read(selectedGroupIdProvider.state).update((state) => null);
         return true; // Allow back navigation
       },
       child: Scaffold(
@@ -72,13 +119,13 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
+                    color: AppColors.secondaryColor.withOpacity(0.6),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
                     onPressed: selectImage,
                     icon: const Icon(Icons.add_a_photo,
-                        color: Colors.white, size: 28),
+                        color: Colors.white, size: 30),
                   ),
                 ),
               ],
@@ -103,9 +150,24 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
             Container(
               alignment: Alignment.topLeft,
               padding: const EdgeInsets.all(8),
-              child: const Text(
-                "Chọn liên hệ",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              child: Column(
+                // Change Row to Column to prevent horizontal overflow
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Vui lòng chọn thành viên",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4), // Add some spacing
+                  const Text(
+                    "*Bạn chỉ được tạo nhóm với những thành viên cùng nhóm gia đình",
+                    style: TextStyle(
+                      fontSize: 14, // Reduce font size
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.errorColor,
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(

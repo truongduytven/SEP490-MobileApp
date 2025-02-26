@@ -171,12 +171,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'LeagueSpartan'),
       color: AppColors.bgColor,
       home: SplashScreen(),
+      scaffoldMessengerKey: scaffoldMessengerKey,
       navigatorKey: widget.navigatorKey,
       onGenerateRoute: (settings) => generateRoute(settings),
       debugShowCheckedModeBanner: false,
