@@ -98,6 +98,12 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
     setState(() {}); // Refresh UI
   }
 
+  void removeContact(Contact contact) {
+    ref
+        .read(selectedGroupContacts.state)
+        .update((state) => state.where((c) => c != contact).toList());
+  }
+
   @override
   Widget build(BuildContext context) {
     return ref.watch(getContactsProvider).when(
@@ -112,8 +118,51 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
               child: Column(
                 children: [
                   if (selectedContacts.isNotEmpty)
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(vertical: 10),
+                    //   child: SizedBox(
+                    //     height: 90, // Limit row height
+                    //     child: ListView.builder(
+                    //       scrollDirection: Axis.horizontal,
+                    //       itemCount: selectedContacts.length,
+                    //       itemBuilder: (context, index) {
+                    //         final contact = selectedContacts[index];
+                    //         return Padding(
+                    //           padding:
+                    //               const EdgeInsets.symmetric(horizontal: 5),
+                    //           child: Column(
+                    //             children: [
+                    //               CircleAvatar(
+                    //                 radius: 25,
+                    //                 backgroundColor: Colors.grey[300],
+                    //                 child: contact.photo != null
+                    //                     ? ClipOval(
+                    //                         child: Image.memory(contact.photo!,
+                    //                             fit: BoxFit.cover,
+                    //                             width: 50,
+                    //                             height: 50),
+                    //                       )
+                    //                     : Icon(Icons.person, size: 30),
+                    //               ),
+                    //               SizedBox(height: 5),
+                    //               Text(
+                    //                 contact.displayName,
+                    //                 // contact.displayName.split(' ').first,
+                    //                 style: TextStyle(fontSize: 12),
+                    //                 overflow: TextOverflow.ellipsis,
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         );
+                    //       },
+                    //     ),
+                    //   ),
+                    // ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 15,
+                      ),
                       child: SizedBox(
                         height: 90, // Limit row height
                         child: ListView.builder(
@@ -124,26 +173,48 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
                             return Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 5),
-                              child: Column(
+                              child: Stack(
+                                alignment: Alignment.topRight,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.grey[300],
-                                    child: contact.photo != null
-                                        ? ClipOval(
-                                            child: Image.memory(contact.photo!,
-                                                fit: BoxFit.cover,
-                                                width: 50,
-                                                height: 50),
-                                          )
-                                        : Icon(Icons.person, size: 30),
+                                  Column(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 25,
+                                        backgroundColor: Colors.grey[300],
+                                        child: contact.photo != null
+                                            ? ClipOval(
+                                                child: Image.memory(
+                                                  contact.photo!,
+                                                  fit: BoxFit.cover,
+                                                  width: 50,
+                                                  height: 50,
+                                                ),
+                                              )
+                                            : Icon(Icons.person, size: 30),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        contact.displayName,
+                                        style: TextStyle(fontSize: 12),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(height: 5),
-                                  Text(
-                                    contact.displayName,
-                                    // contact.displayName.split(' ').first,
-                                    style: TextStyle(fontSize: 12),
-                                    overflow: TextOverflow.ellipsis,
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () => removeContact(contact),
+                                      child: CircleAvatar(
+                                        radius: 10,
+                                        backgroundColor: Colors.red,
+                                        child: Icon(
+                                          Icons.close,
+                                          size: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
