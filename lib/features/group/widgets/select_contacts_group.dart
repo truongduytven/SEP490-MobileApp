@@ -153,7 +153,7 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
                       ),
                     ),
                   SizedBox(
-                    height: 300, // Set a fixed height
+                    height: 500, // Set a fixed height
                     child: ListView.builder(
                       itemCount: sortedContacts.length,
                       itemBuilder: (context, index) {
