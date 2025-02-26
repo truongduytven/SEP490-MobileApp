@@ -47,133 +47,80 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Tạo mới nhóm'),
-      ),
-      // body: SingleChildScrollView(
-      //   child: Column(
-      //     mainAxisSize: MainAxisSize.min, // Ensures it takes only needed space
-      //     children: [
-      //       const SizedBox(height: 10),
-      //       Stack(
-      //         alignment: Alignment.center,
-      //         children: [
-      //           CircleAvatar(
-      //             backgroundImage: image == null
-      //                 ? const NetworkImage(
-      //                     "https://i.pinimg.com/736x/44/6d/5d/446d5df6c8837382b80c16b6cde11175.jpg")
-      //                 : FileImage(image!) as ImageProvider,
-      //             radius: 64,
-      //           ),
-      //           Container(
-      //             decoration: BoxDecoration(
-      //               color: Colors.black.withOpacity(0.6),
-      //               shape: BoxShape.circle,
-      //             ),
-      //             child: IconButton(
-      //               onPressed: selectImage,
-      //               icon: const Icon(Icons.add_a_photo,
-      //                   color: Colors.white, size: 28),
-      //             ),
-      //           ),
-      //         ],
-      //       ),
-      //       Padding(
-      //         padding: const EdgeInsets.all(20.0),
-      //         child: TextField(
-      //           controller: groupNameController,
-      //           decoration: InputDecoration(
-      //             hintText: "Enter group name",
-      //             filled: true,
-      //             fillColor: AppColors.borderColor,
-      //             contentPadding:
-      //                 const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-      //             border: OutlineInputBorder(
-      //               borderRadius: BorderRadius.circular(12),
-      //               borderSide: BorderSide.none,
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //       Container(
-      //         alignment: Alignment.topLeft,
-      //         padding: const EdgeInsets.all(8),
-      //         child: const Text(
-      //           "Chọn liên hệ",
-      //           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-      //         ),
-      //       ),
-      //       SizedBox(
-      //           height: 300,
-      //           child: SelectContactsGroup()), // Ensure fixed height
-      //     ],
-      //   ),
-      // ),
-      body: Column(
-        children: [
-          const SizedBox(height: 10),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              CircleAvatar(
-                backgroundImage: image == null
-                    ? const NetworkImage(
-                        "https://i.pinimg.com/736x/44/6d/5d/446d5df6c8837382b80c16b6cde11175.jpg")
-                    : FileImage(image!) as ImageProvider,
-                radius: 64,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
-                  shape: BoxShape.circle,
+    return WillPopScope(
+      onWillPop: () async {
+        // Reset selected contacts before leaving
+        ref.read(selectedGroupContacts.state).update((state) => []);
+        return true; // Allow back navigation
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Tạo mới nhóm'),
+        ),
+        body: Column(
+          children: [
+            const SizedBox(height: 10),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                CircleAvatar(
+                  backgroundImage: image == null
+                      ? const NetworkImage(
+                          "https://i.pinimg.com/736x/44/6d/5d/446d5df6c8837382b80c16b6cde11175.jpg")
+                      : FileImage(image!) as ImageProvider,
+                  radius: 64,
                 ),
-                child: IconButton(
-                  onPressed: selectImage,
-                  icon: const Icon(Icons.add_a_photo,
-                      color: Colors.white, size: 28),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: selectImage,
+                    icon: const Icon(Icons.add_a_photo,
+                        color: Colors.white, size: 28),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: TextField(
-              controller: groupNameController,
-              decoration: InputDecoration(
-                hintText: "Enter group name",
-                filled: true,
-                fillColor: AppColors.borderColor,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: TextField(
+                controller: groupNameController,
+                decoration: InputDecoration(
+                  hintText: "Enter group name",
+                  filled: true,
+                  fillColor: AppColors.borderColor,
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
             ),
-          ),
-          Container(
-            alignment: Alignment.topLeft,
-            padding: const EdgeInsets.all(8),
-            child: const Text(
-              "Chọn liên hệ",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.all(8),
+              child: const Text(
+                "Chọn liên hệ",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
             ),
+            Expanded(
+              child:
+                  SelectContactsGroup(), // This will take up the remaining height
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: createGroup,
+          backgroundColor: AppColors.primaryColor,
+          child: Icon(
+            Icons.done,
+            color: Colors.white,
           ),
-          Expanded(
-            child:
-                SelectContactsGroup(), // This will take up the remaining height
-          ),
-        ],
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: createGroup,
-        backgroundColor: AppColors.primaryColor,
-        child: Icon(
-          Icons.done,
-          color: Colors.white,
         ),
       ),
     );
