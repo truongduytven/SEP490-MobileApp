@@ -74,7 +74,7 @@ class UserInformationScreen extends StatelessWidget {
             // Name & Location
             Text(
               user.fullName,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             // Add Friend Button
@@ -83,9 +83,9 @@ class UserInformationScreen extends StatelessWidget {
                 // Add friend action
                 print("Friend request sent to ${user.fullName}");
               },
-              icon: const Icon(Icons.person_add, color: Colors.white),
+              icon: const Icon(Icons.person_add, size: 26, color: Colors.white),
               label: const Text("Thêm bạn",
-                  style: TextStyle(fontSize: 16, color: Colors.white)),
+                  style: TextStyle(fontSize: 20, color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 padding:
@@ -138,12 +138,14 @@ class UserInformationScreen extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-                color: AppColors.primaryColor, fontWeight: FontWeight.bold),
+                fontSize: 22,
+                color: AppColors.primaryColor,
+                fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
           ),
           const Divider(thickness: 1),
         ],

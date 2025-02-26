@@ -115,7 +115,7 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: SizedBox(
-                        height: 70, // Limit row height
+                        height: 90, // Limit row height
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: selectedContacts.length,
@@ -140,7 +140,8 @@ class _SelectContactsGroupState extends ConsumerState<SelectContactsGroup> {
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    contact.displayName.split(' ').first,
+                                    contact.displayName,
+                                    // contact.displayName.split(' ').first,
                                     style: TextStyle(fontSize: 12),
                                     overflow: TextOverflow.ellipsis,
                                   ),
