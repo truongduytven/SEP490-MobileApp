@@ -18,6 +18,7 @@ class CreateGroupScreen extends ConsumerStatefulWidget {
 class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
   final TextEditingController groupNameController = TextEditingController();
   File? image;
+  bool isLoading = false;
   void selectImage() async {
     image = await pickImageFromGallery(context);
     setState(() {});
@@ -57,19 +58,9 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
       );
       return;
     }
-    // // Proceed with group creation
-    // ref.read(groupControllerProvider).createGroup(
-    //       context,
-    //       groupNameController.text.trim(),
-    //       image,
-    //       selectedContacts,
-    //     );
-
-    // // Reset selected contacts after creating group
-    // ref.read(selectedGroupContacts.state).update((state) => []);
-    // ref.read(selectedGroupIdProvider.state).update((state) => null);
-
-    // Navigator.pop(context);
+    setState(() {
+      isLoading = true; // Start loading
+    });
 
     bool success = await ref.read(groupControllerProvider).createGroup(
           context,
@@ -83,6 +74,10 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
       ref.read(selectedGroupIdProvider.state).update((state) => null);
       Navigator.pop(context);
     }
+
+    setState(() {
+      isLoading = false; // Stop loading
+    });
   }
 
   @override
@@ -177,12 +172,13 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: createGroup,
+          onPressed: isLoading ? null : createGroup,
           backgroundColor: AppColors.primaryColor,
-          child: Icon(
-            Icons.done,
-            color: Colors.white,
-          ),
+          child: isLoading
+              ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+              : Icon(Icons.done, color: Colors.white),
         ),
       ),
     );
