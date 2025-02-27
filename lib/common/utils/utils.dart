@@ -78,3 +78,16 @@ String convertTime (String time) {
   var formattedTime = '$hour:$minute';
   return formattedTime;
 }
+
+String convertDateTime (String dateTime) {
+  // '25/02/2025' to '2025-02-25T00:00:00Z'
+  var dateParts = dateTime.split('/');
+  var day = dateParts[0];
+  var month = dateParts[1];
+  var year = dateParts[2];
+  if (month.length == 1) {
+    month = '0$month';
+  }
+  var formattedDateTime = '$year-$month-$day''T00:00:00Z';
+  return formattedDateTime;
+}

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:sep490/common/utils/utils.dart';
@@ -357,7 +356,11 @@ class _HomeMedicineState extends State<HomeMedicine> {
   }
 
   Widget buildMedicineList() {
-    if (prescription?.medicines.length == 0) {
+    Map<String, List<Map<String, dynamic>>> categorizedMedicines =
+        categorizeMedicines();
+    bool isAllEmpty = categorizedMedicines.values.every((list) => list.isEmpty);
+
+    if (prescription == null || prescription!.medicines.isEmpty || isAllEmpty) {
       return Column(
         children: [
           const SizedBox(height: 50),
@@ -377,9 +380,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
         ],
       );
     }
-
-    Map<String, List<Map<String, dynamic>>> categorizedMedicines =
-        categorizeMedicines();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

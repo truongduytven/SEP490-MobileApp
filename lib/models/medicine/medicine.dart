@@ -1,21 +1,26 @@
+
+//prescription inside schedules
 class Prescription {
   final int id;
   final String treatment;
+  final String endDate;
   final String startDate;
   final List<Medicine> medicines;
 
   Prescription({
     required this.id,
     required this.treatment,
+    required this.endDate,
     required this.startDate,
     required this.medicines,
   });
 
   factory Prescription.fromJson(Map<String, dynamic> json) {
     return Prescription(
-      id: json['id'],
-      treatment: json['treatment'],
-      startDate: json['startDate'],
+      id: json['id'] ?? 0,
+      treatment: json['treatment'] ?? '',
+      endDate: json['endDate'] ?? '',
+      startDate: json['startDate'] ?? '' ,
       medicines: (json['medicines'] as List)
           .map((medicine) => Medicine.fromJson(medicine))
           .toList(),
@@ -101,8 +106,8 @@ class Schedule {
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
     return Schedule(
-      time: json['time'],
-      status: json['status'],
+      time: json['time'] ?? "",
+      status: json['status'] ?? "",
     );
   }
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sep490/theme/color.dart';
 
 class EditRemaining extends StatefulWidget {
-  final String currentRemaining;
+  final int currentRemaining;
   const EditRemaining({super.key, required this.currentRemaining});
 
   @override
@@ -17,8 +17,8 @@ class _EditRemainingState extends State<EditRemaining> {
   @override
   void initState() {
     super.initState();
-    if (widget.currentRemaining != '') {
-      _selectedPillCount = int.parse(widget.currentRemaining);
+    if (widget.currentRemaining != 0) {
+      _selectedPillCount = widget.currentRemaining;
     } else {
       _selectedPillCount = 1;
     }
@@ -100,7 +100,7 @@ class _EditRemainingState extends State<EditRemaining> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context, _selectedPillCount.toString());
+                    Navigator.pop(context, _selectedPillCount);
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondaryColor,

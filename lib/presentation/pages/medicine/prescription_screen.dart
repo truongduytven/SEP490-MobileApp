@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/models/medicine/medicine.dart';
+import 'package:sep490/presentation/pages/medicine/controller/medicine_controller.dart';
+import 'package:sep490/presentation/pages/medicine/create_presciption/create_prescription_screen.dart';
+import 'package:sep490/presentation/pages/medicine/create_presciption/create_title_prescription.dart';
 import 'package:sep490/presentation/widgets/medicine/medicine_card.dart';
 import 'package:sep490/theme/color.dart';
-
-import 'detail_medicine.dart';
 
 class PrescriptionScreen extends StatefulWidget {
   const PrescriptionScreen({super.key});
@@ -12,105 +18,162 @@ class PrescriptionScreen extends StatefulWidget {
 }
 
 class _PrescriptionScreenState extends State<PrescriptionScreen> {
-  late Map<String, dynamic> prescriptionData = {};
-  late Map<String, dynamic> prescription = {
-    "id": 1,
-    "name": "Toa thuốc 1",
-    "treatment": "viêm họng",
-    "start_date": "2022-10-10",
-    "medicines": <Map<String, dynamic>>[
-      {
-        "id": 1,
-        'name': 'Paracetamol 500mg',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8:00', '12:00', '18:00'],
-      },
-      {
-        "id": 2,
-        'name': 'Amoxicillin 500mg',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Select',
-        'frequencyEvery': '',
-        'frequencySelect': [
-          'Thứ 2',
-          'Thứ 3',
-          'Thứ 4',
-        ],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8:00', '12:00', '18:00'],
-      },
-      {
-        "id": 3,
-        'name': 'Loratadine 10mg',
-        'dosage': '1 viên',
-        'form': 'Viên',
-        'remaining': '31',
-        'typeFrequency': 'Every',
-        'frequencyEvery': '2',
-        'frequencySelect': [],
-        'mealTime': 'Trước ăn',
-        'schedule': ['8:00', '12:00', '18:00'],
-      },
-    ]
-  };
+  Prescription? prescription;
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int userId = sharedPrefsHelper.getInt('accountId')!;
+
   @override
   void initState() {
     super.initState();
     getPrescription();
   }
 
-  void getPrescription() async {}
-
-  void handlePressMedicineCard(int id) async {
-    for (var medicine in prescription["medicines"]) {
-      if (medicine["id"] == id) {
-        final updatedMedicine = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetailMedicine(
-              medicineData: medicine,
-            ),
-          ),
-        );
-        if (updatedMedicine != null &&
-            updatedMedicine is Map<String, dynamic>) {
-          setState(() {
-            medicine = updatedMedicine;
-          });
-        }
-      }
-    }
-  }
-
-  void handleAddMedicine() async {
-    final newMedicine = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DetailMedicine(
-          medicineData: null,
-        ),
-      ),
-    );
-    print(newMedicine);
-    if (newMedicine != null && newMedicine is Map<String, dynamic>) {
-      if (newMedicine['id'] == null) {
-        newMedicine['id'] = DateTime.now().millisecondsSinceEpoch;
-      }
+  void getPrescription() async {
+    MedicineController medicineController = MedicineController();
+    await medicineController.getPresciption(userId);
+    Timer(Duration(seconds: 2), () {
       setState(() {
-        prescription['medicines'].add(newMedicine);
+        prescription = medicineController.prescription;
       });
-    }
+    });
   }
 
-  void handleCreatePrescription() {}
+  // void handlePressMedicineCard(int id) async {
+  //   for (var medicine in prescription!.medicines) {
+  //     if (medicine.id == id) {
+  //       final updatedMedicine = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => DetailMedicine(
+  //             medicineData: medicine,
+  //           ),
+  //         ),
+  //       );
+  //       if (updatedMedicine != null &&
+  //           updatedMedicine is Map<String, dynamic>) {
+  //         setState(() {
+  //           medicine = updatedMedicine;
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+
+  // void handleAddMedicine() async {
+  //   final newMedicine = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => DetailMedicine(
+  //         medicineData: null,
+  //       ),
+  //     ),
+  //   );
+
+  //   if (newMedicine != null && newMedicine is Map<String, dynamic>) {
+  //     if (newMedicine['id'] == null) {
+  //       newMedicine['id'] = DateTime.now().millisecondsSinceEpoch;
+  //     }
+  //     setState(() {
+  //       prescription.medicines.add(newMedicine);
+  //     });
+  //   }
+  // }
+
+  void handleCreatePrescription() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateTitlePrescription(),
+                  ),
+                );
+              },
+              child: Container(
+                width: 250,
+                height: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/img/typing.png',
+                      height: 100,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Nhập tay',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'LeagueSpartan',
+                        color: AppColors.secondaryColor,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 50),
+            GestureDetector(
+              onTap: () async {
+                final XFile? image = await ImagePicker().pickImage(
+                source: ImageSource.camera, // Change to gallery if needed
+              );
+              if (image != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreatePrescriptionScreen(),
+                  ),
+                );
+              }
+              },
+              child: Container(
+                width: 250,
+                height: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/img/scan.png',
+                      height: 100,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Quét toa thuốc',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'LeagueSpartan',
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +201,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          child: prescription.isEmpty
+          child: prescription == null
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -211,7 +274,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                               children: [
                                 Center(
                                     child: Text(
-                                  prescription['name'],
+                                  'Toa thuốc ngày ${prescription!.startDate}',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 22),
@@ -229,8 +292,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                             "Ngày bắt đầu: ", // Phần này giữ bình thường
                                       ),
                                       TextSpan(
-                                        text: prescription[
-                                            'start_date'], // Chỉ phần ngày bắt đầu
+                                        text: prescription!
+                                            .startDate, // Chỉ phần ngày bắt đầu
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 18), // In đậm phần này
@@ -251,8 +314,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                             "Điều trị: ", // Phần này giữ bình thường
                                       ),
                                       TextSpan(
-                                        text: prescription[
-                                            'treatment'], // Chỉ phần ngày bắt đầu
+                                        text: prescription!
+                                            .treatment, // Chỉ phần ngày bắt đầu
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 18), // In đậm phần này
@@ -268,34 +331,78 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                       fontSize: 18),
                                 ),
                                 const SizedBox(height: 10),
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: prescription['medicines'].length,
-                                  itemBuilder: (context, index) {
-                                    return buildMedicineCard(
-                                      prescription['medicines'][index]['name'],
-                                      prescription['medicines'][index]
-                                          ['dosage'],
-                                      prescription['medicines'][index]['form'],
-                                      prescription['medicines'][index]
-                                          ['remaining'],
-                                      prescription['medicines'][index]
-                                          ['typeFrequency'],
-                                      prescription['medicines'][index]
-                                          ['frequencyEvery'],
-                                      prescription['medicines'][index]
-                                          ['frequencySelect'],
-                                      prescription['medicines'][index]
-                                          ['mealTime'],
-                                      prescription['medicines'][index]
-                                          ['schedule'],
-                                      () => handlePressMedicineCard(
-                                          prescription['medicines'][index]
-                                              ['id']),
-                                    );
-                                  },
-                                ),
+                                prescription!.medicines.isNotEmpty
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount:
+                                            prescription!.medicines.length,
+                                        itemBuilder: (context, index) {
+                                          return buildMedicineCard(
+                                            prescription!.medicines[index].name,
+                                            prescription!
+                                                .medicines[index].dosage,
+                                            prescription!.medicines[index].form,
+                                            prescription!
+                                                .medicines[index].remaining,
+                                            prescription!
+                                                .medicines[index].typeFrequency,
+                                            prescription!.medicines[index]
+                                                .frequencyEvery,
+                                            prescription!.medicines[index]
+                                                .frequencySelect,
+                                            prescription!
+                                                .medicines[index].mealTime,
+                                            prescription!
+                                                .medicines[index].schedule,
+                                            // () => handlePressMedicineCard(
+                                            //     prescription!.medicines[index].id),
+                                            () => {},
+                                          );
+                                        },
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset(
+                                            'assets/img3D/toathuocrong.png',
+                                            height: 150,
+                                          ),
+                                          const SizedBox(height: 20),
+                                          Text(
+                                            'Không có thuốc',
+                                            style: TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.secondaryColor,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 20),
+                                          ElevatedButton(
+                                            onPressed: handleCreatePrescription,
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppColors.secondaryColor,
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 20, vertical: 12),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              'Tạo toa thuốc mới',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                 Container(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 16),
@@ -303,7 +410,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                   color: Colors.transparent,
                                   child: ElevatedButton.icon(
                                     onPressed: () {
-                                      handleAddMedicine();
+                                      //handleAddMedicine();
                                     },
                                     icon: Icon(Icons.add_circle,
                                         size: 25, color: AppColors.iconColor),
