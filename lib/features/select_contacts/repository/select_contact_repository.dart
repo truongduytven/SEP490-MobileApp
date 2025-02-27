@@ -8,17 +8,15 @@ import 'package:sep490/models/user_contact.dart';
 import 'dart:convert';
 
 import 'package:sep490/models/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final selectContactRepositoryProvider = Provider(
   (ref) => SelectContactRepository(),
 );
 
 class SelectContactRepository {
-  final String apiUrl = 'https://yourapi.com/users';
-
   Future<List<Contact>> getContacts() async {
     List<Contact> contacts = [];
-    print("vo getcontect");
     try {
       if (await FlutterContacts.requestPermission()) {
         contacts = await FlutterContacts.getContacts(withProperties: true);
@@ -31,6 +29,19 @@ class SelectContactRepository {
 
   Future<void> selectContact(
       Contact selectedContact, BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final accountId = prefs.getInt('accountId');
+
+    if (accountId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Không tìm thấy tài khoản! Vui lòng đăng nhập lại."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     if (selectedContact.phones.isEmpty) {
       showSnackBar(
           context: context, content: "Liên hệ này không có số điện thoại.");
@@ -48,7 +59,7 @@ class SelectContactRepository {
     print("Processed Phone Number: $selectedPhoneNum");
 
     final String apiUrl =
-        "https://api.diavan-valuation.asia/account-management/phoneNumber?phoneNumber=$selectedPhoneNum";
+        "https://api.diavan-valuation.asia/account-management/phoneNumber/$selectedPhoneNum/$accountId";
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -57,7 +68,22 @@ class SelectContactRepository {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
         if (responseData["status"] == 1 && responseData["data"] != null) {
-          // final userData = responseData["data"];
+          final userData = responseData["data"];
+          // Check if the user is family
+          if (userData["isFamily"] == true) {
+            showSnackBar(
+                context: context,
+                content: "Không thể thêm vì các bạn là cùng nhóm gia đình");
+            return;
+          }
+
+          // Check if the user is the current user
+          if (userData["isMe"] == true) {
+            showSnackBar(
+                context: context,
+                content: "Không thể thêm bạn vì liên hệ này là chính bạn!");
+            return;
+          }
           final user = UserContact.fromJson(responseData["data"]);
           // Navigator.pushNamed(
           //   context,
