@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:sep490/common/widgets/loader.dart';
+import 'package:sep490/features/chat/screens/room_chat_detail_screen.dart';
 import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/features/chat/controller/chat_controller.dart';
@@ -30,7 +30,6 @@ class MobileChatScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accountIdAsync = ref.watch(accountIdProvider);
-
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
@@ -117,7 +116,20 @@ class MobileChatScreen extends ConsumerWidget {
             onCallFinished: onSendCallInvitationFinished,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RoomChatDetailScreen(
+                    name: name,
+                    uid: uid,
+                    isGroupChat: isGroupChat,
+                    profilePic: profilePic,
+                    users: users,
+                  ),
+                ),
+              );
+            },
             icon: const Icon(Icons.more_vert),
           ),
         ],

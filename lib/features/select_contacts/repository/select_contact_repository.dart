@@ -6,8 +6,6 @@ import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
 import 'package:sep490/models/user_contact.dart';
 import 'dart:convert';
-
-import 'package:sep490/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final selectContactRepositoryProvider = Provider(
@@ -69,6 +67,7 @@ class SelectContactRepository {
 
         if (responseData["status"] == 1 && responseData["data"] != null) {
           final userData = responseData["data"];
+          print("select $userData");
           // Check if the user is family
           if (userData["isFamily"] == true) {
             showSnackBar(
@@ -114,6 +113,50 @@ class SelectContactRepository {
       print("Error: $e");
       showSnackBar(
           context: context, content: "Error fetching data: ${e.toString()}");
+    }
+  }
+
+  Future<bool> sendFriendRequest(
+    BuildContext context,
+    int requestUserId,
+    int responseUserId,
+  ) async {
+    const String apiUrl =
+        "https://api.diavan-valuation.asia/user-link-management/add-friend";
+
+    final Map<String, dynamic> payload = {
+      "requestUserId": requestUserId,
+      "responseUserId": responseUserId,
+      "relationshipType": "Friend"
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData["status"] == 1) {
+          showSnackBar(
+              context: context,
+              content: "Gửi lời mời thành công ",
+              type: "green");
+
+          return true;
+        }
+      }
+      showSnackBar(context: context, content: "Gửi lời mời thất bại ");
+      return false;
+    } catch (e) {
+      showSnackBar(
+          context: context, content: "Gửi lời mời thất bại ${e.toString()}");
+      print("Error sending friend request: \$e");
+      return false;
     }
   }
 }

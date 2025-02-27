@@ -29,4 +29,13 @@ class SelectContactController {
       Contact selectedContact, BuildContext context) async {
     await selectContactRepository.selectContact(selectedContact, context);
   }
+
+  Future<bool> sendFriendRequest(
+    BuildContext context,
+    int requestUserId,
+    int responseUserId,
+  ) {
+    return selectContactRepository.sendFriendRequest(
+        context, requestUserId, responseUserId);
+  }
 }

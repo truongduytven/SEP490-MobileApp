@@ -14,6 +14,7 @@ class UserContact {
   final bool? isVerified;
   final String? deviceToken;
   final bool? isOnline;
+  final int? requestUserId;
 
   UserContact({
     this.accountId,
@@ -31,6 +32,7 @@ class UserContact {
     this.isVerified,
     this.deviceToken,
     this.isOnline,
+    this.requestUserId,
   });
 
   factory UserContact.fromJson(Map<String, dynamic> json) {
@@ -54,6 +56,7 @@ class UserContact {
       isVerified: json['isVerified'] as bool?,
       deviceToken: json['deviceToken'] as String?,
       isOnline: json['isOnline'] as bool?,
+      requestUserId: json['requestUserId'] as int?,
     );
   }
 
@@ -74,6 +77,7 @@ class UserContact {
       'isVerified': isVerified,
       'deviceToken': deviceToken,
       'isOnline': isOnline,
+      'requestUserId': requestUserId,
     };
   }
 }
