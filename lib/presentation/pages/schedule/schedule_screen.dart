@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/models/schedule.dart';
+import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
 import 'package:sep490/theme/color.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -19,8 +22,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   late DateTime _currentTime = DateTime.now();
   final ScrollController _scrollControllerDay = ScrollController();
   final ScrollController _scrollControllerActivity = ScrollController();
+  List<Activity>? schedule;
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int userId = sharedPrefsHelper.getInt('accountId')!;
 
-  // Example data for tasks or appointments
   final List<Map<String, dynamic>> activities = [
     {
       "ActivityName": "Uống thuốc",
@@ -69,6 +74,18 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         _currentTime = DateTime.now();
       });
     });
+    getSchedule();
+  }
+
+  void getSchedule() async {
+    ScheduleController scheduleController = ScheduleController();
+    await scheduleController.getSchedule(
+        userId, '$selectedYear-$selectedMonth-$selectedDay');
+    Timer(Duration(seconds: 2), () {
+      setState(() {
+        schedule = scheduleController.schedule;
+      });
+    });
   }
 
   @override
@@ -103,7 +120,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   Widget _getActivityIcon(String activityName) {
     switch (activityName) {
-      case "Uống thuốc":
+      case "Medication":
         return Image.asset('assets/img3D/thuoc.png', width: 50, height: 50);
       case "Tư vấn với bác sĩ":
         return Image.asset('assets/img3D/bacsi.png', width: 50, height: 50);
@@ -130,8 +147,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     int daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
-    activities.sort((a, b) =>
-        (a['StartTime'] as DateTime).compareTo(b['StartTime'] as DateTime));
+    if (schedule != null) {
+      schedule?.sort((a, b) =>
+          (a.startTime).compareTo(b.startTime)); // Sắp xếp theo thời gian
+    }
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
@@ -313,15 +332,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   DateTime hour =
                       DateTime(selectedYear, selectedMonth, selectedDay, index);
                   bool haveActivity = false;
-                  final filteredActivities = activities.where((activity) {
-                    DateTime startTime = activity['StartTime'];
-                    return startTime.hour == index;
+                  final filteredActivities = schedule?.where((activity) {
+                    String startTime = activity.startTime;
+                    List<String> startTimeSplit = startTime.split(':');
+                    return int.parse(startTimeSplit[0]) == index;
                   }).toList();
                   bool isCurrentHour = _currentTime.hour == index;
                   double percentHeight = _currentTime.minute / 60;
                   double hourBlockHeight = 100;
 
-                  if (filteredActivities.isEmpty) {
+                  if (filteredActivities == null && filteredActivities!.isEmpty) {
                     haveActivity = false;
                   } else {
                     haveActivity = true;
@@ -368,17 +388,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             ...List.generate(filteredActivities.length,
                                 (index) {
                               final activity = filteredActivities[index];
-                              String startTime = DateFormat.jm()
-                                  .format(activity['StartTime'] as DateTime);
-                              String endTime = DateFormat.jm()
-                                  .format(activity['EndTime'] as DateTime);
 
                               return Container(
                                 margin: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 16),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: getColors(activity['ActivityName']),
+                                  color: getColors(filteredActivities[index].title),
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
@@ -392,7 +408,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 child: Row(
                                   children: [
                                     // Activity Icon
-                                    _getActivityIcon(activity['ActivityName']),
+                                    _getActivityIcon(filteredActivities[index].title),
                                     const SizedBox(width: 12),
                                     // Activity Details
                                     Expanded(
@@ -401,7 +417,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            activity['ActivityName'],
+                                            filteredActivities[index].title,
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
@@ -409,13 +425,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            activity['ActivityDescription'],
+                                            filteredActivities[index].description,
                                             style:
                                                 const TextStyle(fontSize: 14),
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            '$startTime - $endTime',
+                                            '${filteredActivities[index].startTime} ${filteredActivities[index].startTime != '' ? "-" : ""} ${filteredActivities[index].startTime}',
                                             style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
