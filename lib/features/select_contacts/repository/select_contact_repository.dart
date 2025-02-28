@@ -83,6 +83,10 @@ class SelectContactRepository {
                 content: "Không thể thêm bạn vì liên hệ này là chính bạn!");
             return;
           }
+          if (userData["isFriend"] == true) {
+            showSnackBar(context: context, content: "Các bạn đã là bạn bè!");
+            return;
+          }
           final user = UserContact.fromJson(responseData["data"]);
           // Navigator.pushNamed(
           //   context,

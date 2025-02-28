@@ -121,11 +121,10 @@ class MobileChatScreen extends ConsumerWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => RoomChatDetailScreen(
-                    name: name,
-                    uid: uid,
+                    roomId: uid,
+                    roomName: name,
                     isGroupChat: isGroupChat,
                     profilePic: profilePic,
-                    users: users,
                   ),
                 ),
               );

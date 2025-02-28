@@ -1,12 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/enums/message_enum.dart';
 import 'package:sep490/common/provider/message_reply_provider.dart';
-import 'package:sep490/models/chat_contact.dart';
 import 'package:sep490/models/chat_room_status.dart';
-import 'package:sep490/models/group_chat.dart';
 import 'package:sep490/models/message.dart';
 import 'package:sep490/models/room_chat.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
@@ -33,29 +29,13 @@ class ChatController {
     return chatRepository.getRoomChatStream(userId);
   }
 
-  Stream<List<ChatContact>> chatContacts(String userId) {
-    return chatRepository.getContactsStream(userId);
-  }
-
-  Stream<List<GroupChat>> chatGroups(String userId) {
-    return chatRepository.getGroupsStream(userId);
-  }
-
   Stream<List<Message>> getChatStream(String roomId) {
     print("getchat scree $roomId");
     return chatRepository.getChatStream(roomId);
   }
 
-  // Stream<bool> getRoomChatStatus(String roomId, int currentUserId) {
-  //   print("statussss");
-  //   return chatRepository.getStatusRoomChatStream(roomId, currentUserId);
-  // }
   Stream<ChatRoomStatus> getRoomChatStatus(String roomId, int currentUserId) {
     return chatRepository.getStatusRoomChatStream(roomId, currentUserId);
-  }
-
-  Stream<List<Message>> groupGhatStream(String groupId) {
-    return chatRepository.getGroupChatStream(groupId);
   }
 
   void sendTextMessage(
@@ -89,7 +69,6 @@ class ChatController {
     String roomId,
     int curentUserId,
   ) {
-    // final messageReply = ref.read(messsageReplyProvider);
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.setChatMessaageSeen(
             context: context,
@@ -97,30 +76,6 @@ class ChatController {
             currentUserID: curentUserId,
           ),
         );
-  }
-
-  void sendFileMessage(
-    BuildContext context,
-    File file,
-    String recieverUserId,
-    MessageEnum messageEnum,
-    bool isGroupChat,
-  ) {
-    final messageReply = ref.read(messsageReplyProvider);
-
-    ref.read(userDataAuthProvider).whenData(
-          (value) => chatRepository.sendFileMessage(
-            context: context,
-            file: file,
-            receiverUserId: recieverUserId,
-            senderUserData: value!,
-            messageEnum: messageEnum,
-            ref: ref,
-            messageReply: messageReply,
-            isGroupChat: isGroupChat,
-          ),
-        );
-    ref.read(messsageReplyProvider.state).update((state) => null);
   }
 
   // void sendGIFMessage(

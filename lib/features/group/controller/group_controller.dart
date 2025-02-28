@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/features/group/repository/group_repository.dart';
 import 'package:sep490/models/group_model.dart';
+import 'package:sep490/models/room_chat_detail.dart';
 import 'package:sep490/models/user_contact.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 
@@ -51,5 +52,13 @@ class GroupController {
   ) {
     return groupRepository.createGroup(
         context, name, profilePic, selectedContacts);
+  }
+
+  Future<RoomChatDetail?> getRoomChatDetail(
+    BuildContext context,
+    String roomId,
+    int userId,
+  ) {
+    return groupRepository.getRoomChatDetail(context, roomId, userId);
   }
 }
