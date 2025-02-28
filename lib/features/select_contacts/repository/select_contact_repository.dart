@@ -163,4 +163,100 @@ class SelectContactRepository {
       return false;
     }
   }
+
+  Future<bool> cancelSendFriendRequest(
+    BuildContext context,
+    int requestUserId,
+    int responseUserId,
+  ) async {
+    const String apiUrl =
+        "https://api.diavan-valuation.asia/user-link-management/response-add-friend";
+
+    final Map<String, dynamic> payload = {
+      "requestUserId": requestUserId,
+      "responseUserId": responseUserId,
+      "responseStatus":
+          "Cancelled", // Assuming "cancel" is the correct action for cancellation
+    };
+
+    try {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData["status"] == 1) {
+          showSnackBar(
+              context: context,
+              content: "Hủy lời mời kết bạn thành công ",
+              type: "green");
+          return true;
+        }
+      }
+      showSnackBar(
+          context: context,
+          content:
+              "Hủy lời mời kết bạn thất bại ${json.decode(response.body)["data"]} ${json.decode(response.body)["message"]}");
+      return false;
+    } catch (e) {
+      showSnackBar(
+          context: context,
+          content: "Lỗi khi hủy lời mời kết bạn: ${e.toString()}");
+      print("Error canceling friend request: $e");
+      return false;
+    }
+  }
+
+  Future<bool> acceptedFriendRequest(
+    BuildContext context,
+    int requestUserId,
+    int responseUserId,
+  ) async {
+    const String apiUrl =
+        "https://api.diavan-valuation.asia/user-link-management/response-add-friend";
+
+    final Map<String, dynamic> payload = {
+      "requestUserId": requestUserId,
+      "responseUserId": responseUserId,
+      "responseStatus":
+          "Accepted", // Assuming "cancel" is the correct action for cancellation
+    };
+
+    try {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData["status"] == 1) {
+          showSnackBar(
+              context: context,
+              content: "Chấp nhận lời mời kết bạn thành công ",
+              type: "green");
+          return true;
+        }
+      }
+      showSnackBar(
+          context: context,
+          content:
+              "Chấp nhận lời mời kết bạn thất bại ${json.decode(response.body)["data"]} ${json.decode(response.body)["message"]}");
+      return false;
+    } catch (e) {
+      showSnackBar(
+          context: context,
+          content: "Lỗi khi chập nhận lời mời kết bạn: ${e.toString()}");
+      print("Error accepting friend request: $e");
+      return false;
+    }
+  }
 }

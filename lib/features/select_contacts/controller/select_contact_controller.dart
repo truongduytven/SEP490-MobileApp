@@ -38,4 +38,22 @@ class SelectContactController {
     return selectContactRepository.sendFriendRequest(
         context, requestUserId, responseUserId);
   }
+
+  Future<bool> cancelSendFriendRequest(
+    BuildContext context,
+    int requestUserId,
+    int responseUserId,
+  ) {
+    return selectContactRepository.cancelSendFriendRequest(
+        context, requestUserId, responseUserId);
+  }
+
+  Future<bool> acceptedFriendRequest(
+    BuildContext context,
+    int requestUserId,
+    int responseUserId,
+  ) {
+    return selectContactRepository.acceptedFriendRequest(
+        context, requestUserId, responseUserId);
+  }
 }

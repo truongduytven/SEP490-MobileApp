@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
 import 'package:sep490/models/user_contact.dart';
+import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +16,7 @@ final accountIdProvider = FutureProvider<int?>((ref) async {
 
 // StateProvider to track friend request status
 final friendRequestSentProvider = StateProvider<bool>((ref) => false);
+final cancleFriendRequestSentProvider = StateProvider<bool>((ref) => false);
 
 class UserInformationScreen extends ConsumerStatefulWidget {
   final UserContact user;
@@ -32,6 +35,9 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
     Future.microtask(() {
       ref.read(friendRequestSentProvider.notifier).state = false;
     });
+    Future.microtask(() {
+      ref.read(cancleFriendRequestSentProvider.notifier).state = false;
+    });
   }
 
   @override
@@ -39,6 +45,7 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
     final selectContactController = ref.read(selectContactControllerProvider);
     final accountIdAsync = ref.watch(accountIdProvider);
     final isRequestSent = ref.watch(friendRequestSentProvider);
+    final isCancelRequest = ref.watch(cancleFriendRequestSentProvider);
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
@@ -101,11 +108,14 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                 Text(
                   isRequestSent
                       ? "Đang đợi tài khoản đồng ý kết bạn"
-                      : widget.user.requestUserId != null
-                          ? (widget.user.accountId == widget.user.requestUserId
-                              ? "Tài khoản này đã gửi lời mời kết bạn tới bạn"
-                              : "Đang đợi tài khoản đồng ý kết bạn")
-                          : "",
+                      : isCancelRequest
+                          ? ""
+                          : widget.user.requestUserId != null
+                              ? (widget.user.accountId ==
+                                      widget.user.requestUserId
+                                  ? "Tài khoản này đã gửi lời mời kết bạn tới bạn"
+                                  : "Đang đợi tài khoản đồng ý kết bạn")
+                              : "",
                   style: TextStyle(color: AppColors.grayColor5, fontSize: 16),
                 ),
                 const SizedBox(height: 10),
@@ -116,22 +126,84 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                     return ElevatedButton.icon(
                       onPressed: () async {
                         if (isRequestSent) {
+                          bool success = await selectContactController
+                              .cancelSendFriendRequest(
+                            context,
+                            currentUserId ?? 0,
+                            widget.user.accountId ?? 0,
+                          );
+
+                          if (success) {
+                            print("Cancel Friend request sent successfully!");
+                            ref.read(friendRequestSentProvider.notifier).state =
+                                false;
+                            ref
+                                .read(cancleFriendRequestSentProvider.notifier)
+                                .state = true;
+                          } else {
+                            print("Failed to cancel friend request.");
+                          }
                           // Cancel friend request logic (if needed)
                           print(
                               "Canceled friend request to ${widget.user.fullName}");
-                          ref.read(friendRequestSentProvider.notifier).state =
-                              false;
+                        } else if (isCancelRequest) {
+                          bool success =
+                              await selectContactController.sendFriendRequest(
+                            context,
+                            currentUserId ?? 0,
+                            widget.user.accountId ?? 0,
+                          );
+
+                          if (success) {
+                            print("Friend request sent successfully!");
+                            ref.read(friendRequestSentProvider.notifier).state =
+                                true;
+                          } else {
+                            print("Failed to send friend request.");
+                          }
                         } else if (widget.user.requestUserId != null) {
                           if (widget.user.accountId ==
                               widget.user.requestUserId) {
+                            bool success = await selectContactController
+                                .acceptedFriendRequest(
+                              context,
+                              currentUserId ?? 0,
+                              widget.user.accountId ?? 0,
+                            );
+                            if (success) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NavigationMenu(
+                                          keyIndex: 2,
+                                        )),
+                              );
+                              print("Cancel Friend request sent successfully!");
+                            } else {
+                              print("Failed to cancel friend request.");
+                            }
                             // Accept friend request
                             print(
                                 "Accepted friend request from ${widget.user.fullName}");
                           } else {
+                            bool success = await selectContactController
+                                .cancelSendFriendRequest(
+                              context,
+                              currentUserId ?? 0,
+                              widget.user.accountId ?? 0,
+                            );
+
+                            if (success) {
+                              print("Cancel Friend request sent successfully!");
+                              ref
+                                  .read(
+                                      cancleFriendRequestSentProvider.notifier)
+                                  .state = true;
+                            } else {
+                              print("Failed to cancel friend request.");
+                            }
                             print(
                                 "Canceled friend request to ${widget.user.fullName}");
-                            ref.read(friendRequestSentProvider.notifier).state =
-                                false;
                           }
                         } else {
                           bool success =
@@ -149,51 +221,32 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                             print("Failed to send friend request.");
                           }
                         }
-
-                        // if (currentUserId != null &&
-                        //     user.accountId != null) {
-                        //   if (user.accountId == user.requestUserId) {
-                        //     // Action: Accept friend re quest
-                        //     print("Accepted friend request from ${user.fullName}");
-                        //   } else {
-                        //     bool success =
-                        //         await selectContactController.sendFriendRequest(
-                        //       context,
-                        //       currentUserId,
-                        //       user.accountId ?? 0,
-                        //     );
-
-                        //     if (success) {
-                        //       print("Friend request sent successfully!");
-                        //       ref.read(friendRequestSentProvider.notifier).state =
-                        //           true;
-                        //     } else {
-                        //       print("Failed to send friend request.");
-                        //     }
-                        // }
-                        // }
                       },
                       icon: Icon(
                         isRequestSent
                             ? Icons.hourglass_top
-                            : widget.user.requestUserId != null
-                                ? (widget.user.accountId ==
-                                        widget.user.requestUserId
-                                    ? Icons.check
-                                    : Icons.hourglass_top)
-                                : Icons.person_add,
+                            : isCancelRequest
+                                ? Icons.person_add
+                                : widget.user.requestUserId != null
+                                    ? (widget.user.accountId ==
+                                            widget.user.requestUserId
+                                        ? Icons.check
+                                        : Icons.hourglass_top)
+                                    : Icons.person_add,
                         size: 26,
                         color: Colors.white,
                       ),
                       label: Text(
                         isRequestSent
                             ? "Hủy gửi lời mời"
-                            : widget.user.requestUserId != null
-                                ? widget.user.accountId ==
-                                        widget.user.requestUserId
-                                    ? "Chấp nhận"
-                                    : "Hủy gửi lời mời"
-                                : "Thêm bạn",
+                            : isCancelRequest
+                                ? "Thêm bạn"
+                                : widget.user.requestUserId != null
+                                    ? widget.user.accountId ==
+                                            widget.user.requestUserId
+                                        ? "Chấp nhận"
+                                        : "Hủy gửi lời mời"
+                                    : "Thêm bạn",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
