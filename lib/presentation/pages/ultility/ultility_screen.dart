@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/ultility/game_card_screen.dart';
 
 class UltilityScreen extends StatefulWidget {
   const UltilityScreen({super.key});
@@ -10,6 +11,8 @@ class UltilityScreen extends StatefulWidget {
 class _UltilityScreenState extends State<UltilityScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold(
+      body: GameCardScreen(),
+    );
   }
 }
