@@ -4,8 +4,10 @@ import 'package:gif_view/gif_view.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/medicine/medicine.dart';
+import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/medicine/controller/medicine_controller.dart';
 import 'package:sep490/presentation/pages/medicine/prescription_screen.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:intl/intl.dart';
@@ -51,8 +53,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       isLoading = true;
     });
     MedicineController medicineController = MedicineController();
-    await medicineController.getMedicines(userId,
-        DateTime(selectedYear, selectedMonth, selectedDay).toIso8601String());
+    await medicineController.getMedicines(userId, '$selectedYear-$selectedMonth-$selectedDay');
     Timer(Duration(seconds: 2), () {
       setState(() {
         prescription = medicineController.prescription;
@@ -123,6 +124,17 @@ class _HomeMedicineState extends State<HomeMedicine> {
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NavigationMenu(keyIndex: 0,),
+              ),
+            );
+          },
+        ),
       ),
       body: Container(
         width: double.infinity,
@@ -308,7 +320,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                   child: isLoading
                       ? Center(
                           child: GifView.asset(
-                            'assets/img3D/a.gif',
+                            'assets/gif/a.gif',
                             width: 100,
                             height: 100,
                             frameRate: 90,
@@ -460,7 +472,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       ),
       child: Row(
         children: [
-          buildImgForm(medicine["form"]),
+          buildImgForm(medicine["shape"]),
           const SizedBox(width: 10),
           Expanded(
             child: Padding(
@@ -469,7 +481,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    medicine["name"],
+                    medicine["medicationName"],
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -478,12 +490,12 @@ class _HomeMedicineState extends State<HomeMedicine> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    "Dùng ${medicine['dosage']} vào ${medicine['time']['time']} (${medicine['mealTime']})",
+                    "Dùng ${medicine['dosage']} vào ${medicine['time']['time']} (${medicine['isBeforeMeal'] ? 'Trước' : 'Sau'} bữa ăn)",
                     style: const TextStyle(
                         fontSize: 14, color: AppColors.grayColor5),
                   ),
                   Text(
-                    "${medicine['remaining']} viên còn lại",
+                    "${medicine['remaining'].toString()} viên còn lại",
                     style: const TextStyle(
                         fontSize: 14, color: AppColors.grayColor5),
                   ),

@@ -8,15 +8,13 @@ Widget buildMedicineCard(
   String name,
   String dosage,
   String form,
-  String remaining,
-  String typeFrequency,
+  int remaining,
   String frequencyEvery,
   List<dynamic> frequencySelect,
-  String mealTime,
-  List<Schedule> schedule,
+  bool isBeforeMeal,
+  List<dynamic> schedule,
   Function() onPressed,
 ) {
-  List<String> scheduleView  = schedule.map((e) => convertTime(e.time)).toList();
   return GestureDetector(
     onTap: onPressed,
     child: Container(
@@ -67,7 +65,7 @@ Widget buildMedicineCard(
                   Row(
                     children: [
                       Text(
-                        'Dùng $dosage ($mealTime)',
+                        'Dùng $dosage (${isBeforeMeal ? 'trước' : 'sau'} ăn)',
                         style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -87,7 +85,7 @@ Widget buildMedicineCard(
                           children: [
                             const TextSpan(text: "Vào lúc: "),
                             TextSpan(
-                              text: scheduleView.join(', '),
+                              text: schedule.map((e) => convertTime(e)).join(', '),
                               style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,

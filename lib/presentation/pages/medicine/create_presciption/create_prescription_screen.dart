@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/pages/medicine/controller/medicine_controller.dart';
 import 'package:sep490/presentation/pages/medicine/detail_medicine.dart';
+import 'package:sep490/presentation/pages/medicine/prescription_screen.dart';
+import 'package:sep490/presentation/widgets/loading/loadingImgPath.dart';
 import 'package:sep490/presentation/widgets/medicine/medicine_prescription_card.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -77,33 +81,37 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   }
 
   void handleSavePrescription() async {
+    LoadingDialog.show(context, 'assets/gif/opd.gif', 'Đang tạo toa thuốc...');
     String dateData = listMedicine['endDate'];
     listMedicine['endDate'] = convertDateTime(listMedicine['endDate']);
     MedicineController medicineController = MedicineController();
     await medicineController.createPrescriptionController(listMedicine);
-    if (medicineController.isCreateSuccess) {
-      listMedicine['endDate'] = dateData;
-      Fluttertoast.showToast(
-        msg: "Tạo thành công",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    } else {
-      listMedicine['endDate'] = dateData;
-      Fluttertoast.showToast(
-        msg: "Có lỗi trong quá trình xử lý!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    }
+    Timer(const Duration(seconds: 1), () {
+      if (medicineController.isCreateSuccess) {
+        listMedicine['endDate'] = dateData;
+        Navigator.pop(context);
+        LoadingDialog.show(context, 'assets/gif/create_success.gif', 'Tạo toa thuốc thành công!');
+        Timer(const Duration(seconds: 2), () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PrescriptionScreen()));
+        });
+      } else {
+        listMedicine['endDate'] = dateData;
+        Fluttertoast.showToast(
+          msg: "Có lỗi trong quá trình xử lý!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        Navigator.pop(context);
+      }
+    });
   }
 
   @override

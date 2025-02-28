@@ -14,6 +14,7 @@ import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
 import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/presentation/widgets/health_card.dart';
+import 'package:sep490/presentation/widgets/loading/loadingImgPath.dart';
 import 'package:sep490/theme/color.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -73,20 +74,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void handleClickLoading() {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: GifView.asset(
-          'assets/img3D/a.gif',
-          width: 100,
-          height: 100,
-          frameRate: 90,
-        )
-      ),
-    );
-    Timer(Duration(seconds: 3), () {
-      Navigator.of(context).pop();
+    LoadingDialog.show(context, 'assets/gif/opd.gif', 'Đang tải dữ liệu...');
+    Timer(Duration(seconds: 10), () {
+      Navigator.pop(context);
+      LoadingDialog.show(context, 'assets/gif/create_success.gif', 'Tạo toa thuốc thành công!');
+    });
+    Timer(Duration(seconds: 20), () {
+      Navigator.pop(context);
     });
   }
 

@@ -3,6 +3,7 @@ import 'package:sep490/presentation/pages/medicine/repository/medicine_repositor
 
 class MedicineController {
   Prescription? prescription;
+  PrescriptionUpdate? prescriptionUpdate;
   final MedicineRepository _medicineRepository = MedicineRepository();
   bool isCreateSuccess = false;
 
@@ -18,9 +19,9 @@ class MedicineController {
   Future<void> getPresciption (int userId) async {
     final response = await _medicineRepository.getPresciption(userId);
     if (response != null && response['isSuccess']) {
-      prescription = Prescription.fromJson(response['data']['data']);
+      prescriptionUpdate = PrescriptionUpdate.fromJson(response['data']['data']);
     } else {
-      prescription = null;
+      prescriptionUpdate = null;
     }
   }
 
