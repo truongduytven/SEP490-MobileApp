@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/ultility/screens/game_card_screen.dart';
-import 'package:sep490/presentation/pages/ultility/widgets/full_width_game_card.dart';
+import 'package:sep490/presentation/pages/ultility/game/screens/game_card_screen.dart';
+import 'package:sep490/presentation/pages/ultility/game/widgets/full_width_game_card.dart';
 
 class UltilityScreen extends StatefulWidget {
   const UltilityScreen({super.key});

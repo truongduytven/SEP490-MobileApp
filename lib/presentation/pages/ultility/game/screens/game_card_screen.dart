@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/ultility/widgets/full_width_game_card.dart';
-import 'package:sep490/presentation/pages/ultility/widgets/game_card.dart';
+import 'package:sep490/presentation/pages/ultility/game/widgets/full_width_game_card.dart';
+import 'package:sep490/presentation/pages/ultility/game/widgets/game_card.dart';
 import 'package:sep490/theme/color.dart';
 
 class GameCardScreen extends StatelessWidget {
