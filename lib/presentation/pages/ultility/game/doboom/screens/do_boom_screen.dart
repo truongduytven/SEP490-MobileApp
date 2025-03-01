@@ -37,7 +37,7 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
     },
   ),
         title: Text(
-          "MineSweeper",
+          "Dò bom",
           style: TextStyle(color: Colors.white),
         ),
         actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
