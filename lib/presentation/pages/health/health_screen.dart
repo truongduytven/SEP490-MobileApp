@@ -140,8 +140,8 @@ class _HealthScreenState extends State<HealthScreen> {
                           color: AppColors.bgColor,
                           elevation: 4,
                           shape: RoundedRectangleBorder(
-                            side: const BorderSide(
-                                color: AppColors.secondaryColor, width: 0.1),
+                            // side: const BorderSide(
+                            //     color: AppColors.secondaryColor, width: 0.1),
                             borderRadius: BorderRadius.circular(18),
                           ),
                           child: Padding(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
-import 'package:sep490/presentation/pages/chat/widgets/contacts_list.dart';
-import 'package:sep490/presentation/pages/chat/widgets/expandable_fab.dart';
+import 'package:sep490/features/chat/widgets/contacts_list.dart';
+import 'package:sep490/features/chat/widgets/expandable_fab.dart';
 import 'package:sep490/theme/color.dart';
 
 class MobileLayoutScreen extends ConsumerStatefulWidget {
@@ -20,6 +20,9 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
     super.initState();
     tabBarController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addObserver(this);
+    tabBarController.addListener(() {
+      setState(() {}); // This ensures the UI updates when the tab changes
+    });
   }
 
   @override
@@ -65,33 +68,33 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
               fontWeight: FontWeight.bold,
             ),
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search, color: AppColors.secondaryColor),
-              onPressed: () {},
-            ),
-            // IconButton(
-            //   icon: const Icon(Icons.more_vert, color: Colors.grey),
-            //   onPressed: () {},
-            // ),
-            PopupMenuButton(
-              icon:
-                  const Icon(Icons.more_vert, color: AppColors.secondaryColor),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  child: const Text(
-                    "Create Group",
-                  ),
-                  // onTap: () => Future(
-                  //   () => Navigator.pushNamed(
-                  //     context,
-                  //     CreateGroupScreen.routeName,
-                  //   ),
-                  // ),
-                )
-              ],
-            )
-          ],
+          // actions: [
+          //   IconButton(
+          //     icon: const Icon(Icons.search, color: AppColors.secondaryColor),
+          //     onPressed: () {},
+          //   ),
+          //   // IconButton(
+          //   //   icon: const Icon(Icons.more_vert, color: Colors.grey),
+          //   //   onPressed: () {},
+          //   // ),
+          //   PopupMenuButton(
+          //     icon:
+          //         const Icon(Icons.more_vert, color: AppColors.secondaryColor),
+          //     itemBuilder: (context) => [
+          //       PopupMenuItem(
+          //         child: const Text(
+          //           "Create Group",
+          //         ),
+          //         // onTap: () => Future(
+          //         //   () => Navigator.pushNamed(
+          //         //     context,
+          //         //     CreateGroupScreen.routeName,
+          //         //   ),
+          //         // ),
+          //       )
+          //     ],
+          //   )
+          // ],
           bottom: PreferredSize(
             preferredSize: Size(0, 60),
             child: TabBar(
@@ -147,7 +150,19 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
         //   color: Colors.white,
         // ),
         // ),
-        floatingActionButton: ExpandableFab(),
+        // floatingActionButton: ExpandableFab(),
+        floatingActionButton: tabBarController.index == 0
+            ? ExpandableFab()
+            : FloatingActionButton(
+                onPressed: () {
+                  // Navigator.pushNamed(context, SelectContactsScreen.routeName);
+                },
+                backgroundColor: AppColors.primaryColor,
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

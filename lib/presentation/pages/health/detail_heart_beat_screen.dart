@@ -291,8 +291,8 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
               color: AppColors.bgColor,
               elevation: 1,
               shape: RoundedRectangleBorder(
-                side: const BorderSide(
-                    color: AppColors.secondaryColor, width: 0.05),
+                // side: const BorderSide(
+                //     color: AppColors.secondaryColor, width: 0.05),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Padding(
