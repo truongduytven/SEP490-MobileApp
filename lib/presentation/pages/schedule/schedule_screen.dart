@@ -80,7 +80,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   void getSchedule() async {
     ScheduleController scheduleController = ScheduleController();
     await scheduleController.getSchedule(
-        userId, '$selectedYear-$selectedMonth-$selectedDay');
+        8, '$selectedYear-$selectedMonth-$selectedDay');
     Timer(Duration(seconds: 2), () {
       setState(() {
         schedule = scheduleController.schedule;
@@ -149,7 +149,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     int daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
     if (schedule != null) {
       schedule?.sort((a, b) =>
-          (a.startTime).compareTo(b.startTime)); // Sắp xếp theo thời gian
+          (a.startTime).compareTo(b.startTime));
     }
 
     return Scaffold(
@@ -341,7 +341,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   double percentHeight = _currentTime.minute / 60;
                   double hourBlockHeight = 100;
 
-                  if (filteredActivities == null && filteredActivities!.isEmpty) {
+                  if (filteredActivities == null || filteredActivities!.isEmpty) {
                     haveActivity = false;
                   } else {
                     haveActivity = true;
@@ -385,7 +385,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               height: 40,
                             ),
                           if (haveActivity)
-                            ...List.generate(filteredActivities.length,
+                            ...List.generate(filteredActivities!.length,
                                 (index) {
                               final activity = filteredActivities[index];
 
@@ -408,7 +408,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 child: Row(
                                   children: [
                                     // Activity Icon
-                                    _getActivityIcon(filteredActivities[index].title),
+                                    _getActivityIcon(filteredActivities[index].type),
                                     const SizedBox(width: 12),
                                     // Activity Details
                                     Expanded(
