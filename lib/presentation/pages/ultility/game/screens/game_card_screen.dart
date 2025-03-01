@@ -38,7 +38,7 @@ class GameCardScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
-        title: const Text("Tiện ích"),
+        title: const Text("Trò chơi"),
         centerTitle: true,
         backgroundColor: AppColors.bgColor,
       ),
