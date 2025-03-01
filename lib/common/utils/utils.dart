@@ -62,3 +62,17 @@ Future<GiphyGif?> pickGIF(BuildContext context) async {
   debugPrint("Returning GIF: $gif");
   return gif;
 }
+
+String convertTimeSession(String time) {
+  // 8:00 -> 8:00 AM
+  // 20:00 -> 8:00 PM
+  if(time == "") return "";
+  final timeSplit = time.split(":");
+  final hour = int.parse(timeSplit[0]);
+  final minute = timeSplit[1];
+  if (hour < 12) {
+    return "$hour:$minute AM";
+  } else {
+    return "${hour - 12}:$minute PM";
+  }
+}

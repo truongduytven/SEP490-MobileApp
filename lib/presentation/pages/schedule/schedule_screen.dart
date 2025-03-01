@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/schedule.dart';
 import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
+import 'package:sep490/presentation/pages/schedule/activityCard.dart';
 import 'package:sep490/theme/color.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -23,6 +26,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   final ScrollController _scrollControllerDay = ScrollController();
   final ScrollController _scrollControllerActivity = ScrollController();
   List<Activity>? schedule;
+  bool isLoading = false;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId = sharedPrefsHelper.getInt('accountId')!;
 
@@ -78,12 +82,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   void getSchedule() async {
+    setState(() {
+      isLoading = true;
+    });
     ScheduleController scheduleController = ScheduleController();
     await scheduleController.getSchedule(
         8, '$selectedYear-$selectedMonth-$selectedDay');
     Timer(Duration(seconds: 2), () {
       setState(() {
         schedule = scheduleController.schedule;
+        isLoading = false;
       });
     });
   }
@@ -121,8 +129,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget _getActivityIcon(String activityName) {
     switch (activityName) {
       case "Medication":
-        return Image.asset('assets/img3D/thuoc.png', width: 50, height: 50);
-      case "Tư vấn với bác sĩ":
+        return Image.asset(
+          'assets/img3D/thuoc.png', width: 50, height: 50,);
+      case "Professor Apointment":
         return Image.asset('assets/img3D/bacsi.png', width: 50, height: 50);
       case "Tập luyện":
         return Image.asset('assets/img3D/cannang.png', width: 50, height: 50);
@@ -131,16 +140,31 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
-  Color? getColors(String activityName) {
+  Map<String, dynamic>? getColors(String activityName) {
     switch (activityName) {
-      case "Uống thuốc":
-        return Colors.yellow[400];
-      case "Tư vấn với bác sĩ":
-        return Colors.blue[400];
-      case "Tập luyện":
-        return Colors.green[400];
+      case "Medication":
+        return {
+          "colorFirst": Color(0xFFE7F3FF),
+          "colorSecond": Color(0xFFc9e4fe),
+          "textColor": Color(0xFF2a5169),
+        };
+      case "Professor Apointment":
+        return {
+          "colorFirst": Color(0xFFfff0c0),
+          "colorSecond": Color(0xFFfee18b),
+          "textColor": Color(0xFFc6ab3c),
+        };
+      // case "Tập luyện":
+      //   return {
+      //     "colorFirst": Colors.red[400],
+      //     "colorSecond": Colors.red[300],
+      //   };
       default:
-        return Colors.orange[400];
+        return {
+          "colorFirst": Color(0xFFf1ecfe),
+          "colorSecond": Color(0xFFd0c1fe),
+          "textColor": Color(0xFF6d5bb0),
+        };
     }
   }
 
@@ -148,8 +172,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget build(BuildContext context) {
     int daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
     if (schedule != null) {
-      schedule?.sort((a, b) =>
-          (a.startTime).compareTo(b.startTime));
+      schedule?.sort((a, b) => (a.startTime).compareTo(b.startTime));
     }
 
     return Scaffold(
@@ -323,138 +346,211 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
           const SizedBox(height: 30),
 
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                    children: List.generate(24, (index) {
-                  DateTime hour =
-                      DateTime(selectedYear, selectedMonth, selectedDay, index);
-                  bool haveActivity = false;
-                  final filteredActivities = schedule?.where((activity) {
-                    String startTime = activity.startTime;
-                    List<String> startTimeSplit = startTime.split(':');
-                    return int.parse(startTimeSplit[0]) == index;
-                  }).toList();
-                  bool isCurrentHour = _currentTime.hour == index;
-                  double percentHeight = _currentTime.minute / 60;
-                  double hourBlockHeight = 100;
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: GifView.asset(
+                      'assets/gif/loading_calendar.gif',
+                      width: 100,
+                      height: 100,
+                      frameRate: 90,
+                    ),
+                  ),
+                )
+              : Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                          children: List.generate(24, (index) {
+                        DateTime hour = DateTime(
+                            selectedYear, selectedMonth, selectedDay, index);
+                        bool haveActivity = false;
+                        final filteredActivities = schedule?.where((activity) {
+                          String startTime = activity.startTime;
+                          List<String> startTimeSplit = startTime.split(':');
+                          return int.parse(startTimeSplit[0]) == index;
+                        }).toList();
+                        bool isCurrentHour = _currentTime.hour == index;
+                        double percentHeight = _currentTime.minute / 60;
+                        double hourBlockHeight = 100;
 
-                  if (filteredActivities == null || filteredActivities!.isEmpty) {
-                    haveActivity = false;
-                  } else {
-                    haveActivity = true;
-                    hourBlockHeight = 66 +
-                        130 * filteredActivities.length.toDouble() +
-                        15 * (filteredActivities.length.toDouble() - 1);
-                  }
+                        if (filteredActivities == null ||
+                            filteredActivities!.isEmpty) {
+                          haveActivity = false;
+                        } else {
+                          haveActivity = true;
+                          hourBlockHeight = 66 +
+                              130 * filteredActivities.length.toDouble() +
+                              15 * (filteredActivities.length.toDouble() - 1);
+                        }
 
-                  return Stack(
-                    children: [
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 70, // Adjust width as needed
-                                child: Text(
-                                  DateFormat.jm().format(hour),
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                              const SizedBox(
-                                  width: 10), // Spacing between text and line
-
-                              // Right side: Full-width line
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width -
-                                    120, // Trừ đi phần text và spacing
-                                child: Container(
-                                  height: 1,
-                                  color: Colors.grey.withOpacity(0.5),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          if (!haveActivity)
-                            SizedBox(
-                              height: 40,
-                            ),
-                          if (haveActivity)
-                            ...List.generate(filteredActivities!.length,
-                                (index) {
-                              final activity = filteredActivities[index];
-
-                              return Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 16),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: getColors(filteredActivities[index].title),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.secondaryColor
-                                          .withOpacity(0.3),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 4),
+                        return Stack(
+                          children: [
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 70, // Adjust width as needed
+                                      child: Text(
+                                        DateFormat.jm().format(hour),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        width:
+                                            10), // Spacing between text and line
+                                    CustomPaint(
+                                      size: Size(
+                                          MediaQuery.of(context).size.width -
+                                              120,
+                                          1), // Full width, height 1px
+                                      painter: DashedLinePainter(),
                                     ),
                                   ],
                                 ),
-                                child: Row(
-                                  children: [
-                                    // Activity Icon
-                                    _getActivityIcon(filteredActivities[index].type),
-                                    const SizedBox(width: 12),
-                                    // Activity Details
-                                    Expanded(
+                                SizedBox(height: 10),
+                                if (!haveActivity)
+                                  SizedBox(
+                                    height: 40,
+                                  ),
+                                if (haveActivity)
+                                  ...List.generate(filteredActivities!.length,
+                                      (index) {
+                                    final activity = filteredActivities[index];
+                                    Map<String, dynamic>? colorCard =
+                                        getColors(activity.type);
+                                    return Padding(
+                                      padding: const EdgeInsets.all(16.0),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            filteredActivities[index].title,
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColors.textColor),
+                                          // Activity Icon
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: colorCard!['colorFirst'],
+                                              borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(20),
+                                                  topRight:
+                                                      Radius.circular(20)),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8.0),
+                                                    child: Container(
+                                                        width: 60,
+                                                        height: 60,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors
+                                                              .grey.shade300,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                        ),
+                                                        child: Center(
+                                                            child:
+                                                                _getActivityIcon(
+                                                                    activity
+                                                                        .type))),
+                                                  ),
+                                                  const SizedBox(width: 20),
+                                                  // Activity Details
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          filteredActivities[
+                                                                  index]
+                                                              .title,
+                                                          style: TextStyle(
+                                                              fontSize: 22,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: AppColors
+                                                                  .textColor),
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 8),
+                                                        Text(
+                                                          filteredActivities[
+                                                                  index]
+                                                              .description,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 14),
+                                                        ),
+                                                        // const SizedBox(
+                                                        //     height: 8),
+                                                        // Text(
+                                                        //   '${convertTimeSession(activity.startTime)} ${filteredActivities[index].endTime != '' ? "-" : ""} ${convertTimeSession(activity.endTime)}',
+                                                        //   style: TextStyle(
+                                                        //       fontSize: 14,
+                                                        //       fontWeight:
+                                                        //           FontWeight
+                                                        //               .w500,
+                                                        //       color: AppColors
+                                                        //           .textColor),
+                                                        // ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            filteredActivities[index].description,
-                                            style:
-                                                const TextStyle(fontSize: 14),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            '${filteredActivities[index].startTime} ${filteredActivities[index].startTime != '' ? "-" : ""} ${filteredActivities[index].startTime}',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: AppColors.textColor),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: colorCard['colorSecond'],
+                                              borderRadius: BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(20),
+                                                  bottomRight:
+                                                      Radius.circular(20)),
+                                            ),
+                                            alignment: Alignment.centerRight,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0,
+                                                      vertical: 4.0),
+                                              child: Text(
+                                                '${convertTimeSession(activity.startTime)} ${filteredActivities[index].endTime != '' ? "-" : ""} ${convertTimeSession(activity.endTime)}',
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w600,
+                                                    color:
+                                                        colorCard['textColor']),
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                          SizedBox(height: 20),
-                        ],
-                      ),
-                      _buildCurrentTimeIndicator(
-                          percentHeight, isCurrentHour, hourBlockHeight)
-                    ],
-                  );
-                })),
-              ),
-            ),
-          ),
+                                    );
+                                  }),
+                                SizedBox(height: 20),
+                              ],
+                            ),
+                            _buildCurrentTimeIndicator(
+                                percentHeight, isCurrentHour, hourBlockHeight)
+                          ],
+                        );
+                      })),
+                    ),
+                  ),
+                ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -499,4 +595,29 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
     );
   }
+}
+
+class DashedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 0.5
+      ..style = PaintingStyle.stroke;
+
+    double dashWidth = 5, dashSpace = 3;
+    double startX = 0;
+
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, 0),
+        Offset(startX + dashWidth, 0),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

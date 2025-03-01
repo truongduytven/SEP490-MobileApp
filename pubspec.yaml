@@ -73,6 +73,7 @@ dependencies:
   zego_uikit_prebuilt_call: ^4.16.22
   connectivity_plus: ^6.1.3
   flutter_styled_toast: ^2.2.1
+  gif_view: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -105,6 +106,7 @@ flutter:
     - assets/img3D/
     - assets/icons/
     - assets/img3D/
+    - assets/gif/
     - assets/img3D/form_medical/
     - assets/img3D/treatment_medical/
 
