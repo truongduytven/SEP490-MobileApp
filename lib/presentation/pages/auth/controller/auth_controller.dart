@@ -99,13 +99,18 @@ class AuthController {
     return await authRepository.getCurrentUserData();
   }
 
-
   Stream<UserModel?> userData(int userId) {
     print("vo controller");
     return authRepository.getUserDataStream(userId);
   }
 
-  void setUserState(bool isOnline) {
-    authRepository.setUserState(isOnline);
+  Future<void> setUserState(bool isOnline) async {
+    final int? currentUserId = await ref.read(accountIdProvider.future);
+    if (currentUserId == null) {
+      print("Error: User ID not found.");
+      return;
+    }
+
+    await authRepository.setUserState(currentUserId, isOnline);
   }
 }

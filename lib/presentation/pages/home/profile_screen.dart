@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/pages/auth/signin_screen.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -57,6 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.logout,
               press: () {
                 SharedPrefsHelper().clear();
+
                 Fluttertoast.showToast(
                   msg: "Đăng xuất thành công",
                   toastLength: Toast.LENGTH_SHORT,
@@ -68,6 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (_) => SignInScreen()));
+                ZegoUIKitPrebuiltCallInvitationService().uninit();
               },
             ),
           ],

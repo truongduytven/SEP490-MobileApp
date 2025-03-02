@@ -3,13 +3,30 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sep490/theme/color.dart';
 
-void showSnackBar({required BuildContext context, required String content}) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(content),
-    ),
-  );
+// void showSnackBar({required BuildContext context, required String content}) {
+//   if (context.mounted) {
+//     // Check if the widget is still in the tree
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text(content),
+//         backgroundColor: AppColors.errorColor,
+//       ),
+//     );
+//   }
+// }
+void showSnackBar(
+    {required BuildContext context, required String content, String? type}) {
+  if (context.mounted) {
+    ScaffoldMessenger.of(context).clearSnackBars(); // Clear previous snackbars
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(content),
+        backgroundColor: type == "green" ? Colors.green : AppColors.errorColor,
+      ),
+    );
+  }
 }
 
 Future<File?> pickImageFromGallery(BuildContext context) async {

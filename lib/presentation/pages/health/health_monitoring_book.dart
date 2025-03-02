@@ -176,7 +176,6 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
   }
 
   void navigateToCardDetail(Map<String, String> item) {
-
     // Switch case for different titles
     switch (item["title"]) {
       case "Nhịp tim":
@@ -356,9 +355,10 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
                             return Card(
                               elevation: 2,
                               shape: RoundedRectangleBorder(
-                                side: const BorderSide(
-                                    color: AppColors.secondaryColor,
-                                    width: 0.1),
+                                // side: const BorderSide(
+                                //   color: AppColors.secondaryColor,
+                                //   width: 0.05,
+                                // ),
                                 borderRadius: BorderRadius.circular(18),
                               ),
                               color: AppColors.bgColor,

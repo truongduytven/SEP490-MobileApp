@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sep490/common/constants/common.dart';
+import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/presentation/pages/auth/forgot_password_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
@@ -43,6 +47,45 @@ class _SignInFormState extends State<SignInForm> {
     });
   }
 
+  void onUserLogin(int userID, String userName, String avatar) {
+    /// 4/5. initialized ZegoUIKitPrebuiltCallInvitationService when account is logged in or re-logged in
+    ZegoUIKitPrebuiltCallInvitationService().init(
+      appID: AppSecrets.appId /*input your AppID*/,
+      appSign: AppSecrets.appSign /*input your AppSign*/,
+      userID: userID.toString(),
+      userName: userName,
+      plugins: [ZegoUIKitSignalingPlugin()],
+      requireConfig: (ZegoCallInvitationData data) {
+        final config = (data.invitees.length > 1)
+            ? ZegoCallInvitationType.videoCall == data.type
+                ? ZegoUIKitPrebuiltCallConfig.groupVideoCall()
+                : ZegoUIKitPrebuiltCallConfig.groupVoiceCall()
+            : ZegoCallInvitationType.videoCall == data.type
+                ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
+                : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
+
+        /// custom avatar
+        config.avatarBuilder = (context, size, user, extraInfo) {
+          return customAvatarBuilder(
+            context,
+            size,
+            user,
+            {'avatar': avatar}, // Pass the avatar URL
+          );
+        };
+
+        /// support minimizing, show minimizing button
+        config.topMenuBar.isVisible = true;
+        config.topMenuBar.buttons
+            .insert(0, ZegoCallMenuBarButtonName.minimizingButton);
+        config.topMenuBar.buttons
+            .insert(1, ZegoCallMenuBarButtonName.soundEffectButton);
+
+        return config;
+      },
+    );
+  }
+
   void handleSignIn() async {
     if (_formKey.currentState!.validate()) {
       showDialog(
@@ -65,18 +108,23 @@ class _SignInFormState extends State<SignInForm> {
             });
 
         if (responseToken['success']) {
-
           SharedPreferences prefs = await SharedPreferences.getInstance();
-
-          prefs.setInt('accountId', responseToken['data']['user']['accountId'] ?? 0);
+          final userData = responseToken['data']['user'];
+          final int userID = userData['accountId'] ?? 0;
+          final String userName = userData['fullName'] ?? '';
+          final String avatar = userData['avatar'] ?? '';
+          prefs.setInt(
+              'accountId', responseToken['data']['user']['accountId'] ?? 0);
           prefs.setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
           prefs.setString('email', emailController.text);
           prefs.setString('password', passwordController.text);
           prefs.setString('accessToken', accessToken);
-          prefs.setString('fullName', responseToken['data']['user']['fullName'] ?? '');
-          prefs.setString('avatar', responseToken['data']['user']['avatar'] ?? '');
-          prefs.setString('gender', responseToken['data']['user']['gender'] ?? "");
-
+          prefs.setString(
+              'fullName', responseToken['data']['user']['fullName'] ?? '');
+          prefs.setString(
+              'avatar', responseToken['data']['user']['avatar'] ?? '');
+          prefs.setString(
+              'gender', responseToken['data']['user']['gender'] ?? "");
           Navigator.of(context).pop();
           Fluttertoast.showToast(
             msg: "Đăng nhập thành công!",
@@ -93,6 +141,7 @@ class _SignInFormState extends State<SignInForm> {
               keyIndex: 0,
             );
           }));
+          onUserLogin(userID, userName, avatar);
         } else {
           Navigator.of(context).pop();
           Fluttertoast.showToast(
