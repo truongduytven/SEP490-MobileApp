@@ -5,7 +5,6 @@ import 'package:sep490/presentation/pages/medicine/edit_frequency.dart';
 import 'package:sep490/presentation/pages/medicine/edit_name.dart';
 import 'package:sep490/presentation/pages/medicine/edit_remaining.dart';
 import 'package:sep490/presentation/pages/medicine/edit_schedule.dart';
-import 'package:sep490/presentation/pages/medicine/edit_treatment.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/presentation/widgets/medicine/img_treatment.dart';
 import 'package:sep490/theme/color.dart';
@@ -29,14 +28,15 @@ class _DetailMedicineState extends State<DetailMedicine> {
     hasData = widget.medicineData != null;
     medicineData = widget.medicineData ??
         {
-          'name': '',
+          'medicationName': '',
+          'treatment': 'string',
+          'shape': '',
           'dosage': '',
-          'form': '',
-          'remaining': '',
-          'typeFrequency': '',
-          'frequencyEvery': '',
+          'note': 'nothing',
+          'remaining': 0,
+          'frequencyType': '',
           'frequencySelect': [],
-          'mealTime': '',
+          'isBeforeMeal': true,
           'schedule': [],
         };
   }
@@ -49,13 +49,13 @@ class _DetailMedicineState extends State<DetailMedicine> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  EditNameScreen(currentName: medicineData['name']),
+                  EditNameScreen(currentName: medicineData['medicationName']),
             ),
           );
 
           if (newName != null && newName is String) {
             setState(() {
-              medicineData['name'] = newName;
+              medicineData['medicationName'] = newName;
             });
           }
         }
@@ -74,7 +74,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
                 medicineData['dosage'].substring(firstSpaceIndex + 1).trim();
           } else {
             currentDosage = medicineData['dosage'].trim();
-            currentUnit = 'viên';
+            currentUnit = 'Viên';
           }
 
           final result = await Navigator.push(
@@ -99,32 +99,16 @@ class _DetailMedicineState extends State<DetailMedicine> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  EditFormMedical(currentForm: medicineData['form']),
+                  EditFormMedical(currentForm: medicineData['shape']),
             ),
           );
           if (result != null) {
             setState(() {
-              medicineData['form'] = result;
+              medicineData['shape'] = result;
             });
           }
         }
         break;
-      // case 'Điều trị':
-      //   {
-      //     final newTreatment = await Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) =>
-      //             EditTreatment(currentTreatment: medicineData['treatment']),
-      //       ),
-      //     );
-      //     if (newTreatment != null && newTreatment is String) {
-      //       setState(() {
-      //         medicineData['treatment'] = newTreatment;
-      //       });
-      //     }
-      //   }
-      //   break;
       case 'Trong hộp còn':
         {
           final newRemaining = await Navigator.push(
@@ -134,7 +118,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
                   EditRemaining(currentRemaining: medicineData['remaining']),
             ),
           );
-          if (newRemaining != null && newRemaining is String) {
+          if (newRemaining != null && newRemaining is int) {
             setState(() {
               medicineData['remaining'] = newRemaining;
             });
@@ -148,8 +132,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
             MaterialPageRoute(
               builder: (context) => EditFrequency(
                 initialFrequencyData: {
-                  'typeFrequency': medicineData['typeFrequency'],
-                  'frequencyEvery': medicineData['frequencyEvery'],
+                  'frequencyType': medicineData['frequencyType'],
                   'frequencySelect': medicineData['frequencySelect'],
                 },
               ),
@@ -157,8 +140,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
           );
           if (result != null) {
             setState(() {
-              medicineData['typeFrequency'] = result['typeFrequency'];
-              medicineData['frequencyEvery'] = result['frequencyEvery'];
+              medicineData['frequencyType'] = result['frequencyType'];
               medicineData['frequencySelect'] = result['frequencySelect'];
             });
           }
@@ -168,9 +150,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
           final result = await showDialog(
             context: context,
             builder: (BuildContext context) {
-              String selectedOption = medicineData['mealTime'].isNotEmpty
-                  ? medicineData['mealTime']
-                  : '';
+              bool selectedOption = medicineData['isBeforeMeal'];
               return Dialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -201,9 +181,9 @@ class _DetailMedicineState extends State<DetailMedicine> {
                       // Options
                       _buildOption(
                         title: 'Trước ăn',
-                        isSelected: selectedOption == 'Trước ăn',
+                        isSelected: selectedOption,
                         onTap: () {
-                          selectedOption = 'Trước ăn';
+                          selectedOption = true;
                           Navigator.pop(context, selectedOption);
                         },
                       ),
@@ -213,9 +193,9 @@ class _DetailMedicineState extends State<DetailMedicine> {
                       ),
                       _buildOption(
                         title: 'Sau ăn',
-                        isSelected: selectedOption == 'Sau ăn',
+                        isSelected: !selectedOption,
                         onTap: () {
-                          selectedOption = 'Sau khi ăn';
+                          selectedOption = false;
                           Navigator.pop(context, selectedOption);
                         },
                       ),
@@ -228,7 +208,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
 
           if (result != null) {
             setState(() {
-              medicineData['mealTime'] = result; // Update the meal time
+              medicineData['isBeforeMeal'] = result; // Update the meal time
             });
           }
         }
@@ -308,53 +288,55 @@ class _DetailMedicineState extends State<DetailMedicine> {
           ),
           Column(
             children: [
-              if(hasData)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                width: double.infinity,
-                color: Colors.transparent,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailMedicine(),
-                      ),
-                    );
-                  },
-                  icon: Icon(
-                    hasData
-                        ? Icons.pause_circle_outline
-                        : Icons.add_circle_outline,
-                    size: 25,
-                    color:
-                        hasData ? AppColors.secondaryColor : AppColors.bgColor,
-                  ),
-                  label: Text(
-                    'Ngưng thuốc',
-                    style: TextStyle(
-                        fontSize: 25,
-                        color: hasData
-                            ? AppColors.secondaryColor
-                            : AppColors.bgColor),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 25,
-                    ),
-                    backgroundColor:
-                        hasData ? AppColors.bgColor : AppColors.secondaryColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        side: BorderSide(
-                            color: hasData
-                                ? AppColors.secondaryColor
-                                : Colors.transparent)),
-                  ),
-                ),
-              ),
+              // if (hasData)
+              //   Container(
+              //     padding:
+              //         const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              //     width: double.infinity,
+              //     color: Colors.transparent,
+              //     child: ElevatedButton.icon(
+              //       onPressed: () {
+              //         Navigator.push(
+              //           context,
+              //           MaterialPageRoute(
+              //             builder: (context) => DetailMedicine(),
+              //           ),
+              //         );
+              //       },
+              //       icon: Icon(
+              //         hasData
+              //             ? Icons.pause_circle_outline
+              //             : Icons.add_circle_outline,
+              //         size: 25,
+              //         color: hasData
+              //             ? AppColors.secondaryColor
+              //             : AppColors.bgColor,
+              //       ),
+              //       label: Text(
+              //         'Ngưng thuốc',
+              //         style: TextStyle(
+              //             fontSize: 25,
+              //             color: hasData
+              //                 ? AppColors.secondaryColor
+              //                 : AppColors.bgColor),
+              //       ),
+              //       style: ElevatedButton.styleFrom(
+              //         padding: const EdgeInsets.symmetric(
+              //           vertical: 12,
+              //           horizontal: 25,
+              //         ),
+              //         backgroundColor: hasData
+              //             ? AppColors.bgColor
+              //             : AppColors.secondaryColor,
+              //         shape: RoundedRectangleBorder(
+              //             borderRadius: BorderRadius.circular(25),
+              //             side: BorderSide(
+              //                 color: hasData
+              //                     ? AppColors.secondaryColor
+              //                     : Colors.transparent)),
+              //       ),
+              //     ),
+              //   ),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -365,17 +347,13 @@ class _DetailMedicineState extends State<DetailMedicine> {
                     Navigator.pop(context, medicineData);
                   },
                   icon: Icon(
-                    hasData
-                        ? Icons.sync_rounded
-                        : Icons.add_circle_outline,
+                    hasData ? Icons.sync_rounded : Icons.add_circle_outline,
                     size: 25,
                     color: AppColors.bgColor,
                   ),
                   label: Text(
                     hasData ? 'Cập nhật thuốc' : 'Thêm thuốc',
-                    style: TextStyle(
-                        fontSize: 25,
-                        color: AppColors.bgColor),
+                    style: TextStyle(fontSize: 25, color: AppColors.bgColor),
                   ),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
@@ -385,8 +363,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
                     backgroundColor: AppColors.secondaryColor,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
-                        side: BorderSide(
-                            color: Colors.transparent)),
+                        side: BorderSide(color: Colors.transparent)),
                   ),
                 ),
               ),
@@ -412,13 +389,13 @@ class _DetailMedicineState extends State<DetailMedicine> {
             _buildDetailRow(
               iconPath: 'assets/icons/pill.svg',
               title: 'Tên',
-              value: medicineData['name'],
+              value: medicineData['medicationName'],
             ),
             _buildDivider(),
             _buildDetailRow(
               iconPath: 'assets/icons/shapes.svg',
               title: 'Dạng',
-              value: medicineData['form'],
+              value: medicineData['shape'],
             ),
             _buildDivider(),
             _buildDetailRow(
@@ -430,7 +407,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
             _buildDetailRow(
               iconPath: 'assets/icons/briefcase_medical.svg',
               title: 'Trong hộp còn',
-              value: medicineData['remaining'],
+              value: medicineData['remaining'].toString(),
             ),
           ],
         ),
@@ -453,15 +430,14 @@ class _DetailMedicineState extends State<DetailMedicine> {
             _buildFrequencyRow(
               iconPath: 'assets/icons/calendar_sync.svg',
               title: 'Tần suất',
-              value: medicineData['typeFrequency'],
-              frequencyEvery: medicineData['frequencyEvery'],
+              frequencyEvery: medicineData['frequencyType'],
               frequencySelect: medicineData['frequencySelect'],
             ),
             _buildDivider(),
             _buildDetailRow(
               iconPath: 'assets/icons/utenslis_crossed.svg',
               title: 'Cữ uống',
-              value: medicineData['mealTime'],
+              value: medicineData['isBeforeMeal'] ? 'Trước ăn' : 'Sau ăn',
             ),
             _buildDivider(),
             _buildSheduleRow(
@@ -529,9 +505,15 @@ class _DetailMedicineState extends State<DetailMedicine> {
                         textAlign: TextAlign.right,
                       ),
                     ),
-                  if (title != 'Tên')
+                  if (title != 'Tên' && title != 'Trong hộp còn')
                     Text(
                       value.isNotEmpty ? value : '-',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w600),
+                    ),
+                  if (title == 'Trong hộp còn')
+                    Text(
+                      value != '0' ? value : '-',
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.w600),
                     ),
@@ -633,10 +615,14 @@ class _DetailMedicineState extends State<DetailMedicine> {
   Widget _buildFrequencyRow({
     required String iconPath,
     required String title,
-    required String value,
     required String frequencyEvery,
     required List<dynamic> frequencySelect,
   }) {
+    int numberOfDays = 0;
+    if (frequencyEvery != '') {
+      List<String> parts = frequencyEvery.split(' ');
+      numberOfDays = int.parse(parts[1]);
+    }
     return GestureDetector(
       onTap: () {
         _handleClickMedicineData(title);
@@ -668,16 +654,16 @@ class _DetailMedicineState extends State<DetailMedicine> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  if (value == 'Every')
+                  if (frequencyEvery != 'Select' && frequencyEvery.isNotEmpty)
                     Text(
-                      'Mỗi $frequencyEvery ngày',
+                      'Mỗi $numberOfDays ngày',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                         color: AppColors.secondaryColor,
                       ),
                     ),
-                  if (value == 'Select')
+                  if (frequencyEvery == 'Select')
                     Wrap(
                       spacing: 8.0,
                       runSpacing: 8.0,
@@ -700,7 +686,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
                         );
                       }).toList(),
                     ),
-                  if (value.isEmpty)
+                  if (frequencyEvery.isEmpty)
                     const Text(
                       '-',
                       style: TextStyle(

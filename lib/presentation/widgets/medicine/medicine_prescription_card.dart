@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/common/utils/utils.dart';
-import 'package:sep490/models/medicine/medicine.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/theme/color.dart';
 
-Widget buildMedicineCard(
+Widget buildMedicinePresciptionCard(
   String name,
   String dosage,
   String form,
   int remaining,
-  String frequencyEvery,
+  String frequencyType,
   List<dynamic> frequencySelect,
   bool isBeforeMeal,
   List<dynamic> schedule,
@@ -65,7 +63,7 @@ Widget buildMedicineCard(
                   Row(
                     children: [
                       Text(
-                        'Dùng $dosage (${isBeforeMeal ? 'trước' : 'sau'} ăn)',
+                        'Dùng $dosage (${isBeforeMeal == true ? 'Trước' : 'Sau'} bữa ăn)',
                         style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -85,7 +83,7 @@ Widget buildMedicineCard(
                           children: [
                             const TextSpan(text: "Vào lúc: "),
                             TextSpan(
-                              text: schedule.map((e) => convertTime(e)).join(', '),
+                              text: schedule.join(', '),
                               style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
