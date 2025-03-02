@@ -1,40 +1,44 @@
 import 'dart:convert';
 
 class Activity {
+  final int activityId;
   final String title;
   final String description;
   final String startTime;
   final String endTime;
-  final int elderlyId;
+  final String createdBy;
   final String type;
 
   Activity({
+    required this.activityId,
     required this.title,
     required this.description,
     required this.startTime,
     required this.endTime,
-    required this.elderlyId,
+    required this.createdBy,
     required this.type,
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
+      activityId: json['activityId'],
       title: json['title'],
       description: json['description'],
       startTime: json['startTime'],
       endTime: json['endTime'] ?? '',
-      elderlyId: json['elderlyId'],
+      createdBy: json['createdBy'] ?? '',
       type: json['type'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      "activityId": activityId,
       "title": title,
       "description": description,
       "startTime": startTime,
       "endTime": endTime,
-      "elderlyId": elderlyId,
+      "createdBy": createdBy,
       "type": type,
     };
   }
