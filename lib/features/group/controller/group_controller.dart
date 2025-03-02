@@ -28,6 +28,21 @@ final groupMembersProvider =
     return [];
   }
 });
+final roomChatDetailProvider =
+    FutureProvider.family<RoomChatDetail?, Map<String, dynamic>>(
+        (ref, params) async {
+  final groupRepository = ref.read(groupRepositoryProvider);
+  final BuildContext context = params['context'];
+  final String roomId = params['roomId'];
+  final int userId = params['userId'];
+
+  try {
+    return await groupRepository.getRoomChatDetail(context, roomId, userId);
+  } catch (e) {
+    debugPrint("Error fetching room chat detail: $e");
+    return null;
+  }
+});
 
 class GroupController {
   final GroupRepository groupRepository;
