@@ -13,7 +13,7 @@ class EditFrequency extends StatefulWidget {
 class _EditFrequencyState extends State<EditFrequency> {
   late String _selectedFrequency;
   late int _selectedDays = 1;
-  final List<int> _days = List.generate(30, (index) => index + 1); // 1 to 30
+  final List<int> _days = List.generate(30, (index) => index + 1);
   final List<String> _daysOfWeek = [
     'Thứ 2',
     'Thứ 3',
@@ -135,11 +135,11 @@ class _EditFrequencyState extends State<EditFrequency> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.borderColor : AppColors.bgColor,
+        color: isSelected ? AppColors.secondaryColor : AppColors.bgColor,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: isSelected ? AppColors.secondaryColor : Colors.grey,
-          width: 2,
+          width: 1,
         ),
       ),
       child: Row(
@@ -148,7 +148,7 @@ class _EditFrequencyState extends State<EditFrequency> {
             title,
             style: TextStyle(
                 fontSize: 22,
-                color: isSelected ? AppColors.secondaryColor : Colors.black,
+                color: isSelected ? AppColors.bgColor : AppColors.secondaryColor,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400),
           ),
         ],
@@ -171,6 +171,7 @@ class _EditFrequencyState extends State<EditFrequency> {
             scrollController: FixedExtentScrollController(
                 initialItem: _days.indexOf(_selectedDays)),
             itemExtent: 50.0,
+            looping: true,
             onSelectedItemChanged: (int index) {
               setState(() {
                 _selectedDays = _days[index];

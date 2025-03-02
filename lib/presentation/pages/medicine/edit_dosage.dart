@@ -24,7 +24,7 @@ class _EditDosageScreenState extends State<EditDosageScreen> {
     '1/4',
     '1/3',
     '1/2',
-    ...List.generate(30, (index) => (index + 1).toString())
+    ...List.generate(20, (index) => (index + 1).toString())
   ];
   late String _selectedPillCount = '1';
 
@@ -210,34 +210,35 @@ class _EditDosageScreenState extends State<EditDosageScreen> {
                     ],
                   ),
                   const SizedBox(height: 30), 
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context, {
-                        'dosage': _selectedPillCount.toString(),
-                        'unit': _isOtherUnitSelected
-                            ? _diffController.text
-                            : _selectedUnit,
-                      });
-                    },
-                    icon: SvgPicture.asset(
-                      'assets/icons/droplets.svg',
-                      colorFilter:
-                          ColorFilter.mode(AppColors.bgColor, BlendMode.srcIn),
-                    ),
-                    label: const Text(
-                      'Lưu hàm lượng',
-                      style: TextStyle(fontSize: 22, color: AppColors.bgColor),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 25,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(context, {
+                              'dosage': _selectedPillCount.toString(),
+                              'unit': _isOtherUnitSelected
+                                  ? _diffController.text
+                                  : _selectedUnit,
+                            });
+                          },
+                          label: const Text(
+                            'Lưu',
+                            style: TextStyle(fontSize: 25, color: AppColors.bgColor),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 50,
+                            ),
+                            backgroundColor: AppColors.secondaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                          ),
+                        ),
                       ),
-                      backgroundColor: AppColors.secondaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                 ],

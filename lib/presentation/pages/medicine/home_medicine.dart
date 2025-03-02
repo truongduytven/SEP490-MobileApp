@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/medicine/medicine.dart';
-import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/medicine/controller/medicine_controller.dart';
 import 'package:sep490/presentation/pages/medicine/prescription_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
@@ -53,7 +53,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
       isLoading = true;
     });
     MedicineController medicineController = MedicineController();
-    await medicineController.getMedicines(userId, '$selectedYear-$selectedMonth-$selectedDay');
+    await medicineController.getMedicines(
+        userId, '$selectedYear-$selectedMonth-$selectedDay');
     Timer(Duration(seconds: 2), () {
       setState(() {
         prescription = medicineController.prescription;
@@ -102,6 +103,43 @@ class _HomeMedicineState extends State<HomeMedicine> {
     return hours * 60 + minutes;
   }
 
+  void handleConfirmMedicine(
+      String time, int medicationId, String status) async {
+    setState(() {
+      isLoading = true;
+    });
+    Map<String, dynamic> data = {
+      "confirmations": [
+        {
+          "dateTaken":
+              "$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay} $time:00",
+          "status": status,
+          "medicationId": medicationId,
+        }
+      ]
+    };
+    MedicineController medicineController = MedicineController();
+    await medicineController.confirmMedicine(data);
+    if (medicineController.isConfirmSuccess) {
+      Timer(Duration(seconds: 2), () {
+        getDataPrescription();
+      });
+    } else {
+      Fluttertoast.showToast(
+        msg: "Có lỗi trong quá trình xử lý!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     int daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
@@ -130,7 +168,9 @@ class _HomeMedicineState extends State<HomeMedicine> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => NavigationMenu(keyIndex: 0,),
+                builder: (context) => NavigationMenu(
+                  keyIndex: 0,
+                ),
               ),
             );
           },
@@ -503,14 +543,17 @@ class _HomeMedicineState extends State<HomeMedicine> {
               ),
             ),
           ),
-          medicine['time']['status'] != 'unUsed'
-              ? (medicine['time']['status'] == 'used'
-                  ? Icon(Icons.check_circle, color: Colors.green)
-                  : Icon(Icons.cancel, color: Colors.red))
+          medicine['time']['status'] != 'Unused'
+              ? (medicine['time']['status'] == 'Taken'
+                  ? Icon(Icons.check_circle, size: 30, color: Colors.green)
+                  : Icon(Icons.cancel, size: 30, color: Colors.red))
               : Row(
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        handleConfirmMedicine(medicine['time']['time'],
+                            medicine['medicationId'], "Skip");
+                      },
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
@@ -525,7 +568,10 @@ class _HomeMedicineState extends State<HomeMedicine> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        handleConfirmMedicine(medicine['time']['time'],
+                            medicine['medicationId'], "Taken");
+                      },
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(

@@ -6,6 +6,9 @@ class MedicineController {
   PrescriptionUpdate? prescriptionUpdate;
   final MedicineRepository _medicineRepository = MedicineRepository();
   bool isCreateSuccess = false;
+  bool isUpdateSuccess = false;
+  bool isCancelSuccess = false;
+  bool isConfirmSuccess = false;
 
   Future<void> getMedicines(int userId, String day) async {
     final response = await _medicineRepository.getMedicines(userId, day);
@@ -31,6 +34,33 @@ class MedicineController {
       isCreateSuccess = true;
     } else {
       isCreateSuccess = false;
+    }
+  }
+
+  Future<void> updatePrescriptionController (Map<String, dynamic>? presciption, int prescriptionId) async {
+    final response = await _medicineRepository.updatedMedicine(presciption, prescriptionId);
+    if (response != null && response['isSuccess']) {
+      isUpdateSuccess = true;
+    } else {
+      isUpdateSuccess = false;
+    }
+  }
+
+  Future<void> cancelPrescriptionController (int prescriptionId) async {
+    final response = await _medicineRepository.cancelMedicine(prescriptionId);
+    if (response != null && response['isSuccess']) {
+      isCancelSuccess = true;
+    } else {
+      isCancelSuccess = false;
+    }
+  }
+
+  Future<void> confirmMedicine (Map<String, dynamic> medicines) async {
+    final response = await _medicineRepository.confirmMedicine(medicines);
+    if (response != null && response['isSuccess']) {
+      isConfirmSuccess = true;
+    } else {
+      isConfirmSuccess = false;
     }
   }
 }

@@ -288,55 +288,55 @@ class _DetailMedicineState extends State<DetailMedicine> {
           ),
           Column(
             children: [
-              if (hasData)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  width: double.infinity,
-                  color: Colors.transparent,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailMedicine(),
-                        ),
-                      );
-                    },
-                    icon: Icon(
-                      hasData
-                          ? Icons.pause_circle_outline
-                          : Icons.add_circle_outline,
-                      size: 25,
-                      color: hasData
-                          ? AppColors.secondaryColor
-                          : AppColors.bgColor,
-                    ),
-                    label: Text(
-                      'Ngưng thuốc',
-                      style: TextStyle(
-                          fontSize: 25,
-                          color: hasData
-                              ? AppColors.secondaryColor
-                              : AppColors.bgColor),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 25,
-                      ),
-                      backgroundColor: hasData
-                          ? AppColors.bgColor
-                          : AppColors.secondaryColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          side: BorderSide(
-                              color: hasData
-                                  ? AppColors.secondaryColor
-                                  : Colors.transparent)),
-                    ),
-                  ),
-                ),
+              // if (hasData)
+              //   Container(
+              //     padding:
+              //         const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              //     width: double.infinity,
+              //     color: Colors.transparent,
+              //     child: ElevatedButton.icon(
+              //       onPressed: () {
+              //         Navigator.push(
+              //           context,
+              //           MaterialPageRoute(
+              //             builder: (context) => DetailMedicine(),
+              //           ),
+              //         );
+              //       },
+              //       icon: Icon(
+              //         hasData
+              //             ? Icons.pause_circle_outline
+              //             : Icons.add_circle_outline,
+              //         size: 25,
+              //         color: hasData
+              //             ? AppColors.secondaryColor
+              //             : AppColors.bgColor,
+              //       ),
+              //       label: Text(
+              //         'Ngưng thuốc',
+              //         style: TextStyle(
+              //             fontSize: 25,
+              //             color: hasData
+              //                 ? AppColors.secondaryColor
+              //                 : AppColors.bgColor),
+              //       ),
+              //       style: ElevatedButton.styleFrom(
+              //         padding: const EdgeInsets.symmetric(
+              //           vertical: 12,
+              //           horizontal: 25,
+              //         ),
+              //         backgroundColor: hasData
+              //             ? AppColors.bgColor
+              //             : AppColors.secondaryColor,
+              //         shape: RoundedRectangleBorder(
+              //             borderRadius: BorderRadius.circular(25),
+              //             side: BorderSide(
+              //                 color: hasData
+              //                     ? AppColors.secondaryColor
+              //                     : Colors.transparent)),
+              //       ),
+              //     ),
+              //   ),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
