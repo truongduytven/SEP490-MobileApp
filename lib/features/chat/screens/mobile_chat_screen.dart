@@ -291,7 +291,13 @@ class _SendCallButtonState extends State<SendCallButton> {
       future: _inviteesFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Loader(); // Show loading indicator
+          return IconButton(
+            onPressed: () {},
+            icon: Icon(
+              widget.isVideoCall ? Icons.video_call : Icons.phone,
+              color: Colors.grey,
+            ),
+          ); // Show loading indicator
         }
         if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
           return IconButton(

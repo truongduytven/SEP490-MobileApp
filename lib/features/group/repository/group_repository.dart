@@ -36,7 +36,8 @@ class GroupRepository {
         } else {
           showSnackBar(context: context, content: "Lỗi tải dữ liệu");
 
-          throw Exception("API returned an error: ${jsonData['message']} ${jsonData['data']}");
+          throw Exception(
+              "API returned an error: ${jsonData['message']} ${jsonData['data']}");
         }
       } else {
         showSnackBar(context: context, content: "Lỗi nè hehe");
@@ -138,12 +139,12 @@ class GroupRepository {
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
         if (jsonData['status'] == 1) {
-          showSnackBar(
-            context: context,
-            content: "Tải chi tiết cuộc trò chuyện thành công!",
-            type: "green",
-          );
-          print("chi tiets cuộc trò hcuyeenj ${jsonData['data']}");
+          // showSnackBar(
+          //   context: context,
+          //   content: "Tải chi tiết cuộc trò chuyện thành công!",
+          //   type: "green",
+          // );
+          // print("chi tiets cuộc trò hcuyeenj ${jsonData['data']}");
           return RoomChatDetail.fromJson(jsonData['data']);
         } else {
           showSnackBar(

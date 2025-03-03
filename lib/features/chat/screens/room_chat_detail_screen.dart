@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/common/widgets/loader.dart';
 import 'package:sep490/features/group/controller/group_controller.dart';
+import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
 import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
 import 'package:sep490/models/room_chat_detail.dart';
+import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class RoomChatDetailScreen extends ConsumerWidget {
@@ -24,7 +26,7 @@ class RoomChatDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupController = ref.read(groupControllerProvider);
     final accountIdAsync = ref.watch(accountIdProvider);
-
+    final selectContactController = ref.read(selectContactControllerProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Thông tin cuộc trò chuyện"),
@@ -191,8 +193,67 @@ class RoomChatDetailScreen extends ConsumerWidget {
                       ),
                     ] else ...[
                       GestureDetector(
-                        onTap: () {
-                          // Remove friend functionality
+                        onTap: () async {
+                          // Show a confirmation dialog
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Xác nhận"),
+                                content: const Text(
+                                    "Bạn có chắc chắn muốn xóa liên hệ bạn bè này không?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context,
+                                          false); // Return false if canceled
+                                    },
+                                    child: const Text("Hủy"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context,
+                                          true); // Return true if confirmed
+                                    },
+                                    child: const Text("Xóa"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          // Proceed only if the user confirmed the action
+                          if (confirmed == true) {
+                            // Get the IDs of the two users in the private chat
+                            final requestUserId =
+                                roomChatDetail.users[0].accountId;
+                            final responseUserId =
+                                roomChatDetail.users[1].accountId;
+
+                            // Call the removeFriend method
+                            final success =
+                                await selectContactController.removeFriend(
+                              context,
+                              requestUserId,
+                              responseUserId,
+                            );
+
+                            // Show a snackbar based on the result
+                            if (success) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MobileLayoutScreen(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Xóa bạn bè thất bại"),
+                                ),
+                              );
+                            }
+                          }
                         },
                         child: const Card(
                           margin: EdgeInsets.symmetric(vertical: 12.0),
