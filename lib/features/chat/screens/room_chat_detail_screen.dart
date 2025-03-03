@@ -1,16 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/common/widgets/loader.dart';
+import 'package:sep490/features/chat/screens/confirm_avatar_group_screen.dart';
 import 'package:sep490/features/group/controller/group_controller.dart';
 import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
 import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
 import 'package:sep490/models/room_chat_detail.dart';
-import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/theme/color.dart';
 
-class RoomChatDetailScreen extends ConsumerWidget {
+class RoomChatDetailScreen extends ConsumerStatefulWidget {
   final String roomId;
   final String roomName;
   final bool isGroupChat;
@@ -23,23 +26,175 @@ class RoomChatDetailScreen extends ConsumerWidget {
     required this.isGroupChat,
     this.profilePic = "",
   }) : super(key: key);
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RoomChatDetailScreen> createState() =>
+      _RoomChatDetailScreenState();
+}
+
+class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
+  late TextEditingController _roomNameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _roomNameController = TextEditingController(text: widget.roomName);
+  }
+
+  @override
+  void dispose() {
+    _roomNameController.dispose();
+    super.dispose();
+  }
+
+  void _showRenameDialog(BuildContext context, String currentName) {
+    _roomNameController.text = currentName; // Pre-fill the text field
+    final groupController = ref.watch(groupControllerProvider);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        bool isLoading = false; // Local state for loading
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Đổi tên cuộc trò chuyện"),
+              content: Column(
+                mainAxisSize:
+                    MainAxisSize.min, // Ensure the dialog doesn't expand
+                children: [
+                  TextField(
+                    controller: _roomNameController,
+                    decoration: const InputDecoration(
+                      hintText: "Nhập tên mới",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  if (isLoading) // Show loading indicator if isLoading is true
+                    const Padding(
+                      padding: EdgeInsets.only(top: 16.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isLoading
+                      ? null // Disable button when loading
+                      : () {
+                          Navigator.pop(context); // Close the dialog
+                        },
+                  child: const Text(
+                    "Hủy",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+                TextButton(
+                  onPressed: isLoading
+                      ? null // Disable button when loading
+                      : () async {
+                          final newName = _roomNameController.text.trim();
+                          if (newName.isNotEmpty) {
+                            setState(() {
+                              isLoading = true; // Start loading
+                            });
+
+                            // Call the API or method to update the group chat name
+                            final success =
+                                await groupController.changeNameGroupChat(
+                              context,
+                              widget.roomId,
+                              newName,
+                            );
+
+                            setState(() {
+                              isLoading = false; // Stop loading
+                            });
+
+                            if (success) {
+                              ref.invalidate(groupControllerProvider);
+                              Navigator.pop(
+                                  context); // Close the dialog on success
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Đổi tên thất bại"),
+                                ),
+                              );
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Tên không được để trống"),
+                              ),
+                            );
+                          }
+                        },
+                  child: const Text(
+                    "Lưu",
+                    style: TextStyle(color: AppColors.primaryColor),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final groupController = ref.read(groupControllerProvider);
     final accountIdAsync = ref.watch(accountIdProvider);
-    final selectContactController = ref.read(selectContactControllerProvider);
+    final selectContactController = ref.watch(selectContactControllerProvider);
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       appBar: AppBar(
-        title: const Text("Thông tin cuộc trò chuyện"),
-        centerTitle: true,
-      ),
+          title: const Text("Thông tin cuộc trò chuyện"),
+          centerTitle: true,
+          actions: [
+            if (widget.isGroupChat)
+              PopupMenuButton(
+                icon: const Icon(Icons.more_vert,
+                    color: AppColors.secondaryColor),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    child: const Text(
+                      "Đổi tên cuộc trò chuyện",
+                    ),
+                    onTap: () {
+                      Future.delayed(Duration.zero, () {
+                        // Use the roomName from roomChatDetail
+                        final roomChatDetail = ref
+                            .read(groupControllerProvider)
+                            .getRoomChatDetail(
+                                context, widget.roomId, accountIdAsync.value!);
+                        roomChatDetail.then((detail) {
+                          if (detail != null) {
+                            _showRenameDialog(context, detail.roomName);
+                          }
+                        });
+                      });
+                    },
+                  ),
+                  PopupMenuItem(
+                    child: const Text(
+                      "Thêm thành viên",
+                    ),
+                  )
+                ],
+              )
+          ]),
       body: accountIdAsync.when(
         data: (userId) {
           if (userId == null) {
             return const Center(child: Text("Không tìm thấy ID người dùng"));
           }
           return FutureBuilder<RoomChatDetail?>(
-            future: groupController.getRoomChatDetail(context, roomId, userId),
+            future: groupController.getRoomChatDetail(
+                context, widget.roomId, userId),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: Loader());
@@ -54,10 +209,61 @@ class RoomChatDetailScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundImage:
-                            NetworkImage(roomChatDetail.roomAvatar),
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundImage:
+                                NetworkImage(roomChatDetail.roomAvatar),
+                          ),
+                          if (roomChatDetail.isGroupChat)
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  color: AppColors.bgColor,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: AppColors.primaryColor,
+                                    size: 20,
+                                  ),
+                                  onPressed: () async {
+                                    File? pickedImage =
+                                        await pickImageFromGallery(context);
+                                    if (pickedImage != null) {
+                                      final result = await Navigator.pushNamed(
+                                        context,
+                                        ConfirmChangeAvatarGroupChatScreen
+                                            .routeName,
+                                        arguments: {
+                                          "file": pickedImage,
+                                          "groupId": roomChatDetail.roomId,
+                                        },
+                                      );
+
+                                      if (result == true) {
+                                        setState(
+                                            () {}); // Force UI update to show new avatar
+                                      }
+                                    }
+                                    // Handle edit image functionality
+                                    print("Edit image clicked");
+                                  },
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -65,6 +271,7 @@ class RoomChatDetailScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           Text(
+                            textAlign: TextAlign.center,
                             roomChatDetail.roomName,
                             style: const TextStyle(
                               fontSize: 28,

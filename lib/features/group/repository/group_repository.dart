@@ -149,8 +149,7 @@ class GroupRepository {
         } else {
           showSnackBar(
               context: context,
-              content:
-                  "Lỗi tải dữ liệu: ${jsonData['message']} ${jsonData['data']}");
+              content: "Lỗi tải dữ liệu: ${jsonData['message']} }");
           return null;
         }
       } else {
@@ -161,6 +160,83 @@ class GroupRepository {
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
       return null;
+    }
+  }
+
+  Future<bool> changeNameGroupChat(
+      BuildContext context, String groupId, String groupName) async {
+    try {
+      final response = await http.put(
+        Uri.parse(
+            "https://api.diavan-valuation.asia/chat-management/group-chat/group-name?groupId=${groupId}&groupName=${groupName}"),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+        if (jsonData['status'] == 1) {
+          showSnackBar(
+            context: context,
+            content: "Cuộc trò chuyện đã được đổi tên!",
+            type: "green",
+          );
+          // print("chi tiets cuộc trò hcuyeenj ${jsonData['data']}");
+          return true;
+        } else {
+          showSnackBar(
+              context: context,
+              content: "Lỗi đổi tên cuộc trò chuyện: ${jsonData['message']}");
+          return false;
+        }
+      } else {
+        showSnackBar(context: context, content: "Lỗi đổi tên cuộc trò chuyện");
+        return false;
+      }
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> changeAvatarGroupChat(
+      BuildContext context, String groupId, File groupAvatar) async {
+    try {
+      var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse(
+            "https://api.diavan-valuation.asia/chat-management/group-chat/group-avatar?groupId=$groupId"),
+      );
+
+      request.headers.addAll({
+        'accept': '*/*',
+        'Content-Type': 'multipart/form-data',
+      });
+
+      request.files.add(
+        await http.MultipartFile.fromPath('groupAvatar', groupAvatar.path),
+      );
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      var jsonData = jsonDecode(responseBody);
+
+      if (response.statusCode == 200 && jsonData['status'] == 1) {
+        showSnackBar(
+          context: context,
+          content: "Cuộc trò chuyện đã được đổi ảnh!",
+          type: "green",
+        );
+        return true;
+      } else {
+        showSnackBar(
+          context: context,
+          content: "Lỗi đổi ảnh cuộc trò chuyện: ${jsonData['message']}",
+        );
+        return false;
+      }
+    } catch (e) {
+      showSnackBar(context: context, content: "Lỗi: ${e.toString()}");
+      return false;
     }
   }
 }

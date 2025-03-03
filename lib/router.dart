@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:sep490/common/widgets/error.dart';
+import 'package:sep490/features/chat/screens/confirm_avatar_group_screen.dart';
 import 'package:sep490/features/chat/screens/mobile_chat_screen.dart';
 import 'package:sep490/features/group/screens/create_group_screen.dart';
 import 'package:sep490/features/select_contacts/screens/select_contacts_screen.dart';
@@ -43,22 +44,17 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             profilePic: profilePic,
             users: users),
       );
-    // case ConfirmStatusScreen.routeName:
-    //   final file = settings.arguments as File;
+    case ConfirmChangeAvatarGroupChatScreen.routeName:
+      final arguments = settings.arguments as Map<String, dynamic>;
+      // final file = settings.arguments as File;
 
-    //   return MaterialPageRoute(
-    //     builder: (context) => ConfirmStatusScreen(
-    //       file: file,
-    //     ),
-    //   );
-    // case StatusScreen.routeName:
-    //   final status = settings.arguments as Status;
+      return MaterialPageRoute(
+        builder: (context) => ConfirmChangeAvatarGroupChatScreen(
+          file: arguments["file"] as File,
+          groupId: arguments["groupId"] as String,
+        ),
+      );
 
-    //   return MaterialPageRoute(
-    //     builder: (context) => StatusScreen(
-    //       status: status,
-    //     ),
-    //   );
     case CreateGroupScreen.routeName:
       return MaterialPageRoute(
         builder: (context) => CreateGroupScreen(),

@@ -76,4 +76,27 @@ class GroupController {
   ) {
     return groupRepository.getRoomChatDetail(context, roomId, userId);
   }
+
+  Future<bool> changeNameGroupChat(
+    BuildContext context,
+    String groupId,
+    String groupName,
+  ) {
+    return groupRepository.changeNameGroupChat(
+      context,
+      groupId,
+      groupName,
+    );
+  }
+  Future<bool> changeAvatarGroupChat(
+    BuildContext context,
+    String groupId,
+    File groupAvatar,
+  ) {
+    return groupRepository.changeAvatarGroupChat(
+      context,
+      groupId,
+      groupAvatar,
+    );
+  }
 }
