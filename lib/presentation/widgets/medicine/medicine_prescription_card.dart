@@ -62,17 +62,20 @@ Widget buildMedicinePresciptionCard(
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      Text(
-                        'Dùng $dosage (${isBeforeMeal == true ? 'Trước' : 'Sau'} bữa ăn)',
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.iconColor),
+                      Expanded(
+                        child: Text(
+                          'Dùng $dosage (${isBeforeMeal == true ? 'Trước' : 'Sau'} ăn)',
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.iconColor),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 2),
-                  Row(
+                  Wrap(
                     children: [
                       RichText(
                         text: TextSpan(

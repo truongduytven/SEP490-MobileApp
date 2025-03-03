@@ -205,48 +205,53 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
     LoadingDialog.show(context, 'assets/gif/opd.gif', 'Đang lưu toa thuốc...');
     Map<String, dynamic> newObject = {
       ...prescription!,
-      "medication": (prescription!["medicines"]).map((medicine) => {
-        ...medicine,
-        "note": "nothing",
-        "treatment": "string",
-        "frequencySelect": medicine['frequencyType'] != 'Select' ? [] : medicine['frequencySelect'],
-        "schedule": medicine["schedule"].map((time) => time.length > 5 ? time.substring(0, 5) : time).toList(),
-      }).toList(),
-    }..remove("medicines"); 
+      "medication": (prescription!["medicines"])
+          .map((medicine) => {
+                ...medicine,
+                "note": "nothing",
+                "treatment": "string",
+                "frequencySelect": medicine['frequencyType'] != 'Select'
+                    ? []
+                    : medicine['frequencySelect'],
+                "schedule": medicine["schedule"]
+                    .map(
+                        (time) => time.length > 5 ? time.substring(0, 5) : time)
+                    .toList(),
+              })
+          .toList(),
+    }..remove("medicines");
 
     newObject.remove('startDate');
     newObject.remove('id');
 
-    print(newObject);
-    Navigator.pop(context);
-
-    
-    // MedicineController medicineController = MedicineController();
-    // await medicineController.updatePrescriptionController(newObject, prescription!['id']);
-    // Timer(const Duration(seconds: 1), () {
-    //   if (medicineController.isUpdateSuccess) {
-    //     Navigator.pop(context);
-    //     LoadingDialog.show(context, 'assets/gif/create_success.gif', 'Tạo toa thuốc thành công!');
-    //     Timer(const Duration(seconds: 2), () {
-    //       Navigator.pop(context);
-    //     });
-    //     setState(() {
-    //       isEdited = false;
-    //       getPrescription();
-    //     });
-    //   } else {
-    //     Fluttertoast.showToast(
-    //       msg: "Có lỗi trong quá trình xử lý!",
-    //       toastLength: Toast.LENGTH_SHORT,
-    //       gravity: ToastGravity.BOTTOM,
-    //       timeInSecForIosWeb: 1,
-    //       backgroundColor: Colors.green,
-    //       textColor: Colors.white,
-    //       fontSize: 16.0,
-    //     );
-    //     Navigator.pop(context);
-    //   }
-    // });
+    MedicineController medicineController = MedicineController();
+    await medicineController.updatePrescriptionController(
+        newObject, prescription!['id']);
+    Timer(const Duration(seconds: 1), () {
+      if (medicineController.isUpdateSuccess) {
+        Navigator.pop(context);
+        LoadingDialog.show(context, 'assets/gif/create_success.gif',
+            'Lưu toa thuốc thành công!');
+        Timer(const Duration(seconds: 2), () {
+          Navigator.pop(context);
+          setState(() {
+            isEdited = false;
+            getPrescription();
+          });
+        });
+      } else {
+        Fluttertoast.showToast(
+          msg: "Có lỗi trong quá trình xử lý!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        Navigator.pop(context);
+      }
+    });
   }
 
   void handleCancelPrescription() async {
@@ -254,32 +259,47 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Xác nhận'),
-          content: const Text('Bạn có chắc chắn muốn hủy toa thuốc này không?'),
+          title: const Text(
+            'Xác nhận',
+            style: TextStyle(fontSize: 25),
+          ),
+          content: const Text(
+            'Bạn có chắc chắn muốn hủy toa thuốc này không?',
+            style: TextStyle(fontSize: 20),
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Hủy'),
+              child: const Text(
+                'Hủy',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
             TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
               onPressed: () async {
-                Navigator.pop(context);
-                LoadingDialog.show(context, 'assets/gif/opd.gif', 'Đang hủy toa thuốc...');
+                LoadingDialog.show(
+                    context, 'assets/gif/opd.gif', 'Đang hủy toa thuốc...');
                 MedicineController medicineController = MedicineController();
-                await medicineController.cancelPrescriptionController(prescription!['id']);
-                Timer(const Duration(seconds: 1), () {
+                await medicineController
+                    .cancelPrescriptionController(prescription!['id']);
+                Timer(const Duration(seconds: 2), () {
                   if (medicineController.isCancelSuccess) {
                     Navigator.pop(context);
-                    LoadingDialog.show(context, 'assets/gif/create_success.gif', 'Hủy toa thuốc thành công!');
+                    LoadingDialog.show(context, 'assets/gif/create_success.gif',
+                        'Hủy toa thuốc thành công!');
                     Timer(const Duration(seconds: 2), () {
                       Navigator.pop(context);
-                    });
-                    setState(() {
-                      isEdited = false;
-                      getPrescription();
-                    });
+                      Navigator.pop(context);
+                      setState(() {
+                        isEdited = false;
+                        getPrescription();
+                      });
+                    }); 
                   } else {
                     Fluttertoast.showToast(
                       msg: "Có lỗi trong quá trình xử lý!",
@@ -294,7 +314,10 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                   }
                 });
               },
-              child: const Text('Xác nhận'),
+              child: const Text(
+                'Xác nhận',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -615,7 +638,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                             width: double.infinity,
                             color: Colors.transparent,
                             child: ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                handleCancelPrescription();
+                              },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.bgColor,
                                   padding: EdgeInsets.symmetric(

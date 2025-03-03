@@ -140,6 +140,43 @@ class _HomeMedicineState extends State<HomeMedicine> {
     }
   }
 
+  void handleAllConfirmMedicine(List<Map<String, dynamic>> medicines) async {
+    setState(() {
+      isLoading = true;
+    });
+    Map<String, dynamic> data = {
+      "confirmations": []
+    };
+    medicines.forEach((medicine) {
+      data["confirmations"].add({
+        "dateTaken":
+            "$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay} ${medicine["time"]["time"]}:00",
+        "status": "Taken",
+        "medicationId": medicine["medicationId"],
+      });
+    });
+    MedicineController medicineController = MedicineController();
+    await medicineController.confirmMedicine(data);
+    if (medicineController.isConfirmSuccess) {
+      Timer(Duration(seconds: 2), () {
+        getDataPrescription();
+      });
+    } else {
+      Fluttertoast.showToast(
+        msg: "Có lỗi trong quá trình xử lý!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     int daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
@@ -477,7 +514,9 @@ class _HomeMedicineState extends State<HomeMedicine> {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  handleAllConfirmMedicine(medicines);
+                },
                 child: Text(
                   "UỐNG TẤT CẢ",
                   style: TextStyle(

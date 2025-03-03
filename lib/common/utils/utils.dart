@@ -105,6 +105,9 @@ String convertDateTime (String dateTime) {
   if (month.length == 1) {
     month = '0$month';
   }
-  var formattedDateTime = '$year-$month-$day''T00:00:00Z';
+  if (day.length == 1) {
+    day = '0$day';
+  }
+  var formattedDateTime = '$year-$month-$day''T00:00:00.000Z';
   return formattedDateTime;
 }
