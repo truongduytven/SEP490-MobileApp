@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
+import 'package:sep490/common/utils/utils.dart';
+import 'package:sep490/models/medicine/medicine.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -7,12 +8,11 @@ Widget buildMedicineCard(
   String name,
   String dosage,
   String form,
-  String remaining,
-  String typeFrequency,
+  int remaining,
   String frequencyEvery,
   List<dynamic> frequencySelect,
-  String mealTime,
-  List<String> schedule,
+  bool isBeforeMeal,
+  List<dynamic> schedule,
   Function() onPressed,
 ) {
   return GestureDetector(
@@ -65,7 +65,7 @@ Widget buildMedicineCard(
                   Row(
                     children: [
                       Text(
-                        'Dùng $dosage ($mealTime)',
+                        'Dùng $dosage (${isBeforeMeal ? 'trước' : 'sau'} ăn)',
                         style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -85,7 +85,7 @@ Widget buildMedicineCard(
                           children: [
                             const TextSpan(text: "Vào lúc: "),
                             TextSpan(
-                              text: schedule.join(', '),
+                              text: schedule.map((e) => convertTime(e)).join(', '),
                               style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,

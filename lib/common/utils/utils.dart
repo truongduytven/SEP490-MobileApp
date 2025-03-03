@@ -3,13 +3,27 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sep490/theme/color.dart';
 
-void showSnackBar({required BuildContext context, required String content}) {
+// void showSnackBar({required BuildContext context, required String content}) {
+//   if (context.mounted) {
+//     // Check if the widget is still in the tree
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text(content),
+//         backgroundColor: AppColors.errorColor,
+//       ),
+//     );
+//   }
+// }
+void showSnackBar(
+    {required BuildContext context, required String content, String? type}) {
   if (context.mounted) {
-    // Check if the widget is still in the tree
+    ScaffoldMessenger.of(context).clearSnackBars(); // Clear previous snackbars
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(content),
+        backgroundColor: type == "green" ? Colors.green : AppColors.errorColor,
       ),
     );
   }
@@ -66,7 +80,7 @@ Future<GiphyGif?> pickGIF(BuildContext context) async {
 String convertTimeSession(String time) {
   // 8:00 -> 8:00 AM
   // 20:00 -> 8:00 PM
-  if(time == "") return "";
+  if (time == "") return "";
   final timeSplit = time.split(":");
   final hour = int.parse(timeSplit[0]);
   final minute = timeSplit[1];
@@ -75,4 +89,36 @@ String convertTimeSession(String time) {
   } else {
     return "${hour - 12}:$minute PM";
   }
+}
+
+String convertDate(String date) {
+  // '2025-01-25' to '25/01/2025'
+  var dateParts = date.split('-');
+  var day = dateParts[2];
+  var month = dateParts[1];
+  var year = dateParts[0];
+  var formattedDate = '$day/$month/$year';
+  return formattedDate;
+}
+
+String convertTime(String time) {
+  // '12:00:00' to '12:00'
+  var timeParts = time.split(':');
+  var hour = timeParts[0];
+  var minute = timeParts[1];
+  var formattedTime = '$hour:$minute';
+  return formattedTime;
+}
+
+String convertDateTime(String dateTime) {
+  // '25/02/2025' to '2025-02-25T00:00:00Z'
+  var dateParts = dateTime.split('/');
+  var day = dateParts[0];
+  var month = dateParts[1];
+  var year = dateParts[2];
+  if (month.length == 1) {
+    month = '0$month';
+  }
+  var formattedDateTime = '$year-$month-$day' 'T00:00:00Z';
+  return formattedDateTime;
 }
