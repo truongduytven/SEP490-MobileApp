@@ -46,7 +46,7 @@ class _KeoBuaBaoScreenState extends State<KeoBuaBaoScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("SCORE", style: TextStyle(
+                    Text("ĐIỂM", style: TextStyle(
                       color: Colors.white,
                       fontSize: 32.0,
                       fontWeight: FontWeight.bold
@@ -148,7 +148,7 @@ class _KeoBuaBaoScreenState extends State<KeoBuaBaoScreen> {
                   padding: EdgeInsets.all(16.0),
                   shape: StadiumBorder(side: BorderSide(color: Colors.white,width: 5.0)),
                   child: Text(
-                    "Rules",
+                    "Luật chơi",
                     style: TextStyle(color: Colors.white, fontSize: 24.0),
                   ),
                 ),

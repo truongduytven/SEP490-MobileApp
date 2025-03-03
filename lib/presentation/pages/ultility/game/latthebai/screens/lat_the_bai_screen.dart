@@ -71,8 +71,8 @@ class _LatTheBaiScreenState extends State<LatTheBaiScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              scoreBoard("Tries", "${tries}"),
-              scoreBoard("Score", "${score}"),
+              scoreBoard("Thử", "${tries}"),
+              scoreBoard("Điểm", "${score}"),
             ],
           ),
           SizedBox(
@@ -131,7 +131,7 @@ class _LatTheBaiScreenState extends State<LatTheBaiScreen> {
           ElevatedButton(
             onPressed: _resetGame,
             child: const Text(
-              "Play Again",
+              "Chơi lại",
               style: TextStyle(fontSize: 24.0),
             ),
           ),

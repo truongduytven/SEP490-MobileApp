@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:sep490/common/utils/game_logic.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:sep490/common/utils/game_logic.dart';
+import 'package:sep490/common/utils/player.dart';
 
 class CoCaroScreen extends StatefulWidget {
   @override
@@ -10,8 +9,7 @@ class CoCaroScreen extends StatefulWidget {
 }
 
 class _CoCaroScreenState extends State<CoCaroScreen> {
-
-    String lastValue = "X";
+  String lastValue = "X";
   bool gameOver = false;
   int turn = 0;
   String result = "";
@@ -25,41 +23,33 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
   }
 
   void aiMove() {
-    List<int> emptyCells = [];
-    for (int i = 0; i < Game.boardlenth; i++) {
-      if (game.board![i] == Player.empty) {
-        emptyCells.add(i);
+  int bestMove = game.findBestMove(game.board!);
+  if (bestMove != -1) {
+    setState(() {
+      game.board![bestMove] = lastValue;
+      turn++;
+      gameOver = game.winnerCheck(lastValue, bestMove, scoreboard, 3);
+      if (gameOver) {
+        result = "$lastValue là người chiến thắng";
+      } else if (!gameOver && turn == 9) {
+        result = "Hòa nhau";
+        gameOver = true;
       }
-    }
-
-    if (emptyCells.isNotEmpty) {
-      int randomIndex = emptyCells[Random().nextInt(emptyCells.length)];
-      setState(() {
-        game.board![randomIndex] = lastValue;
-        turn++;
-        gameOver = game.winnerCheck(lastValue, randomIndex, scoreboard, 3);
-        if (gameOver) {
-          result = "$lastValue is the Winner";
-        } else if (!gameOver && turn == 9) {
-          result = "It's a Draw";
-          gameOver = true;
-        }
-        if (lastValue == "X") lastValue = "O";
-        else lastValue = "X";
-      });
-    }
+      if (lastValue == "X") lastValue = "O";
+      else lastValue = "X";
+    });
   }
-
+}
   void makeMove(int index) {
-    if (game.board![index] == "") {
+    if (game.board![index] == Player.empty) {
       setState(() {
         game.board![index] = lastValue;
         turn++;
         gameOver = game.winnerCheck(lastValue, index, scoreboard, 3);
         if (gameOver) {
-          result = "$lastValue is the Winner";
+          result = "$lastValue là người chiến thắng";
         } else if (!gameOver && turn == 9) {
-          result = "It's a Draw";
+          result = "Hòa nhau";
           gameOver = true;
         }
         if (lastValue == "X") lastValue = "O";
@@ -74,29 +64,30 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     double boardWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
         elevation: 0.0,
         centerTitle: true,
-         leading: IconButton(
-    icon: Icon(Icons.arrow_back, color: Colors.white),
-    onPressed: () {
-       setState(() {
-                game.board = Game.initGameBoard();
-                lastValue = "X";
-                gameOver = false;
-                turn = 0;
-                result = "";
-                scoreboard = [0, 0, 0, 0, 0, 0, 0, 0];
-              });
-      Navigator.pop(context);
-    },
-  ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            setState(() {
+              game.board = Game.initGameBoard();
+              lastValue = "X";
+              gameOver = false;
+              turn = 0;
+              result = "";
+              scoreboard = [0, 0, 0, 0, 0, 0, 0, 0];
+            });
+            Navigator.pop(context);
+          },
+        ),
         title: Text(
           "Cờ caro",
           style: TextStyle(color: Colors.white),
@@ -109,7 +100,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "It's ${lastValue} turn".toUpperCase(),
+            "Đến lượt ${lastValue} .".toUpperCase(),
             style: TextStyle(
               color: Colors.white,
               fontSize: 58,
@@ -131,7 +122,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
                   onTap: gameOver
                       ? null
                       : () {
-                          makeMove(index); // Use the makeMove function
+                          makeMove(index);
                         },
                   child: Container(
                     width: Game.blocSize,
@@ -151,7 +142,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
                     ),
                   ),
                 );
-                }),
+              }),
             ),
           ),
           SizedBox(height: 25.0),
@@ -171,7 +162,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
               });
             },
             icon: Icon(Icons.replay),
-            label: Text("Play Again"),
+            label: Text("Chơi lại "),
           ),
         ],
       ),

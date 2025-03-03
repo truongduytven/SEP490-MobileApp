@@ -75,6 +75,8 @@ dependencies:
   flutter_styled_toast: ^2.2.1
   flutter_contacts: ^1.1.9+2
   dio: ^5.8.0+1
+  font_awesome_flutter: ^10.8.0
+  collection: ^1.19.0
 
 dev_dependencies:
   flutter_test:

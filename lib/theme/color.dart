@@ -15,6 +15,4 @@ class AppColors {
   static const Color grayColor5 = Color(0xFF636364);
   static const Color borderColor = Color(0xFFF1EDFD);
   static const Color textPrimary = Color.fromARGB(255, 110, 97, 149);
-
-  
 }

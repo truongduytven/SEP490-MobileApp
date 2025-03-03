@@ -141,7 +141,7 @@ class _GameScreenState extends State<GameScreen> {
                 padding: EdgeInsets.all(16.0),
                 shape: StadiumBorder(side: BorderSide(color: Colors.white,width: 5.0)),
                 child: Text(
-                  "Play Again",
+                  "Chơi lại",
                   style: TextStyle(color: Colors.white, fontSize: 24.0),
                 ),
               ),
@@ -154,7 +154,7 @@ class _GameScreenState extends State<GameScreen> {
                 padding: EdgeInsets.all(16.0),
                 shape: StadiumBorder(side: BorderSide(color: Colors.white,width: 5.0)),
                 child: Text(
-                  "Rules",
+                  "Luật chơi",
                   style: TextStyle(color: Colors.white, fontSize: 24.0),
                 ),
               ),

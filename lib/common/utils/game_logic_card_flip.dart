@@ -24,10 +24,10 @@ class Game {
   ];
 
   List<Map<int, String>> matchCheck = [];
-  final int cardCount = 16; // 4x4 grid
+  final int cardCount = 16; 
 
   void initGame() {
-    card_list.shuffle(Random()); // Shuffle the card list
+    card_list.shuffle(Random());
     gameImg = List.generate(cardCount, (index) => hiddenCardpath);
   }
 }
