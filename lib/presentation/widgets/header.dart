@@ -98,16 +98,18 @@ class _HeaderState extends State<Header> {
                         style:
                             TextStyle(color: AppColors.textColor, fontSize: 18),
                       ),
-                      Text(
-                        fullName,
-                        style: TextStyle(
-                          color: AppColors.textColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: Text(
+                          fullName,
+                          style: TextStyle(
+                            color: AppColors.textColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      )
                     ],
                   ),
                 ],

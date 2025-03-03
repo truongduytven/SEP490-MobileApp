@@ -137,8 +137,6 @@ class _CreateTitlePrescriptionState extends State<CreateTitlePrescription> {
                                 _selectedDate =
                                     "${selectedDay.day}/${selectedDay.month}/${selectedDay.year}";
                                 _focusedDay = focusedDay;
-                                print(
-                                    'heheh ${selectedDay.day}/${selectedDay.month}/${selectedDay.year} hehe $focusedDay');
                               });
                             },
                             onFormatChanged: (format) {
@@ -191,7 +189,7 @@ class _CreateTitlePrescriptionState extends State<CreateTitlePrescription> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    Navigator.push(context,
+                    Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
                       return CreatePrescriptionScreen(
                           endDate: _selectedDate,
