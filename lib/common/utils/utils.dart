@@ -77,7 +77,21 @@ Future<GiphyGif?> pickGIF(BuildContext context) async {
   return gif;
 }
 
-String convertDate (String date) {
+String convertTimeSession(String time) {
+  // 8:00 -> 8:00 AM
+  // 20:00 -> 8:00 PM
+  if (time == "") return "";
+  final timeSplit = time.split(":");
+  final hour = int.parse(timeSplit[0]);
+  final minute = timeSplit[1];
+  if (hour < 12) {
+    return "$hour:$minute AM";
+  } else {
+    return "${hour - 12}:$minute PM";
+  }
+}
+
+String convertDate(String date) {
   // '2025-01-25' to '25/01/2025'
   var dateParts = date.split('-');
   var day = dateParts[2];
@@ -87,7 +101,7 @@ String convertDate (String date) {
   return formattedDate;
 }
 
-String convertTime (String time) {
+String convertTime(String time) {
   // '12:00:00' to '12:00'
   var timeParts = time.split(':');
   var hour = timeParts[0];
@@ -96,7 +110,7 @@ String convertTime (String time) {
   return formattedTime;
 }
 
-String convertDateTime (String dateTime) {
+String convertDateTime(String dateTime) {
   // '25/02/2025' to '2025-02-25T00:00:00Z'
   var dateParts = dateTime.split('/');
   var day = dateParts[0];
@@ -105,6 +119,6 @@ String convertDateTime (String dateTime) {
   if (month.length == 1) {
     month = '0$month';
   }
-  var formattedDateTime = '$year-$month-$day''T00:00:00Z';
+  var formattedDateTime = '$year-$month-$day' 'T00:00:00Z';
   return formattedDateTime;
 }

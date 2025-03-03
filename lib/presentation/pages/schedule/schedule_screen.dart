@@ -1,7 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/common/utils/utils.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/models/schedule.dart';
+import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
+import 'package:sep490/presentation/pages/schedule/create_calendar_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -19,8 +25,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   late DateTime _currentTime = DateTime.now();
   final ScrollController _scrollControllerDay = ScrollController();
   final ScrollController _scrollControllerActivity = ScrollController();
+  List<Activity>? schedule;
+  bool isLoading = false;
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int userId = sharedPrefsHelper.getInt('accountId')!;
 
-  // Example data for tasks or appointments
   final List<Map<String, dynamic>> activities = [
     {
       "ActivityName": "Uống thuốc",
@@ -69,6 +78,22 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         _currentTime = DateTime.now();
       });
     });
+    getSchedule();
+  }
+
+  void getSchedule() async {
+    setState(() {
+      isLoading = true;
+    });
+    ScheduleController scheduleController = ScheduleController();
+    await scheduleController.getSchedule(userId,
+        '$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay}');
+    Timer(Duration(seconds: 2), () {
+      setState(() {
+        schedule = scheduleController.schedule;
+        isLoading = false;
+      });
+    });
   }
 
   @override
@@ -103,35 +128,32 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   Widget _getActivityIcon(String activityName) {
     switch (activityName) {
-      case "Uống thuốc":
+      case "Medication":
         return Image.asset('assets/img3D/thuoc.png', width: 50, height: 50);
-      case "Tư vấn với bác sĩ":
+      case "Professor Appointment":
         return Image.asset('assets/img3D/bacsi.png', width: 50, height: 50);
-      case "Tập luyện":
-        return Image.asset('assets/img3D/cannang.png', width: 50, height: 50);
       default:
-        return Icon(Icons.event, color: AppColors.secondaryColor, size: 50);
+        return Image.asset('assets/img3D/calendar.png', width: 50, height: 50);
     }
   }
 
   Color? getColors(String activityName) {
     switch (activityName) {
-      case "Uống thuốc":
-        return Colors.yellow[400];
-      case "Tư vấn với bác sĩ":
-        return Colors.blue[400];
-      case "Tập luyện":
-        return Colors.green[400];
+      case "Medication":
+        return Colors.yellow[200];
+      case "Professor Appointment":
+        return Colors.blue[200];
       default:
-        return Colors.orange[400];
+        return Colors.green[200];
     }
   }
 
   @override
   Widget build(BuildContext context) {
     int daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
-    activities.sort((a, b) =>
-        (a['StartTime'] as DateTime).compareTo(b['StartTime'] as DateTime));
+    if (schedule != null) {
+      schedule?.sort((a, b) => (a.startTime).compareTo(b.startTime));
+    }
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
@@ -304,147 +326,162 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
           const SizedBox(height: 30),
 
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                    children: List.generate(24, (index) {
-                  DateTime hour =
-                      DateTime(selectedYear, selectedMonth, selectedDay, index);
-                  bool haveActivity = false;
-                  final filteredActivities = activities.where((activity) {
-                    DateTime startTime = activity['StartTime'];
-                    return startTime.hour == index;
-                  }).toList();
-                  bool isCurrentHour = _currentTime.hour == index;
-                  double percentHeight = _currentTime.minute / 60;
-                  double hourBlockHeight = 100;
+          isLoading
+              ? Expanded(
+                  child: Center(
+                    child: GifView.asset(
+                      'assets/gif/loading_calendar.gif',
+                      width: 100,
+                      height: 100,
+                      frameRate: 90,
+                    ),
+                  ),
+                )
+              : Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                          children: List.generate(24, (index) {
+                        DateTime hour = DateTime(
+                            selectedYear, selectedMonth, selectedDay, index);
+                        bool haveActivity = false;
+                        final filteredActivities = schedule?.where((activity) {
+                          String startTime = activity.startTime;
+                          List<String> startTimeSplit = startTime.split(':');
+                          return int.parse(startTimeSplit[0]) == index;
+                        }).toList();
+                        bool isCurrentHour = _currentTime.hour == index;
+                        double percentHeight = _currentTime.minute / 60;
+                        double hourBlockHeight = 100;
 
-                  if (filteredActivities.isEmpty) {
-                    haveActivity = false;
-                  } else {
-                    haveActivity = true;
-                    hourBlockHeight = 66 +
-                        130 * filteredActivities.length.toDouble() +
-                        15 * (filteredActivities.length.toDouble() - 1);
-                  }
+                        if (filteredActivities == null ||
+                            filteredActivities.isEmpty) {
+                          haveActivity = false;
+                        } else {
+                          haveActivity = true;
+                          hourBlockHeight = 66 +
+                              130 * filteredActivities.length.toDouble() +
+                              15 * (filteredActivities.length.toDouble() - 1);
+                        }
 
-                  return Stack(
-                    children: [
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 70, // Adjust width as needed
-                                child: Text(
-                                  DateFormat.jm().format(hour),
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                              const SizedBox(
-                                  width: 10), // Spacing between text and line
-
-                              // Right side: Full-width line
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width -
-                                    120, // Trừ đi phần text và spacing
-                                child: Container(
-                                  height: 1,
-                                  color: Colors.grey.withOpacity(0.5),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          if (!haveActivity)
-                            SizedBox(
-                              height: 40,
-                            ),
-                          if (haveActivity)
-                            ...List.generate(filteredActivities.length,
-                                (index) {
-                              final activity = filteredActivities[index];
-                              String startTime = DateFormat.jm()
-                                  .format(activity['StartTime'] as DateTime);
-                              String endTime = DateFormat.jm()
-                                  .format(activity['EndTime'] as DateTime);
-
-                              return Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 16),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: getColors(activity['ActivityName']),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.secondaryColor
-                                          .withOpacity(0.3),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 4),
+                        return Stack(
+                          children: [
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 70, // Adjust width as needed
+                                      child: Text(
+                                        DateFormat.jm().format(hour),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        width:
+                                            10), // Spacing between text and line
+                                    CustomPaint(
+                                      size: Size(
+                                          MediaQuery.of(context).size.width -
+                                              120,
+                                          1), // Full width, height 1px
+                                      painter: DashedLinePainter(),
                                     ),
                                   ],
                                 ),
-                                child: Row(
-                                  children: [
-                                    // Activity Icon
-                                    _getActivityIcon(activity['ActivityName']),
-                                    const SizedBox(width: 12),
-                                    // Activity Details
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            activity['ActivityName'],
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColors.textColor),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            activity['ActivityDescription'],
-                                            style:
-                                                const TextStyle(fontSize: 14),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            '$startTime - $endTime',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: AppColors.textColor),
+                                SizedBox(height: 10),
+                                if (!haveActivity)
+                                  SizedBox(
+                                    height: 40,
+                                  ),
+                                if (haveActivity)
+                                  ...List.generate(filteredActivities!.length,
+                                      (index) {
+                                    final activity = filteredActivities[index];
+
+                                    return Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 16),
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            getColors(activity.type),
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppColors.secondaryColor
+                                                .withOpacity(0.3),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 4),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                          SizedBox(height: 20),
-                        ],
-                      ),
-                      _buildCurrentTimeIndicator(
-                          percentHeight, isCurrentHour, hourBlockHeight)
-                    ],
-                  );
-                })),
-              ),
-            ),
-          ),
+                                      child: Row(
+                                        children: [
+                                          // Activity Icon
+                                          _getActivityIcon(
+                                              activity.type),
+                                          const SizedBox(width: 12),
+                                          // Activity Details
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  activity.title,
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          AppColors.textColor),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  activity.description,
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  '${activity.startTime} ${activity.endTime != '' ? '-' : ''} ${activity.endTime}',
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          AppColors.textColor),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                SizedBox(height: 20),
+                              ],
+                            ),
+                            _buildCurrentTimeIndicator(
+                                percentHeight, isCurrentHour, hourBlockHeight)
+                          ],
+                        );
+                      })),
+                    ),
+                  ),
+                ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Xử lý khi nhấn vào nút
-          print("Floating Button Pressed");
+        onPressed: () async {
+          final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => CreateCalendarScreen()));
+          if (result != null) {
+            getSchedule();
+          }
         },
         backgroundColor: AppColors.primaryColor,
         shape: const CircleBorder(),
@@ -483,4 +520,29 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
     );
   }
+}
+
+class DashedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 0.5
+      ..style = PaintingStyle.stroke;
+
+    double dashWidth = 5, dashSpace = 3;
+    double startX = 0;
+
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, 0),
+        Offset(startX + dashWidth, 0),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
