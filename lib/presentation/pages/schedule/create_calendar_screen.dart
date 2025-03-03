@@ -16,6 +16,14 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
   final TextEditingController durationController = TextEditingController();
   List<Map<String, String>> schedules = [];
 
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      schedules.add({"startTime": "08:00", "endTime": "17:00"});
+    });
+  }
+
   void _addSchedule() {
     setState(() {
       schedules.add({"startTime": "08:00", "endTime": "17:00"});
@@ -140,7 +148,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                     // Call API to create calendar
                   }
                 },
-                child: const Text('Create'),
+                child: const Text('Tạo sự kiện'),
               )
             ],
           ),
