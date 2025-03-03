@@ -30,7 +30,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
       "title": "Đọc sách",
       "color1": Colors.purple,
       "color2": Colors.deepPurple,
-      "image": "assets/img/reading_book_2.webp",
+      "image": "assets/img/docsach.png",
       "subtitle": "Khám phá những cuốn sách hay và bổ ích.",
       "onTap": () => {},
     },
@@ -38,7 +38,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
       "title": "Tập luyện",
       "color1": Colors.blue,
       "color2": Colors.lightBlueAccent,
-      "image": "assets/img/tapluyen.webp",
+      "image": "assets/img/tapluyen.png",
       "subtitle": "Giữ gìn sức khỏe với các bài tập luyện hiệu quả.",
       "onTap": () => {},
     },
@@ -80,7 +80,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
                     subtitle: utilities[i]['subtitle'],
                   ),
                 ),
-                const SizedBox(height: 26), // Space between cards
+                const SizedBox(height: 36), // Space between cards
               ],
             ],
           ),
