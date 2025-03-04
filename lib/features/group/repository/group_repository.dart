@@ -255,11 +255,19 @@ class GroupRepository {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         if (responseData['status'] == 1) {
-          showSnackBar(
-            context: context,
-            content: "Đã rời khỏi cuộc trò chuyện",
-            type: "green",
-          );
+          if (kickerId == userId) {
+            showSnackBar(
+              context: context,
+              content: "Đã rời khỏi cuộc trò chuyện",
+              type: "green",
+            );
+          } else {
+            showSnackBar(
+              context: context,
+              content: "Đã xóa liên hệ cuộc trò chuyện",
+              type: "green",
+            );
+          }
           return true; // Successfully removed from the group
         } else {
           showSnackBar(

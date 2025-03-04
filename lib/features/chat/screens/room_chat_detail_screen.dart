@@ -35,6 +35,67 @@ class RoomChatDetailScreen extends ConsumerStatefulWidget {
 
 class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
   late TextEditingController _roomNameController;
+  final ValueNotifier<int?> selectedUserIndex = ValueNotifier<int?>(null);
+
+  void _showRemoveDialog(int userId) {
+    final groupController = ref.watch(groupControllerProvider);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Xác nhận"),
+        content:
+            const Text("Bạn có chắc chắn muốn xóa thành viên này khỏi nhóm?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Hủy"),
+          ),
+          TextButton(
+            onPressed: () async {
+              SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+              final currentUserId = sharedPrefsHelper.getInt("accountId");
+
+              final success = await groupController.outGroupChat(
+                context,
+                currentUserId ?? 0,
+                widget.roomId,
+                userId,
+              );
+
+              // // Show a snackbar based on the result
+              if (success) {
+                ref.invalidate(groupControllerProvider);
+
+                if (currentUserId == userId) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NavigationMenu(
+                        keyIndex: 2,
+                      ),
+                    ),
+                  );
+                } else {
+                  Navigator.pop(context);
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text("Không thể xóa người này khỏi cuộc trò chuyện"),
+                  ),
+                );
+              }
+              print("xóa id $userId ra khỏi nhóm");
+              // widget.onRemoveUser(userId);
+            },
+            child: const Text("Xóa", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -204,6 +265,9 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
               }
 
               final roomChatDetail = snapshot.data!;
+
+              SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+              final currentUserId = sharedPrefsHelper.getInt("accountId");
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -322,64 +386,179 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
+                      // Expanded(
+                      //   child: ListView.builder(
+                      //     itemCount: roomChatDetail.users.length,
+                      //     itemBuilder: (context, index) {
+                      //       final user = roomChatDetail.users[index];
+                      //       return GestureDetector(
+                      //         onTap: () {
+                      //           setState(() {
+                      //             selectedUserIndex =
+                      //                 selectedUserIndex == index ? null : index;
+                      //           });
+                      //         },
+                      //         child: ListTile(
+                      //           leading: CircleAvatar(
+                      //             radius: 25,
+                      //             backgroundImage: NetworkImage(user.avatar),
+                      //           ),
+                      //           title: Row(
+                      //             mainAxisAlignment:
+                      //                 MainAxisAlignment.spaceBetween,
+                      //             children: [
+                      //               Text(
+                      //                 user.fullName,
+                      //                 style: TextStyle(
+                      //                   fontSize: 20,
+                      //                   fontWeight: FontWeight.w500,
+                      //                 ),
+                      //                 overflow: TextOverflow.ellipsis,
+                      //               ),
+                      //               user.isCreator
+                      //                   ? Text(
+                      //                       "Quản trị viên",
+                      //                       style: TextStyle(
+                      //                         color: AppColors.primaryColor,
+                      //                       ),
+                      //                     )
+                      //                   : Text(""),
+                      //             ],
+                      //           ),
+                      //           subtitle: Row(
+                      //             children: [
+                      //               Icon(
+                      //                 user.gender.toLowerCase() == "female"
+                      //                     ? Icons.female
+                      //                     : user.gender.toLowerCase() == "male"
+                      //                         ? Icons.male
+                      //                         : Icons
+                      //                             .help_outline, // Default icon for unknown gender
+                      //                 color: user.gender.toLowerCase() ==
+                      //                         "female"
+                      //                     ? Colors.pink
+                      //                     : user.gender.toLowerCase() == "male"
+                      //                         ? Colors.blue
+                      //                         : Colors
+                      //                             .grey, // Default color for unknown gender
+                      //               ),
+                      //               const SizedBox(
+                      //                   width:
+                      //                       5), // Space between icon and text
+                      //               Text(
+                      //                 user.gender.toLowerCase() == "female"
+                      //                     ? "Nữ"
+                      //                     : user.gender.toLowerCase() == "male"
+                      //                         ? "Nam"
+                      //                         : "Không rõ",
+                      //               ),
+                      //             ],
+                      //           ),
+                      //           trailing: selectedUserIndex == index
+                      //               ? IconButton(
+                      //                   icon: const Icon(Icons.remove_circle,
+                      //                       color: Colors.red),
+                      //                   onPressed: () =>
+                      //                       _showRemoveDialog(user.accountId),
+                      //                 )
+                      //               : null,
+                      //         ),
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
+
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: roomChatDetail.users.length,
-                          itemBuilder: (context, index) {
-                            final user = roomChatDetail.users[index];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                radius: 25,
-                                backgroundImage: NetworkImage(user.avatar),
-                              ),
-                              title: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    user.fullName,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
+                        child: ValueListenableBuilder<int?>(
+                          valueListenable: selectedUserIndex,
+                          builder: (context, value, child) {
+                            return ListView.builder(
+                              itemCount: roomChatDetail.users.length,
+                              itemBuilder: (context, index) {
+                                final user = roomChatDetail.users[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    selectedUserIndex.value =
+                                        selectedUserIndex.value == index
+                                            ? null
+                                            : index;
+                                  },
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 25,
+                                      backgroundImage:
+                                          NetworkImage(user.avatar),
                                     ),
-                                  ),
-                                  user.isCreator
-                                      ? Text(
-                                          "Quản trị viên",
-                                          style: TextStyle(
-                                            color: AppColors.primaryColor,
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            user.fullName,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        )
-                                      : Text("Thành viên"),
-                                ],
-                              ),
-                              subtitle: Row(
-                                children: [
-                                  Icon(
-                                    user.gender.toLowerCase() == "female"
-                                        ? Icons.female
-                                        : user.gender.toLowerCase() == "male"
-                                            ? Icons.male
-                                            : Icons
-                                                .help_outline, // Default icon for unknown gender
-                                    color: user.gender.toLowerCase() == "female"
-                                        ? Colors.pink
-                                        : user.gender.toLowerCase() == "male"
-                                            ? Colors.blue
-                                            : Colors
-                                                .grey, // Default color for unknown gender
+                                        ),
+                                        user.isCreator
+                                            ? Text(
+                                                "Quản trị viên",
+                                                style: TextStyle(
+                                                  color: AppColors.primaryColor,
+                                                ),
+                                              )
+                                            : Text(""),
+                                        if (user.accountId == currentUserId)
+                                          Text("Bạn"),
+                                      ],
+                                    ),
+                                    subtitle: Row(
+                                      children: [
+                                        Icon(
+                                          user.gender.toLowerCase() == "female"
+                                              ? Icons.female
+                                              : user.gender.toLowerCase() ==
+                                                      "male"
+                                                  ? Icons.male
+                                                  : Icons
+                                                      .help_outline, // Default icon for unknown gender
+                                          color: user.gender.toLowerCase() ==
+                                                  "female"
+                                              ? Colors.pink
+                                              : user.gender.toLowerCase() ==
+                                                      "male"
+                                                  ? Colors.blue
+                                                  : Colors
+                                                      .grey, // Default color for unknown gender
+                                        ),
+                                        const SizedBox(
+                                            width:
+                                                5), // Space between icon and text
+                                        Text(
+                                          user.gender.toLowerCase() == "female"
+                                              ? "Nữ"
+                                              : user.gender.toLowerCase() ==
+                                                      "male"
+                                                  ? "Nam"
+                                                  : "Không rõ",
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: selectedUserIndex.value == index
+                                        ? IconButton(
+                                            icon: const Icon(
+                                                Icons.remove_circle,
+                                                color: Colors.red),
+                                            onPressed: () => _showRemoveDialog(
+                                                user.accountId),
+                                          )
+                                        : null,
                                   ),
-                                  const SizedBox(
-                                      width: 5), // Space between icon and text
-                                  Text(
-                                    user.gender.toLowerCase() == "female"
-                                        ? "Nữ"
-                                        : user.gender.toLowerCase() == "male"
-                                            ? "Nam"
-                                            : "Không rõ",
-                                  ),
-                                ],
-                              ),
+                                );
+                              },
                             );
                           },
                         ),
