@@ -1554,6 +1554,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.2"
+  water_bottle:
+    dependency: "direct main"
+    description:
+      name: water_bottle
+      sha256: "5b3692d9249b8cfe549ce03d8b3be51290d134aab2ce7d9c1f2cd73b926415db"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   web:
     dependency: transitive
     description:

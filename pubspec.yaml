@@ -75,6 +75,7 @@ dependencies:
   flutter_styled_toast: ^2.2.1
   flutter_contacts: ^1.1.9+2
   dio: ^5.8.0+1
+  water_bottle: ^0.0.7
 
 dev_dependencies:
   flutter_test:

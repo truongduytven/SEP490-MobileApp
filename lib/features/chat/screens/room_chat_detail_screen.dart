@@ -211,6 +211,8 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
     final groupController = ref.read(groupControllerProvider);
     final accountIdAsync = ref.watch(accountIdProvider);
     final selectContactController = ref.watch(selectContactControllerProvider);
+    SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+    final currentUserRoleId = sharedPrefsHelper.getInt("roleId");
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
@@ -241,11 +243,12 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
                       });
                     },
                   ),
-                  PopupMenuItem(
-                    child: const Text(
-                      "Thêm thành viên",
-                    ),
-                  )
+                  if (currentUserRoleId == 3)
+                    PopupMenuItem(
+                      child: const Text(
+                        "Thêm thành viên",
+                      ),
+                    )
                 ],
               )
           ]),
