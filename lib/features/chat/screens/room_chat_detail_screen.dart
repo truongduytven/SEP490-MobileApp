@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/common/widgets/loader.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/chat/screens/confirm_avatar_group_screen.dart';
 import 'package:sep490/features/group/controller/group_controller.dart';
 import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
@@ -384,8 +385,68 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          // Leave group chat functionality
+                        onTap: () async {
+                          // Show a confirmation dialog
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Xác nhận"),
+                                content: const Text(
+                                    "Bạn có chắc chắn muốn rời khỏi cuộc trò chuyện này không?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context,
+                                          false); // Return false if canceled
+                                    },
+                                    child: const Text("Hủy"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context,
+                                          true); // Return true if confirmed
+                                    },
+                                    child: const Text("Rời"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          // Proceed only if the user confirmed the action
+                          if (confirmed == true) {
+                            SharedPrefsHelper sharedPrefsHelper =
+                                SharedPrefsHelper();
+                            final currentUserId =
+                                sharedPrefsHelper.getInt("accountId");
+
+                            final success = await groupController.outGroupChat(
+                              context,
+                              currentUserId ?? 0,
+                              widget.roomId,
+                              currentUserId ?? 0,
+                            );
+
+                            // // Show a snackbar based on the result
+                            if (success) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NavigationMenu(
+                                    keyIndex: 2,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Không thể rời khỏi cuộc trò chuyện"),
+                                ),
+                              );
+                            }
+                          }
                         },
                         child: const ListTile(
                           leading: Icon(Icons.output, color: Colors.red),

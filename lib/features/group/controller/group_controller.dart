@@ -99,4 +99,17 @@ class GroupController {
       groupAvatar,
     );
   }
+  Future<bool> outGroupChat(
+    BuildContext context,
+    int kickerId,
+    String groupId,
+    int userId,
+  ) {
+    return groupRepository.outGroupChat(
+      context,
+      kickerId,
+      groupId,
+      userId,
+    );
+  }
 }

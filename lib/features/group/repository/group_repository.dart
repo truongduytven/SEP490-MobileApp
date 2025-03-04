@@ -239,4 +239,52 @@ class GroupRepository {
       return false;
     }
   }
+
+  Future<bool> outGroupChat(
+    BuildContext context,
+    int kickerId,
+    String groupId,
+    int userId,
+  ) async {
+    final String apiUrl =
+        "https://api.diavan-valuation.asia/chat-management/kick-member?kickerId=$kickerId&groupId=$groupId&userId=$userId";
+
+    try {
+      final response = await http.put(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData['status'] == 1) {
+          showSnackBar(
+            context: context,
+            content: "Đã rời khỏi cuộc trò chuyện",
+            type: "green",
+          );
+          return true; // Successfully removed from the group
+        } else {
+          showSnackBar(
+            context: context,
+            content:
+                "Lỗi rời cuộc trò chuyện: ${responseData['message']} ${responseData['data']}",
+          );
+          debugPrint("Error: ${responseData['message']}");
+          return false;
+        }
+      } else {
+        showSnackBar(
+          context: context,
+          content: "Lỗi rời cuộc trò chuyện: ${response.statusCode}",
+        );
+        debugPrint("Server error: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("Request failed: $e");
+      showSnackBar(
+        context: context,
+        content: "Lỗi rời cuộc trò chuyện: ${e.toString()}",
+      );
+      return false;
+    }
+  }
 }
