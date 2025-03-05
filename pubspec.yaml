@@ -78,6 +78,9 @@ dependencies:
   dio: ^5.8.0+1
   font_awesome_flutter: ^10.8.0
   collection: ^1.19.0
+  firebase_messaging: ^15.2.4
+  firebase_core: ^3.12.1
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -113,6 +116,7 @@ flutter:
     - assets/gif/
     - assets/img3D/form_medical/
     - assets/img3D/treatment_medical/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
