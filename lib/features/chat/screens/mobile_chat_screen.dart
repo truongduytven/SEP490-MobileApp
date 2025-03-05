@@ -31,6 +31,7 @@ class MobileChatScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.invalidate(roomChatDetailProvider);
     final accountIdAsync = ref.watch(accountIdProvider);
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserId = sharedPrefsHelper.getInt("accountId");
@@ -139,8 +140,8 @@ class MobileChatScreen extends ConsumerWidget {
             onCallFinished: onSendCallInvitationFinished,
           ),
           IconButton(
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => RoomChatDetailScreen(
@@ -151,6 +152,9 @@ class MobileChatScreen extends ConsumerWidget {
                   ),
                 ),
               );
+              if (result == true) {
+                ref.invalidate(roomChatDetailProvider);
+              }
             },
             icon: const Icon(Icons.more_vert),
           ),
@@ -185,7 +189,7 @@ Future<List<ZegoUIKitUser>> fetchLatestInvitees(
   List<User> inviteeUsers,
 ) async {
   try {
-    final roomChatDetail = await ref.read(roomChatDetailProvider({
+    final roomChatDetail = await ref.watch(roomChatDetailProvider({
       'context': context,
       'roomId': roomId,
       'userId': userId,
@@ -270,6 +274,25 @@ class _SendCallButtonState extends State<SendCallButton> {
       widget.userId,
       widget.inviteeUsers,
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Fetch invitees when dependencies change (e.g., when navigating back)
+    _fetchInvitees();
+  }
+
+  void _fetchInvitees() {
+    setState(() {
+      _inviteesFuture = fetchLatestInvitees(
+        widget.ref,
+        widget.context,
+        widget.roomId,
+        widget.userId,
+        widget.inviteeUsers,
+      );
+    });
   }
 
   // Method to refresh the invitees list
