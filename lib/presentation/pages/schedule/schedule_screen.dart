@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/schedule.dart';
+import 'package:sep490/presentation/pages/medicine/controller/medicine_controller.dart';
 import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
 import 'package:sep490/presentation/pages/schedule/create_calendar_screen.dart';
+import 'package:sep490/presentation/widgets/loading/loadingImgPath.dart';
 import 'package:sep490/theme/color.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -24,53 +26,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   late Timer _timer;
   late DateTime _currentTime = DateTime.now();
   final ScrollController _scrollControllerDay = ScrollController();
-  final ScrollController _scrollControllerActivity = ScrollController();
   List<Activity>? schedule;
   bool isLoading = false;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId = sharedPrefsHelper.getInt('accountId')!;
-
-  final List<Map<String, dynamic>> activities = [
-    {
-      "ActivityName": "Uống thuốc",
-      "ActivityDescription": "Penicilin v kali 500mg\nDùng 1 vào 8:00 (sau ăn)",
-      "StartTime": DateTime(2025, 2, 16, 9, 0),
-      "EndTime": DateTime(2025, 2, 16, 10, 0),
-    },
-    {
-      "ActivityName": "Tư vấn với bác sĩ",
-      "ActivityDescription": "Bác sĩ Phan Văn Anh",
-      "StartTime": DateTime(2025, 2, 16, 9, 0),
-      "EndTime": DateTime(2025, 2, 16, 10, 0),
-    },
-    {
-      "ActivityName": "Tư vấn với bác sĩ",
-      "ActivityDescription": "Bác sĩ Phan Văn Anh",
-      "StartTime": DateTime(2025, 2, 16, 11, 0),
-      "EndTime": DateTime(2025, 2, 16, 12, 0),
-    },
-    {
-      "ActivityName": "Tập luyện",
-      "ActivityDescription": "Bài tập cổ vai gáy",
-      "StartTime": DateTime(2025, 2, 16, 13, 0),
-      "EndTime": DateTime(2025, 2, 16, 14, 0),
-    },
-    {
-      "ActivityName": "Sự kiện gia đình",
-      "ActivityDescription": "Tiệc tất niên",
-      "StartTime": DateTime(2025, 2, 16, 21, 0),
-      "EndTime": DateTime(2025, 2, 16, 22, 0),
-    },
-  ];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDay();
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToNextActivity();
     });
     _currentTime = DateTime.now();
     _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
@@ -102,21 +67,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     super.dispose();
   }
 
-  void _scrollToNextActivity() {
-    final now = DateTime.now();
-    for (int i = 0; i < activities.length; i++) {
-      if (activities[i]['StartTime'].isAfter(now)) {
-        double scrollPosition = i * 150;
-        _scrollControllerActivity.animateTo(
-          scrollPosition,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-        break;
-      }
-    }
-  }
-
   void _scrollToSelectedDay() {
     double scrollPosition = (selectedDay - 1) * 80;
     _scrollControllerDay.animateTo(
@@ -146,6 +96,171 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       default:
         return Colors.green[200];
     }
+  }
+
+  void _showActivityDialog(BuildContext context, Activity activity) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, anim1, anim2) {
+        return ScaleTransition(
+          scale: anim1,
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: getColors(activity.type),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      _getActivityIcon(activity.type),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              activity.title,
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textColor),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              activity.description,
+                              style: const TextStyle(fontSize: 20),
+                              maxLines: 5,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${activity.startTime} ${activity.endTime.isNotEmpty ? '-' : ''} ${activity.endTime}',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        handleChangeStatusActivity(activity.activityId);
+                      },
+                      icon: Icon(Icons.delete, color: Colors.white),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                      label: const Text('Dừng',
+                          style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreateCalendarScreen(
+                              data: activity,
+                              date: "$selectedYear-$selectedMonth-$selectedDay",
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.edit, color: Colors.white),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryColor,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                      label: const Text('Cập nhật',
+                          style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void handleChangeStatusActivity(int activityId) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Xác nhận'),
+          content: Text(
+              'Bạn có chắc chắn muốn dừng hoạt động này từ ngày $selectedDay/$selectedMonth/$selectedYear không?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Hủy'),
+            ),
+            TextButton(
+              onPressed: () async {
+                LoadingDialog.show(context, 'assets/gif/loading_calendar.gif',
+                    'Đang hủy hoạt động...');
+                ScheduleController scheduleController = ScheduleController();
+                await scheduleController.changeStatusActivity(activityId,
+                    "$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay}");
+                Timer(const Duration(seconds: 1), () {
+                  if (scheduleController.isChangeStatusSuccess) {
+                    Navigator.pop(context);
+                    LoadingDialog.show(context, 'assets/gif/schedule_success.gif',
+                        'Dừng hoạt động thành công!');
+                    Timer(const Duration(seconds: 2), () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      setState(() {
+                        getSchedule();
+                      });
+                    });
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: "Có lỗi trong quá trình xử lý!",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.green,
+                      textColor: Colors.white,
+                      fontSize: 16.0,
+                    );
+                    Navigator.pop(context);
+                  }
+                });
+              },
+              child: const Text('Xác nhận'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -198,6 +313,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         _scrollToSelectedDay();
                       });
+                      getSchedule();
                     });
                   },
                 ),
@@ -224,6 +340,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         _scrollToSelectedDay(); // Scroll to day 1
                       });
+                      getSchedule();
                     });
                   },
                 ),
@@ -242,6 +359,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 _scrollToSelectedDay();
                               });
+                              getSchedule();
                             });
                           }
                         : null,
@@ -277,6 +395,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   onTap: () {
                     setState(() {
                       selectedDay = day;
+                      getSchedule();
                     });
                   },
                   child: Container(
@@ -402,64 +521,68 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                       (index) {
                                     final activity = filteredActivities[index];
 
-                                    return Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 16),
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            getColors(activity.type),
-                                        borderRadius: BorderRadius.circular(12),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: AppColors.secondaryColor
-                                                .withOpacity(0.3),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          // Activity Icon
-                                          _getActivityIcon(
-                                              activity.type),
-                                          const SizedBox(width: 12),
-                                          // Activity Details
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  activity.title,
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color:
-                                                          AppColors.textColor),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  activity.description,
-                                                  style: const TextStyle(
-                                                      fontSize: 14),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  '${activity.startTime} ${activity.endTime != '' ? '-' : ''} ${activity.endTime}',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color:
-                                                          AppColors.textColor),
-                                                ),
-                                              ],
+                                    return GestureDetector(
+                                      onLongPress: () {
+                                        _showActivityDialog(context, activity);
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 16),
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: getColors(activity.type),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AppColors.secondaryColor
+                                                  .withOpacity(0.3),
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 4),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            // Activity Icon
+                                            _getActivityIcon(activity.type),
+                                            const SizedBox(width: 12),
+                                            // Activity Details
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    activity.title,
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: AppColors
+                                                            .textColor),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    activity.description,
+                                                    style: const TextStyle(
+                                                        fontSize: 14),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    '${activity.startTime} ${activity.endTime != '' ? '-' : ''} ${activity.endTime}',
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: AppColors
+                                                            .textColor),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   }),
@@ -478,7 +601,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => CreateCalendarScreen()));
+          final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CreateCalendarScreen(
+                        data: null,
+                      )));
           if (result != null) {
             getSchedule();
           }
