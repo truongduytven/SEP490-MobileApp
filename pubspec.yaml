@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.6.1
+  sdk: ^3.6.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -68,11 +68,19 @@ dependencies:
   mime: ^2.0.0
   http_parser: ^4.1.2
   easy_date_timeline: ^2.0.6
+  gif_view: ^1.0.0
   zego_uikit: ^2.28.7
   zego_uikit_signaling_plugin: ^2.8.10
   zego_uikit_prebuilt_call: ^4.16.22
   connectivity_plus: ^6.1.3
   flutter_styled_toast: ^2.2.1
+  flutter_contacts: ^1.1.9+2
+  dio: ^5.8.0+1
+  font_awesome_flutter: ^10.8.0
+  collection: ^1.19.0
+  firebase_messaging: ^15.2.4
+  firebase_core: ^3.12.1
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -105,8 +113,10 @@ flutter:
     - assets/img3D/
     - assets/icons/
     - assets/img3D/
+    - assets/gif/
     - assets/img3D/form_medical/
     - assets/img3D/treatment_medical/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

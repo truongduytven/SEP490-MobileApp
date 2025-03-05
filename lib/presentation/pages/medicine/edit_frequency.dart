@@ -13,7 +13,7 @@ class EditFrequency extends StatefulWidget {
 class _EditFrequencyState extends State<EditFrequency> {
   late String _selectedFrequency;
   late int _selectedDays = 1;
-  final List<int> _days = List.generate(30, (index) => index + 1); // 1 to 30
+  final List<int> _days = List.generate(30, (index) => index + 1);
   final List<String> _daysOfWeek = [
     'Thứ 2',
     'Thứ 3',
@@ -30,11 +30,16 @@ class _EditFrequencyState extends State<EditFrequency> {
   void initState() {
     super.initState();
     _frequencyData = Map.from(widget.initialFrequencyData);
-    _selectedFrequency = _frequencyData['typeFrequency'] ?? 'Every';
+    _selectedFrequency =
+        _frequencyData['frequencyType'] == 'Select' ? 'Select' : 'Every';
 
     if (_selectedFrequency == 'Every') {
-      _selectedDays =
-          int.tryParse(_frequencyData['frequencyEvery'] ?? '1') ?? 1;
+      if (_frequencyData['frequencyType'].isNotEmpty) {
+        _frequencyData['frequencyType'].split(' ');
+        _selectedDays = int.tryParse(_frequencyData['frequencyType'][1]) ?? 1;
+      } else {
+        _selectedDays = 1;
+      }
     } else if (_selectedFrequency == 'Select') {
       _selectedDaysOfWeek
           .addAll(List<String>.from(_frequencyData['frequencySelect'] ?? []));
@@ -76,8 +81,7 @@ class _EditFrequencyState extends State<EditFrequency> {
                   _selectedFrequency = "Every";
                 });
               },
-              child:
-                  _buildOption("Cách ngày", _selectedFrequency == "Every"),
+              child: _buildOption("Cách ngày", _selectedFrequency == "Every"),
             ),
             const SizedBox(height: 10),
             GestureDetector(
@@ -86,40 +90,40 @@ class _EditFrequencyState extends State<EditFrequency> {
                   _selectedFrequency = "Select";
                 });
               },
-              child: _buildOption("Ngày cụ thể trong tuần",
-                  _selectedFrequency == "Select"),
+              child: _buildOption(
+                  "Ngày cụ thể trong tuần", _selectedFrequency == "Select"),
             ),
             const SizedBox(height: 30),
             if (_selectedFrequency == "Every") _buildEveryFewDaysPicker(),
-            if (_selectedFrequency == "Select")
-              _buildDaysOfWeekSelection(),
+            if (_selectedFrequency == "Select") _buildDaysOfWeekSelection(),
             const Spacer(),
             Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ElevatedButton(
-                  onPressed: () {
-                    _saveFrequencyData();
-                    Navigator.pop(context, _frequencyData);
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondaryColor,
-                      padding: EdgeInsets.symmetric(horizontal: 80, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      )),
-                  child: const Text('Lưu',
-                      style: TextStyle(
-                        fontSize: 28,
-                        color: AppColors.bgColor,
-                        fontWeight: FontWeight.w400,
-                      )),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _saveFrequencyData();
+                      Navigator.pop(context, _frequencyData);
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryColor,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 80, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        )),
+                    child: const Text('Lưu',
+                        style: TextStyle(
+                          fontSize: 28,
+                          color: AppColors.bgColor,
+                          fontWeight: FontWeight.w400,
+                        )),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
             const SizedBox(height: 20),
           ],
         ),
@@ -131,11 +135,11 @@ class _EditFrequencyState extends State<EditFrequency> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.borderColor : AppColors.bgColor,
+        color: isSelected ? AppColors.secondaryColor : AppColors.bgColor,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: isSelected ? AppColors.secondaryColor : Colors.grey,
-          width: 2,
+          width: 1,
         ),
       ),
       child: Row(
@@ -144,7 +148,7 @@ class _EditFrequencyState extends State<EditFrequency> {
             title,
             style: TextStyle(
                 fontSize: 22,
-                color: isSelected ? AppColors.secondaryColor : Colors.black,
+                color: isSelected ? AppColors.bgColor : AppColors.secondaryColor,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400),
           ),
         ],
@@ -167,6 +171,7 @@ class _EditFrequencyState extends State<EditFrequency> {
             scrollController: FixedExtentScrollController(
                 initialItem: _days.indexOf(_selectedDays)),
             itemExtent: 50.0,
+            looping: true,
             onSelectedItemChanged: (int index) {
               setState(() {
                 _selectedDays = _days[index];
@@ -178,8 +183,12 @@ class _EditFrequencyState extends State<EditFrequency> {
                         day.toString(),
                         style: TextStyle(
                           fontSize: 25,
-                          color: day == _selectedDays ? AppColors.secondaryColor : Colors.grey,
-                          fontWeight: day == _selectedDays ? FontWeight.w600 : FontWeight.w400, 
+                          color: day == _selectedDays
+                              ? AppColors.secondaryColor
+                              : Colors.grey,
+                          fontWeight: day == _selectedDays
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                       ),
                     ))
@@ -211,7 +220,7 @@ class _EditFrequencyState extends State<EditFrequency> {
               color: isSelected ? Color(0xFF00d688) : Colors.white,
               borderRadius: BorderRadius.circular(30),
               border: Border.all(
-                color: isSelected ? Color(0xFF00d688): Colors.grey,
+                color: isSelected ? Color(0xFF00d688) : Colors.grey,
               ),
             ),
             child: Row(
@@ -221,13 +230,16 @@ class _EditFrequencyState extends State<EditFrequency> {
                     day,
                     style: TextStyle(
                       fontSize: 22,
-                      color: isSelected ? AppColors.secondaryColor : Colors.black,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      color:
+                          isSelected ? AppColors.secondaryColor : Colors.black,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
                 ),
                 if (isSelected)
-                  const Icon(Icons.check_circle, color: AppColors.secondaryColor),
+                  const Icon(Icons.check_circle,
+                      color: AppColors.secondaryColor),
               ],
             ),
           ),
@@ -237,12 +249,11 @@ class _EditFrequencyState extends State<EditFrequency> {
   }
 
   void _saveFrequencyData() {
-    _frequencyData['typeFrequency'] = _selectedFrequency;
     if (_selectedFrequency == "Every") {
-      _frequencyData['frequencyEvery'] = _selectedDays.toString();
+      _frequencyData['frequencyType'] = "Every $_selectedDays day";
       _frequencyData['frequencySelect'] = [];
     } else if (_selectedFrequency == "Select") {
-      _frequencyData['frequencyEvery'] = '';
+      _frequencyData['frequencyType'] = "";
       _frequencyData['frequencySelect'] = _selectedDaysOfWeek.toList();
     }
   }

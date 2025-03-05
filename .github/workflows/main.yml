@@ -28,6 +28,14 @@ jobs:
           dart --version
 
       - run: flutter pub get
+
+      - name: Create .env file
+        run: echo "$FLUTTER_ENV_FILE" > .env
+        shell: bash
+        env:
+          FLUTTER_ENV_FILE: ${{ secrets.FLUTTER_ENV_FILE }}
+
+          
       - run: flutter build apk --release --split-per-abi
 
       - name: Push to Releases
