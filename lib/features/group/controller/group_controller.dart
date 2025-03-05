@@ -28,6 +28,26 @@ final groupMembersProvider =
     return [];
   }
 });
+final groupMembersToAddProvider =
+    FutureProvider.family<List<GroupMember>, Map<String, dynamic>>(
+        (ref, params) async {
+          
+  final BuildContext context = params['context'];
+  final String groupId = params['groupId'];
+
+  print("Fetching group members to add in provider: Group ID - $groupId");
+  final groupController = ref.read(groupControllerProvider);
+  try {
+    final members =
+        await groupController.getGroupMembersToAdd(context, groupId);
+    print("Members received in provider: $members");
+    return members;
+  } catch (e) {
+    print("Error in provider fetching group members: $e");
+    return [];
+  }
+});
+
 final roomChatDetailProvider =
     FutureProvider.family<RoomChatDetail?, Map<String, dynamic>>(
         (ref, params) async {
@@ -53,6 +73,17 @@ class GroupController {
       BuildContext context, int userId) async {
     try {
       return await groupRepository.getGroupMembers(context, userId);
+    } catch (e) {
+      debugPrint("Error fetching group members: $e");
+      return [];
+    }
+  }
+
+  Future<List<GroupMember>> getGroupMembersToAdd(
+      BuildContext context, String groupId) async {
+    print("add member to chat $groupId");
+    try {
+      return await groupRepository.getGroupMembersToAdd(context, groupId);
     } catch (e) {
       debugPrint("Error fetching group members: $e");
       return [];
@@ -88,6 +119,7 @@ class GroupController {
       groupName,
     );
   }
+
   Future<bool> changeAvatarGroupChat(
     BuildContext context,
     String groupId,
@@ -99,6 +131,7 @@ class GroupController {
       groupAvatar,
     );
   }
+
   Future<bool> outGroupChat(
     BuildContext context,
     int kickerId,

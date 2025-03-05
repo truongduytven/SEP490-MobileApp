@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
+import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/call_history/repository/call_history_helper.dart';
+import 'package:sep490/models/call_history.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
 import 'package:sep490/theme/color.dart';
@@ -29,6 +32,9 @@ void main() async {
   /// Initialize Zego Signaling Plugin **BEFORE** running the app
   await ZegoUIKit().initLog();
 
+  /// Define a scaffold messenger key
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
   ZegoUIKitPrebuiltCallInvitationService().init(
     appID: AppSecrets.appId, // Replace with your Zego App ID
     appSign: AppSecrets.appSign, // Replace with your Zego App Sign
@@ -56,94 +62,183 @@ void main() async {
               .hangUp(navigatorKey.currentState!.context);
         }
       };
+
+      // Track call start time
+      final callStartTime = DateTime.now();
+
+      // Track call end event (successful call)
+      // Track call start time
+
+      // Use the onCallEnd event to track call end
+      ZegoUIKitPrebuiltCallEvents(
+        onCallEnd: (event, defaultAction) async {
+          final callEndTime = DateTime.now();
+          final callDuration = callEndTime.difference(callStartTime);
+          print("cuộc gọi bị hủy ${event.invitationData}");
+          // final callHistory = CallHistory(
+          //   callId: 'N/A', // You can generate a unique ID or use a placeholder
+          //   callerId: currentUserId?.toString() ?? '',
+          //   calleeId: event.callUsers.firstWhere((user) => user.id != currentUserId?.toString()).id,
+          //   callType: event.isVideoCall ? ZegoCallType.videoCall : ZegoCallType.voiceCall,
+          //   startTime: callStartTime,
+          //   endTime: callEndTime,
+          //   duration: callDuration,
+          //   callStatus: CallStatus.success, // Mark as successful call
+          // );
+
+          // await CallHistoryHelper.saveCallHistory(callHistory);
+          scaffoldMessengerKey.currentState?.showSnackBar(
+            SnackBar(
+              content: Text(
+                'Call History:\n'
+                'Caller: ${event.invitationData!.callID}\n'
+                'Callee: ${event.invitationData}\n'
+                'Duration: ${event.invitationData?.invitationID ?? 0} seconds',
+              ),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          // Call the default action to ensure the call ends properly
+          defaultAction();
+        },
+      );
       return config;
     },
 
     invitationEvents: ZegoUIKitPrebuiltCallInvitationEvents(
-      onInvitationUserStateChanged: (List) {
-        ///  Add your custom logic here.
-        print("onInvitationUserStateChanged nè");
+      // Track outgoing call accepted (successful call)
+      onOutgoingCallAccepted: (String callID, ZegoCallUser callee) async {
+        final callStartTime = DateTime.now();
+
+        final callHistory = CallHistory(
+          callId: callID,
+          callerId: currentUserId?.toString() ?? '',
+          calleeId: callee.id,
+          callType: ZegoCallType.videoCall, // Adjust based on actual call type
+          startTime: callStartTime,
+          callStatus: CallStatus.success, // Mark as successful call
+        );
+
+        await CallHistoryHelper.saveCallHistory(callHistory);
       },
-      onIncomingCallDeclineButtonPressed: () {
-        ///  Add your custom logic here.
-        print("onIncomingCallDeclineButtonPressed nè");
-      },
-      onIncomingCallAcceptButtonPressed: () {
-        ///  Add your custom logic here.
-        print("onIncomingCallAcceptButtonPressed nè");
-      },
+
+      // Track incoming call received
       onIncomingCallReceived: (
         String callID,
         ZegoCallUser caller,
         ZegoCallType callType,
         List callees,
         String customData,
-      ) {
-        ///  Add your custom logic here.
-        print("onIncomingCallReceived nè $callID $caller");
+      ) async {
+        final callStartTime = DateTime.now();
+
+        final callHistory = CallHistory(
+          callId: callID,
+          callerId: caller.id,
+          calleeId: currentUserId?.toString() ?? '',
+          callType: callType,
+          startTime: callStartTime,
+          callStatus: CallStatus.missed, // Mark as missed by default
+        );
+
+        await CallHistoryHelper.saveCallHistory(callHistory);
       },
-      onIncomingCallCanceled: (
-        String callID,
-        ZegoCallUser caller,
-        String customData,
-      ) {
-        ///  Add your custom logic here.
-        print("onIncomingCallCanceled nè $callID $caller");
+
+      // Track incoming call declined
+      onIncomingCallDeclineButtonPressed: () async {
+        final callHistory = CallHistory(
+          callId: 'N/A', // You can generate a unique ID or use a placeholder
+          callerId: 'N/A',
+          calleeId: currentUserId?.toString() ?? '',
+          callType: ZegoCallType.voiceCall, // Adjust based on actual call type
+          startTime: DateTime.now(),
+          callStatus: CallStatus.declined, // Mark as declined
+        );
+
+        await CallHistoryHelper.saveCallHistory(callHistory);
       },
-      onIncomingCallTimeout: (String callID, ZegoCallUser caller) {
-        ///  Add your custom logic here.
-        print("onIncomingCallTimeout nè $callID $caller");
-      },
-      onOutgoingCallCancelButtonPressed: () {
-        ///  Add your custom logic here.
-        print("onOutgoingCallCancelButtonPressed nè");
-      },
-      onOutgoingCallAccepted: (String callID, ZegoCallUser callee) {
-        ///  Add your custom logic here.
-        print("onOutgoingCallAccepted nè $callID $callee");
-      },
-      onOutgoingCallRejectedCauseBusy: (
-        String callID,
-        ZegoCallUser callee,
-        String customData,
-      ) {
-        ///  Add your custom logic here.
-        print("onOutgoingCallRejectedCauseBusy nè $callID $callee");
-      },
+
+      // Track outgoing call declined
       onOutgoingCallDeclined: (
         String callID,
         ZegoCallUser callee,
         String customData,
-      ) {
-        ///  Add your custom logic here.
-        print("onOutgoingCallDeclined nè $callID $callee");
+      ) async {
+        final callHistory = CallHistory(
+          callId: callID,
+          callerId: currentUserId?.toString() ?? '',
+          calleeId: callee.id,
+          callType: ZegoCallType.voiceCall, // Adjust based on actual call type
+          startTime: DateTime.now(),
+          callStatus: CallStatus.declined, // Mark as declined
+        );
+
+        await CallHistoryHelper.saveCallHistory(callHistory);
       },
+
+      // Track outgoing call timeout
       onOutgoingCallTimeout: (
         String callID,
         List<ZegoCallUser> callees,
         bool isVideoCall,
-      ) {
-        ///  Add your custom logic here.
-        print("onOutgoingCallDeclined nè $callID $callees");
+      ) async {
+        final callHistory = CallHistory(
+          callId: callID,
+          callerId: currentUserId?.toString() ?? '',
+          calleeId: callees.first.id,
+          callType:
+              isVideoCall ? ZegoCallType.videoCall : ZegoCallType.voiceCall,
+          startTime: DateTime.now(),
+          callStatus: CallStatus.timedOut, // Mark as timed out
+        );
+
+        await CallHistoryHelper.saveCallHistory(callHistory);
       },
-      onIncomingMissedCallClicked: (
+
+      // Track incoming call timeout
+      onIncomingCallTimeout: (String callID, ZegoCallUser caller) async {
+        final callHistory = CallHistory(
+          callId: callID,
+          callerId: caller.id,
+          calleeId: currentUserId?.toString() ?? '',
+          callType: ZegoCallType.voiceCall, // Adjust based on actual call type
+          startTime: DateTime.now(),
+          callStatus: CallStatus.timedOut, // Mark as timed out
+        );
+
+        await CallHistoryHelper.saveCallHistory(callHistory);
+      },
+
+      // Track outgoing call canceled
+      onOutgoingCallCancelButtonPressed: () async {
+        final callHistory = CallHistory(
+          callId: 'N/A', // You can generate a unique ID or use a placeholder
+          callerId: currentUserId?.toString() ?? '',
+          calleeId: 'N/A',
+          callType: ZegoCallType.voiceCall, // Adjust based on actual call type
+          startTime: DateTime.now(),
+          callStatus: CallStatus.canceled, // Mark as canceled
+        );
+
+        await CallHistoryHelper.saveCallHistory(callHistory);
+      },
+
+      // Track incoming call canceled
+      onIncomingCallCanceled: (
         String callID,
         ZegoCallUser caller,
-        ZegoCallInvitationType callType,
-        List<ZegoCallUser> callees,
         String customData,
-
-        /// The default action is to dial back the missed call
-
-        Future<void> Function() defaultAction,
       ) async {
-        /// Add your custom logic here.
+        final callHistory = CallHistory(
+          callId: callID,
+          callerId: caller.id,
+          calleeId: currentUserId?.toString() ?? '',
+          callType: ZegoCallType.voiceCall, // Adjust based on actual call type
+          startTime: DateTime.now(),
+          callStatus: CallStatus.canceled, // Mark as canceled
+        );
 
-        await defaultAction.call();
-      },
-      onIncomingMissedCallDialBackFailed: () {
-        /// Add your custom logic here.
-        print("onIncomingMissedCallDialBackFailed nè");
+        await CallHistoryHelper.saveCallHistory(callHistory);
       },
     ),
   );

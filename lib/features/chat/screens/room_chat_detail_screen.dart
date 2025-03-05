@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/common/widgets/loader.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/chat/screens/add_member_group_chat.dart';
 import 'package:sep490/features/chat/screens/confirm_avatar_group_screen.dart';
 import 'package:sep490/features/group/controller/group_controller.dart';
 import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
@@ -195,7 +196,7 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
                         },
                   child: const Text(
                     "Lưu",
-                    style: TextStyle(color: AppColors.primaryColor),
+                    style: TextStyle(color: AppColors.secondaryColor),
                   ),
                 ),
               ],
@@ -248,6 +249,19 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
                       child: const Text(
                         "Thêm thành viên",
                       ),
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AddMemberGroupChat(groupId: widget.roomId),
+                          ),
+                        );
+                        if (result == true) {
+                          setState(() {}); // Force UI update to show new avatar
+                        }
+                        print("them thnahf viên");
+                      },
                     )
                 ],
               )

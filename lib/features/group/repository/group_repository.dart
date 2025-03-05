@@ -17,8 +17,6 @@ final groupRepositoryProvider = Provider(
 class GroupRepository {
   GroupRepository();
 
-  // Base API URL
-  static const String baseUrl = "https://your-api.com";
   Future<List<GroupMember>> getGroupMembers(
       BuildContext context, int userId) async {
     try {
@@ -32,6 +30,41 @@ class GroupRepository {
 
         if (jsonData['status'] == 1) {
           GroupResponse groupResponse = GroupResponse.fromJson(jsonData);
+          return groupResponse.data;
+        } else {
+          showSnackBar(context: context, content: "Lỗi tải dữ liệu");
+
+          throw Exception(
+              "API returned an error: ${jsonData['message']} ${jsonData['data']}");
+        }
+      } else {
+        showSnackBar(context: context, content: "Lỗi nè hehe");
+
+        throw Exception("Failed to fetch group members.");
+      }
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+
+      throw Exception("Error fetching group members: $e");
+    }
+  }
+
+  Future<List<GroupMember>> getGroupMembersToAdd(
+      BuildContext context, String groupId) async {
+    print("resository add member $groupId");
+    try {
+      final response = await http.get(
+        Uri.parse(
+            "https://api.diavan-valuation.asia/groups/members-to-add/$groupId"),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+        if (jsonData['status'] == 1) {
+          GroupResponse groupResponse = GroupResponse.fromJson(jsonData);
+          showSnackBar(context: context, content: "tải dữ liệu thành công");
+          print("data res ${groupResponse.data.toString()}");
           return groupResponse.data;
         } else {
           showSnackBar(context: context, content: "Lỗi tải dữ liệu");
