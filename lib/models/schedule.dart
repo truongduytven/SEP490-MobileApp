@@ -22,9 +22,9 @@ class Activity {
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
       activityId: json['activityId'],
-      title: json['title'],
+      title: json['title'] ?? '',
       description: json['description'],
-      startTime: json['startTime'],
+      startTime: json['startTime'] ?? '',
       endTime: json['endTime'] ?? '',
       createdBy: json['createdBy'] ?? '',
       type: json['type'],
