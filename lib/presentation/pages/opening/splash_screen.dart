@@ -31,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
     FirebaseMessaging.instance.getToken().then((token) {
       setState(() {
         _token = token;
-        print('Device token: $_token');
       });
     });
   }
