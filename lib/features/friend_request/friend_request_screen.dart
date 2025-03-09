@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:sep490/common/utils/utils.dart';
+import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
 import 'package:sep490/models/friend_request.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -93,6 +95,11 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
       debugPrint("Error fetching friend requests: $e");
       return [];
     }
+  }
+
+  String formatDateTime(String dateTimeString) {
+    DateTime parsedDate = DateTime.parse(dateTimeString);
+    return DateFormat("HH:mm dd/MM/yyyy").format(parsedDate);
   }
 
   void _acceptFriendRequest(int requestId) {
@@ -266,33 +273,52 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text("Error: ${snapshot.error}"));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text("No friend requests found."));
+                  return Center(
+                      child: Text("Tất cả lời mời đã được chấp nhận!"));
                 }
 
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     final request = snapshot.data![index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(request.requestUserAvatar ?? ""),
-                      ),
-                      title: Text(request.requestUserName ?? "Unknown"),
-                      subtitle: Text(
-                          "Requested to ${request.responseUserName ?? 'Unknown'}"),
-                      trailing: ElevatedButton(
-                        onPressed: () =>
-                            _cancelFriendRequest(request.requestUserId ?? 0),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserInformationScreen(user: request.user),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 28,
+                          backgroundImage:
+                              NetworkImage(request.requestUserAvatar ?? ""),
+                        ),
+                        title: Text(
+                          request.responseUserName ?? "Không xác định",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
                           ),
                         ),
-                        child: Text(
-                          "Hủy gửi lời mời",
-                          style: TextStyle(color: Colors.white),
+                        subtitle: Text(
+                            "Đã gửi vào ${formatDateTime(request.createdAt.toString()) ?? 'Không xác định'}"),
+                        trailing: ElevatedButton(
+                          onPressed: () =>
+                              _cancelFriendRequest(request.responseUserId ?? 0),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Hủy gửi lời mời",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     );
@@ -310,33 +336,51 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text("Error: ${snapshot.error}"));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text("No pending responses found."));
+                  return Center(child: Text("Không có lời mời kết bạn nào!"));
                 }
 
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     final response = snapshot.data![index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(response.responseUserAvatar ?? ""),
-                      ),
-                      title: Text(response.requestUserName ?? "Unknown"),
-                      subtitle: Text(
-                          "Requested by ${response.requestUserName ?? 'Unknown'}"),
-                      trailing: ElevatedButton(
-                        onPressed: () =>
-                            _acceptFriendRequest(response.requestUserId ?? 0),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserInformationScreen(user: response.user),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 28,
+                          backgroundImage:
+                              NetworkImage(response.responseUserAvatar ?? ""),
+                        ),
+                        title: Text(
+                          response.requestUserName ?? "Không xác định",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
                           ),
                         ),
-                        child: Text(
-                          "Chấp nhận",
-                          style: TextStyle(color: Colors.white),
+                        subtitle: Text(
+                            "Đã gửi vào ${formatDateTime(response.createdAt.toString()) ?? 'Không xác định'}"),
+                        trailing: ElevatedButton(
+                          onPressed: () =>
+                              _acceptFriendRequest(response.requestUserId ?? 0),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Chấp nhận",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     );

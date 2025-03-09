@@ -29,7 +29,7 @@ class CallHistoryHelper {
         },
         body: jsonEncode(request.toJson()),
       );
-
+      print("lịch sử cuộc gọi nè ${request.toString()}");
       // Check the response status
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);

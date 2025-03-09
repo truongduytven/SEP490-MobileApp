@@ -22,4 +22,9 @@ class CallHistoryRequest {
       'isVideo': isVideo,
     };
   }
+
+  @override
+  String toString() {
+    return 'CallHistoryRequest(callerId: $callerId, listReceiverId: $listReceiverId, duration: $duration, status: $status, isVideo: $isVideo)';
+  }
 }

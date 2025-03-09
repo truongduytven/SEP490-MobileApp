@@ -18,8 +18,8 @@ final accountIdProvider = FutureProvider<int?>((ref) async {
 final friendRequestSentProvider = StateProvider<bool>((ref) => false);
 final cancleFriendRequestSentProvider = StateProvider<bool>((ref) => false);
 
-class UserInformationScreen extends ConsumerStatefulWidget {
-  final UserContact user;
+class UserInformationScreen<T> extends ConsumerStatefulWidget {
+  final T user;
 
   const UserInformationScreen({Key? key, required this.user}) : super(key: key);
 

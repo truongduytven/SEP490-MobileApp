@@ -57,24 +57,25 @@ class User {
   final bool? isVerified;
   final String? deviceToken;
   final bool? isOnline;
+  final int? requestUserId;
 
-  User({
-    this.accountId,
-    this.roleId,
-    this.email,
-    this.password,
-    this.fullName,
-    this.avatar,
-    this.gender,
-    this.phoneNumber,
-    this.dateOfBirth,
-    this.createdDate,
-    this.status,
-    this.otp,
-    this.isVerified,
-    this.deviceToken,
-    this.isOnline,
-  });
+  User(
+      {this.accountId,
+      this.roleId,
+      this.email,
+      this.password,
+      this.fullName,
+      this.avatar,
+      this.gender,
+      this.phoneNumber,
+      this.dateOfBirth,
+      this.createdDate,
+      this.status,
+      this.otp,
+      this.isVerified,
+      this.deviceToken,
+      this.isOnline,
+      this.requestUserId});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -97,6 +98,7 @@ class User {
       isVerified: json["isVerified"],
       deviceToken: json["deviceToken"],
       isOnline: json["isOnline"],
+      requestUserId: json['requestUserId'] as int?,
     );
   }
 }

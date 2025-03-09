@@ -40,6 +40,45 @@ void main() async {
     appSign: AppSecrets.appSign, // Replace with your Zego App Sign
     userID: currentUserId?.toString() ?? '',
     userName: fullName ?? "",
+    events: ZegoUIKitPrebuiltCallEvents(
+      onCallEnd: (
+        ZegoCallEndEvent event,
+        VoidCallback defaultAction,
+      ) async {
+        final callStartTime = DateTime.now();
+
+        final callEndTime = DateTime.now();
+        final callDuration = callEndTime.difference(callStartTime);
+        print(
+            "cuộc gọi bị hủy ${event.invitationData!.invitationID} ${event.invitationData!.invitees}  ${event.invitationData!.inviter} heeeeehah");
+        // final callHistory = CallHistory(
+        //   callId: 'N/A', // You can generate a unique ID or use a placeholder
+        //   callerId: currentUserId?.toString() ?? '',
+        //   calleeId: event.callUsers.firstWhere((user) => user.id != currentUserId?.toString()).id,
+        //   callType: event.isVideoCall ? ZegoCallType.videoCall : ZegoCallType.voiceCall,
+        //   startTime: callStartTime,
+        //   endTime: callEndTime,
+        //   duration: callDuration,
+        //   callStatus: CallStatus.success, // Mark as successful call
+        // );
+
+        // await CallHistoryHelper.saveCallHistory(callHistory);
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text(
+              'Call History:\n'
+              'Caller: ${event.invitationData!.callID}\n'
+              'Callee: ${event.invitationData}\n'
+              'Duration: ${event.invitationData?.invitationID ?? 0} seconds',
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        // Call the default action to ensure the call ends properly
+        // defaultAction();
+        defaultAction.call();
+      },
+    ),
     plugins: [
       ZegoUIKitSignalingPlugin()
     ], // Ensure the signaling plugin is added
@@ -64,44 +103,12 @@ void main() async {
       };
 
       // Track call start time
-      final callStartTime = DateTime.now();
 
       // Track call end event (successful call)
       // Track call start time
 
       // Use the onCallEnd event to track call end
-      ZegoUIKitPrebuiltCallEvents(
-        onCallEnd: (event, defaultAction) async {
-          final callEndTime = DateTime.now();
-          final callDuration = callEndTime.difference(callStartTime);
-          print("cuộc gọi bị hủy ${event.invitationData}");
-          // final callHistory = CallHistory(
-          //   callId: 'N/A', // You can generate a unique ID or use a placeholder
-          //   callerId: currentUserId?.toString() ?? '',
-          //   calleeId: event.callUsers.firstWhere((user) => user.id != currentUserId?.toString()).id,
-          //   callType: event.isVideoCall ? ZegoCallType.videoCall : ZegoCallType.voiceCall,
-          //   startTime: callStartTime,
-          //   endTime: callEndTime,
-          //   duration: callDuration,
-          //   callStatus: CallStatus.success, // Mark as successful call
-          // );
 
-          // await CallHistoryHelper.saveCallHistory(callHistory);
-          scaffoldMessengerKey.currentState?.showSnackBar(
-            SnackBar(
-              content: Text(
-                'Call History:\n'
-                'Caller: ${event.invitationData!.callID}\n'
-                'Callee: ${event.invitationData}\n'
-                'Duration: ${event.invitationData?.invitationID ?? 0} seconds',
-              ),
-              duration: const Duration(seconds: 3),
-            ),
-          );
-          // Call the default action to ensure the call ends properly
-          defaultAction();
-        },
-      );
       return config;
     },
 
