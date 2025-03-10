@@ -35,12 +35,91 @@ void main() async {
   /// Define a scaffold messenger key
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+  // Error state variable
+  bool hasError = false;
+
+  // // Method to show error dialog
+  // void showErrorDialog(String message) {
+  //   // Ensure the context is valid and the dialog is shown after the first frame
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     showDialog(
+  //       context: navigatorKey.currentContext!,
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           title: Text('Error'),
+  //           content: Text(message),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () {
+  //                 hasError = false; // Reset error state
+  //                 Navigator.of(context).pop(); // Close the dialog
+  //               },
+  //               child: Text('Close'),
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   });
+  // }
+
+  void closeAllDialogs() {
+    while (navigatorKey.currentState!.canPop()) {
+      navigatorKey.currentState!.pop();
+    }
+  }
+
+  void showErrorDialog(String message) {
+    if (navigatorKey.currentContext != null) {
+      showDialog(
+        barrierColor: AppColors.secondaryColor.withOpacity(0.95),
+        context: navigatorKey.currentContext!,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Không thể gọi'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // Navigator.of(context).pop(); // Close the dialog
+                  closeAllDialogs();
+                },
+                child: Text('Đã hiểu'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   ZegoUIKitPrebuiltCallInvitationService().init(
     appID: AppSecrets.appId, // Replace with your Zego App ID
     appSign: AppSecrets.appSign, // Replace with your Zego App Sign
     userID: currentUserId?.toString() ?? '',
     userName: fullName ?? "",
+
     events: ZegoUIKitPrebuiltCallEvents(
+      onError: (ZegoUIKitError error) {
+        if (error.code == 301003001) {
+          hasError = true;
+          showErrorDialog(
+              'Tài khoản chưa đăng nhập trên thiết bị nào hoặc tài khoản đang không hoạt động');
+        }
+        // Print the error to the console
+        print(
+            "ZegoUIKit Error: Code: ${error.code}, Message: ${error.message}");
+
+        // Show SnackBar for errors caught by ZegoUIKit
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scaffoldMessengerKey.currentState?.showSnackBar(
+            SnackBar(
+              content: Text('Error: ${error.message}'),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        });
+      },
       onCallEnd: (
         ZegoCallEndEvent event,
         VoidCallback defaultAction,
@@ -113,6 +192,25 @@ void main() async {
     },
 
     invitationEvents: ZegoUIKitPrebuiltCallInvitationEvents(
+      onError: (error) {
+        if (error.code == 301003001) {
+          hasError = true;
+          showErrorDialog(
+              'Tài khoản chưa đăng nhập trên thiết bị nào hoặc tài khoản đang không hoạt động');
+        }
+        print(
+            "ZegoUIKit Error: Code: ${error.code}, Message: ${error.message}");
+
+        // Show SnackBar for errors caught by ZegoUIKit
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scaffoldMessengerKey.currentState?.showSnackBar(
+            SnackBar(
+              content: Text('Error: ${error.message}'),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        });
+      },
       // Track outgoing call accepted (successful call)
       onOutgoingCallAccepted: (String callID, ZegoCallUser callee) async {
         final callStartTime = DateTime.now();
