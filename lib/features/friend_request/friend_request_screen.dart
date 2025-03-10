@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:sep490/common/utils/utils.dart';
+import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
 import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
 import 'package:sep490/models/friend_request.dart';
 import 'package:sep490/theme/color.dart';
 
-class FriendRequestScreen extends StatefulWidget {
+class FriendRequestScreen extends ConsumerStatefulWidget {
   final int requestUserId;
 
   const FriendRequestScreen({Key? key, required this.requestUserId})
@@ -18,7 +20,7 @@ class FriendRequestScreen extends StatefulWidget {
   _FriendRequestScreenState createState() => _FriendRequestScreenState();
 }
 
-class _FriendRequestScreenState extends State<FriendRequestScreen> {
+class _FriendRequestScreenState extends ConsumerState<FriendRequestScreen> {
   Future<List<FriendRequest>> getFriendRequestByUserId(
       BuildContext context, int requestUserId) async {
     final String apiUrl =
@@ -102,16 +104,99 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
     return DateFormat("HH:mm dd/MM/yyyy").format(parsedDate);
   }
 
-  void _acceptFriendRequest(int requestId) {
-    // Implement the logic to accept the friend request
-    debugPrint("Accepted friend request with ID: $requestId");
-    // You can call an API here to update the friend request status
+  void _cancelFriendRequest(int requestId, int responseId) async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Xác nhận hủy lời mời"),
+          content: Text("Bạn có chắc chắn muốn hủy lời mời kết bạn này không?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false), // No
+              child: Text("Hủy bỏ"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true), // Yes
+              child: Text("Đồng ý"),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If the user confirms, proceed with the action
+    if (confirmed == true) {
+      final controller = ref.read(selectContactControllerProvider);
+      final success = await controller.cancelSendFriendRequest(
+        context,
+        requestId,
+        responseId,
+      );
+
+      if (success) {
+        showSnackBar(
+          context: context,
+          content: "Đã hủy lời mời kết bạn",
+          type: "green",
+        );
+        setState(() {}); // Refresh the UI
+      } else {
+        showSnackBar(
+          context: context,
+          content: "Hủy lời mời kết bạn thất bại",
+        );
+      }
+    }
   }
 
-  void _cancelFriendRequest(int requestId) {
-    // Implement the logic to accept the friend request
-    debugPrint("Cancel friend request with ID: $requestId");
-    // You can call an API here to update the friend request status
+  void _acceptFriendRequest(int requestId, int responseId) async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Xác nhận chấp nhận"),
+          content: Text(
+              "Bạn có chắc chắn muốn chấp nhận lời mời kết bạn này không?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false), // No
+              child: Text("Hủy bỏ"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true), // Yes
+              child: Text("Đồng ý"),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If the user confirms, proceed with the action
+    if (confirmed == true) {
+      final controller = ref.read(selectContactControllerProvider);
+      final success = await controller.acceptedFriendRequest(
+        context,
+        requestId,
+        responseId,
+      );
+
+      if (success) {
+        showSnackBar(
+          context: context,
+          content: "Đã chấp nhận lời mời kết bạn",
+          type: "green",
+        );
+        setState(() {}); // Refresh the UI
+      } else {
+        showSnackBar(
+          context: context,
+          content: "Chấp nhận lời mời kết bạn thất bại",
+        );
+      }
+    }
   }
 
   @override
@@ -307,8 +392,9 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
                         subtitle: Text(
                             "Đã gửi vào ${formatDateTime(request.createdAt.toString()) ?? 'Không xác định'}"),
                         trailing: ElevatedButton(
-                          onPressed: () =>
-                              _cancelFriendRequest(request.responseUserId ?? 0),
+                          onPressed: () => _cancelFriendRequest(
+                              widget.requestUserId,
+                              request.responseUserId ?? 0),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
                             shape: RoundedRectangleBorder(
@@ -369,8 +455,9 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
                         subtitle: Text(
                             "Đã gửi vào ${formatDateTime(response.createdAt.toString()) ?? 'Không xác định'}"),
                         trailing: ElevatedButton(
-                          onPressed: () =>
-                              _acceptFriendRequest(response.requestUserId ?? 0),
+                          onPressed: () => _acceptFriendRequest(
+                              widget.requestUserId,
+                              response.requestUserId ?? 0),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
                             shape: RoundedRectangleBorder(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/ultility/game/screens/game_card_screen.dart';
 import 'package:sep490/presentation/pages/ultility/game/widgets/full_width_game_card.dart';
+import 'package:sep490/theme/color.dart';
 
 class UltilityScreen extends StatefulWidget {
   const UltilityScreen({super.key});
@@ -56,6 +57,9 @@ class _UltilityScreenState extends State<UltilityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        backgroundColor: AppColors.bgColor,
         title: const Text('Tiện ích'),
         centerTitle: true,
       ),
