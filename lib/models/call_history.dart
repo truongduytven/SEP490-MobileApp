@@ -12,7 +12,7 @@ enum CallStatus {
 class CallHistory {
   final String callId;
   final String callerId;
-  final String calleeId;
+  final List<String> calleeIds;
   final ZegoCallType callType;
   final DateTime startTime;
   final DateTime? endTime;
@@ -22,7 +22,7 @@ class CallHistory {
   CallHistory({
     required this.callId,
     required this.callerId,
-    required this.calleeId,
+    required this.calleeIds,
     required this.callType,
     required this.startTime,
     this.endTime,
@@ -34,7 +34,7 @@ class CallHistory {
     return {
       'callId': callId,
       'callerId': callerId,
-      'calleeId': calleeId,
+      'calleeId': calleeIds,
       'callType': callType.toString(),
       'startTime': startTime.toIso8601String(),
       'endTime': endTime?.toIso8601String(),
@@ -47,7 +47,7 @@ class CallHistory {
     return CallHistory(
       callId: map['callId'],
       callerId: map['callerId'],
-      calleeId: map['calleeId'],
+      calleeIds: List<String>.from(map['calleeIds']),
       callType: ZegoCallType.values
           .firstWhere((e) => e.toString() == map['callType']),
       startTime: DateTime.parse(map['startTime']),

@@ -93,6 +93,11 @@ void main() async {
     }
   }
 
+  String? currentCallId;
+  String? callerId;
+  String? calleeId;
+  DateTime? startTime;
+  ZegoCallType? callType;
   ZegoUIKitPrebuiltCallInvitationService().init(
     appID: AppSecrets.appId, // Replace with your Zego App ID
     appSign: AppSecrets.appSign, // Replace with your Zego App Sign
@@ -124,24 +129,42 @@ void main() async {
         ZegoCallEndEvent event,
         VoidCallback defaultAction,
       ) async {
-        final callStartTime = DateTime.now();
-
         final callEndTime = DateTime.now();
-        final callDuration = callEndTime.difference(callStartTime);
+        final callDuration = startTime != null
+            ? callEndTime.difference(startTime!)
+            : Duration.zero; // Check if startTime is null
         print(
             "cuộc gọi bị hủy ${event.invitationData!.invitationID} ${event.invitationData!.invitees}  ${event.invitationData!.inviter} heeeeehah");
-        // final callHistory = CallHistory(
-        //   callId: 'N/A', // You can generate a unique ID or use a placeholder
-        //   callerId: currentUserId?.toString() ?? '',
-        //   calleeId: event.callUsers.firstWhere((user) => user.id != currentUserId?.toString()).id,
-        //   callType: event.isVideoCall ? ZegoCallType.videoCall : ZegoCallType.voiceCall,
-        //   startTime: callStartTime,
-        //   endTime: callEndTime,
-        //   duration: callDuration,
-        //   callStatus: CallStatus.success, // Mark as successful call
-        // );
 
-        // await CallHistoryHelper.saveCallHistory(callHistory);
+        final invitationData = event.invitationData;
+        final callType = invitationData != null && invitationData.type != null
+            ? (invitationData.type == ZegoCallType.videoCall
+                ? ZegoCallType.videoCall
+                : ZegoCallType.voiceCall)
+            : ZegoCallType.voiceCall;
+        List<String> inviteeIds = [];
+        // Check if invitationData and invitees are not null
+        if (invitationData != null && invitationData.invitees != null) {
+          // Extract user IDs from invitees
+          inviteeIds = invitationData.invitees.map((user) => user.id).toList();
+
+          // Print or use the list of invitee IDs
+          print("Invitee IDs: $inviteeIds");
+        } else {
+          print("No invitees found.");
+        }
+        final callHistory = CallHistory(
+          callId: 'N/A', // You can generate a unique ID or use a placeholder
+          callerId: currentUserId?.toString() ?? '',
+          calleeIds: inviteeIds,
+          callType: callType,
+          startTime: startTime ?? callEndTime,
+          endTime: callEndTime,
+          duration: callDuration,
+          callStatus: CallStatus.success, // Mark as successful call
+        );
+
+        await CallHistoryHelper.saveCallHistory(callHistory);
         scaffoldMessengerKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(
@@ -213,18 +236,23 @@ void main() async {
       },
       // Track outgoing call accepted (successful call)
       onOutgoingCallAccepted: (String callID, ZegoCallUser callee) async {
-        final callStartTime = DateTime.now();
+        currentCallId = callID;
+        callerId = currentUserId?.toString() ?? '';
+        calleeId = callee.id;
+        callType = ZegoCallType.voiceCall;
+        // final callStartTime = DateTime.now();
+        startTime = DateTime.now();
 
-        final callHistory = CallHistory(
-          callId: callID,
-          callerId: currentUserId?.toString() ?? '',
-          calleeId: callee.id,
-          callType: ZegoCallType.videoCall, // Adjust based on actual call type
-          startTime: callStartTime,
-          callStatus: CallStatus.success, // Mark as successful call
-        );
+        // final callHistory = CallHistory(
+        //   callId: callID,
+        //   callerId: currentUserId?.toString() ?? '',
+        //   calleeId: callee.id,
+        //   callType: ZegoCallType.videoCall, // Adjust based on actual call type
+        //   startTime: callStartTime,
+        //   callStatus: CallStatus.success, // Mark as successful call
+        // );
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        // await CallHistoryHelper.saveCallHistory(callHistory);
       },
 
       // Track incoming call received
@@ -235,32 +263,44 @@ void main() async {
         List callees,
         String customData,
       ) async {
+        currentCallId = callID;
+        callerId = currentUserId?.toString() ?? '';
+        calleeId = caller.toString();
+        callType = ZegoCallType.voiceCall;
         final callStartTime = DateTime.now();
 
-        final callHistory = CallHistory(
-          callId: callID,
-          callerId: caller.id,
-          calleeId: currentUserId?.toString() ?? '',
-          callType: callType,
-          startTime: callStartTime,
-          callStatus: CallStatus.missed, // Mark as missed by default
-        );
+        // final callHistory = CallHistory(
+        //   callId: callID,
+        //   callerId: caller.id,
+        //   calleeId: currentUserId?.toString() ?? '',
+        //   callType: callType,
+        //   startTime: callStartTime,
+        //   callStatus: CallStatus.missed, // Mark as missed by default
+        // );
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        // await CallHistoryHelper.saveCallHistory(callHistory);
+        startTime = DateTime.now();
       },
 
       // Track incoming call declined
       onIncomingCallDeclineButtonPressed: () async {
-        final callHistory = CallHistory(
-          callId: 'N/A', // You can generate a unique ID or use a placeholder
-          callerId: 'N/A',
-          calleeId: currentUserId?.toString() ?? '',
-          callType: ZegoCallType.voiceCall, // Adjust based on actual call type
-          startTime: DateTime.now(),
-          callStatus: CallStatus.declined, // Mark as declined
-        );
+        // print("tắt máy: $currentCallId $callerId $callType");
+        // final callHistory = CallHistory(
+        //   callId: currentCallId ?? 'N/A', // Use the stored call ID
+        //   callerId: currentUserId?.toString() ?? '',, // Use the stored caller ID
+        //   calleeId: currentUserId?.toString() ?? '',
+        //   callType:
+        //       callType ?? ZegoCallType.voiceCall, // Use the stored call type
+        //   startTime: DateTime.now(),
+        //   callStatus: CallStatus.declined, // Mark as declined
+        // );
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        // await CallHistoryHelper.saveCallHistory(callHistory);
+
+        // // Optionally, reset the stored information
+        // currentCallId = null;
+        // callerId = null;
+        // callType = null;
       },
 
       // Track outgoing call declined
@@ -272,7 +312,7 @@ void main() async {
         final callHistory = CallHistory(
           callId: callID,
           callerId: currentUserId?.toString() ?? '',
-          calleeId: callee.id,
+          calleeIds: [callee.id],
           callType: ZegoCallType.voiceCall, // Adjust based on actual call type
           startTime: DateTime.now(),
           callStatus: CallStatus.declined, // Mark as declined
@@ -287,10 +327,11 @@ void main() async {
         List<ZegoCallUser> callees,
         bool isVideoCall,
       ) async {
+        List<String> calleeIds = callees.map((user) => user.id).toList();
         final callHistory = CallHistory(
           callId: callID,
           callerId: currentUserId?.toString() ?? '',
-          calleeId: callees.first.id,
+          calleeIds: calleeIds,
           callType:
               isVideoCall ? ZegoCallType.videoCall : ZegoCallType.voiceCall,
           startTime: DateTime.now(),
@@ -305,7 +346,8 @@ void main() async {
         final callHistory = CallHistory(
           callId: callID,
           callerId: caller.id,
-          calleeId: currentUserId?.toString() ?? '',
+          // calleeId: currentUserId?.toString() ?? '',
+          calleeIds: [calleeId ?? ''],
           callType: ZegoCallType.voiceCall, // Adjust based on actual call type
           startTime: DateTime.now(),
           callStatus: CallStatus.timedOut, // Mark as timed out
@@ -316,16 +358,24 @@ void main() async {
 
       // Track outgoing call canceled
       onOutgoingCallCancelButtonPressed: () async {
-        final callHistory = CallHistory(
-          callId: 'N/A', // You can generate a unique ID or use a placeholder
-          callerId: currentUserId?.toString() ?? '',
-          calleeId: 'N/A',
-          callType: ZegoCallType.voiceCall, // Adjust based on actual call type
-          startTime: DateTime.now(),
-          callStatus: CallStatus.canceled, // Mark as canceled
-        );
+        print("tắt máy: $currentCallId $callerId $callType");
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        // final callHistory = CallHistory(
+        //   callId: currentCallId ?? 'N/A', // Use the stored call ID
+        //   callerId: callerId ?? 'N/A', // Use the stored caller ID
+        //   calleeId: currentUserId?.toString() ?? '',
+        //   callType:
+        //       callType ?? ZegoCallType.voiceCall, // Use the stored call type
+        //   startTime: DateTime.now(),
+        //   callStatus: CallStatus.declined, // Mark as declined
+        // );
+
+        // await CallHistoryHelper.saveCallHistory(callHistory);
+
+        // // Optionally, reset the stored information
+        // currentCallId = null;
+        // callerId = null;
+        // callType = null;
       },
 
       // Track incoming call canceled
@@ -337,7 +387,8 @@ void main() async {
         final callHistory = CallHistory(
           callId: callID,
           callerId: caller.id,
-          calleeId: currentUserId?.toString() ?? '',
+          // calleeId: currentUserId?.toString() ?? '',
+          calleeIds: [caller.id],
           callType: ZegoCallType.voiceCall, // Adjust based on actual call type
           startTime: DateTime.now(),
           callStatus: CallStatus.canceled, // Mark as canceled

@@ -11,15 +11,21 @@ class CallHistoryHelper {
 
   static Future<void> saveCallHistory(CallHistory callHistory) async {
     try {
-      // Convert CallHistory to API request model
+      print("list user ${callHistory.calleeIds}");
+
+      List<int> listReceiverId = callHistory.calleeIds
+          .map((id) => int.parse(id)) // Convert each String to int
+          .toList();
       final request = CallHistoryRequest(
         callerId: int.parse(callHistory.callerId),
-        listReceiverId: [int.parse(callHistory.calleeId)],
+        // listReceiverId: [int.parse(callHistory.calleeId)],
+        listReceiverId: listReceiverId,
         duration: callHistory.duration?.inSeconds.toString() ?? '0',
         status: callHistory.callStatus == CallStatus.success,
         isVideo: callHistory.callType == ZegoCallType.videoCall,
       );
 
+      print("lịch sử cuộc gọi nè ${request.toString()}");
       // Send POST request to the API
       final response = await http.post(
         Uri.parse(_apiUrl),
@@ -29,7 +35,6 @@ class CallHistoryHelper {
         },
         body: jsonEncode(request.toJson()),
       );
-      print("lịch sử cuộc gọi nè ${request.toString()}");
       // Check the response status
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
