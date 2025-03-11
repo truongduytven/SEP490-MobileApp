@@ -39,9 +39,10 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
       isUpdate = widget.date != null ? true : false;
       fullName = sharedPrefsHelper.getString('fullName') ?? "";
       titleController.text = widget.data != null ? widget.data!.title : "";
+      durationController.text =
+          widget.data != null ? widget.data!.duration.toString() : "";
       descriptionController.text =
           widget.data != null ? widget.data!.description : "";
-      durationController.text = widget.data != null ? "0" : "";
       schedules.add({
         "startTime": widget.data != null
             ? "${widget.data!.startTime}:00.000"
@@ -221,6 +222,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
         "accountId": accountId,
         "title": titleController.text,
         "description": descriptionController.text,
+        "startDate": widget.date,
         "createdBy": fullName,
         "duration": int.tryParse(durationController.text) ?? 0,
         "schedules": schedules
@@ -255,7 +257,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
   void handleUpdateActivity() async {
     if (_formKey.currentState!.validate()) {
       LoadingDialog.show(
-          context, 'assets/gif/loading_calendar.gif', "Đang tạo sự kiện...");
+          context, 'assets/gif/loading_calendar.gif', "Đang cập nhật sự kiện...");
       Map<String, dynamic> data = {
         "activityId": widget.data!.activityId,
         "title": titleController.text,
@@ -265,6 +267,30 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
         "duration": int.tryParse(durationController.text) ?? 0,
         "schedules": schedules
       };
+      ScheduleController scheduleController = ScheduleController();
+      await scheduleController.updateActivity(data);
+      Timer(const Duration(seconds: 2), () {
+        if (scheduleController.isUpdateSuccess) {
+          Navigator.pop(context);
+          LoadingDialog.show(context, 'assets/gif/schedule_success.gif',
+              "Cập nhật sự kiện thành công!");
+          Timer(Duration(seconds: 2), () {
+            Navigator.pop(context);
+            Navigator.pop(context, true);
+          });
+        } else {
+          Fluttertoast.showToast(
+            msg: "Có lỗi trong quá trình xử lý!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          Navigator.pop(context);
+        }
+      });
     }
   }
 

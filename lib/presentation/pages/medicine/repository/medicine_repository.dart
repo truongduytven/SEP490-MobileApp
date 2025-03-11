@@ -88,7 +88,6 @@ class MedicineRepository {
         return {'isSuccess': false, 'data': jsonDecode(response.body)};
       }
     } catch (e) {
-      print("hehe" + e.toString());
       return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
     }
   }

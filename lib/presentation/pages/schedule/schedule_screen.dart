@@ -196,15 +196,19 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
-                        Navigator.push(
+                        final result = Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => CreateCalendarScreen(
                               data: activity,
-                              date: "$selectedYear-$selectedMonth-$selectedDay",
+                              date: "$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay}",  
                             ),
                           ),
                         );
+                        // ignore: unnecessary_null_comparison
+                        if (result != null) {
+                          getSchedule();
+                        }
                       },
                       icon: Icon(Icons.edit, color: Colors.white),
                       style: ElevatedButton.styleFrom(
@@ -543,7 +547,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                     final activity = filteredActivities[index];
 
                                     return GestureDetector(
-                                      onLongPress: () {
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
                                         _showActivityDialog(context, activity);
                                       },
                                       child: Container(
@@ -586,6 +591,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                   const SizedBox(height: 8),
                                                   Text(
                                                     activity.description,
+                                                    style: const TextStyle(
+                                                        fontSize: 14),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    "Còn ${activity.duration} ngày nữa",
                                                     style: const TextStyle(
                                                         fontSize: 14),
                                                   ),
