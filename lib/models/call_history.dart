@@ -16,7 +16,7 @@ class CallHistory {
   final ZegoCallType callType;
   final DateTime startTime;
   final DateTime? endTime;
-  final Duration? duration;
+  final String? duration;
   final CallStatus callStatus; // Add this field
 
   CallHistory({
@@ -38,7 +38,7 @@ class CallHistory {
       'callType': callType.toString(),
       'startTime': startTime.toIso8601String(),
       'endTime': endTime?.toIso8601String(),
-      'duration': duration?.inSeconds,
+      'duration': duration?.toString(),
       'callStatus': callStatus.toString(), // Add this field
     };
   }
@@ -52,8 +52,8 @@ class CallHistory {
           .firstWhere((e) => e.toString() == map['callType']),
       startTime: DateTime.parse(map['startTime']),
       endTime: map['endTime'] != null ? DateTime.parse(map['endTime']) : null,
-      duration:
-          map['duration'] != null ? Duration(seconds: map['duration']) : null,
+      duration: map['duration'],
+      // map['duration'] != null ? Duration(seconds: map['duration']) : null,
       callStatus: CallStatus.values.firstWhere(
           (e) => e.toString() == map['callStatus']), // Add this field
     );

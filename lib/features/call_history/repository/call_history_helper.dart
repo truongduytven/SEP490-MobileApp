@@ -20,7 +20,7 @@ class CallHistoryHelper {
         callerId: int.parse(callHistory.callerId),
         // listReceiverId: [int.parse(callHistory.calleeId)],
         listReceiverId: listReceiverId,
-        duration: callHistory.duration?.inSeconds.toString() ?? '0',
+        duration: callHistory.duration ?? "0 giây",
         status: callHistory.callStatus == CallStatus.success,
         isVideo: callHistory.callType == ZegoCallType.videoCall,
       );
