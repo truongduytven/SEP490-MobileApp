@@ -78,17 +78,6 @@ class _SignUpFormState extends State<SignUpForm> {
     }
   }
 
-  // Future<File> _getDefaultAvatar() async {
-  //   Directory appDir = await getApplicationDocumentsDirectory();
-  //   File defaultAvatar = File('${appDir.path}/default_avatar.png');
-  //   if (!defaultAvatar.existsSync()) {
-  //     ByteData data = await rootBundle.load('assets/img/default_avatar.png');
-  //     List<int> bytes = data.buffer.asUint8List();
-  //     await defaultAvatar.writeAsBytes(bytes);
-  //   }
-  //   return defaultAvatar;
-  // }
-
   void _onTextChanged() {
     setState(() {
       isButtonEnabled = fullNameController.text.isNotEmpty &&
@@ -154,7 +143,7 @@ class _SignUpFormState extends State<SignUpForm> {
           const SizedBox(height: 24),
 
           // Email Field
-          if (widget.typeIn == 'Phone')
+          if (widget.typeIn == 'Phone number')
             AuthField(
               labelText: "Email",
               hintText: "Nhập email",
