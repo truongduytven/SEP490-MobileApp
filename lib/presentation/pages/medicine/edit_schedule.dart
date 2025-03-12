@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -83,9 +84,15 @@ class _EditScheduleState extends State<EditSchedule> {
                                 });
                               },
                             ),
-                            const Text(
-                              ':',
-                              style: TextStyle(fontSize: 22),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 30,),
+                                const Text(
+                                  ':',
+                                  style: TextStyle(fontSize: 22),
+                                ),
+                              ],
                             ),
                             _buildPicker(
                               type: 'minute',
@@ -222,31 +229,28 @@ class _EditScheduleState extends State<EditSchedule> {
         SizedBox(
           width: 120,
           height: 140,
-          child: ListWheelScrollView.useDelegate(
-            controller: controller,
-            itemExtent: 40,
+          child: CupertinoPicker(
+            scrollController: controller,
+            itemExtent: 50,
+            looping: true, // Enables infinite looping
             onSelectedItemChanged: (index) {
               onChanged(items[index]);
             },
-            childDelegate: ListWheelChildBuilderDelegate(
-              builder: (context, index) {
-                return Center(
-                  child: Text(
-                    items[index].toString(),
-                    style: TextStyle(
-                      fontSize: value == items[index] ? 25 : 20,
-                      fontWeight: value == items[index]
-                          ? FontWeight.bold
-                          : FontWeight.w400,
-                      color: value == items[index]
-                          ? Colors.black
-                          : Colors.grey.shade600,
-                    ),
-                  ),
-                );
-              },
-              childCount: items.length,
-            ),
+            children: items
+                .map((item) => Center(
+                      child: Text(
+                        item.toString(),
+                        style: TextStyle(
+                          fontSize: value == item ? 25 : 20,
+                          fontWeight:
+                              value == item ? FontWeight.bold : FontWeight.w400,
+                          color: value == item
+                              ? Colors.black
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                    ))
+                .toList(),
           ),
         ),
       ],

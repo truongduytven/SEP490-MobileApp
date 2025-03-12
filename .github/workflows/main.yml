@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
       - uses: actions/setup-java@v2
         with:
           distribution: "zulu"
@@ -18,8 +19,23 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: "3.27.2"
           channel: "stable"
+
+      - name: Check Flutter and Dart Version
+        run: |
+          flutter --version
+          dart --version
+
       - run: flutter pub get
+
+      - name: Create .env file
+        run: echo "$FLUTTER_ENV_FILE" > .env
+        shell: bash
+        env:
+          FLUTTER_ENV_FILE: ${{ secrets.FLUTTER_ENV_FILE }}
+
+          
       - run: flutter build apk --release --split-per-abi
 
       - name: Push to Releases

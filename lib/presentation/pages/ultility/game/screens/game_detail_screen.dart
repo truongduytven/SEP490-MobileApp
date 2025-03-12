@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/ultility/game/screens/chu_chim_bay_screen.dart';
-import 'package:sep490/presentation/pages/ultility/game/screens/do_boom_screen.dart';
+import 'package:sep490/presentation/pages/ultility/game/doboom/screens/do_boom_screen.dart';
 import 'play_game_screen.dart';
-import 'co_caro_screen.dart';
-import 'keo_bua_bao_screen.dart';
-import 'lat_the_bai_screen.dart';
+import '../caro/screens/co_caro_screen.dart';
+import '../keobuabao/screens/keo_bua_bao_screen.dart';
+import '../latthebai/screens/lat_the_bai_screen.dart';
+import '../2048/main.dart';
 
 class GameDetailScreen extends StatefulWidget {
   final String title;
@@ -31,7 +32,6 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   }
 
   Widget _getGameScreen(String title) {
-    print("title ne $title");
     switch (title) {
       case "Cờ caro":
         return CoCaroScreen();
@@ -41,6 +41,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         return KeoBuaBaoScreen();
       case "Lật thẻ bài":
         return LatTheBaiScreen();
+      case "2048":
+        return TwentyFortyEight();
       case "Chú chim bay":
         return ChuChimBayScreen();
       default:
