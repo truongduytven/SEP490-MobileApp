@@ -31,6 +31,12 @@ class GameCardScreen extends StatelessWidget {
       "color2": Colors.amber,
       "image": "assets/img/card_game_2.png"
     },
+     {
+      "title": "Chú chim bay",
+      "color1": Colors.yellow,
+      "color2": Colors.amber,
+      "image": "assets/img/bird_midflap.png"
+    },
   ];
 
   @override

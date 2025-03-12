@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/ultility/game/screens/chu_chim_bay_screen.dart';
 import 'package:sep490/presentation/pages/ultility/game/screens/do_boom_screen.dart';
 import 'play_game_screen.dart';
 import 'co_caro_screen.dart';
@@ -40,6 +41,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
         return KeoBuaBaoScreen();
       case "Lật thẻ bài":
         return LatTheBaiScreen();
+      case "Chú chim bay":
+        return ChuChimBayScreen();
       default:
         return PlayGameScreen(gameTitle: title); // Default screen if not found
     }
