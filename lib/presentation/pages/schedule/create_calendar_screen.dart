@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/schedule.dart';
 import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/presentation/widgets/loading/loadingImgPath.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CreateCalendarScreen extends StatefulWidget {
   final Activity? data;
@@ -24,19 +26,29 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController durationController = TextEditingController();
+  late DateTime _focusedDay;
+  late String _startDate = "";
+  late String _endDate = "";
+  // ignore: unused_field
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  final FocusNode _focusNode = FocusNode();
   late List<Map<String, String>> schedules = [];
   late String scheduleId = "";
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId = 0;
   late String fullName = "";
   late bool isUpdate = false;
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
+    _focusedDay = DateTime.now();
+    _startDate = widget.date ?? '';
+    _endDate = widget.date ?? '';
     setState(() {
       accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
-      isUpdate = widget.date != null ? true : false;
+      isUpdate = widget.data != null ? true : false;
       fullName = sharedPrefsHelper.getString('fullName') ?? "";
       titleController.text = widget.data != null ? widget.data!.title : "";
       durationController.text =
@@ -46,17 +58,23 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
       schedules.add({
         "startTime": widget.data != null
             ? "${widget.data!.startTime}:00.000"
-            : "08:00:00.000",
+            : "${selectedDate.add(const Duration(minutes: 30)).hour < 10 ? "0${selectedDate.add(const Duration(minutes: 30)).hour}" : selectedDate.add(const Duration(minutes: 30)).hour}:${selectedDate.add(const Duration(minutes: 30)).minute < 10 ? "0${selectedDate.add(const Duration(minutes: 30)).minute}" : selectedDate.add(const Duration(minutes: 30)).minute}:00.000",
         "endTime": widget.data != null
             ? "${widget.data!.endTime}:00.000"
-            : "17:00:00.000"
+            : "${selectedDate.add(const Duration(minutes: 90)).hour < 10 ? "0${selectedDate.add(const Duration(minutes: 90)).hour}" : selectedDate.add(const Duration(minutes: 90)).hour}:${selectedDate.add(const Duration(minutes: 90)).minute < 10 ? "0${selectedDate.add(const Duration(minutes: 90)).minute}" : selectedDate.add(const Duration(minutes: 90)).minute}:00.000"
       });
     });
   }
 
   void _addSchedule() {
+    DateTime selectedDate = DateTime.now();
     setState(() {
-      schedules.add({"startTime": "08:00:00.000", "endTime": "17:00:00.000"});
+      schedules.add({
+        "startTime":
+            "${selectedDate.add(const Duration(minutes: 30)).hour < 10 ? "0${selectedDate.add(const Duration(minutes: 30)).hour}" : selectedDate.add(const Duration(minutes: 30)).hour}:${selectedDate.add(const Duration(minutes: 30)).minute < 10 ? "0${selectedDate.add(const Duration(minutes: 30)).minute}" : selectedDate.add(const Duration(minutes: 30)).minute}:00.000",
+        "endTime":
+            "${selectedDate.add(const Duration(minutes: 90)).hour < 10 ? "0${selectedDate.add(const Duration(minutes: 90)).hour}" : selectedDate.add(const Duration(minutes: 90)).hour}:${selectedDate.add(const Duration(minutes: 90)).minute < 10 ? "0${selectedDate.add(const Duration(minutes: 90)).minute}" : selectedDate.add(const Duration(minutes: 90)).minute}:00.000"
+      });
     });
   }
 
@@ -175,6 +193,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
+                    FocusScope.of(context).unfocus();
                   },
                   child: const Text(
                     "Hủy",
@@ -193,6 +212,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                       String time =
                           "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}:00.000";
                       Navigator.pop(context, time);
+                      FocusScope.of(context).unfocus();
                     },
                     child: const Text(
                       "Chọn",
@@ -218,13 +238,18 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
     if (_formKey.currentState!.validate()) {
       LoadingDialog.show(
           context, 'assets/gif/loading_calendar.gif', "Đang tạo sự kiện...");
+
+      DateTime startDate = DateFormat("dd/MM/yyyy").parse(_startDate);
+      DateTime endDate = DateFormat("dd/MM/yyyy").parse(_endDate);
+      int duration = endDate.difference(startDate).inDays + 1;
+
       Map<String, dynamic> data = {
         "accountId": accountId,
         "title": titleController.text,
         "description": descriptionController.text,
-        "startDate": widget.date,
+        "startDate": "${_endDate.split('/')[2]}-${_endDate.split('/')[1].padLeft(2, '0')}-${_endDate.split('/')[0].padLeft(2, '0')}",
         "createdBy": fullName,
-        "duration": int.tryParse(durationController.text) ?? 0,
+        "duration": duration,
         "schedules": schedules
       };
       ScheduleController scheduleController = ScheduleController();
@@ -256,8 +281,8 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
 
   void handleUpdateActivity() async {
     if (_formKey.currentState!.validate()) {
-      LoadingDialog.show(
-          context, 'assets/gif/loading_calendar.gif', "Đang cập nhật sự kiện...");
+      LoadingDialog.show(context, 'assets/gif/loading_calendar.gif',
+          "Đang cập nhật sự kiện...");
       Map<String, dynamic> data = {
         "activityId": widget.data!.activityId,
         "title": titleController.text,
@@ -295,12 +320,18 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
   }
 
   @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          'Tạo sự kiện',
+        title: Text(
+          isUpdate ? "Chỉnh sửa sự kiện" : 'Tạo sự kiện',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
@@ -335,12 +366,243 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                   labelText: "Mô tả",
                   controller: descriptionController),
               SizedBox(height: 25),
-              AuthField(
-                  hintText: "Nhập số ngày",
-                  labelText: "Sự kiện diễn ra trong bao lâu",
-                  controller: durationController,
-                  keyboardType: TextInputType.number,
-                  suffixText: "(ngày)"),
+              // AuthField(
+              //     hintText: "Nhập số ngày",
+              //     labelText: "Sự kiện diễn ra trong bao lâu",
+              //     controller: durationController,
+              //     keyboardType: TextInputType.number,
+              //     suffixText: "(ngày)"),
+              // SizedBox(height: 25),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: TextEditingController(text: _startDate),
+                      textInputAction: TextInputAction.next,
+                      readOnly: true,
+                      onTap: () async {
+                        // ignore: unused_local_variable
+                        DateTime? pickedDate = await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              contentPadding: EdgeInsets.zero,
+                              content: SizedBox(
+                                height: 400,
+                                width: 300,
+                                child: TableCalendar(
+                                  locale: 'vi_VN',
+                                  firstDay: DateTime.now(),
+                                  lastDay: _endDate == _startDate
+                                      ? DateTime(2030)
+                                      : DateTime.parse(
+                                          "${_endDate.split('/')[2]}-${_endDate.split('/')[1].padLeft(2, '0')}-${_endDate.split('/')[0].padLeft(2, '0')}"),
+                                  focusedDay: _focusedDay,
+                                  availableCalendarFormats: const {
+                                    CalendarFormat.month: 'Month',
+                                    CalendarFormat.twoWeeks: 'Year',
+                                  },
+                                  selectedDayPredicate: (day) {
+                                    if (_startDate.isNotEmpty) {
+                                      final parsedDate = DateTime.parse(
+                                        "${_startDate.split('/')[2]}-${_startDate.split('/')[1].padLeft(2, '0')}-${_startDate.split('/')[0].padLeft(2, '0')}",
+                                      );
+                                      final isSameDate =
+                                          day.year == parsedDate.year &&
+                                              day.month == parsedDate.month &&
+                                              day.day == parsedDate.day;
+                                      return isSameDate;
+                                    }
+                                    return false;
+                                  },
+                                  calendarFormat: CalendarFormat.month,
+                                  headerStyle: HeaderStyle(
+                                    formatButtonVisible: false,
+                                    titleCentered: true,
+                                    leftChevronVisible: true,
+                                    rightChevronVisible: true,
+                                  ),
+                                  availableGestures: AvailableGestures.all,
+                                  calendarStyle: CalendarStyle(
+                                    selectedDecoration: BoxDecoration(
+                                      color: AppColors.primaryColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  onDaySelected: (selectedDay, focusedDay) {
+                                    Navigator.pop(context);
+                                    // Update the selected date when a day is selected
+                                    setState(() {
+                                      if (_startDate == _endDate) {
+                                        _endDate =
+                                            "${selectedDay.day}/${selectedDay.month}/${selectedDay.year}";
+                                      }
+                                      _startDate =
+                                          "${selectedDay.day}/${selectedDay.month}/${selectedDay.year}";
+                                      _focusedDay = focusedDay;
+                                    });
+                                  },
+                                  onFormatChanged: (format) {
+                                    setState(() {
+                                      _calendarFormat = format;
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Chọn ngày kết thúc thuốc",
+                        labelText: "Ngày bắt đầu",
+                        labelStyle:
+                            TextStyle(color: AppColors.textColor, fontSize: 20),
+                        hintStyle: TextStyle(
+                            color: AppColors.grayColor3, fontSize: 20),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          borderSide:
+                              const BorderSide(color: AppColors.grayColor1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          borderSide:
+                              const BorderSide(color: AppColors.grayColor1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          borderSide:
+                              const BorderSide(color: AppColors.secondaryColor),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng chọn ngày kết thúc sự kiện';
+                        }
+                        return null;
+                      },
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  SizedBox(width: 25),
+                  Expanded(
+                    child: TextFormField(
+                      controller: TextEditingController(text: _endDate),
+                      textInputAction: TextInputAction.next,
+                      readOnly: true,
+                      onTap: () async {
+                        // ignore: unused_local_variable
+                        DateTime? pickedDate = await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              contentPadding: EdgeInsets.zero,
+                              content: SizedBox(
+                                height: 400,
+                                width: 300,
+                                child: TableCalendar(
+                                  locale: 'vi_VN',
+                                  firstDay: DateTime.parse(
+                                    "${_startDate.split('/')[2]}-${_startDate.split('/')[1].padLeft(2, '0')}-${_startDate.split('/')[0].padLeft(2, '0')}",
+                                  ),
+                                  lastDay: DateTime(2030),
+                                  focusedDay: _focusedDay,
+                                  availableCalendarFormats: const {
+                                    CalendarFormat.month: 'Month',
+                                    CalendarFormat.twoWeeks: 'Year',
+                                  },
+                                  selectedDayPredicate: (day) {
+                                    if (_endDate.isNotEmpty) {
+                                      final parsedDate = DateTime.parse(
+                                        "${_endDate.split('/')[2]}-${_endDate.split('/')[1].padLeft(2, '0')}-${_endDate.split('/')[0].padLeft(2, '0')}",
+                                      );
+                                      final isSameDate =
+                                          day.year == parsedDate.year &&
+                                              day.month == parsedDate.month &&
+                                              day.day == parsedDate.day;
+                                      return isSameDate;
+                                    }
+                                    return false;
+                                  },
+                                  calendarFormat: CalendarFormat.month,
+                                  headerStyle: HeaderStyle(
+                                    formatButtonVisible: false,
+                                    titleCentered: true,
+                                    leftChevronVisible: true,
+                                    rightChevronVisible: true,
+                                  ),
+                                  availableGestures: AvailableGestures.all,
+                                  calendarStyle: CalendarStyle(
+                                    selectedDecoration: BoxDecoration(
+                                      color: AppColors.primaryColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  onDaySelected: (selectedDay, focusedDay) {
+                                    Navigator.pop(context);
+                                    // Update the selected date when a day is selected
+                                    setState(() {
+                                      _endDate =
+                                          "${selectedDay.day}/${selectedDay.month}/${selectedDay.year}";
+                                      _focusedDay = focusedDay;
+                                    });
+                                  },
+                                  onFormatChanged: (format) {
+                                    setState(() {
+                                      _calendarFormat = format;
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Chọn ngày kết thúc thuốc",
+                        labelText: "Ngày kết thúc",
+                        labelStyle:
+                            TextStyle(color: AppColors.textColor, fontSize: 20),
+                        hintStyle: TextStyle(
+                            color: AppColors.grayColor3, fontSize: 20),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          borderSide:
+                              const BorderSide(color: AppColors.grayColor1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          borderSide:
+                              const BorderSide(color: AppColors.grayColor1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                          borderSide:
+                              const BorderSide(color: AppColors.secondaryColor),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng chọn ngày kết thúc sự kiện';
+                        }
+                        return null;
+                      },
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(height: 25),
               Text('Lịch trình', style: const TextStyle(fontSize: 20)),
               Expanded(
@@ -364,51 +626,57 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                             )
                           ],
                         ),
-                        subtitle: Row(
-                          children: [
-                            RichText(
-                                text: TextSpan(children: [
-                              TextSpan(
-                                  text: "Bắt đầu: ",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.secondaryColor,
-                                  )),
-                              TextSpan(
-                                  text:
-                                      "${schedules[index]['startTime']!.split(":")[0]}:${schedules[index]['startTime']!.split(":")[1]}",
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      color: AppColors.secondaryColor,
-                                      fontWeight: FontWeight.w600)),
-                            ])),
-                            IconButton(
-                              icon: const Icon(Icons.access_time),
-                              onPressed: () =>
-                                  _showTimePicker(index, "startTime"),
-                            ),
-                            RichText(
-                                text: TextSpan(children: [
-                              TextSpan(
-                                  text: "Kết thúc: ",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.secondaryColor,
-                                  )),
-                              TextSpan(
-                                  text:
-                                      "${schedules[index]['endTime']!.split(":")[0]}:${schedules[index]['endTime']!.split(":")[1]}",
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      color: AppColors.secondaryColor,
-                                      fontWeight: FontWeight.w600)),
-                            ])),
-                            IconButton(
-                              icon: const Icon(Icons.access_time),
-                              onPressed: () =>
-                                  _showTimePicker(index, "endTime"),
-                            ),
-                          ],
+                        subtitle: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  FocusScope.of(context).unfocus();
+                                  _showTimePicker(index, "startTime");
+                                },
+                                child: RichText(
+                                    text: TextSpan(children: [
+                                  TextSpan(
+                                      text: "Bắt đầu: ",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.secondaryColor,
+                                      )),
+                                  TextSpan(
+                                      text:
+                                          "${schedules[index]['startTime']!.split(":")[0]}:${schedules[index]['startTime']!.split(":")[1]}",
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          color: AppColors.secondaryColor,
+                                          fontWeight: FontWeight.w600)),
+                                ])),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  FocusScope.of(context).unfocus();
+                                  _showTimePicker(index, "endTime");
+                                },
+                                child: RichText(
+                                    text: TextSpan(children: [
+                                  TextSpan(
+                                      text: "Kết thúc: ",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.secondaryColor,
+                                      )),
+                                  TextSpan(
+                                      text:
+                                          "${schedules[index]['endTime']!.split(":")[0]}:${schedules[index]['endTime']!.split(":")[1]}",
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          color: AppColors.secondaryColor,
+                                          fontWeight: FontWeight.w600)),
+                                ])),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -416,89 +684,88 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                 ),
               ),
               SizedBox(height: 25),
-              if(!isUpdate)  
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                width: double.infinity,
-                color: Colors.transparent,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    _addSchedule();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.bgColor,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        side: BorderSide(
-                            color: AppColors.secondaryColor, width: 1),
-                      )),
-                  icon: Icon(Icons.add_circle_outline,
-                      size: 25, color: AppColors.secondaryColor),
-                  label: const Text('Thêm lịch trình',
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: AppColors.secondaryColor,
-                        fontWeight: FontWeight.w400,
-                      )),
+              if (!isUpdate)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  width: double.infinity,
+                  color: Colors.transparent,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      _addSchedule();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.bgColor,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          side: BorderSide(
+                              color: AppColors.secondaryColor, width: 1),
+                        )),
+                    icon: Icon(Icons.add_circle_outline,
+                        size: 25, color: AppColors.secondaryColor),
+                    label: const Text('Thêm lịch trình',
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: AppColors.secondaryColor,
+                          fontWeight: FontWeight.w400,
+                        )),
+                  ),
                 ),
-              ),
-              if(!isUpdate)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                width: double.infinity,
-                color: Colors.transparent,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    handleAddActivity();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondaryColor,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      )),
-                  icon: Icon(Icons.edit_calendar,
-                      size: 25, color: AppColors.bgColor),
-                  label: const Text('Lưu thay đổi',
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: AppColors.bgColor,
-                        fontWeight: FontWeight.w400,
-                      )),
+              if (!isUpdate)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  width: double.infinity,
+                  color: Colors.transparent,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      handleAddActivity();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryColor,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        )),
+                    icon: Icon(Icons.edit_calendar,
+                        size: 25, color: AppColors.bgColor),
+                    label: const Text('Tạo sự kiện',
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: AppColors.bgColor,
+                          fontWeight: FontWeight.w400,
+                        )),
+                  ),
                 ),
-              ),
-              if(isUpdate)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                width: double.infinity,
-                color: Colors.transparent,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    handleUpdateActivity();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondaryColor,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      )),
-                  icon: Icon(Icons.sync,
-                      size: 25, color: AppColors.bgColor),
-                  label: const Text('Cập nhật sự kiện',
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: AppColors.bgColor,
-                        fontWeight: FontWeight.w400,
-                      )),
+              if (isUpdate)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  width: double.infinity,
+                  color: Colors.transparent,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      handleUpdateActivity();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryColor,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        )),
+                    icon: Icon(Icons.sync, size: 25, color: AppColors.bgColor),
+                    label: const Text('Cập nhật sự kiện',
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: AppColors.bgColor,
+                          fontWeight: FontWeight.w400,
+                        )),
+                  ),
                 ),
-              ),
             ],
           ),
         ),

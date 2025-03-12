@@ -638,6 +638,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               MaterialPageRoute(
                   builder: (context) => CreateCalendarScreen(
                         data: null,
+                        date: "${selectedDay.toString().padLeft(2, '0')}/${selectedMonth.toString().padLeft(2, '0')}/$selectedYear",
                       )));
           if (result != null) {
             getSchedule();
