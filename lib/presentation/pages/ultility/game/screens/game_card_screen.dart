@@ -33,8 +33,8 @@ class GameCardScreen extends StatelessWidget {
     },
     {
       "title": "2048",
-      "color1": Colors.yellow,
-      "color2": Colors.amber,
+      "color1": Colors.pink,
+      "color2": Colors.pinkAccent,
       "image": "assets/img/2048.png"
     },
     // {
@@ -43,6 +43,12 @@ class GameCardScreen extends StatelessWidget {
     //   "color2": Colors.amber,
     //   "image": "assets/img/card_game_2.png"
     // },
+     {
+      "title": "Chú chim bay",
+      "color1": Colors.lightGreenAccent,
+      "color2": Colors.green,
+      "image": "assets/img/flappy.webp"
+    },
   ];
 
   @override

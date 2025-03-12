@@ -449,7 +449,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               ? Center(
                   child: GifView.asset(
                     'assets/gif/prescription1.gif',
-                    width: 100,
+                    width: 100,                 
                     height: 100,
                     frameRate: 90,
                   ),
