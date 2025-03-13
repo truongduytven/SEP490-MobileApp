@@ -319,8 +319,8 @@ void main() async {
       ) async {
         final callHistory = CallHistory(
           callId: callID,
-          // callerId: currentUserId?.toString() ?? '',
-          callerId: callerId ?? "Unknown",
+          callerId: currentUserId?.toString() ?? '',
+          // callerId: callerId ?? "Unknown",
           calleeIds: [callee.id],
           callType: ZegoCallType.voiceCall, // Adjust based on actual call type
           startTime: DateTime.now(),
@@ -340,8 +340,8 @@ void main() async {
         List<String> calleeIds = callees.map((user) => user.id).toList();
         final callHistory = CallHistory(
           callId: callID,
-          // callerId: currentUserId?.toString() ?? '',
-          callerId: callerId ?? "Unknown",
+          callerId: currentUserId?.toString() ?? '',
+          // callerId: callerId ?? "Unknown",
           calleeIds: calleeIds,
           callType:
               isVideoCall ? ZegoCallType.videoCall : ZegoCallType.voiceCall,
@@ -357,8 +357,8 @@ void main() async {
       onIncomingCallTimeout: (String callID, ZegoCallUser caller) async {
         final callHistory = CallHistory(
           callId: callID,
-          callerId: caller.id,
-          // calleeId: currentUserId?.toString() ?? '',
+          // callerId: caller.id,
+          callerId: currentUserId?.toString() ?? '',
           calleeIds: [calleeId ?? ''],
           callType: ZegoCallType.voiceCall, // Adjust based on actual call type
           startTime: DateTime.now(),
