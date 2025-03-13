@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:sep490/theme/color.dart';
 
 // void showSnackBar({required BuildContext context, required String content}) {
@@ -110,6 +111,20 @@ String convertTime(String time) {
   return formattedTime;
 }
 
+String addDaytoDate(String date, int day) {
+  // '25-01-2025' add day day -> '27-01-2025'
+  DateFormat format = DateFormat("dd/MM/yyyy");
+
+  // Parse start date
+  DateTime start = format.parse(date);
+
+  // Add duration (days)
+  DateTime endDate = start.add(Duration(days: day - 1));
+
+  // Format back to "dd/MM/yyyy"
+  return format.format(endDate);
+}
+
 String convertDateTime(String dateTime) {
   // '25/02/2025' to '2025-02-25T00:00:00Z'
   var dateParts = dateTime.split('/');
@@ -122,6 +137,6 @@ String convertDateTime(String dateTime) {
   if (day.length == 1) {
     day = '0$day';
   }
-  var formattedDateTime = '$year-$month-$day''T00:00:00.000Z';
+  var formattedDateTime = '$year-$month-$day' 'T00:00:00.000Z';
   return formattedDateTime;
 }

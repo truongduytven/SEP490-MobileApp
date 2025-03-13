@@ -55,7 +55,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     });
     ScheduleController scheduleController = ScheduleController();
     await scheduleController.getSchedule(userId,
-        '$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay}');
+        '$selectedYear-${selectedMonth.toString().padLeft(2, "0")}-${selectedDay.toString().padLeft(2, "0")}');
     Timer(Duration(seconds: 2), () {
       setState(() {
         schedule = scheduleController.schedule;
@@ -195,20 +195,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                     ElevatedButton.icon(
                       onPressed: () {
+                        List<Map<String, String>> time = [];
+                        for (var element in schedule!) {
+                          if (element.activityId == activity.activityId) {
+                            time.add({
+                              "startTime": element.startTime,
+                              "endTime": element.endTime,
+                            });
+                          }
+                        }  
                         Navigator.pop(context);
-                        final result = Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreateCalendarScreen(
-                              data: activity,
-                              date: "$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay}",  
-                            ),
-                          ),
-                        );
-                        // ignore: unnecessary_null_comparison
-                        if (result != null) {
-                          getSchedule();
-                        }
+                        handleUpdateActivity(activity, time);
                       },
                       icon: Icon(Icons.edit, color: Colors.white),
                       style: ElevatedButton.styleFrom(
@@ -227,6 +224,23 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         );
       },
     );
+  }
+
+  void handleUpdateActivity(Activity activity, List<Map<String, String>> time) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateCalendarScreen(
+          data: activity,
+          times: time,
+          date:
+              "${selectedDay.toString().padLeft(2, '0')}/${selectedMonth.toString().padLeft(2, '0')}/$selectedYear",
+        ),
+      ),
+    );
+    if (result != null) {
+      getSchedule();
+    }
   }
 
   void handleChangeStatusActivity(int activityId) async {
@@ -638,7 +652,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               MaterialPageRoute(
                   builder: (context) => CreateCalendarScreen(
                         data: null,
-                        date: "${selectedDay.toString().padLeft(2, '0')}/${selectedMonth.toString().padLeft(2, '0')}/$selectedYear",
+                        date:
+                            "${selectedDay.toString().padLeft(2, '0')}/${selectedMonth.toString().padLeft(2, '0')}/$selectedYear",
                       )));
           if (result != null) {
             getSchedule();
