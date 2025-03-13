@@ -10,8 +10,8 @@ import 'package:sep490/features/chat/screens/add_member_group_chat.dart';
 import 'package:sep490/features/chat/screens/confirm_avatar_group_screen.dart';
 import 'package:sep490/features/group/controller/group_controller.dart';
 import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
-import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
 import 'package:sep490/models/room_chat_detail.dart';
+import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/theme/color.dart';
 

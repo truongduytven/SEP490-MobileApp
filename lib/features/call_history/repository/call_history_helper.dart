@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/models/call_history.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +10,8 @@ class CallHistoryHelper {
   static const String _apiUrl =
       'https://api.diavan-valuation.asia/video-call-management';
 
-  static Future<void> saveCallHistory(CallHistory callHistory) async {
+  static Future<void> saveCallHistory(
+      BuildContext context, CallHistory callHistory) async {
     try {
       print("list user ${callHistory.calleeIds}");
 
@@ -39,15 +41,29 @@ class CallHistoryHelper {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         if (responseData['status'] == 0) {
+          showSnackBar(
+              context: context,
+              content: "Lỗi lưu lịch sử cuộc gọi ${responseData['message']}");
           print('Failed to save call history: ${responseData['message']}');
         } else {
+          showSnackBar(
+              context: context,
+              content: "Lưu lịch sử cuộc gọi thành công",
+              type: "green");
           print('Call history saved successfully');
         }
       } else {
+        showSnackBar(
+            context: context,
+            content: "Lỗi lưu lịch sử cuộc gọi ${response.statusCode}");
+
         print(
             'Failed to save call history. Status code: ${response.statusCode}');
       }
     } catch (e) {
+      showSnackBar(
+          context: context,
+          content: "Lỗi lưu lịch sử cuộc gọi ${e.toString()}");
       print('Error saving call history: $e');
     }
   }

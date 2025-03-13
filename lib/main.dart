@@ -155,7 +155,7 @@ void main() async {
           print("No invitees found.");
         }
 
-         final formattedDuration = formatDuration(callDuration);
+        final formattedDuration = formatDuration(callDuration);
         final callHistory = CallHistory(
           callId: 'N/A', // You can generate a unique ID or use a placeholder
           callerId: callerId,
@@ -169,7 +169,8 @@ void main() async {
               : CallStatus.missed, // Mark as successful call
         );
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        await CallHistoryHelper.saveCallHistory(
+            navigatorKey.currentContext!, callHistory);
         scaffoldMessengerKey.currentState?.showSnackBar(
           SnackBar(
             content: Text(
@@ -326,7 +327,8 @@ void main() async {
           callStatus: CallStatus.declined, // Mark as declined
         );
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        await CallHistoryHelper.saveCallHistory(
+            navigatorKey.currentContext!, callHistory);
       },
 
       // Track outgoing call timeout
@@ -347,7 +349,8 @@ void main() async {
           callStatus: CallStatus.timedOut, // Mark as timed out
         );
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        await CallHistoryHelper.saveCallHistory(
+            navigatorKey.currentContext!, callHistory);
       },
 
       // Track incoming call timeout
@@ -362,7 +365,8 @@ void main() async {
           callStatus: CallStatus.timedOut, // Mark as timed out
         );
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        await CallHistoryHelper.saveCallHistory(
+            navigatorKey.currentContext!, callHistory);
       },
 
       // Track outgoing call canceled
@@ -403,7 +407,8 @@ void main() async {
           callStatus: CallStatus.canceled, // Mark as canceled
         );
 
-        await CallHistoryHelper.saveCallHistory(callHistory);
+        await CallHistoryHelper.saveCallHistory(
+            navigatorKey.currentContext!, callHistory);
       },
     ),
   );
