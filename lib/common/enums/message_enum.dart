@@ -1,4 +1,4 @@
-enum MessageEnum { Text, Image, Video, Audio, Gif }
+enum MessageEnum { Text, Image, Video, Audio, Gif, CallSuccess, CallFailure }
 
 // ✅ Extension for converting String to MessageEnum
 extension MessageEnumExtension on MessageEnum {
@@ -18,6 +18,10 @@ extension MessageEnumExtension on MessageEnum {
         return MessageEnum.Audio;
       case 'gif':
         return MessageEnum.Gif;
+      case 'true':
+        return MessageEnum.CallSuccess;
+      case 'false':
+        return MessageEnum.CallFailure;
       default:
         return MessageEnum.Text; // Default to text if unknown type
     }

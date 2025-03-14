@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/ultility/game/screens/game_card_screen.dart';
 import 'package:sep490/presentation/pages/ultility/game/widgets/full_width_game_card.dart';
+import 'package:sep490/theme/color.dart';
 
 class UltilityScreen extends StatefulWidget {
   const UltilityScreen({super.key});
@@ -30,7 +31,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
       "title": "Đọc sách",
       "color1": Colors.purple,
       "color2": Colors.deepPurple,
-      "image": "assets/img/reading_book_2.webp",
+      "image": "assets/img/docsach.png",
       "subtitle": "Khám phá những cuốn sách hay và bổ ích.",
       "onTap": () => {},
     },
@@ -38,7 +39,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
       "title": "Tập luyện",
       "color1": Colors.blue,
       "color2": Colors.lightBlueAccent,
-      "image": "assets/img/tapluyen.webp",
+      "image": "assets/img/tapluyen.png",
       "subtitle": "Giữ gìn sức khỏe với các bài tập luyện hiệu quả.",
       "onTap": () => {},
     },
@@ -56,6 +57,9 @@ class _UltilityScreenState extends State<UltilityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        backgroundColor: AppColors.bgColor,
         title: const Text('Tiện ích'),
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -81,7 +85,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
                     subtitle: utilities[i]['subtitle'],
                   ),
                 ),
-                const SizedBox(height: 26), // Space between cards
+                const SizedBox(height: 36), // Space between cards
               ],
             ],
           ),

@@ -477,10 +477,10 @@ packages:
     dependency: "direct main"
     description:
       name: flame
-      sha256: "8b5abd3fe76b8b3357ba777513900fa4f1c0dc5b46ab07ad7c38e8b290773bb9"
+      sha256: "03e90d4bd3bc4f6a325602914ee27509f02d8743bb7ccb9282c88192b58eeb84"
       url: "https://pub.dev"
     source: hosted
-    version: "1.25.0"
+    version: "1.26.0"
   floating:
     dependency: transitive
     description:
@@ -753,10 +753,10 @@ packages:
     dependency: "direct main"
     description:
       name: gif_view
-      sha256: d2441d98bcd56b3fd00e869513aeaefa56849ab62f63675e7d55f5fa4517f27e
+      sha256: "7665fe9ba03ffcad823c13564baed36513143403dc9b68f89adc9f8d7cbdb384"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   giphy_picker:
     dependency: "direct main"
     description:
@@ -1650,6 +1650,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.2"
+  water_bottle:
+    dependency: "direct main"
+    description:
+      name: water_bottle
+      sha256: "5b3692d9249b8cfe549ce03d8b3be51290d134aab2ce7d9c1f2cd73b926415db"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   web:
     dependency: transitive
     description:

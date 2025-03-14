@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
+import 'package:sep490/models/friend_request.dart';
 import 'package:sep490/models/user_contact.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -259,4 +260,51 @@ class SelectContactRepository {
       return false;
     }
   }
+
+  Future<bool> removeFriend(
+    BuildContext context,
+    int requestUserId,
+    int responseUserId,
+  ) async {
+    const String apiUrl =
+        "https://api.diavan-valuation.asia/user-link-management/remove-friend";
+
+    final Map<String, dynamic> payload = {
+      "requestUserId": requestUserId,
+      "responseUserId": responseUserId,
+    };
+
+    try {
+      final response = await http.delete(
+        Uri.parse(apiUrl),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData["status"] == 1) {
+          showSnackBar(
+              context: context,
+              content: "Xóa liên hệ bạn bè thành công ",
+              type: "green");
+          return true;
+        }
+      }
+      showSnackBar(
+          context: context,
+          content:
+              "Xóa liên hệ bạn bè thất bại ${json.decode(response.body)["data"]} ${json.decode(response.body)["message"]}");
+      return false;
+    } catch (e) {
+      showSnackBar(
+          context: context, content: "Lỗi xóa liên hệ bạn bè: ${e.toString()}");
+      print("Error remove friend relationship: $e");
+      return false;
+    }
+  }
+
+ 
 }
