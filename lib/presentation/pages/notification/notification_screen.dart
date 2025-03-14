@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/carouse_with_save.dart';
 import 'package:sep490/theme/color.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -19,7 +20,16 @@ class NotificationScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Center(
-        child: Text("Notification Screen here"),
+        child: SingleChildScrollView(
+          // Prevents layout overflow issues
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Prevents infinite height
+            children: [
+              Text("Notification Screen here"),
+              CarouselWithSave(),
+            ],
+          ),
+        ),
       ),
     );
   }

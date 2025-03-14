@@ -95,6 +95,16 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
       "unit": "cm",
       "dataType": "Thiết bị IOT"
     },
+    {
+      "title": "Chiều cao",
+      "result": "Bình Thường",
+      "dateTime": "14 th03  4:04",
+      "date": "14-03-2025",
+      "time": "04:04",
+      "data": "170",
+      "unit": "cm",
+      "dataType": "Thiết bị IOT"
+    },
   ];
 
   late String selectedTopic;
@@ -338,106 +348,124 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
                       final date = entry.key;
                       final items = entry.value;
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              date,
-                              style: const TextStyle(
-                                  color: AppColors.grayColor5,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500),
+                      return TweenAnimationBuilder(
+                        tween: Tween<Offset>(
+                          begin: const Offset(0, 0.8), // Start slightly below
+                          end: const Offset(0, 0), // Move to normal position
+                        ),
+                        duration:
+                            Duration(milliseconds: 1000), // Add delay per item
+                        curve: Curves.fastLinearToSlowEaseIn,
+                        builder: (context, Offset offset, child) {
+                          return Transform.translate(
+                            offset: offset * MediaQuery.of(context).size.height,
+                            child: Opacity(
+                              opacity: (1 - offset.dy), // Fade effect
+                              child: child,
                             ),
-                          ),
-                          ...items.map((item) {
-                            return Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                // side: const BorderSide(
-                                //   color: AppColors.secondaryColor,
-                                //   width: 0.05,
-                                // ),
-                                borderRadius: BorderRadius.circular(18),
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                date,
+                                style: const TextStyle(
+                                    color: AppColors.grayColor5,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500),
                               ),
-                              color: AppColors.bgColor,
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5),
-                                child: ListTile(
-                                  leading: Image.asset(
-                                    getImagePath(item["title"]!),
-                                    width: 50,
-                                    height: 50,
-                                  ),
-                                  title: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "${item["result"]}",
-                                        style: const TextStyle(
-                                          color: AppColors.grayColor5,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                      item["title"] == "Thuốc"
-                                          ? Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left:
-                                                      8.0), // Add space between result and time
-                                              child: Text(
-                                                "${item["time"]}",
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  color:
-                                                      AppColors.secondaryColor,
-                                                ),
-                                              ),
-                                            )
-                                          : SizedBox(),
-                                    ],
-                                  ),
-                                  subtitle: Text(
-                                    "${item["data"]} ${item['unit']}",
-                                    style: TextStyle(
-                                        color: AppColors.textColor,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  onTap: () {
-                                    // Navigate to the card detail screen when tapped
-                                    navigateToCardDetail(item);
-                                  },
-                                  trailing: item["title"] == "Thuốc"
-                                      ? null
-                                      : Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              " ${item["time"]}",
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  color:
-                                                      AppColors.secondaryColor),
-                                            ),
-                                            const Icon(
-                                              Icons.arrow_forward_ios,
-                                              size: 20,
-                                            ),
-                                          ],
-                                        ),
+                            ),
+                            ...items.map((item) {
+                              return Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  // side: const BorderSide(
+                                  //   color: AppColors.secondaryColor,
+                                  //   width: 0.05,
+                                  // ),
+                                  borderRadius: BorderRadius.circular(18),
                                 ),
-                              ),
-                            );
-                          }).toList(),
-                        ],
+                                color: AppColors.bgColor,
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 16.0, vertical: 8.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: ListTile(
+                                    leading: Image.asset(
+                                      getImagePath(item["title"]!),
+                                      width: 50,
+                                      height: 50,
+                                    ),
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${item["result"]}",
+                                          style: const TextStyle(
+                                            color: AppColors.grayColor5,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        item["title"] == "Thuốc"
+                                            ? Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left:
+                                                        8.0), // Add space between result and time
+                                                child: Text(
+                                                  "${item["time"]}",
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                  ),
+                                                ),
+                                              )
+                                            : SizedBox(),
+                                      ],
+                                    ),
+                                    subtitle: Text(
+                                      "${item["data"]} ${item['unit']}",
+                                      style: TextStyle(
+                                          color: AppColors.textColor,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    onTap: () {
+                                      // Navigate to the card detail screen when tapped
+                                      navigateToCardDetail(item);
+                                    },
+                                    trailing: item["title"] == "Thuốc"
+                                        ? null
+                                        : Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                " ${item["time"]}",
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: AppColors
+                                                        .secondaryColor),
+                                              ),
+                                              const Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 20,
+                                              ),
+                                            ],
+                                          ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        ),
                       );
                     }).toList(),
                   )

@@ -206,15 +206,34 @@ class _HealthScreenState extends State<HealthScreen> {
                       }
                       final item = listData[index];
 
-                      return InfoCard(
-                        title: item['title']!,
-                        imageUrl: item['imageUrl']!,
-                        result: item['result']!,
-                        dateTime: item['dateTime']!,
-                        data: item['data']!,
-                        unit: item['unit']!,
-                        average: item['average']!,
-                        dataAverage: item['dataAverage']!,
+                      return TweenAnimationBuilder(
+                        tween: Tween<Offset>(
+                          begin: const Offset(0, 0.8), // Start slightly below
+                          end: const Offset(0, 0), // Move to normal position
+                        ),
+                        duration: Duration(
+                            milliseconds:
+                                550 + (index * 300)), // Add delay per item
+                        curve: Curves.fastLinearToSlowEaseIn,
+                        builder: (context, Offset offset, child) {
+                          return Transform.translate(
+                            offset: offset * MediaQuery.of(context).size.height,
+                            child: Opacity(
+                              opacity: (1 - offset.dy), // Fade effect
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: InfoCard(
+                          title: item['title']!,
+                          imageUrl: item['imageUrl']!,
+                          result: item['result']!,
+                          dateTime: item['dateTime']!,
+                          data: item['data']!,
+                          unit: item['unit']!,
+                          average: item['average']!,
+                          dataAverage: item['dataAverage']!,
+                        ),
                       );
                     },
                   ),
