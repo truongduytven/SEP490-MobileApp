@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pulsator/pulsator.dart';
 import 'package:record/record.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/presentation/pages/emergency_alert/controller/emergency_controller.dart';
 
 class EmergencyScreen extends StatefulWidget {
   const EmergencyScreen({super.key});
@@ -35,11 +33,13 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   final int _duration = 2;
   final int _repeatCount = 0;
   bool _isCancelled = false;
+  bool isCompleteCreateConfirmation = false;
   final Completer<void> _completer = Completer<void>();
   String title = "Tiến hành gọi khẩn cấp";
   String description = "Cuộc gọi khẩn cấp sẽ được thực hiện sau:";
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId;
+  late int emergencyConfirmationId;
 
   @override
   void initState() {
@@ -53,7 +53,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         print("Permissions denied!");
       }
     });
-  _startEmergency();
+    _startEmergency();
   }
 
   Future<void> _startEmergency() async {
@@ -69,10 +69,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         });
       } else {
         _timer?.cancel();
-         setState(() {
+        setState(() {
           title = "Đang gửi dữ liệu khẩn cấp...";
           description = "Vui lòng đợi trong giây lát!";
-         });
+        });
       }
     });
   }
@@ -86,31 +86,88 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
   Future<void> _callEmergencyAPI() async {
     print("Gọi API Emergency Start...");
-    var uri = Uri.parse("https://your-backend.com/api/emergency-start");
+    print(userId);
+    var uri = Uri.parse(
+        "https://api.diavan-valuation.asia/emergency-contacts/family-emergency-call?accountId=$userId");
 
     try {
-      final response = http.get(uri).then((res) {
+      final response = http.post(uri).then((res) {
         if (!_completer.isCompleted) _completer.complete();
         return res;
       });
 
       await Future.any([
-        response, 
-        _completer.future, 
+        response,
+        _completer.future,
       ]);
 
       if (!_isCancelled) {
-        print("Hết 10 giây, gửi dữ liệu khẩn cấp!");
+        setState(() {
+          title = "Đang gửi tín hiệu đến người thân...";
+          description =
+              "Chúng tôi đang cố gắng liên hệ đến người thân của bạn!";
+        });
+        await createConfirmation(userId);
         await _sendEmergencyData();
+        _checkConfirmationStatus(0);
       }
     } catch (e) {
       print("Lỗi gọi API Emergency: $e");
     }
   }
 
+  Future<void> _checkConfirmationStatus(int attempt) async {
+    if (attempt >= 3) return;
+
+    await Future.delayed(Duration(seconds: 20)); 
+
+    bool isConfirmed = await _checkIsConfirmed(); 
+
+    if (isConfirmed) {
+      print("Người thân đã xác nhận, dừng kiểm tra.");
+      return;
+    } else {
+      print("Chưa xác nhận, gửi lại dữ liệu khẩn cấp...");
+      // await _sendEmergencyData();
+
+      // if (attempt == 1) {
+      //   print("Chưa xác nhận sau 2 lần, gọi bác sĩ...");
+      //   await _callDoctorAPI();
+      // }
+      return;
+      // _checkConfirmationStatus(attempt + 1);
+    }
+  }
+
+  Future<bool> _checkIsConfirmed() async {
+    EmergencyController emergencyController = EmergencyController();
+    await emergencyController.confirmEmergency(emergencyConfirmationId);
+    if (emergencyController.isConfirmed) {
+      return true;
+    }
+    return false;
+  }
+
+  // Future<void> _callDoctorAPI() async {
+  //   var uri = Uri.parse(
+  //       "https://api.diavan-valuation.asia/emergency-contacts/call-doctor/$userId");
+
+  //   try {
+  //     final response = await http.post(uri);
+  //     if (response.statusCode == 200) {
+  //       print("Gọi bác sĩ thành công!");
+  //     } else {
+  //       print("Lỗi gọi bác sĩ: ${response.statusCode}");
+  //     }
+  //   } catch (e) {
+  //     print("Lỗi gọi API bác sĩ: $e");
+  //   }
+  // }
+
   Future<void> _callCancelEmergencyAPI() async {
     print("Gọi API Cancel Emergency...");
-    var uri = Uri.parse("https://api.diavan-valuation.asia/emergency-contacts/cancel/$userId");
+    var uri = Uri.parse(
+        "https://api.diavan-valuation.asia/emergency-contacts/cancel/$userId");
 
     try {
       final response = await http.get(uri);
@@ -125,6 +182,16 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     }
   }
 
+  Future<void> createConfirmation(int accountID) async {
+    EmergencyController emergencyController = EmergencyController();
+    await emergencyController.createEmergencyConfirmation(accountID);
+    if (emergencyController.emergencyConfirmationId != null) {
+      setState(() {
+        emergencyConfirmationId = emergencyController.emergencyConfirmationId!;
+      });
+    }
+  }
+
   Future<bool> _requestPermissions() async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.camera,
@@ -135,6 +202,28 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     return statuses[Permission.camera]!.isGranted &&
         statuses[Permission.microphone]!.isGranted &&
         statuses[Permission.locationWhenInUse]!.isGranted;
+  }
+
+  Future<void> _sendEmergencyData() async {
+    await _captureImages();
+    await _getLocation();
+    EmergencyController emergencyController = EmergencyController();
+    await emergencyController.createEmergencyInformation(
+      emergencyConfirmationId,
+      frontImagePath ?? "",
+      backImagePath ?? "",
+      _currentPosition?.longitude.toString() ?? "",
+      _currentPosition?.latitude.toString() ?? "",
+      false,
+      true,
+    );
+    if (emergencyController.isCreateSuccess) {
+      setState(() {
+        title = "Đã gửi thông tin khẩn cấp!";
+        description =
+            "Chúng tôi đã gửi thông tin khẩn cấp đến người thân của bạn và đang chờ tín hiệu từ họ!";
+      });
+    }
   }
 
   Future<void> _initCamera() async {
@@ -152,8 +241,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   }
 
   Future<void> _captureImages() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
+    }
 
     // Chụp ảnh từ camera sau
     XFile backImage = await _cameraController!.takePicture();
@@ -182,33 +272,28 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       print("Thiết bị không có camera trước!");
       frontImagePath = null;
     }
-
     print("Ảnh trước: $frontImagePath");
     print("Ảnh sau: $backImagePath");
   }
 
   // 🔹 3. Ghi âm 15 giây
-  Future<void> _recordAudio() async {
-    if (await Permission.microphone.request().isGranted) {
-      Directory tempDir = await getTemporaryDirectory();
-      audioPath =
-          '${tempDir.path}/emergency_audio.m4a';
-
-      await record.start(
-        const RecordConfig(encoder: AudioEncoder.aacLc),
-        path: audioPath ?? '',
-      );
-
-      print("Bắt đầu ghi âm...");
-
-      await Future.delayed(Duration(seconds: 15));
-      await record.stop();
-
-      print("Ghi âm xong: $audioPath");
-    } else {
-      print("Không có quyền truy cập microphone!");
-    }
-  }
+  // Future<void> _recordAudio() async {
+  //   if (await Permission.microphone.request().isGranted) {
+  //     Directory tempDir = await getTemporaryDirectory();
+  //     audioPath =
+  //         '${tempDir.path}/emergency_audio.m4a';
+  //     await record.start(
+  //       const RecordConfig(encoder: AudioEncoder.aacLc),
+  //       path: audioPath ?? '',
+  //     );
+  //     print("Bắt đầu ghi âm...");
+  //     await Future.delayed(Duration(seconds: 15));
+  //     await record.stop();
+  //     print("Ghi âm xong: $audioPath");
+  //   } else {
+  //     print("Không có quyền truy cập microphone!");
+  //   }
+  // }
 
   // 🔹 4. Lấy vị trí GPS
   Future<void> _getLocation() async {
@@ -219,76 +304,44 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     }
 
     _currentPosition = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
         desiredAccuracy: LocationAccuracy.high);
     print(
         "Vị trí: ${_currentPosition!.latitude}, ${_currentPosition!.longitude}");
   }
 
-  // 🔹 5. Tracking vị trí liên tục
-  void _startLocationTracking() {
-    _locationTimer = Timer.periodic(Duration(seconds: 10), (Timer t) async {
-      await _getLocation();
-      if (_currentPosition != null) {
-        await _sendLiveLocation();
-      }
-    });
-  }
+  // // 🔹 5. Tracking vị trí liên tục
+  // void _startLocationTracking() {
+  //   _locationTimer = Timer.periodic(Duration(seconds: 10), (Timer t) async {
+  //     await _getLocation();
+  //     if (_currentPosition != null) {
+  //       await _sendLiveLocation();
+  //     }
+  //   });
+  // }
 
-  // 🔹 6. Gửi vị trí tracking
-  Future<void> _sendLiveLocation() async {
-    var uri = Uri.parse("https://your-backend.com/api/live-location");
-
-    var response = await http.post(uri,
-        body: jsonEncode({
-          "latitude": _currentPosition?.latitude ?? 0.0,
-          "longitude": _currentPosition?.longitude ?? 0.0,
-          "timestamp": DateTime.now().toIso8601String(),
-        }),
-        headers: {"Content-Type": "application/json"});
-
-    if (response.statusCode == 200) {
-      print("Gửi vị trí liên tục thành công!");
-    } else {
-      print("Lỗi gửi vị trí: ${response.statusCode}");
-    }
-  }
-
-  // 🔹 7. Gửi dữ liệu khẩn cấp lên server
-  Future<void> _sendEmergencyData() async {
-    var uri = Uri.parse("https://your-backend.com/api/emergency");
-    var request = http.MultipartRequest('POST', uri);
-
-    if (frontImagePath != null) {
-      request.files.add(
-          await http.MultipartFile.fromPath('front_image', frontImagePath!));
-    }
-    if (backImagePath != null) {
-      request.files
-          .add(await http.MultipartFile.fromPath('back_image', backImagePath!));
-    }
-    if (audioPath != null) {
-      request.files.add(await http.MultipartFile.fromPath('audio', audioPath!));
-    }
-    if (_currentPosition != null) {
-      request.fields['latitude'] = _currentPosition!.latitude.toString();
-      request.fields['longitude'] = _currentPosition!.longitude.toString();
-    }
-
-    var response = await request.send();
-
-    if (response.statusCode == 200) {
-      print("Gửi dữ liệu khẩn cấp thành công!");
-    } else {
-      print("Lỗi gửi dữ liệu: ${response.statusCode}");
-    }
-  }
-
-  Future<void> _handleEmergency() async {
-    await _captureImages();
-    await _recordAudio();
-    await _getLocation();
-    await _sendEmergencyData();
-  }
+  // // 🔹 6. Gửi vị trí tracking
+  // Future<void> _sendLiveLocation() async {
+  //   var uri = Uri.parse("https://your-backend.com/api/live-location");
+  //   var response = await http.post(uri,
+  //       body: jsonEncode({
+  //         "latitude": _currentPosition?.latitude ?? 0.0,
+  //         "longitude": _currentPosition?.longitude ?? 0.0,
+  //         "timestamp": DateTime.now().toIso8601String(),
+  //       }),
+  //       headers: {"Content-Type": "application/json"});
+  //   if (response.statusCode == 200) {
+  //     print("Gửi vị trí liên tục thành công!");
+  //   } else {
+  //     print("Lỗi gửi vị trí: ${response.statusCode}");
+  //   }
+  // }
+  // Future<void> _handleEmergency() async {
+  //   await _captureImages();
+  //   await _recordAudio();
+  //   await _getLocation();
+  //   await _sendEmergencyData();
+  // }
 
   @override
   void dispose() {
@@ -329,12 +382,13 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
               SizedBox(height: 20),
 
-              Center(
-                child: Text(
-                  "$_countdown",
-                  style: TextStyle(fontSize: 50, color: Colors.red),
+              if (!isCompleteCreateConfirmation)
+                Center(
+                  child: Text(
+                    "$_countdown",
+                    style: TextStyle(fontSize: 50, color: Colors.red),
+                  ),
                 ),
-              ),
 
               // 🔹 Nút đếm ngược
               Expanded(
@@ -372,20 +426,21 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               SizedBox(height: 50),
 
               // 🔹 Nút "Hủy"
-              ElevatedButton(
-                onPressed: _cancelEmergency,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+              if (!isCompleteCreateConfirmation)
+                ElevatedButton(
+                  onPressed: _cancelEmergency,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    "Hủy",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
-                child: Text(
-                  "Hủy",
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
             ],
           ),
         ),
