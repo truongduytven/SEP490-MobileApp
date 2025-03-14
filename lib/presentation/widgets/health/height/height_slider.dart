@@ -42,7 +42,6 @@ class SliderLabel extends StatelessWidget {
       child: Text(
         "${height?.toStringAsFixed(1)} cm", // Show one decimal place
         style: TextStyle(
-          
           fontSize: selectedLabelFontSize,
           color: AppColors.primaryColor,
           fontWeight: FontWeight.w600,

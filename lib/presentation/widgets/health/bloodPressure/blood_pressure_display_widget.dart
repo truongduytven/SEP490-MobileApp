@@ -142,7 +142,7 @@ class BloodPressureDisplayWidget extends StatelessWidget {
                                 Text(
                                   systolic.toString(),
                                   style: TextStyle(
-                                      fontSize: 80,
+                                      fontSize: 60,
                                       fontWeight: FontWeight.w700),
                                 ),
                                 Transform.translate(
@@ -151,7 +151,7 @@ class BloodPressureDisplayWidget extends StatelessWidget {
                                   child: Text(
                                     "Tâm thu",
                                     style: TextStyle(
-                                        fontSize: 30,
+                                        fontSize: 28,
                                         color: AppColors.grayColor5),
                                   ),
                                 ),
@@ -163,7 +163,7 @@ class BloodPressureDisplayWidget extends StatelessWidget {
                                 Text(
                                   diastolic.toString(),
                                   style: TextStyle(
-                                      fontSize: 80,
+                                      fontSize: 60,
                                       fontWeight: FontWeight.w700),
                                 ),
                                 Transform.translate(
@@ -172,7 +172,7 @@ class BloodPressureDisplayWidget extends StatelessWidget {
                                   child: Text(
                                     "Tâm trương",
                                     style: TextStyle(
-                                        fontSize: 30,
+                                        fontSize: 28,
                                         color: AppColors.grayColor5),
                                   ),
                                 ),
@@ -238,7 +238,7 @@ class BloodPressureDisplayWidget extends StatelessWidget {
                               Text(
                                 bloodPressureClassification,
                                 style: TextStyle(
-                                  fontSize: 26,
+                                  fontSize: 22,
                                   color: classificationColor,
                                 ),
                               ),

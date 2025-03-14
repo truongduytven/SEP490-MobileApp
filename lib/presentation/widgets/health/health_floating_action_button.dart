@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:sep490/presentation/pages/health/add_blood_glucose_screen.dart';
 import 'package:sep490/presentation/pages/health/add_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
@@ -27,7 +28,7 @@ class HealthFloatingActionButton extends StatelessWidget {
       overlayOpacity: 0.95,
       spacing: 5,
       foregroundColor: AppColors.secondaryColor,
-      spaceBetweenChildren: 10,
+      spaceBetweenChildren: 0,
       closeManually: true,
       direction: SpeedDialDirection.down,
       children: [
@@ -161,7 +162,12 @@ class HealthFloatingActionButton extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => HomeMedicine()),
+                  builder: (context) => AddBloodGlucoseScreen(
+                        isDraft: true,
+                        showBloodGlucoseWidget: false,
+                        currentBloodGlucoseValue: 0,
+                        period: "Sau bữa ăn",
+                      )),
             );
           },
           labelWidget: ConstrainedBox(
@@ -186,7 +192,7 @@ class HealthFloatingActionButton extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.asset(
-                        'assets/img3D/thuoc.png',
+                        'assets/img3D/treatment_medical/tieuduong.png',
                         width: 48,
                         height: 48,
                         fit: BoxFit.cover,
@@ -198,11 +204,159 @@ class HealthFloatingActionButton extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
                           Text(
-                            'Thuốc',
+                            'Đường huyết',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w600),
                           ),
-                          Text('Thêm/Sửa thuốc'),
+                          Text('Thêm chỉ số đo'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        SpeedDialChild(
+          labelWidget: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
+            child: IntrinsicWidth(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(35.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        'assets/img3D/treatment_medical/than.png',
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Chức năng thận',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          Text('Thêm chỉ số đo'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        SpeedDialChild(
+          labelWidget: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
+            child: IntrinsicWidth(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(35.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        'assets/img3D/treatment_medical/momau.webp',
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Mỡ máu',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          Text('Thêm chỉ số đo'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        SpeedDialChild(
+          labelWidget: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
+            child: IntrinsicWidth(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(35.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        'assets/img3D/treatment_medical/gan.png',
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Men gan',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          Text('Thêm chỉ số đo'),
                         ],
                       ),
                     ),
@@ -325,55 +479,6 @@ class HealthFloatingActionButton extends StatelessWidget {
                                 fontSize: 20, fontWeight: FontWeight.w600),
                           ),
                           Text('Thêm chỉ số đo'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        SpeedDialChild(
-          labelWidget: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
-            child: IntrinsicWidth(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(35.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        'assets/img3D/ongnghe.png',
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Lịch hẹn với bác sĩ',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600),
-                          ),
-                          Text('Thêm/Sửa lịch hẹn'),
                         ],
                       ),
                     ),
