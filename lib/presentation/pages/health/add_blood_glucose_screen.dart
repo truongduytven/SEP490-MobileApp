@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/presentation/widgets/health/bloodGlucose/blood_glucose_display_widget.dart';
 import 'package:sep490/presentation/widgets/health/bloodGlucose/blood_glucose_input_widget.dart';
 import 'package:sep490/presentation/widgets/health/heartBeat/heart_beat_display_widget.dart';
 import 'package:sep490/presentation/widgets/health/heartBeat/heart_beat_input_widget.dart';
@@ -55,7 +56,7 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
     setState(() {
       currentBloodGlucoseValue = updatedValue;
       period = period;
-      // showBloodGlucoseWidget = true;
+      showBloodGlucoseWidget = true;
     });
   }
 
@@ -116,15 +117,14 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
           ],
         ),
         body: showBloodGlucoseWidget
-            ?
-            // HeartBeatDisplayWidget(
-            //     isDraft: isDraft,
-            //     typeData: "Thủ công",
-            //     dateTime: formattedDateTime,
-            //     heartBeat: currentBloodGlucoseValue,
-            //     onEdit: onEdit,
-            //   )
-            Text("Display blood glucose")
+            ? BloodGlucoseDisplayWidget(
+                typeData: "Thủ công",
+                isDraft: isDraft,
+                period: period,
+                dateTime: formattedDateTime,
+                bloodGlucose: currentBloodGlucoseValue,
+                onEdit: onEdit,
+              )
             : BloodGlucoseInputWidget(
                 dateTime: formattedDateTime,
                 initialValue: currentBloodGlucoseValue,
