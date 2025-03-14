@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/common/utils/utils.dart';
@@ -12,8 +13,18 @@ import 'package:sep490/theme/color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
+  await dotenv.load(fileName: ".env");
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: dotenv.env['API_KEY'] ?? '',
+      appId: dotenv.env['APP_ID'] ?? '',
+      messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
+      projectId: dotenv.env['PROJECT_ID'] ?? '',
+    ),
+  );
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
     SystemUiOverlay.top,

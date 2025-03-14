@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:sep490/common/widgets/error.dart';
 import 'package:sep490/features/chat/screens/confirm_avatar_group_screen.dart';

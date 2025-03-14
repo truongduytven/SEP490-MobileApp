@@ -62,6 +62,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
         backgroundColor: AppColors.bgColor,
         title: const Text('Tiện ích'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

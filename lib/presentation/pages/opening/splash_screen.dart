@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
@@ -21,14 +22,20 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  String? _token;
+
   @override
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), _navigateNext);
+    FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        _token = token;
+      });
+    });
   }
 
   Future<void> _navigateNext() async {
-    final String token = SharedPrefsHelper().getString('accessToken') ?? '';
     final String email = SharedPrefsHelper().getString('email') ?? '';
     final String password = SharedPrefsHelper().getString('password') ?? '';
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -62,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
         await ApiService.postRequest("auth-management/managed-auths/sign-ins", {
       "email": email,
       "password": password,
-      "deviceToken": "string",
+      "deviceToken": _token ?? "string",
     });
     if (response['success'] && response['data']['isSuccess']) {
       final String accessToken = response['data']['data'];

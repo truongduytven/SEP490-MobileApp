@@ -20,7 +20,7 @@
     <!--for bring app to foreground from background in Android 10 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <application
-        android:label="Senior Essentials"
+        android:label="Tiện ích người già"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_ic">
         <activity

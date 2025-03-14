@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -25,12 +26,19 @@ class _SignInFormState extends State<SignInForm> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   bool isButtonEnabled = false;
+  String? _token = '';
 
   @override
   void initState() {
     super.initState();
     emailController.addListener(_onTextChanged);
     passwordController.addListener(_onTextChanged);
+    FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        _token = token;
+        print('Device token: $_token');
+      });
+    });
   }
 
   @override
@@ -97,7 +105,7 @@ class _SignInFormState extends State<SignInForm> {
           "auth-management/managed-auths/sign-ins", {
         "email": emailController.text,
         "password": passwordController.text,
-        "deviceToken": "string",
+        "deviceToken": _token ?? "string",
       });
       if (response['success'] && response['data']['isSuccess']) {
         final String accessToken = response['data']['data'];
