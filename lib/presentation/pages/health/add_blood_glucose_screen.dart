@@ -27,7 +27,7 @@ class AddBloodGlucoseScreen extends StatefulWidget {
 
 class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
   late String formattedDateTime;
-  late String period;
+  late String currentperiod;
   late num currentBloodGlucoseValue;
   late bool showBloodGlucoseWidget;
   late bool isDraft;
@@ -41,7 +41,7 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
     currentBloodGlucoseValue = widget.currentBloodGlucoseValue;
     showBloodGlucoseWidget = widget.showBloodGlucoseWidget;
     isDraft = widget.isDraft;
-    period = widget.period;
+    currentperiod = widget.period;
   }
 
   void onEdit() {
@@ -55,7 +55,7 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
     print("chi so đường huyết $updatedValue");
     setState(() {
       currentBloodGlucoseValue = updatedValue;
-      period = period;
+      currentperiod = period;
       showBloodGlucoseWidget = true;
     });
   }
@@ -120,7 +120,7 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
             ? BloodGlucoseDisplayWidget(
                 typeData: "Thủ công",
                 isDraft: isDraft,
-                period: period,
+                period: currentperiod,
                 dateTime: formattedDateTime,
                 bloodGlucose: currentBloodGlucoseValue,
                 onEdit: onEdit,
@@ -128,7 +128,7 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
             : BloodGlucoseInputWidget(
                 dateTime: formattedDateTime,
                 initialValue: currentBloodGlucoseValue,
-                period: period,
+                period: currentperiod,
                 onSubmit: onSubmit,
               ));
     // Text("Input blood glucose"));

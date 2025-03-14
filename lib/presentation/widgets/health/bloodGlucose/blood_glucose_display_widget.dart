@@ -192,20 +192,49 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
                         height: 10,
                       ),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(
-                            Icons.bloodtype_outlined,
-                            size: 30,
-                            color: classificationColor,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.bloodtype_outlined,
+                                size: 30,
+                                color: classificationColor,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                overflow: TextOverflow.ellipsis,
+                                heartBeatClassification,
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  color: classificationColor,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            heartBeatClassification,
-                            style: TextStyle(
-                              fontSize: 26,
-                              color: classificationColor,
+                          Container(
+                            width: 25,
+                            height: 25,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.textPrimary,
+                                width: 1.5,
+                              ),
+                              color: AppColors.bgColor,
+                            ),
+                            child: Center(
+                              child: GestureDetector(
+                                onTap: () => _showAccountDialog(context),
+                                child: Icon(
+                                  Icons.question_mark_sharp,
+                                  color: AppColors.textPrimary,
+                                  size: 20,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -248,4 +277,159 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+void _showAccountDialog(BuildContext context) {
+  showDialog(
+    barrierColor: AppColors.secondaryColor.withOpacity(0.95),
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        insetPadding: EdgeInsets.all(20),
+        backgroundColor: AppColors.bgColor,
+        contentPadding: EdgeInsets.zero,
+        content: SizedBox(
+          height: 460, // Increased height to fit the source text
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    "Về đường huyết",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Expanded(
+                      child: Text(
+                        "Mức đường huyết là lượng glucose trong máu. Glucose là một loại đường có trong thực phẩm chúng ta ăn, và nó cũng được hình thành và lưu trữ bên trong cơ thể.",
+                        style: TextStyle(
+                            fontSize: 16, color: AppColors.grayColor5),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Cao",
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
+                                "> 9.94 mmol/L",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Trong mức bình thường",
+                              style: TextStyle(
+                                  fontSize: 23, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
+                                "3.83 - 9.94 mmol/L",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Thấp",
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.lightBlueAccent,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
+                                "< 3.83 mmol/L",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: Text(
+                    "Nguồn: Hiệp hội Tiểu đường Hoa Kỳ (ADA)",
+                    style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              "Đóng",
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }
