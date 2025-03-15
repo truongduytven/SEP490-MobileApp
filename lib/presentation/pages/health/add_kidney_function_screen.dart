@@ -2,32 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/presentation/widgets/health/bloodGlucose/blood_glucose_display_widget.dart';
 import 'package:sep490/presentation/widgets/health/bloodGlucose/blood_glucose_input_widget.dart';
+import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_blood_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
-class AddBloodGlucoseScreen extends StatefulWidget {
+class AddKidneyFunctionScreen extends StatefulWidget {
   final String? date;
-  final String period;
-  final num currentBloodGlucoseValue;
-  final bool showBloodGlucoseWidget;
+  final num currentBUNValue;
+  final num currenteGFRValue;
+  final num currentGFRValue;
+  final bool showKidneyFunctionWidget;
   final bool isDraft;
-  const AddBloodGlucoseScreen({
+  const AddKidneyFunctionScreen({
     super.key,
-    required this.currentBloodGlucoseValue,
-    required this.showBloodGlucoseWidget,
-    required this.isDraft,
-    required this.period,
     this.date,
+    required this.currentBUNValue,
+    required this.currenteGFRValue,
+    required this.currentGFRValue,
+    required this.showKidneyFunctionWidget,
+    required this.isDraft,
   });
 
   @override
-  State<AddBloodGlucoseScreen> createState() => _AddBloodGlucoseScreenState();
+  State<AddKidneyFunctionScreen> createState() =>
+      _AddKidneyFunctionScreenState();
 }
 
-class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
+class _AddKidneyFunctionScreenState extends State<AddKidneyFunctionScreen> {
   late String formattedDateTime;
-  late String currentperiod;
-  late num currentBloodGlucoseValue;
-  late bool showBloodGlucoseWidget;
+  late num currentBUNValue;
+  late num currenteGFRValue;
+  late num currentGFRValue;
+  late bool showKidneyFunctionWidget;
   late bool isDraft;
   @override
   void initState() {
@@ -36,25 +41,26 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
     formattedDateTime = widget.date != null
         ? widget.date!
         : DateFormat('dd-MM-yyyy').format(DateTime.now());
-    currentBloodGlucoseValue = widget.currentBloodGlucoseValue;
-    showBloodGlucoseWidget = widget.showBloodGlucoseWidget;
+    currentBUNValue = widget.currentBUNValue;
+    currenteGFRValue = widget.currenteGFRValue;
+    currentGFRValue = widget.currentGFRValue;
+    showKidneyFunctionWidget = widget.showKidneyFunctionWidget;
     isDraft = widget.isDraft;
-    currentperiod = widget.period;
   }
 
   void onEdit() {
     setState(() {
-      showBloodGlucoseWidget = false;
+      showKidneyFunctionWidget = false;
     });
   }
 
-  void onSubmit(num updatedValue, String period) {
-    print("period $period");
-    print("chi so đường huyết $updatedValue");
+  void onSubmit(num updatedBUNValue, num updateeGFRValue, num updateGFRValue) {
+    print("chi so thận  $updatedBUNValue $updateeGFRValue $updateGFRValue ");
     setState(() {
-      currentBloodGlucoseValue = updatedValue;
-      currentperiod = period;
-      showBloodGlucoseWidget = true;
+      currentBUNValue = updatedBUNValue;
+      currenteGFRValue = currenteGFRValue;
+      currentGFRValue = updateeGFRValue;
+      // showKidneyFunctionWidget = true;
     });
   }
 
@@ -72,7 +78,7 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Image.asset(
-                  "assets/img3D/treatment_medical/tieuduong.png",
+                  "assets/img3D/treatment_medical/than.png",
                   width: 10,
                   height: 10,
                   fit: BoxFit.cover,
@@ -81,7 +87,7 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
             ),
           ),
           title: Text(
-            "Đường huyết",
+            "Chức năng thận",
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w700,
@@ -114,21 +120,23 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
             ),
           ],
         ),
-        body: showBloodGlucoseWidget
-            ? BloodGlucoseDisplayWidget(
-                typeData: "Thủ công",
-                isDraft: isDraft,
-                period: currentperiod,
+        body: showKidneyFunctionWidget
+            ?
+            // BloodGlucoseDisplayWidget(
+            //     typeData: "Thủ công",
+            //     isDraft: isDraft,
+            //     period: currentperiod,
+            //     dateTime: formattedDateTime,
+            //     bloodGlucose: currentBloodGlucoseValue,
+            //     onEdit: onEdit,
+            //   )
+            Text("Chức năng thận display")
+            : KidneyBloodInputWidget(
                 dateTime: formattedDateTime,
-                bloodGlucose: currentBloodGlucoseValue,
-                onEdit: onEdit,
-              )
-            : BloodGlucoseInputWidget(
-                dateTime: formattedDateTime,
-                initialValue: currentBloodGlucoseValue,
-                period: currentperiod,
+                initialBUNValue: currentBUNValue,
+                initialeGFRValue: currenteGFRValue,
+                initialGFRValue: currentGFRValue,
                 onSubmit: onSubmit,
               ));
-    // Text("Input blood glucose"));
   }
 }

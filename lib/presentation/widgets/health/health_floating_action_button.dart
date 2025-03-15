@@ -4,6 +4,7 @@ import 'package:sep490/presentation/pages/health/add_blood_glucose_screen.dart';
 import 'package:sep490/presentation/pages/health/add_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
+import 'package:sep490/presentation/pages/health/add_kidney_function_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/theme/color.dart';
@@ -166,7 +167,7 @@ class HealthFloatingActionButton extends StatelessWidget {
                         isDraft: true,
                         showBloodGlucoseWidget: false,
                         currentBloodGlucoseValue: 0,
-                        period: "Sau bữa ăn",
+                        period: "Thức dậy",
                       )),
             );
           },
@@ -220,6 +221,20 @@ class HealthFloatingActionButton extends StatelessWidget {
         ),
 
         SpeedDialChild(
+          onTap: () {
+            isDialOpen.value = false;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddKidneyFunctionScreen(
+                        isDraft: true,
+                        showKidneyFunctionWidget: false,
+                        currentBUNValue: 0,
+                        currenteGFRValue: 0,
+                        currentGFRValue: 0,
+                      )),
+            );
+          },
           labelWidget: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
             child: IntrinsicWidth(
