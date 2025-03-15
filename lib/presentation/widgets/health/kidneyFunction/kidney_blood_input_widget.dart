@@ -1,5 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/widgets/health/kidneyFunction/bun_information_dialog.dart';
+import 'package:sep490/presentation/widgets/health/kidneyFunction/egfr_information_dialog.dart';
+import 'package:sep490/presentation/widgets/health/kidneyFunction/gfr_information_dialog.dart';
 import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_input.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -170,9 +173,44 @@ class _KidneyBloodInputWidgetState extends State<KidneyBloodInputWidget> {
                                   },
                                 ),
                               ),
-                              SizedBox(
-                                  width:
-                                      10), // Space between TextField and Icon
+                              SizedBox(width: 10),
+                              Container(
+                                width: 25,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.textPrimary,
+                                    width: 1.5,
+                                  ),
+                                  color: AppColors.bgColor,
+                                ),
+                                child: Center(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext context) {
+                                          return Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.8, // 80% of screen height
+                                            padding: EdgeInsets.all(16),
+                                            child: BunInformationDialog(),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.question_mark_sharp,
+                                      color: AppColors.textPrimary,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -209,9 +247,44 @@ class _KidneyBloodInputWidgetState extends State<KidneyBloodInputWidget> {
                                   },
                                 ),
                               ),
-                              SizedBox(
-                                  width:
-                                      10), // Space between TextField and Icon
+                              SizedBox(width: 10),
+                              Container(
+                                width: 25,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.textPrimary,
+                                    width: 1.5,
+                                  ),
+                                  color: AppColors.bgColor,
+                                ),
+                                child: Center(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext context) {
+                                          return Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.8, // 80% of screen height
+                                            padding: EdgeInsets.all(16),
+                                            child: EgfrInformationDialog(),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.question_mark_sharp,
+                                      color: AppColors.textPrimary,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -229,32 +302,73 @@ class _KidneyBloodInputWidgetState extends State<KidneyBloodInputWidget> {
                               fontWeight: FontWeight.w500,
                               color: AppColors.secondaryColor),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.5, // Half of screen width
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  child: KidneyBloodInput(
-                                controller: _gfrcontroller,
-                                focusNode: gfrFocusNode,
-                                onChanged: (value) {
-                                  setState(() {
-                                    final parsedValue =
-                                        num.tryParse(value) ?? 0;
-                                    if (unit == "mg/dL") {
-                                      currentGFRValue =
-                                          (currentGFRValue * 88.42);
-                                    } else {
-                                      currentGFRValue =
-                                          parsedValue.clamp(0, double.infinity);
-                                    }
-                                  });
-                                },
-                              )),
-                              SizedBox(width: 10),
-                            ],
-                          ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width *
+                                  0.5, // Half of screen width
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      child: KidneyBloodInput(
+                                    controller: _gfrcontroller,
+                                    focusNode: gfrFocusNode,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        final parsedValue =
+                                            num.tryParse(value) ?? 0;
+                                        if (unit == "mg/dL") {
+                                          currentGFRValue =
+                                              (currentGFRValue * 88.42);
+                                        } else {
+                                          currentGFRValue = parsedValue.clamp(
+                                              0, double.infinity);
+                                        }
+                                      });
+                                    },
+                                  )),
+                                  SizedBox(width: 10),
+                                  Container(
+                                    width: 25,
+                                    height: 25,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.textPrimary,
+                                        width: 1.5,
+                                      ),
+                                      color: AppColors.bgColor,
+                                    ),
+                                    child: Center(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            builder: (BuildContext context) {
+                                              return Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.8, // 80% of screen height
+                                                padding: EdgeInsets.all(16),
+                                                child: GfrInformationDialog(),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Icon(
+                                          Icons.question_mark_sharp,
+                                          color: AppColors.textPrimary,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

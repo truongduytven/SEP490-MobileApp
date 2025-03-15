@@ -63,28 +63,6 @@ class _KidneyBloodInputState extends State<KidneyBloodInput> {
               onChanged: widget.onChanged,
             ),
           ),
-          const SizedBox(width: 10), // Space between TextField and Icon
-          GestureDetector(
-            onTap: () {
-              // Handle question mark click action
-            },
-            child: Container(
-              width: 25,
-              height: 25,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.textPrimary, width: 1.5),
-                color: AppColors.bgColor,
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.question_mark_sharp,
-                  color: AppColors.textPrimary,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
