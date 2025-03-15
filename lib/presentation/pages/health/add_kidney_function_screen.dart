@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/presentation/widgets/health/bloodGlucose/blood_glucose_display_widget.dart';
 import 'package:sep490/presentation/widgets/health/bloodGlucose/blood_glucose_input_widget.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_blood_input_widget.dart';
+import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_display_widget.dart';
+import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddKidneyFunctionScreen extends StatefulWidget {
@@ -58,9 +59,9 @@ class _AddKidneyFunctionScreenState extends State<AddKidneyFunctionScreen> {
     print("chi so thận  $updatedBUNValue $updateeGFRValue $updateGFRValue ");
     setState(() {
       currentBUNValue = updatedBUNValue;
-      currenteGFRValue = currenteGFRValue;
-      currentGFRValue = updateeGFRValue;
-      // showKidneyFunctionWidget = true;
+      currenteGFRValue = updateeGFRValue;
+      currentGFRValue = updateGFRValue;
+      showKidneyFunctionWidget = true;
     });
   }
 
@@ -121,17 +122,16 @@ class _AddKidneyFunctionScreenState extends State<AddKidneyFunctionScreen> {
           ],
         ),
         body: showKidneyFunctionWidget
-            ?
-            // BloodGlucoseDisplayWidget(
-            //     typeData: "Thủ công",
-            //     isDraft: isDraft,
-            //     period: currentperiod,
-            //     dateTime: formattedDateTime,
-            //     bloodGlucose: currentBloodGlucoseValue,
-            //     onEdit: onEdit,
-            //   )
-            Text("Chức năng thận display")
-            : KidneyBloodInputWidget(
+            ? KidneyFunctionDisplayWidget(
+                typeData: "Thủ công",
+                isDraft: isDraft,
+                bunValue: currentBUNValue,
+                gfrValue: currentGFRValue,
+                egfrValue: currenteGFRValue,
+                dateTime: formattedDateTime,
+                onEdit: onEdit,
+              )
+            : KidneyFunctionInputWidget(
                 dateTime: formattedDateTime,
                 initialBUNValue: currentBUNValue,
                 initialeGFRValue: currenteGFRValue,

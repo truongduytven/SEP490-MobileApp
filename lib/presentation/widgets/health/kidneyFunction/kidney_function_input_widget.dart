@@ -6,14 +6,14 @@ import 'package:sep490/presentation/widgets/health/kidneyFunction/gfr_informatio
 import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_input.dart';
 import 'package:sep490/theme/color.dart';
 
-class KidneyBloodInputWidget extends StatefulWidget {
+class KidneyFunctionInputWidget extends StatefulWidget {
   final num initialBUNValue;
   final num initialeGFRValue;
   final num initialGFRValue;
   final String dateTime;
   final void Function(num, num, num) onSubmit;
 
-  const KidneyBloodInputWidget({
+  const KidneyFunctionInputWidget({
     super.key,
     required this.initialBUNValue,
     required this.initialeGFRValue,
@@ -23,10 +23,10 @@ class KidneyBloodInputWidget extends StatefulWidget {
   });
 
   @override
-  State<KidneyBloodInputWidget> createState() => _KidneyBloodInputWidgetState();
+  State<KidneyFunctionInputWidget> createState() => _KidneyFunctionInputWidgetState();
 }
 
-class _KidneyBloodInputWidgetState extends State<KidneyBloodInputWidget> {
+class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
   late TextEditingController _buncontroller;
   late TextEditingController _eGFRcontroller;
   late TextEditingController _gfrcontroller;
