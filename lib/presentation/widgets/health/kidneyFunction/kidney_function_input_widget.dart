@@ -170,6 +170,13 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                                         currentBUNValue = parsedValue.clamp(
                                             0, double.infinity);
                                       }
+
+                                      if (currentBUNValue == 0) {
+                                        errorMessage =
+                                            "Giá trị không được để trống hoặc bằng 0.";
+                                      } else {
+                                        errorMessage = null;
+                                      }
                                     });
                                   },
                                 ),
@@ -244,6 +251,13 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                                           num.tryParse(value) ?? 0;
                                       currenteGFRValue =
                                           parsedValue.clamp(0, double.infinity);
+
+                                      if (currenteGFRValue == 0) {
+                                        errorMessage =
+                                            "Giá trị không được để trống hoặc bằng 0.";
+                                      } else {
+                                        errorMessage = null;
+                                      }
                                     });
                                   },
                                 ),
@@ -325,6 +339,13 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                                           currentGFRValue = parsedValue.clamp(
                                               0, double.infinity);
                                         }
+
+                                        if (currentGFRValue == 0) {
+                                          errorMessage =
+                                              "Giá trị không được để trống hoặc bằng 0.";
+                                        } else {
+                                          errorMessage = null;
+                                        }
                                       });
                                     },
                                   )),
@@ -373,6 +394,17 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                         ),
                       ],
                     ),
+                    if (errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          errorMessage!,
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -490,7 +522,10 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                 child: ElevatedButton(
                   onPressed: (_buncontroller.text.isEmpty ||
                           _eGFRcontroller.text.isEmpty ||
-                          _gfrcontroller.text.isEmpty)
+                          _gfrcontroller.text.isEmpty ||
+                          double.tryParse(_buncontroller.text) == 0.0 ||
+                          double.tryParse(_eGFRcontroller.text) == 0.0 ||
+                          double.tryParse(_gfrcontroller.text) == 0.0)
                       ? null // Disable button
                       : () {
                           if (unit == "mg/dL") {

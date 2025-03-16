@@ -6,22 +6,24 @@ import 'package:intl/intl.dart';
 import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_dialog.dart';
 import 'package:sep490/theme/color.dart';
 
-class KidneyFunctionDisplayWidget extends StatelessWidget {
-  final num bunValue;
-  final num gfrValue;
-  final num egfrValue;
+class LiverEnzymesDisplayWidget extends StatelessWidget {
+  final num altValue;
+  final num alpValue;
+  final num astValue;
+  final num ggtValue;
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
-  KidneyFunctionDisplayWidget({
+  LiverEnzymesDisplayWidget({
     super.key,
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
-    required this.bunValue,
-    required this.egfrValue,
-    required this.gfrValue,
+    required this.altValue,
+    required this.alpValue,
+    required this.astValue,
+    required this.ggtValue,
     required this.typeData,
   });
   bool isToday(String dateTime) {
@@ -34,9 +36,9 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
   }
 
   Color get classificationColor {
-    if (bunValue < 60) {
+    if (altValue < 60) {
       return Colors.orange; // Yellow for Bradycardia
-    } else if (bunValue >= 60 && bunValue <= 100) {
+    } else if (altValue >= 60 && altValue <= 100) {
       return Colors.green; // Green for Normal
     } else {
       return Colors.red; // Red for Tachycardia
@@ -44,12 +46,12 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
   }
 
   String get heartBeatClassification {
-    if (bunValue < 60) {
-      return "Thận chậm";
-    } else if (bunValue >= 60 && bunValue <= 100) {
-      return "Thận bình thường";
+    if (altValue < 60) {
+      return "Gan chậm";
+    } else if (altValue >= 60 && altValue <= 100) {
+      return "Gan bình thường";
     } else {
-      return "Thận nhanh";
+      return "Gan nhanh";
     }
   }
 
@@ -132,7 +134,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "BUN",
+                                "ALT",
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -140,7 +142,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                bunValue.toDouble().toStringAsFixed(1),
+                                altValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -151,7 +153,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                                 offset: Offset(0,
                                     -25), // Adjust the vertical position of "kg"
                                 child: Text(
-                                  "mmol/L",
+                                  "UI/L",
                                   style: TextStyle(
                                       fontSize: 20,
                                       color: AppColors.grayColor5),
@@ -163,7 +165,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "GFR",
+                                "ALP",
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -171,7 +173,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                gfrValue.toDouble().toStringAsFixed(1),
+                                alpValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -182,7 +184,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                                 offset: Offset(0,
                                     -25), // Adjust the vertical position of "kg"
                                 child: Text(
-                                  "mmol/L",
+                                  "UI/L",
                                   style: TextStyle(
                                       fontSize: 20,
                                       color: AppColors.grayColor5),
@@ -193,33 +195,71 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                         ],
                       ),
 
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            "eGFR",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.primaryColor,
-                            ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "AST",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                              Text(
+                                astValue.toDouble().toStringAsFixed(1),
+                                style: TextStyle(
+                                    fontSize: 50, fontWeight: FontWeight.w700),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Transform.translate(
+                                offset: Offset(0,
+                                    -25), // Adjust the vertical position of "kg"
+                                child: Text(
+                                  " UI/L",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.grayColor5),
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            egfrValue.toDouble().toStringAsFixed(1),
-                            style: TextStyle(
-                                fontSize: 50, fontWeight: FontWeight.w700),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Transform.translate(
-                            offset: Offset(
-                                0, -25), // Adjust the vertical position of "kg"
-                            child: Text(
-                              " mL/min/1.73m",
-                              style: TextStyle(
-                                  fontSize: 20, color: AppColors.grayColor5),
-                            ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "GGT",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                              Text(
+                                ggtValue.toDouble().toStringAsFixed(1),
+                                style: TextStyle(
+                                    fontSize: 50, fontWeight: FontWeight.w700),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Transform.translate(
+                                offset: Offset(0,
+                                    -25), // Adjust the vertical position of "kg"
+                                child: Text(
+                                  " UI/L",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.grayColor5),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -290,42 +330,6 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Container(
-                            width: 25,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.textPrimary,
-                                width: 1.5,
-                              ),
-                              color: AppColors.bgColor,
-                            ),
-                            child: Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (BuildContext context) {
-                                      return Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.8, // 80% of screen height
-                                        padding: EdgeInsets.all(16),
-                                        child: KidneyFunctionInfoDialog(),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.question_mark_sharp,
-                                  color: AppColors.textPrimary,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ],
@@ -343,7 +347,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                 ? SizedBox.shrink() // Use an empty widget when disabled
                 : ElevatedButton(
                     onPressed: () {
-                      print('hehe $bunValue $dateTime');
+                      print('hehe $altValue $dateTime');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondaryColor,

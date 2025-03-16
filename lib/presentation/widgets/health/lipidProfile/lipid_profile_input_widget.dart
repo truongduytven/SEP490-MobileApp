@@ -158,6 +158,13 @@ class _LipidProfileInputWidgetState extends State<LipidProfileInputWidget> {
 
                                       currentHDLValue =
                                           parsedValue.clamp(0, double.infinity);
+
+                                      if (currentHDLValue == 0) {
+                                        errorMessage =
+                                            "Giá trị không được để trống hoặc bằng 0.";
+                                      } else {
+                                        errorMessage = null;
+                                      }
                                     });
                                   },
                                 ),
@@ -235,6 +242,13 @@ class _LipidProfileInputWidgetState extends State<LipidProfileInputWidget> {
 
                                         currentLDLValue = parsedValue.clamp(
                                             0, double.infinity);
+
+                                        if (currentLDLValue == 0) {
+                                          errorMessage =
+                                              "Giá trị không được để trống hoặc bằng 0.";
+                                        } else {
+                                          errorMessage = null;
+                                        }
                                       },
                                     );
                                   },
@@ -314,6 +328,13 @@ class _LipidProfileInputWidgetState extends State<LipidProfileInputWidget> {
 
                                         currentTGValue = parsedValue.clamp(
                                             0, double.infinity);
+
+                                        if (currentTGValue == 0) {
+                                          errorMessage =
+                                              "Giá trị không được để trống hoặc bằng 0.";
+                                        } else {
+                                          errorMessage = null;
+                                        }
                                       });
                                     },
                                   )),
@@ -393,6 +414,13 @@ class _LipidProfileInputWidgetState extends State<LipidProfileInputWidget> {
 
                                         currentTCValue = parsedValue.clamp(
                                             0, double.infinity);
+
+                                        if (currentTCValue == 0) {
+                                          errorMessage =
+                                              "Giá trị không được để trống hoặc bằng 0.";
+                                        } else {
+                                          errorMessage = null;
+                                        }
                                       },
                                     );
                                   },
@@ -442,6 +470,17 @@ class _LipidProfileInputWidgetState extends State<LipidProfileInputWidget> {
                         ),
                       ],
                     ),
+                    if (errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          errorMessage!,
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                     SizedBox(
                       height: 30,
                     ),

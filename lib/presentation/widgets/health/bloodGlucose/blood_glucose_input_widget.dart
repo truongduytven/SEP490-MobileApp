@@ -274,12 +274,31 @@ class _BloodGlucoseInputWidgetState extends State<BloodGlucoseInputWidget> {
                                   currentValue =
                                       parsedValue.clamp(0, double.infinity);
                                 }
+
+                                if (currentValue == 0) {
+                                  errorMessage =
+                                      "Giá trị không được để trống hoặc bằng 0.";
+                                } else {
+                                  errorMessage = null;
+                                }
                               });
                             },
                           ),
                         ),
                       ],
                     ),
+
+                    if (errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          errorMessage!,
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

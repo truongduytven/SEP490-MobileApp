@@ -4,6 +4,8 @@ import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_functio
 import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_input_widget.dart';
 import 'package:sep490/presentation/widgets/health/lipidProfile/lipid_profile_display_widget.dart';
 import 'package:sep490/presentation/widgets/health/lipidProfile/lipid_profile_input_widget.dart';
+import 'package:sep490/presentation/widgets/health/liverEnzymes/liver_enzymes_display_widget.dart';
+import 'package:sep490/presentation/widgets/health/liverEnzymes/liver_enzymes_information_dialog.dart';
 import 'package:sep490/presentation/widgets/health/liverEnzymes/liver_enzymes_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -133,18 +135,16 @@ class _AddLiverEnzymesScreenState extends State<AddLiverEnzymesScreen> {
         ],
       ),
       body: showLiverEnzymesWidget
-          ?
-          // LipidProfileDisplayWidget(
-          //     tcValue: currentTCValue,
-          //     tgValue: currentTGValue,
-          //     ldlValue: currentLDLValue,
-          //     hdlValue: currentHDLValue,
-          //     typeData: "Thủ công",
-          //     isDraft: isDraft,
-          //     dateTime: formattedDateTime,
-          //     onEdit: onEdit,
-          //   )
-          Text("Men gan display")
+          ? LiverEnzymesDisplayWidget(
+              altValue: currentALTValue,
+              alpValue: currentALPValue,
+              astValue: currentASTValue,
+              ggtValue: currentGGTValue,
+              typeData: "Thủ công",
+              isDraft: isDraft,
+              dateTime: formattedDateTime,
+              onEdit: onEdit,
+            )
           : LiverEnzymesInputWidget(
               dateTime: formattedDateTime,
               initialALTValue: currentALTValue,
