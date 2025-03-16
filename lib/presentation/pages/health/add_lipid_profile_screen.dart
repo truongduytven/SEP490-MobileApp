@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_display_widget.dart';
 import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_input_widget.dart';
+import 'package:sep490/presentation/widgets/health/lipidProfile/lipid_profile_display_widget.dart';
 import 'package:sep490/presentation/widgets/health/lipidProfile/lipid_profile_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -70,7 +71,7 @@ class _AddLipidProfileScreenState extends State<AddLipidProfileScreen> {
       currentTGValue = updateTGValue;
       currentLDLValue = updateLDLValue;
       currentHDLValue = updateHDLValue;
-      // showLipidProfileWidget = true;
+      showLipidProfileWidget = true;
     });
   }
 
@@ -131,17 +132,16 @@ class _AddLipidProfileScreenState extends State<AddLipidProfileScreen> {
           ],
         ),
         body: showLipidProfileWidget
-            ?
-            // KidneyFunctionDisplayWidget(
-            //     typeData: "Thủ công",
-            //     isDraft: isDraft,
-            //     bunValue: currentBUNValue,
-            //     gfrValue: currentGFRValue,
-            //     egfrValue: currenteGFRValue,
-            //     dateTime: formattedDateTime,
-            //     onEdit: onEdit,
-            //   )
-            Text("Lipid Profile display")
+            ? LipidProfileDisplayWidget(
+                tcValue: currentTCValue,
+                tgValue: currentTGValue,
+                ldlValue: currentLDLValue,
+                hdlValue: currentHDLValue,
+                typeData: "Thủ công",
+                isDraft: isDraft,
+                dateTime: formattedDateTime,
+                onEdit: onEdit,
+              )
             : LipidProfileInputWidget(
                 dateTime: formattedDateTime,
                 initialTCValue: currentTCValue,
