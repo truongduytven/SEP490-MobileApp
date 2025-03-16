@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/detail_blood_glucose_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_height_screen.dart';
@@ -65,6 +66,28 @@ class _InfoCardState extends State<InfoCard> {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => DetailMedicineScreen()));
         break;
+      case "Đường huyết":
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailBloodGlucoseScreen()));
+        break;
+      // case "Tuân thủ uống thuốc":
+      //   // Navigate to ChieuCaoCard
+      //   Navigator.push(context,
+      //       MaterialPageRoute(builder: (context) => DetailMedicineScreen()));
+      //   break;
+      // case "Tuân thủ uống thuốc":
+      //   // Navigate to ChieuCaoCard
+      //   Navigator.push(context,
+      //       MaterialPageRoute(builder: (context) => DetailMedicineScreen()));
+      //   break;
+      // case "Tuân thủ uống thuốc":
+      //   // Navigate to ChieuCaoCard
+      //   Navigator.push(context,
+      //       MaterialPageRoute(builder: (context) => DetailMedicineScreen()));
+      //   break;
 
       default:
         print("No card detail screen for ${title}");
@@ -196,6 +219,7 @@ class _InfoCardState extends State<InfoCard> {
                               TextSpan(
                                 text: "  ${widget.unit}",
                                 style: const TextStyle(
+                                    overflow: TextOverflow.ellipsis,
                                     fontSize: 20,
                                     color: AppColors.grayColor5,
                                     fontWeight: FontWeight.w500),
@@ -233,7 +257,12 @@ class _InfoCardState extends State<InfoCard> {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: " ${widget.unit}",
+                                  text: (widget.title != "Đường huyết" &&
+                                          widget.title != "Men gan" &&
+                                          widget.title != "Mỡ máu" &&
+                                          widget.title != "Chức năng thận")
+                                      ? " ${widget.unit}" // Hiển thị đơn vị nếu điều kiện không khớp
+                                      : "",
                                   style: const TextStyle(
                                       fontSize: 20,
                                       color: AppColors.grayColor5,

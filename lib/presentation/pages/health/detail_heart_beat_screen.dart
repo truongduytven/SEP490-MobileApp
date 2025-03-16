@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
-import 'package:sep490/presentation/widgets/health/chart/line_chart_heart_beat_widget.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -23,7 +23,7 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
     "T5": 114,
     "T6": null,
     "T7": 125,
-    "Hôm nay": 115,
+    "Hôm nay": 215,
   };
   final Map<String, double?> chartDataMonth = {
     "11/2024": 116,
@@ -151,7 +151,10 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                         ),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartDataDate),
+                          child: LineChartWidget(
+                            data: chartDataDate,
+                            unit: "BPM",
+                          ),
                         ),
                       ],
                     ),
@@ -192,7 +195,10 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                         ),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartDataWeek),
+                          child: LineChartWidget(
+                            data: chartDataWeek,
+                            unit: "BPM",
+                          ),
                         ),
                       ],
                     ),
@@ -233,7 +239,10 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                         ),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartDataMonth),
+                          child: LineChartWidget(
+                            data: chartDataMonth,
+                            unit: "BPM",
+                          ),
                         ),
                       ],
                     ),
@@ -273,7 +282,10 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                         ),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartDataYear),
+                          child: LineChartWidget(
+                            data: chartDataYear,
+                            unit: "BPM",
+                          ),
                         ),
                       ],
                     ),

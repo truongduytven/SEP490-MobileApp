@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
-import 'package:sep490/presentation/widgets/health/chart/line_chart_weight_widget.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
@@ -154,7 +154,10 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                         ),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartDataDate),
+                          child: LineChartWidget(
+                            data: chartDataDate,
+                            unit: "kg",
+                          ),
                         ),
                       ],
                     ),
@@ -195,7 +198,10 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                         ),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartDataWeek),
+                          child: LineChartWidget(
+                            data: chartDataWeek,
+                            unit: "kg",
+                          ),
                         ),
                       ],
                     ),
@@ -249,7 +255,10 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                         ),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartDataMonth),
+                          child: LineChartWidget(
+                            data: chartDataMonth,
+                            unit: "kg",
+                          ),
                         ),
                       ],
                     ),
@@ -289,7 +298,10 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                         ),
                         SizedBox(
                           height: 300,
-                          child: LineChartWidget(data: chartDataYear),
+                          child: LineChartWidget(
+                            data: chartDataYear,
+                            unit: "kg",
+                          ),
                         ),
                       ],
                     ),

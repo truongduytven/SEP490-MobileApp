@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
-import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
-class DetailHeightScreen extends StatefulWidget {
-  const DetailHeightScreen({super.key});
+class DetailBloodGlucoseScreen extends StatefulWidget {
+  const DetailBloodGlucoseScreen({super.key});
 
   @override
-  State<DetailHeightScreen> createState() => _DetailHeightScreenState();
+  State<DetailBloodGlucoseScreen> createState() =>
+      _DetailBloodGlucoseScreenState();
 }
 
-class _DetailHeightScreenState extends State<DetailHeightScreen>
+class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
     with SingleTickerProviderStateMixin {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
   final Map<String, double?> chartDataDate = {
-    "T2": 175,
+    "T2": 115,
     "T3": null,
-    "T4": 176,
-    "T5": 174.5,
+    "T4": 116,
+    "T5": 114,
     "T6": null,
-    "T7": 175,
-    "Hôm nay": 175,
+    "T7": 125,
+    "Hôm nay": 115,
   };
   final Map<String, double?> chartDataMonth = {
-    "11/2024": 174.5,
-    "12/2024": 172,
+    "11/2024": 116,
+    "12/2024": 112,
     "T1": null,
-    "Tháng này": 178,
+    "Tháng này": 118,
   };
   final Map<String, double?> chartDataYear = {
     "2023": 165,
@@ -38,13 +38,14 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
     "Năm nay": 146,
   };
   final Map<String, double?> chartDataWeek = {
-    "t-5": 170,
+    "t-5": 120,
     "t-4": null,
-    "t-3": 166,
-    "t-2": 164.5,
+    "t-3": 116,
+    "t-2": 125,
     "t-1": null,
-    "Tuần này": 165,
+    "Tuần này": 115,
   };
+
   @override
   void initState() {
     super.initState();
@@ -64,10 +65,9 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "Chiều cao",
+          "Đường huyết",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -77,17 +77,18 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
         centerTitle: true,
         actions: [
           Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
+            padding: const EdgeInsets.only(right: 10),
+            child: HealthFloatingActionButton(isDialOpen: isDialOpen),
+          ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             // Tab Bar
             Container(
               height: 55,
+              margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.borderColor,
                 borderRadius: BorderRadius.circular(25.0),
@@ -110,62 +111,175 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                     .toList(),
               ),
             ),
-            // Use Expanded for TabBarView
+            // Tab Bar View
             SizedBox(
-              height: 400, // Adjust the height for better scrolling experience
+              height: 450,
               child: TabBarView(
                 controller: _tabController,
                 children: [
+                  // Day View
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    "Trung bình ngày",
-                                    style:
-                                        TextStyle(color: AppColors.grayColor5),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Cao:",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: AppColors.grayColor5),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "50%",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                            color: Colors.orange),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    "163cm",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Bình thường:",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: AppColors.grayColor5),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "30%",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                            color: Colors.green),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Thấp:",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: AppColors.grayColor5),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "20%",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                            color: Colors.red),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                              Text(
-                                "BMI: 18.1",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500, fontSize: 18),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Tối đa",
+                                        style: TextStyle(
+                                            color: AppColors.grayColor5),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "198.6 mmol/L",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Trung bình",
+                                        style: TextStyle(
+                                            color: AppColors.grayColor5),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "198.6 mmol/L",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Tối thiểu",
+                                        style: TextStyle(
+                                            color: AppColors.grayColor5),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "198.6 mmol/L",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
                         SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataDate,
-                            unit: "cm",
+                          height: 350,
+                          child: Center(
+                            child: LineChartWidget(
+                              data: chartDataDate,
+                              unit: "mmol/L",
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // Content for 'Tuần' tab (Weekly)
+                  // Week View
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -178,7 +292,7 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                                         TextStyle(color: AppColors.grayColor5),
                                   ),
                                   Text(
-                                    "164.5cm",
+                                    "---",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600),
@@ -186,7 +300,7 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                                 ],
                               ),
                               Text(
-                                "BMI: 17.1",
+                                "Cao",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500, fontSize: 18),
                               ),
@@ -194,22 +308,21 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                           ),
                         ),
                         SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataWeek,
-                            unit: "cm",
-                          ),
+                          height: 350,
+                          child: Center(
+                              // child: GroupBarChartWidget(data: chartDataWeek),
+                              ),
                         ),
                       ],
                     ),
                   ),
-
+                  // Month View (Placeholder)
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -222,7 +335,7 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                                         TextStyle(color: AppColors.grayColor5),
                                   ),
                                   Text(
-                                    "166.6cm",
+                                    "---",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600),
@@ -230,7 +343,7 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                                 ],
                               ),
                               Text(
-                                "BMI: 19.1",
+                                "Bình Thường",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500, fontSize: 18),
                               ),
@@ -238,21 +351,21 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                           ),
                         ),
                         SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataMonth,
-                            unit: "cm",
-                          ),
+                          height: 350,
+                          child: Center(
+                              // child: GroupBarChartWidget(data: chartDataMonth),
+                              ),
                         ),
                       ],
                     ),
                   ),
+                  // Year View (Placeholder)
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -265,7 +378,7 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                                         TextStyle(color: AppColors.grayColor5),
                                   ),
                                   Text(
-                                    "161cm",
+                                    "---",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600),
@@ -273,7 +386,7 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                                 ],
                               ),
                               Text(
-                                "BMI: 16.1",
+                                "Thấp",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500, fontSize: 18),
                               ),
@@ -281,11 +394,10 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                           ),
                         ),
                         SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataYear,
-                            unit: "cm",
-                          ),
+                          height: 350,
+                          child: Center(
+                              // child: GroupBarChartWidget(data: chartDataYear),
+                              ),
                         ),
                       ],
                     ),
@@ -294,58 +406,8 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
               ),
             ),
             const SizedBox(height: 20),
-            // Marker Pointer Chart
-            Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey
-                        .withOpacity(0.5), // Shadow color (light pink)
-                    blurRadius: 0.05, // Blur radius for the shadow
-                    offset: Offset(
-                        1, 1), // Offset for the shadow (horizontal, vertical)
-                  ),
-                ],
-                color: AppColors.bgColor,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: AppColors.secondaryColor, // Pink border color
-                  width: 0.05, // Adjust the border width as needed
-                ),
-              ),
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    "Tỉ số khối cơ thể(BMI)",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 15),
-                    child: Text(
-                      "11 tháng 2 năm 2025",
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: AppColors.grayColor5,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 150, // Ensure it has a fixed height
-                    child: MarkerPointerChart(
-                      value: 18.9,
-                      result: "Bình Thường",
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
             Card(
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               color: AppColors.bgColor,
               elevation: 1,
               shape: RoundedRectangleBorder(
@@ -363,9 +425,10 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => HealthMonitoringBook(
-                                    initialTopic: "height",
-                                  )),
+                            builder: (context) => HealthMonitoringBook(
+                              initialTopic: "blood_pressure",
+                            ),
+                          ),
                         );
                       },
                       child: Row(
@@ -403,14 +466,14 @@ class _DetailHeightScreenState extends State<DetailHeightScreen>
                         ],
                       ),
                     ),
-                    Icon(
+                    const Icon(
                       Icons.arrow_forward_ios,
                       size: 20,
                     ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

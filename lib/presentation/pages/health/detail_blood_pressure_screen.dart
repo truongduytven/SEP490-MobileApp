@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/health/chart/group_bar_chart_widget.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_blood_pressure_widget.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -153,7 +154,10 @@ class _DetailBloodPressureScreenState extends State<DetailBloodPressureScreen>
                         SizedBox(
                           height: 350,
                           child: Center(
-                            child: GroupBarChartWidget(data: chartDataDate),
+                            child: LineChartBloodPressureWidget(
+                              data: chartDataDate,
+                              unit: "BPM",
+                            ),
                           ),
                         ),
                       ],

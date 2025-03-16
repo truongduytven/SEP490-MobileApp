@@ -313,7 +313,7 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                           Row(
                             children: [
                               Icon(
-                                Icons.grain,
+                                Icons.tune,
                                 size: 30,
                                 color: classificationColor,
                               ),
