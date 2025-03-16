@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/add_blood_glucose_screen.dart';
 import 'package:sep490/presentation/pages/health/add_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
+import 'package:sep490/presentation/pages/health/add_kidney_function_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -22,6 +24,8 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
     {"label": "Thuốc", "value": "medicine"},
     {"label": "Cân nặng", "value": "weight"},
     {"label": "Chiều cao", "value": "height"},
+    {"label": "Đường huyết", "value": "blood_glucose"},
+    {"label": "Chức năng thận", "value": "kidney_function"},
   ];
 
   static List<Map<String, String>> listData = [
@@ -96,13 +100,23 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
       "dataType": "Thiết bị IOT"
     },
     {
-      "title": "Chiều cao",
-      "result": "Bình Thường",
-      "dateTime": "14 th03  4:04",
-      "date": "14-03-2025",
+      "title": "Đường huyết",
+      "result": "Thấp",
+      "dateTime": "16 th03  4:04",
+      "date": "16-03-2025",
       "time": "04:04",
-      "data": "170",
-      "unit": "cm",
+      "data": "170/Sau bữa ăn",
+      "unit": "mmol/L",
+      "dataType": "Thiết bị IOT"
+    },
+    {
+      "title": "Chức năng thận",
+      "result": "Bình Thường",
+      "dateTime": "17 th03  4:04",
+      "date": "17-03-2025",
+      "time": "04:04",
+      "data": "198/345/678",
+      "unit": "ml/phút/1.73m2",
       "dataType": "Thiết bị IOT"
     },
   ];
@@ -166,6 +180,10 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
         return "assets/img3D/cannang.png";
       case "Chiều cao":
         return "assets/img3D/chieucao.png";
+      case "Đường huyết":
+        return "assets/img3D/treatment_medical/tieuduong.png";
+      case "Chức năng thận":
+        return "assets/img3D/treatment_medical/than.png";
       default:
         return "assets/img/Logo.png";
     }
@@ -248,6 +266,58 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
                   date: item['date'],
                   currentValue: num.tryParse(item['data'] ?? "") ?? 0,
                   showHeightWidget: true,
+                  isDraft: false)),
+        );
+        break;
+      case "Đường huyết":
+        String? data = item['data']; // Get the data
+        String bloodGlucoseValue = "N/A"; // Default value
+        String period = "N/A"; // Default value
+        if (data != null && data.contains("/")) {
+          // Safely split the string
+          List<String> parts = data.split("/");
+          if (parts.length == 2) {
+            bloodGlucoseValue = parts[0]; // First part
+            period = parts[1]; // Second part
+          }
+        }
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddBloodGlucoseScreen(
+                  period: period,
+                  date: item['date'],
+                  currentBloodGlucoseValue:
+                      double.tryParse(bloodGlucoseValue) ?? 0,
+                  showBloodGlucoseWidget: true,
+                  isDraft: false)),
+        );
+        break;
+      case "Chức năng thận":
+        String? data = item['data'];
+        String egfrValue = "N/A";
+        String bunValue = "N/A";
+        String gfrValue = "N/A";
+        if (data != null && data.contains("/")) {
+          // Safely split the string
+          List<String> parts = data.split("/");
+          if (parts.length == 3) {
+            egfrValue = parts[0];
+            bunValue = parts[1];
+            gfrValue = parts[2];
+          }
+        }
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddKidneyFunctionScreen(
+                  date: item['date'],
+                  currentBUNValue: double.tryParse(bunValue) ?? 0,
+                  currenteGFRValue: double.tryParse(egfrValue) ?? 0,
+                  currentGFRValue: double.tryParse(gfrValue) ?? 0,
+                  showKidneyFunctionWidget: true,
                   isDraft: false)),
         );
         break;
@@ -429,7 +499,15 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
                                       ],
                                     ),
                                     subtitle: Text(
-                                      "${item["data"]} ${item['unit']}",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      // "${item["data"]} ${item['unit']}",
+                                      item["data"].toString().contains("/")
+                                          ? item["data"]
+                                                  .toString()
+                                                  .split("/")[0] +
+                                              " ${item['unit']}"
+                                          : "${item["data"]} ${item['unit']}",
                                       style: TextStyle(
                                           color: AppColors.textColor,
                                           fontSize: 22,

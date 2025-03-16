@@ -3,6 +3,7 @@ import 'package:sep490/presentation/pages/health/detail_blood_glucose_screen.dar
 import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_height_screen.dart';
+import 'package:sep490/presentation/pages/health/detail_kidney_function_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
@@ -73,11 +74,13 @@ class _InfoCardState extends State<InfoCard> {
             MaterialPageRoute(
                 builder: (context) => DetailBloodGlucoseScreen()));
         break;
-      // case "Tuân thủ uống thuốc":
-      //   // Navigate to ChieuCaoCard
-      //   Navigator.push(context,
-      //       MaterialPageRoute(builder: (context) => DetailMedicineScreen()));
-      //   break;
+      case "Chức năng thận":
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailKidneyFunctionScreen()));
+        break;
       // case "Tuân thủ uống thuốc":
       //   // Navigate to ChieuCaoCard
       //   Navigator.push(context,

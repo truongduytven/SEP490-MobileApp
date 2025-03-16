@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
+import 'package:sep490/presentation/widgets/health/chart/kidney_function_chart.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
-class DetailBloodGlucoseScreen extends StatefulWidget {
-  const DetailBloodGlucoseScreen({super.key});
+class DetailKidneyFunctionScreen extends StatefulWidget {
+  const DetailKidneyFunctionScreen({super.key});
 
   @override
-  State<DetailBloodGlucoseScreen> createState() =>
-      _DetailBloodGlucoseScreenState();
+  State<DetailKidneyFunctionScreen> createState() =>
+      _DetailKidneyFunctionScreenState();
 }
 
-class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
+class _DetailKidneyFunctionScreenState extends State<DetailKidneyFunctionScreen>
     with SingleTickerProviderStateMixin {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
-  final Map<String, double?> chartDataDate = {
-    "T2": 115,
-    "T3": null,
-    "T4": 116,
-    "T5": 114,
-    "T6": null,
-    "T7": 125,
-    "Hôm nay": 115,
-  };
+  final List<Map<String, dynamic>> kidneyDataDate = [
+    {"date": "T2", "BUN": 18, "GFR": 90, "eGFR": 85},
+    {"date": "T3", "BUN": 20, "GFR": 88, "eGFR": 83},
+    {"date": "T5", "BUN": 22, "GFR": 85, "eGFR": 80},
+    {"date": "Hôm nay", "BUN": 25, "GFR": 82, "eGFR": 78},
+  ];
   final Map<String, double?> chartDataMonth = {
     "11/2024": 116,
     "12/2024": 112,
@@ -67,7 +65,7 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
         scrolledUnderElevation: 0,
         elevation: 0,
         title: const Text(
-          "Đường huyết",
+          "Chức năng thận",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -113,17 +111,18 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
             ),
             // Tab Bar View
             SizedBox(
-              height: 450,
+              height: 550,
               child: TabBarView(
                 controller: _tabController,
                 children: [
                   // Day View
                   Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -201,7 +200,7 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "Tối đa",
+                                        "BUN tb",
                                         style: TextStyle(
                                             color: AppColors.grayColor5),
                                       ),
@@ -209,7 +208,7 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                                         width: 5,
                                       ),
                                       Text(
-                                        "198.6 mmol/L",
+                                        "198.6",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w600),
@@ -221,7 +220,7 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "Trung bình",
+                                        "GFR tb",
                                         style: TextStyle(
                                             color: AppColors.grayColor5),
                                       ),
@@ -229,7 +228,7 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                                         width: 5,
                                       ),
                                       Text(
-                                        "198.6 mmol/L",
+                                        "198.6",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w600),
@@ -241,7 +240,7 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "Tối thiểu",
+                                        "eGFR",
                                         style: TextStyle(
                                             color: AppColors.grayColor5),
                                       ),
@@ -249,7 +248,7 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                                         width: 5,
                                       ),
                                       Text(
-                                        "198.6 mmol/L",
+                                        "187 ",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w600),
@@ -261,14 +260,8 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 350,
-                          child: Center(
-                            child: LineChartWidget(
-                              data: chartDataDate,
-                              unit: "mmol/L",
-                            ),
-                          ),
+                        KidneyFunctionChart(
+                          data: kidneyDataDate,
                         ),
                       ],
                     ),
@@ -426,7 +419,7 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                           context,
                           MaterialPageRoute(
                             builder: (context) => HealthMonitoringBook(
-                              initialTopic: "blood_glucose",
+                              initialTopic: "kidney_function",
                             ),
                           ),
                         );
