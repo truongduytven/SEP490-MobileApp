@@ -23,7 +23,8 @@ class KidneyFunctionInputWidget extends StatefulWidget {
   });
 
   @override
-  State<KidneyFunctionInputWidget> createState() => _KidneyFunctionInputWidgetState();
+  State<KidneyFunctionInputWidget> createState() =>
+      _KidneyFunctionInputWidgetState();
 }
 
 class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
@@ -508,8 +509,8 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                               double.parse(currenteGFRValue.toStringAsFixed(2));
 
                           // Pass formatted values to onSubmit
-                          widget.onSubmit(formattedBUNValue, formattedGFRValue,
-                              formattedeGFRValue);
+                          widget.onSubmit(formattedBUNValue, formattedeGFRValue,
+                              formattedGFRValue);
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.secondaryColor,

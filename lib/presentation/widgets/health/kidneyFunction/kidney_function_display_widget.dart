@@ -140,7 +140,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                bunValue.toString(),
+                                bunValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -168,7 +168,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                gfrValue.toString(),
+                                gfrValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -199,7 +199,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            egfrValue.toString(),
+                            egfrValue.toDouble().toStringAsFixed(1),
                             style: TextStyle(
                                 fontSize: 50, fontWeight: FontWeight.w700),
                           ),
