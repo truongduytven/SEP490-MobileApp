@@ -2,27 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/health/chart/kidney_function_chart.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
+import 'package:sep490/presentation/widgets/health/chart/lipid_profile_chart.dart';
 import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
-class DetailKidneyFunctionScreen extends StatefulWidget {
-  const DetailKidneyFunctionScreen({super.key});
+class DetailLipidProfileScreen extends StatefulWidget {
+  const DetailLipidProfileScreen({super.key});
 
   @override
-  State<DetailKidneyFunctionScreen> createState() =>
-      _DetailKidneyFunctionScreenState();
+  State<DetailLipidProfileScreen> createState() =>
+      _DetailLipidProfileScreenState();
 }
 
-class _DetailKidneyFunctionScreenState extends State<DetailKidneyFunctionScreen>
+class _DetailLipidProfileScreenState extends State<DetailLipidProfileScreen>
     with SingleTickerProviderStateMixin {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
-  final List<Map<String, dynamic>> kidneyDataDate = [
-    {"date": "T2", "BUN": 18, "GFR": 90, "eGFR": 85.5},
-    {"date": "T3", "BUN": 20, "GFR": 88, "eGFR": 83},
-    {"date": "T5", "BUN": 22, "GFR": 85, "eGFR": 80},
-    {"date": "Hôm nay", "BUN": 25, "GFR": 82, "eGFR": 78},
+  List<Map<String, dynamic>> lipidDataDate = [
+    {"date": "T2", "Triglycerides": 200, "LDL": 130, "HDL": 50},
+    {"date": "T3", "Triglycerides": 210, "LDL": 135, "HDL": 52},
+    {"date": "T4", "Triglycerides": 195, "LDL": 128, "HDL": 48},
+    {"date": "T5", "Triglycerides": 220, "LDL": 140, "HDL": 55},
+    {"date": "T6", "Triglycerides": 205, "LDL": 132, "HDL": 50},
+    {"date": "T7", "Triglycerides": 215, "LDL": 138, "HDL": 53},
+    {"date": "CN", "Triglycerides": 225, "LDL": 145, "HDL": 57},
   ];
   final Map<String, double?> chartDataMonth = {
     "11/2024": 116,
@@ -65,7 +69,7 @@ class _DetailKidneyFunctionScreenState extends State<DetailKidneyFunctionScreen>
         scrolledUnderElevation: 0,
         elevation: 0,
         title: const Text(
-          "Chức năng thận",
+          "Mỡ máu",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -200,7 +204,7 @@ class _DetailKidneyFunctionScreenState extends State<DetailKidneyFunctionScreen>
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "BUN tb",
+                                        "HDL tb",
                                         style: TextStyle(
                                             color: AppColors.grayColor5),
                                       ),
@@ -220,7 +224,7 @@ class _DetailKidneyFunctionScreenState extends State<DetailKidneyFunctionScreen>
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "GFR tb",
+                                        "LDL tb",
                                         style: TextStyle(
                                             color: AppColors.grayColor5),
                                       ),
@@ -240,7 +244,7 @@ class _DetailKidneyFunctionScreenState extends State<DetailKidneyFunctionScreen>
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "eGFR",
+                                        "Trig tb",
                                         style: TextStyle(
                                             color: AppColors.grayColor5),
                                       ),
@@ -260,8 +264,8 @@ class _DetailKidneyFunctionScreenState extends State<DetailKidneyFunctionScreen>
                             ],
                           ),
                         ),
-                        KidneyFunctionChart(
-                          data: kidneyDataDate,
+                        LipidProfileChart(
+                          data: lipidDataDate,
                         ),
                       ],
                     ),
@@ -419,7 +423,7 @@ class _DetailKidneyFunctionScreenState extends State<DetailKidneyFunctionScreen>
                           context,
                           MaterialPageRoute(
                             builder: (context) => HealthMonitoringBook(
-                              initialTopic: "kidney_function",
+                              initialTopic: "lipid_profile",
                             ),
                           ),
                         );

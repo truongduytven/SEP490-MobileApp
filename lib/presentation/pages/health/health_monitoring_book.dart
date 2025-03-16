@@ -4,6 +4,7 @@ import 'package:sep490/presentation/pages/health/add_blood_pressure_screen.dart'
 import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
 import 'package:sep490/presentation/pages/health/add_kidney_function_screen.dart';
+import 'package:sep490/presentation/pages/health/add_lipid_profile_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -26,6 +27,7 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
     {"label": "Chiều cao", "value": "height"},
     {"label": "Đường huyết", "value": "blood_glucose"},
     {"label": "Chức năng thận", "value": "kidney_function"},
+    {"label": "Mỡ máu", "value": "lipid_profile"},
   ];
 
   static List<Map<String, String>> listData = [
@@ -67,6 +69,16 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
       "time": "11:54",
       "data": "110",
       "unit": "BMP",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Mỡ máu",
+      "result": "Bình Thường",
+      "dateTime": "17 th03  11:54",
+      "date": "17-03-2025",
+      "time": "11:54",
+      "data": "110/123/456/789",
+      "unit": "mmol/L",
       "dataType": "Thủ công"
     },
     {
@@ -184,6 +196,8 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
         return "assets/img3D/treatment_medical/tieuduong.png";
       case "Chức năng thận":
         return "assets/img3D/treatment_medical/than.png";
+      case "Mỡ máu":
+        return "assets/img3D/treatment_medical/momau.webp";
       default:
         return "assets/img/Logo.png";
     }
@@ -318,6 +332,36 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
                   currenteGFRValue: double.tryParse(egfrValue) ?? 0,
                   currentGFRValue: double.tryParse(gfrValue) ?? 0,
                   showKidneyFunctionWidget: true,
+                  isDraft: false)),
+        );
+        break;
+      case "Mỡ máu":
+        String? data = item['data'];
+        String total = "N/A";
+        String hdl = "N/A";
+        String ldl = "N/A";
+        String tg = "N/A";
+        if (data != null && data.contains("/")) {
+          // Safely split the string
+          List<String> parts = data.split("/");
+          if (parts.length == 4) {
+            total = parts[0];
+            hdl = parts[1];
+            ldl = parts[2];
+            tg = parts[3];
+          }
+        }
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddLipidProfileScreen(
+                  date: item['date'],
+                  currentHDLValue: double.tryParse(hdl) ?? 0,
+                  currentLDLValue: double.tryParse(ldl) ?? 0,
+                  currentTGValue: double.tryParse(tg) ?? 0,
+                  currentTCValue: double.tryParse(total) ?? 0,
+                  showLipidProfileWidget: true,
                   isDraft: false)),
         );
         break;
