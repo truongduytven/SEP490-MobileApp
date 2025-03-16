@@ -4,105 +4,97 @@ import 'package:sep490/presentation/widgets/health/kidneyFunction/bun_informatio
 import 'package:sep490/presentation/widgets/health/kidneyFunction/egfr_information_dialog.dart';
 import 'package:sep490/presentation/widgets/health/kidneyFunction/gfr_information_dialog.dart';
 import 'package:sep490/presentation/widgets/health/health_input.dart';
+import 'package:sep490/presentation/widgets/health/lipidProfile/hdl_information_dialog.dart';
+import 'package:sep490/presentation/widgets/health/lipidProfile/ldl_information_dialog.dart';
+import 'package:sep490/presentation/widgets/health/lipidProfile/total_cholesterol_information_dialog.dart';
+import 'package:sep490/presentation/widgets/health/lipidProfile/triglycerides_information_dialog.dart';
 import 'package:sep490/theme/color.dart';
 
-class KidneyFunctionInputWidget extends StatefulWidget {
-  final num initialBUNValue;
-  final num initialeGFRValue;
-  final num initialGFRValue;
+class LipidProfileInputWidget extends StatefulWidget {
+  final num initialTCValue;
+  final num initialTGValue;
+  final num initialLDLValue;
+  final num initialHDLValue;
   final String dateTime;
-  final void Function(num, num, num) onSubmit;
+  final void Function(num, num, num, num) onSubmit;
 
-  const KidneyFunctionInputWidget({
+  const LipidProfileInputWidget({
     super.key,
-    required this.initialBUNValue,
-    required this.initialeGFRValue,
-    required this.initialGFRValue,
+    required this.initialTCValue,
+    required this.initialTGValue,
+    required this.initialLDLValue,
+    required this.initialHDLValue,
     required this.dateTime,
     required this.onSubmit,
   });
 
   @override
-  State<KidneyFunctionInputWidget> createState() =>
-      _KidneyFunctionInputWidgetState();
+  State<LipidProfileInputWidget> createState() =>
+      _LipidProfileInputWidgetState();
 }
 
-class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
-  late TextEditingController _buncontroller;
-  late TextEditingController _eGFRcontroller;
-  late TextEditingController _gfrcontroller;
-  final FocusNode bunFocusNode = FocusNode();
-  final FocusNode eGFRFocusNode = FocusNode();
-  final FocusNode gfrFocusNode = FocusNode();
-  late num currentBUNValue;
-  late num currenteGFRValue;
-  late num currentGFRValue;
+class _LipidProfileInputWidgetState extends State<LipidProfileInputWidget> {
+  late TextEditingController _tcController;
+  late TextEditingController _tgController;
+  late TextEditingController _ldlController;
+  late TextEditingController _hdlController;
+  final FocusNode tcFocusNode = FocusNode();
+  final FocusNode tgFocusNode = FocusNode();
+  final FocusNode ldlFocusNode = FocusNode();
+  final FocusNode hdlFocusNode = FocusNode();
+  late num currentTCValue;
+  late num currentTGValue;
+  late num currentLDLValue;
+  late num currentHDLValue;
   String? errorMessage;
-  String unit = "mmol/L"; // Default unit
 
   @override
   void initState() {
     super.initState();
-    currentBUNValue = widget.initialBUNValue;
-    currenteGFRValue = widget.initialeGFRValue;
-    currentGFRValue = widget.initialGFRValue;
+    currentTCValue = widget.initialTCValue;
+    currentTGValue = widget.initialTGValue;
+    currentLDLValue = widget.initialLDLValue;
+    currentHDLValue = widget.initialHDLValue;
 
-    _buncontroller = TextEditingController(
-        text: widget.initialBUNValue > 0
-            ? widget.initialBUNValue.toString()
+    _tcController = TextEditingController(
+        text:
+            widget.initialTCValue > 0 ? widget.initialTCValue.toString() : "");
+    _tgController = TextEditingController(
+        text:
+            widget.initialTGValue > 0 ? widget.initialTGValue.toString() : "");
+    _ldlController = TextEditingController(
+        text: widget.initialLDLValue > 0
+            ? widget.initialLDLValue.toString()
             : "");
-    _eGFRcontroller = TextEditingController(
-        text: widget.initialeGFRValue > 0
-            ? widget.initialeGFRValue.toString()
-            : "");
-    _gfrcontroller = TextEditingController(
-        text: widget.initialGFRValue > 0
-            ? widget.initialGFRValue.toString()
+    _hdlController = TextEditingController(
+        text: widget.initialHDLValue > 0
+            ? widget.initialHDLValue.toString()
             : "");
 
-    bunFocusNode.addListener(() {
+    tcFocusNode.addListener(() {
       setState(() {});
     });
-    eGFRFocusNode.addListener(() {
+    tgFocusNode.addListener(() {
       setState(() {});
     });
-    gfrFocusNode.addListener(() {
+    ldlFocusNode.addListener(() {
       setState(() {});
     });
-  }
-
-  void toggleUnit() {
-    setState(() {
-      // Read the latest values from the controllers
-      final bunValue = num.tryParse(_buncontroller.text) ?? 0;
-      final gfrValue = num.tryParse(_gfrcontroller.text) ?? 0;
-
-      if (unit == "mmol/L") {
-        // Switching to mg/dL
-        unit = "mg/dL";
-        currentBUNValue = bunValue * 2.8; // Convert BUN to mg/dL
-        currentGFRValue = gfrValue / 88.42; // Convert GFR to µmol/L
-      } else {
-        // Switching to mmol/L
-        unit = "mmol/L";
-        currentBUNValue = bunValue / 2.8; // Convert BUN to mmol/L
-        currentGFRValue = gfrValue * 88.42; // Convert GFR to mL/min/1.73m²
-      }
-
-      // Update the controller text with formatted values
-      _buncontroller.text = currentBUNValue.toStringAsFixed(1);
-      _gfrcontroller.text = currentGFRValue.toStringAsFixed(1);
+    hdlFocusNode.addListener(() {
+      setState(() {});
     });
   }
 
   @override
   void dispose() {
-    _buncontroller.dispose();
-    _eGFRcontroller.dispose();
-    _gfrcontroller.dispose();
-    bunFocusNode.dispose();
-    eGFRFocusNode.dispose();
-    gfrFocusNode.dispose();
+    _tcController.dispose();
+    _tgController.dispose();
+    _ldlController.dispose();
+    _hdlController.dispose();
+    tcFocusNode.dispose();
+    tgFocusNode.dispose();
+    ldlFocusNode.dispose();
+    hdlFocusNode.dispose();
     super.dispose();
   }
 
@@ -144,7 +136,7 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          "BUN",
+                          "HDL-C",
                           style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w500,
@@ -157,92 +149,14 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                             children: [
                               Expanded(
                                 child: HealthInput(
-                                  controller: _buncontroller,
-                                  focusNode: bunFocusNode,
+                                  controller: _hdlController,
+                                  focusNode: hdlFocusNode,
                                   onChanged: (value) {
                                     setState(() {
                                       final parsedValue =
                                           num.tryParse(value) ?? 0;
-                                      if (unit == "mg/dL") {
-                                        currentBUNValue =
-                                            (currentBUNValue / 2.8);
-                                      } else {
-                                        currentBUNValue = parsedValue.clamp(
-                                            0, double.infinity);
-                                      }
-                                    });
-                                  },
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Container(
-                                width: 25,
-                                height: 25,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppColors.textPrimary,
-                                    width: 1.5,
-                                  ),
-                                  color: AppColors.bgColor,
-                                ),
-                                child: Center(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (BuildContext context) {
-                                          return Container(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.8, // 80% of screen height
-                                            padding: EdgeInsets.all(16),
-                                            child: BunInformationDialog(),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.question_mark_sharp,
-                                      color: AppColors.textPrimary,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "eGFR",
-                          style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.secondaryColor),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width *
-                              0.5, // Half of screen width
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: HealthInput(
-                                  controller: _eGFRcontroller,
-                                  focusNode: eGFRFocusNode,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      final parsedValue =
-                                          num.tryParse(value) ?? 0;
-                                      currenteGFRValue =
+
+                                      currentHDLValue =
                                           parsedValue.clamp(0, double.infinity);
                                     });
                                   },
@@ -264,6 +178,7 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                                   child: GestureDetector(
                                     onTap: () {
                                       showModalBottomSheet(
+                                        backgroundColor: AppColors.bgColor,
                                         context: context,
                                         isScrollControlled: true,
                                         builder: (BuildContext context) {
@@ -273,7 +188,7 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                                                     .height *
                                                 0.8, // 80% of screen height
                                             padding: EdgeInsets.all(16),
-                                            child: EgfrInformationDialog(),
+                                            child: HDLInformationDialog(),
                                           );
                                         },
                                       );
@@ -297,7 +212,85 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          "GFR",
+                          "LDL-C",
+                          style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.secondaryColor),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width *
+                              0.5, // Half of screen width
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: HealthInput(
+                                  controller: _ldlController,
+                                  focusNode: ldlFocusNode,
+                                  onChanged: (value) {
+                                    setState(
+                                      () {
+                                        final parsedValue =
+                                            num.tryParse(value) ?? 0;
+
+                                        currentLDLValue = parsedValue.clamp(
+                                            0, double.infinity);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Container(
+                                width: 25,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.textPrimary,
+                                    width: 1.5,
+                                  ),
+                                  color: AppColors.bgColor,
+                                ),
+                                child: Center(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        backgroundColor: AppColors.bgColor,
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext context) {
+                                          return Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.8, // 80% of screen height
+                                            padding: EdgeInsets.all(16),
+                                            child: LDLInformationDialog(),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.question_mark_sharp,
+                                      color: AppColors.textPrimary,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Triglycerides",
                           style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w500,
@@ -312,19 +305,15 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                                 children: [
                                   Expanded(
                                       child: HealthInput(
-                                    controller: _gfrcontroller,
-                                    focusNode: gfrFocusNode,
+                                    controller: _tgController,
+                                    focusNode: tgFocusNode,
                                     onChanged: (value) {
                                       setState(() {
                                         final parsedValue =
                                             num.tryParse(value) ?? 0;
-                                        if (unit == "mg/dL") {
-                                          currentGFRValue =
-                                              (currentGFRValue * 88.42);
-                                        } else {
-                                          currentGFRValue = parsedValue.clamp(
-                                              0, double.infinity);
-                                        }
+
+                                        currentTGValue = parsedValue.clamp(
+                                            0, double.infinity);
                                       });
                                     },
                                   )),
@@ -344,6 +333,7 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                                       child: GestureDetector(
                                         onTap: () {
                                           showModalBottomSheet(
+                                            backgroundColor: AppColors.bgColor,
                                             context: context,
                                             isScrollControlled: true,
                                             builder: (BuildContext context) {
@@ -353,7 +343,8 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                                                         .height *
                                                     0.8, // 80% of screen height
                                                 padding: EdgeInsets.all(16),
-                                                child: GfrInformationDialog(),
+                                                child:
+                                                    TriglyceridesInformationDialog(),
                                               );
                                             },
                                           );
@@ -373,111 +364,110 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "eGFR được tính theo đơn vị",
-                  style: TextStyle(
-                    color: AppColors.grayColor5,
-                  ),
-                ),
-                Text(
-                  "mL/phút/ 1,73 m2",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.secondaryColor,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  "BUN và GFR được tính theo đơn vị",
-                  style: TextStyle(
-                    color: AppColors.grayColor5,
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: const Color.fromARGB(255, 255, 225, 232),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 5.0,
-                            bottom: 5,
-                            left: 5,
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              if (unit != "mmol/L") toggleUnit();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 12),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: unit == "mmol/L"
-                                    ? AppColors.bgColor
-                                    : Colors.transparent,
-                              ),
-                              child: Text(
-                                "mmol/L",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.secondaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
+                        Text(
+                          "Toàn phần",
+                          style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.secondaryColor),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 5.0,
-                            bottom: 5,
-                            right: 5,
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              if (unit != "mg/dL") toggleUnit();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 12),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: unit == "mg/dL"
-                                    ? AppColors.bgColor
-                                    : Colors.transparent,
-                              ),
-                              child: Text(
-                                "mg/dL",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.secondaryColor,
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width *
+                              0.5, // Half of screen width
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: HealthInput(
+                                  controller: _tcController,
+                                  focusNode: tcFocusNode,
+                                  onChanged: (value) {
+                                    setState(
+                                      () {
+                                        final parsedValue =
+                                            num.tryParse(value) ?? 0;
+
+                                        currentTCValue = parsedValue.clamp(
+                                            0, double.infinity);
+                                      },
+                                    );
+                                  },
                                 ),
                               ),
-                            ),
+                              SizedBox(width: 10),
+                              Container(
+                                width: 25,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.textPrimary,
+                                    width: 1.5,
+                                  ),
+                                  color: AppColors.bgColor,
+                                ),
+                                child: Center(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext context) {
+                                          return Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.8, // 80% of screen height
+                                            padding: EdgeInsets.all(16),
+                                            child:
+                                                TotalCholesterolInformationDialog(),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.question_mark_sharp,
+                                      color: AppColors.textPrimary,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "*Các chỉ số được tính theo đơn vị",
+                          style: TextStyle(
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        Text(
+                          "mmol/L",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
 
             SizedBox(height: 20),
@@ -488,29 +478,29 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: (_buncontroller.text.isEmpty ||
-                          _eGFRcontroller.text.isEmpty ||
-                          _gfrcontroller.text.isEmpty)
+                  onPressed: (_tcController.text.isEmpty ||
+                          _tgController.text.isEmpty ||
+                          _ldlController.text.isEmpty ||
+                          _hdlController.text.isEmpty)
                       ? null // Disable button
                       : () {
-                          if (unit == "mg/dL") {
-                            currentBUNValue = (currentBUNValue /
-                                2.8); // Convert BUN to mmol/L
-                            currentGFRValue = (currentGFRValue *
-                                88.42); // Convert GFR to mL/min/1.73m²
-                          }
-
                           // Format values to two decimal places
-                          final formattedBUNValue =
-                              double.parse(currentBUNValue.toStringAsFixed(2));
-                          final formattedGFRValue =
-                              double.parse(currentGFRValue.toStringAsFixed(2));
-                          final formattedeGFRValue =
-                              double.parse(currenteGFRValue.toStringAsFixed(2));
+                          final formattedTCValue =
+                              double.parse(currentTCValue.toStringAsFixed(2));
+                          final formattedTGValue =
+                              double.parse(currentTGValue.toStringAsFixed(2));
+                          final formattedLDLValue =
+                              double.parse(currentLDLValue.toStringAsFixed(2));
+                          final formattedHDLValue =
+                              double.parse(currentHDLValue.toStringAsFixed(2));
 
                           // Pass formatted values to onSubmit
-                          widget.onSubmit(formattedBUNValue, formattedeGFRValue,
-                              formattedGFRValue);
+                          widget.onSubmit(
+                            formattedTCValue,
+                            formattedTGValue,
+                            formattedLDLValue,
+                            formattedHDLValue,
+                          );
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.secondaryColor,

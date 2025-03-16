@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/theme/color.dart';
 
-class KidneyBloodInput extends StatefulWidget {
+class HealthInput extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final Function(String) onChanged;
 
-  const KidneyBloodInput({
+  const HealthInput({
     Key? key,
     required this.controller,
     required this.focusNode,
@@ -14,10 +14,10 @@ class KidneyBloodInput extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _KidneyBloodInputState createState() => _KidneyBloodInputState();
+  _HealthInputState createState() => _HealthInputState();
 }
 
-class _KidneyBloodInputState extends State<KidneyBloodInput> {
+class _HealthInputState extends State<HealthInput> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
