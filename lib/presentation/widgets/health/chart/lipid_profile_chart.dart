@@ -164,11 +164,11 @@ class LipidProfileChart extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              LegendItem(color: Colors.red, text: "LDL (mg/dL)"),
+              LegendItem(color: Colors.red, text: "LDL (mmol/L)"),
               SizedBox(width: 10),
-              LegendItem(color: Colors.blue, text: "HDL (mg/dL)"),
+              LegendItem(color: Colors.blue, text: "HDL (mmol/L)"),
               SizedBox(width: 10),
-              LegendItem(color: Colors.orange, text: "Triglycerides (mg/dL)"),
+              LegendItem(color: Colors.orange, text: "Triglycerides (mmol/L)"),
             ],
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:sep490/presentation/pages/health/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
 import 'package:sep490/presentation/pages/health/add_kidney_function_screen.dart';
 import 'package:sep490/presentation/pages/health/add_lipid_profile_screen.dart';
+import 'package:sep490/presentation/pages/health/add_liver_enzymes_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -28,6 +29,7 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
     {"label": "Đường huyết", "value": "blood_glucose"},
     {"label": "Chức năng thận", "value": "kidney_function"},
     {"label": "Mỡ máu", "value": "lipid_profile"},
+    {"label": "Men gan", "value": "liver_enzym"},
   ];
 
   static List<Map<String, String>> listData = [
@@ -62,13 +64,13 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
       "dataType": "Thủ công"
     },
     {
-      "title": "Nhịp tim",
+      "title": "Men gan",
       "result": "Bình Thường",
-      "dateTime": "19 th08  11:54",
-      "date": "19-08-2025",
+      "dateTime": "17 th03  11:54",
+      "date": "17-03-2025",
       "time": "11:54",
-      "data": "110",
-      "unit": "BMP",
+      "data": "123/122/124/125",
+      "unit": "UI/L",
       "dataType": "Thủ công"
     },
     {
@@ -198,6 +200,8 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
         return "assets/img3D/treatment_medical/than.png";
       case "Mỡ máu":
         return "assets/img3D/treatment_medical/momau.webp";
+      case "Men gan":
+        return "assets/img3D/treatment_medical/gan.png";
       default:
         return "assets/img/Logo.png";
     }
@@ -362,6 +366,36 @@ class _HealthMonitoringBookState extends State<HealthMonitoringBook> {
                   currentTGValue: double.tryParse(tg) ?? 0,
                   currentTCValue: double.tryParse(total) ?? 0,
                   showLipidProfileWidget: true,
+                  isDraft: false)),
+        );
+        break;
+      case "Men gan":
+        String? data = item['data'];
+        String alt = "N/A";
+        String alp = "N/A";
+        String ast = "N/A";
+        String ggt = "N/A";
+        if (data != null && data.contains("/")) {
+          // Safely split the string
+          List<String> parts = data.split("/");
+          if (parts.length == 4) {
+            alt = parts[0];
+            alp = parts[1];
+            ast = parts[2];
+            ggt = parts[3];
+          }
+        }
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddLiverEnzymesScreen(
+                  date: item['date'],
+                  currentALTValue: double.tryParse(alt) ?? 0,
+                  currentALPValue: double.tryParse(alp) ?? 0,
+                  currentASTValue: double.tryParse(ast) ?? 0,
+                  currentGGTValue: double.tryParse(ggt) ?? 0,
+                  showLiverEnzymesWidget: true,
                   isDraft: false)),
         );
         break;
