@@ -1,3 +1,4 @@
+import 'package:sep490/models/emergency.dart';
 import 'package:sep490/presentation/pages/emergency_alert/repository/emergency_repository.dart';
 
 class EmergencyController {
@@ -5,6 +6,9 @@ class EmergencyController {
   int? emergencyConfirmationId;
   bool isCreateSuccess = false;
   bool isConfirmed = false;
+  List<Emergency> emergencyList = [];
+  EmergencyInformation? emergencyInformation;
+  List<EmergencyInformation> emergencyInformationList = [];
 
   Future<void> createEmergencyConfirmation(int accountID) async {
     final response = await _emergencyRepository.createConfirmation(accountID);
@@ -44,6 +48,37 @@ class EmergencyController {
       isConfirmed = response['data']['data']['isConfirmed'];
     } else {
       isConfirmed = false;
+    }
+  }
+
+  Future<void> getEmergencyList(int accountId) async {
+    final response = await _emergencyRepository.getEmergencyList(accountId);
+    if (response != null && response['isSuccess']) {
+      emergencyList = response['data']['data']
+          .map<Emergency>((emergency) => Emergency.fromJson(emergency))
+          .toList();
+    } else {
+      emergencyList = [];
+    }
+  }
+
+  Future<void> getEmergencyDetail(int emergencyId) async {
+    final response = await _emergencyRepository.getEmergencyDetail(emergencyId);
+    if (response != null && response['isSuccess']) {
+      emergencyInformation = EmergencyInformation.fromJson(response['data']['data']);
+    } else {
+      emergencyInformation = null;
+    }
+  }
+
+  Future<void> getEmergencyListDetail(int emergencyId) async {
+    final response = await _emergencyRepository.getEmergencyList(emergencyId);
+    if (response != null && response['isSuccess']) {
+      emergencyInformationList = response['data']
+          .map<EmergencyInformation>((emergency) => EmergencyInformation.fromJson(emergency))
+          .toList();
+    } else {
+      emergencyInformationList = [];
     }
   }
 

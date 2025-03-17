@@ -7,9 +7,9 @@ class EmergencyRepository {
 
   Future<dynamic> createConfirmation(int accountID) async {
     try {
-      final response = await http.post(
-          Uri.parse('$baseUrl/emergency-contacts/emergency-confirmation?elderlyId=$accountID'));
-      print(response.body);
+      final response = await http.post(Uri.parse(
+          '$baseUrl/emergency-contacts/emergency-confirmation?elderlyId=$accountID'));
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -33,8 +33,8 @@ class EmergencyRepository {
       bool isCallProfessor,
       bool isSendMessage) async {
     try {
-      final request = http.MultipartRequest(
-          'POST', Uri.parse('$baseUrl/emergency-contacts/emergency-information'));
+      final request = http.MultipartRequest('POST',
+          Uri.parse('$baseUrl/emergency-contacts/emergency-information'));
       request.fields['EmergencyConfirmationId'] = emergencyId.toString();
       request.fields['Longitude'] = longitude;
       request.fields['Latitude'] = latitude;
@@ -54,7 +54,7 @@ class EmergencyRepository {
       }
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
-      print(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -71,9 +71,66 @@ class EmergencyRepository {
 
   Future<dynamic> getEmergencyConfirm(int emergencyId) async {
     try {
-      final response = await http.get(
-          Uri.parse('$baseUrl/emergency-contacts/emergency-confirmation/$emergencyId'));
-      print(response.body);
+      final response = await http.get(Uri.parse(
+          '$baseUrl/emergency-contacts/emergency-confirmation/$emergencyId'));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> getEmergencyList(int accountId) async {
+    try {
+      final response = await http.get(Uri.parse(
+          '$baseUrl/emergency-contacts/list-emergency-confirmation-of-family-member/$accountId'));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> getEmergencyDetail(int emergencyId) async {
+    try {
+      final response = await http.get(Uri.parse(
+          '$baseUrl/emergency-contacts/newest-emergency-information/$emergencyId'));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> getEmergencyListDetail(int emergencyId) async {
+    try {
+      final response = await http.get(Uri.parse(
+          '$baseUrl/emergency-contacts/list-emergency-information/$emergencyId'));
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};

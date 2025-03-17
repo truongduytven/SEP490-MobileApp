@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
+import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
 import 'package:sep490/presentation/pages/health/health_screen.dart';
 import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/ultility/ultility_screen.dart';
@@ -10,7 +12,8 @@ import 'package:flutter/services.dart';
 
 class NavigationMenu extends StatefulWidget {
   final int keyIndex;
-  const NavigationMenu({super.key, required this.keyIndex});
+  const NavigationMenu(
+      {super.key, required this.keyIndex});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -19,11 +22,164 @@ class NavigationMenu extends StatefulWidget {
 
 class _NavigationMenuState extends State<NavigationMenu> {
   int _selectedIndex = 0;
+  late int _roleId = 0;
+  final SharedPrefsHelper _sharedPrefsHelper = SharedPrefsHelper();
+
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.keyIndex;
+    _roleId = _sharedPrefsHelper.getInt('roleId') ?? 2;
+  }
+
+  List<Widget> _widgetOptions(int roleId) {
+    switch (roleId) {
+      case 2:
+        return [
+          NavigationDestination(
+            icon: Icon(Icons.home, size: 30),
+            selectedIcon: Icon(
+              Icons.home,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trang chủ",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.monitor_heart_outlined, size: 30),
+            selectedIcon: Icon(
+              Icons.monitor_heart_outlined,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Sức khỏe",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.chat_outlined, size: 30),
+            selectedIcon: Icon(
+              Icons.chat_outlined,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trò chuyện",
+          ),
+          NavigationDestination(
+            icon: SvgPicture.asset('assets/icons/stethoscope.svg',
+                height: 30, width: 30),
+            selectedIcon: SvgPicture.asset(
+                'assets/icons/stethoscope_selected.svg',
+                height: 30,
+                width: 30),
+            label: "Tư vấn",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.grid_view_outlined, size: 30),
+            selectedIcon: Icon(
+              Icons.grid_view_outlined,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Tiện ích",
+          ),
+        ];
+      case 3:
+        return [
+          NavigationDestination(
+            icon: Icon(Icons.home, size: 30),
+            selectedIcon: Icon(
+              Icons.home,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trang chủ",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.monitor_heart_outlined, size: 30),
+            selectedIcon: Icon(
+              Icons.monitor_heart_outlined,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Sức khỏe",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.chat_outlined, size: 30),
+            selectedIcon: Icon(
+              Icons.chat_outlined,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trò chuyện",
+          ),
+          NavigationDestination(
+            icon: SvgPicture.asset('assets/icons/stethoscope.svg',
+                height: 30, width: 30),
+            selectedIcon: SvgPicture.asset(
+                'assets/icons/stethoscope_selected.svg',
+                height: 30,
+                width: 30),
+            label: "Tư vấn",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.sos, size: 30),
+            selectedIcon: Icon(
+              Icons.sos,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Khẩn cấp",
+          ),
+        ];
+      default:
+        return [
+          NavigationDestination(
+            icon: Icon(Icons.home, size: 30),
+            selectedIcon: Icon(
+              Icons.home,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trang chủ",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.monitor_heart_outlined, size: 30),
+            selectedIcon: Icon(
+              Icons.monitor_heart_outlined,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Sức khỏe",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.chat_outlined, size: 30),
+            selectedIcon: Icon(
+              Icons.chat_outlined,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trò chuyện",
+          ),
+          NavigationDestination(
+            icon: SvgPicture.asset('assets/icons/stethoscope.svg',
+                height: 30, width: 30),
+            selectedIcon: SvgPicture.asset(
+                'assets/icons/stethoscope_selected.svg',
+                height: 30,
+                width: 30),
+            label: "Tư vấn",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.grid_view_outlined, size: 30),
+            selectedIcon: Icon(
+              Icons.grid_view_outlined,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Tiện ích",
+          ),
+        ];
+    }
   }
 
   @override
@@ -74,53 +230,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
             elevation: 0,
             selectedIndex: _selectedIndex,
             onDestinationSelected: _onItemTapped,
-            destinations: [
-              NavigationDestination(
-                icon: Icon(Icons.home, size: 30),
-                selectedIcon: Icon(
-                  Icons.home,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Trang chủ",
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.monitor_heart_outlined, size: 30),
-                selectedIcon: Icon(
-                  Icons.monitor_heart_outlined,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Sức khỏe",
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.chat_outlined, size: 30),
-                selectedIcon: Icon(
-                  Icons.chat_outlined,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Trò chuyện",
-              ),
-              NavigationDestination(
-                icon: SvgPicture.asset('assets/icons/stethoscope.svg',
-                    height: 30, width: 30),
-                selectedIcon: SvgPicture.asset(
-                    'assets/icons/stethoscope_selected.svg',
-                    height: 30,
-                    width: 30),
-                label: "Tư vấn",
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.grid_view_outlined, size: 30),
-                selectedIcon: Icon(
-                  Icons.grid_view_outlined,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Tiện ích",
-              ),
-            ],
+            destinations: _widgetOptions(_roleId),
           ),
         ),
         body: Center(
@@ -137,19 +247,51 @@ class _NavigationMenuState extends State<NavigationMenu> {
   }
 
   Widget _getSelectedPage(int index) {
-    switch (index) {
-      case 0:
-        return HomeScreen();
-      case 1:
-        return HealthScreen();
-      case 2:
-        return MobileLayoutScreen();
-      case 3:
-        return HomeDoctorAdviseScreen();
-      case 4:
-        return UltilityScreen();
-      default:
-        return HomeScreen();
+    if (_roleId == 2) {
+      switch (index) {
+        case 0:
+          return HomeScreen();
+        case 1:
+          return HealthScreen();
+        case 2:
+          return MobileLayoutScreen();
+        case 3:
+          return HomeDoctorAdviseScreen();
+        case 4:
+          return UltilityScreen();
+        default:
+          return HomeScreen();
+      }
+    } else if (_roleId == 3) {
+      switch (index) {
+        case 0:
+          return HomeScreen();
+        case 1:
+          return HealthScreen();
+        case 2:
+          return MobileLayoutScreen();
+        case 3:
+          return HomeDoctorAdviseScreen();
+        case 4:
+          return EmergencyList();
+        default:
+          return HomeScreen();
+      }
+    } else {
+      switch (index) {
+        case 0:
+          return HomeScreen();
+        case 1:
+          return HealthScreen();
+        case 2:
+          return MobileLayoutScreen();
+        case 3:
+          return HomeDoctorAdviseScreen();
+        case 4:
+          return UltilityScreen();
+        default:
+          return HomeScreen();
+      }
     }
   }
 

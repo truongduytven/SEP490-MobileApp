@@ -183,13 +183,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  int roleId = 0;
   double buttonX = 5;
   double buttonY = 500;
   final double buttonSize = 60.0;
   final double borderRadius = 50.0;
   final double edgePadding = 5.0;
-  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  @override
+  void initState() {
+    super.initState();
+    roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -204,6 +211,7 @@ class _MyAppState extends State<MyApp> {
         return Stack(
           children: [
             child!,
+            if(roleId == 2)
             Positioned(
               left: buttonX,
               top: buttonY,
