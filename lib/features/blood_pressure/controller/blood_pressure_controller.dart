@@ -34,12 +34,12 @@ class BloodPressureController {
       debugPrint("Error fetching blood pressure evaluation: $e");
 
       // Thông báo lỗi
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Không thể lấy đánh giá huyết áp'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Không thể lấy đánh giá huyết áp'),
+      //     backgroundColor: Colors.red,
+      //   ),
+      // );
 
       return "Không thể lấy đánh giá";
     }

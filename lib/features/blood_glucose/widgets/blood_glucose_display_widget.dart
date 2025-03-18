@@ -1,9 +1,13 @@
-import 'package:flutter/foundation.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/blood_glucose/controller/blood_glucose_controller.dart';
 import 'package:sep490/theme/color.dart';
 
-class BloodGlucoseDisplayWidget extends StatelessWidget {
+class BloodGlucoseDisplayWidget extends ConsumerStatefulWidget {
   final num bloodGlucose;
   final String dateTime;
   final VoidCallback onEdit;
@@ -19,6 +23,38 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
     required this.period,
     required this.typeData,
   });
+
+  @override
+  ConsumerState<BloodGlucoseDisplayWidget> createState() =>
+      _BloodGlucoseDisplayWidgetState();
+}
+
+class _BloodGlucoseDisplayWidgetState
+    extends ConsumerState<BloodGlucoseDisplayWidget> {
+  String bloodGlucoseEvaluation = "Đang đánh giá...";
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBloodGlucoseEvaluation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(AssetImage('assets/gif/notes.gif'), context);
+    });
+  }
+
+  Future<void> fetchBloodGlucoseEvaluation() async {
+    final bloodGlucoseController = ref.read(bloodGlucoseControllerProvider);
+    final result = await bloodGlucoseController.getBloodGlucoseEvaluation(
+      context,
+      widget.bloodGlucose.toDouble(),
+      widget.period,
+    );
+    setState(() {
+      bloodGlucoseEvaluation = result;
+    });
+  }
+
   bool isToday(String dateTime) {
     final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
     final DateTime dateFromString = dateFormat.parse(dateTime);
@@ -29,9 +65,9 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
   }
 
   Color get classificationColor {
-    if (bloodGlucose < 60) {
+    if (widget.bloodGlucose < 60) {
       return Colors.orange; // Yellow for Bradycardia
-    } else if (bloodGlucose >= 60 && bloodGlucose <= 100) {
+    } else if (widget.bloodGlucose >= 60 && widget.bloodGlucose <= 100) {
       return Colors.green; // Green for Normal
     } else {
       return Colors.red; // Red for Tachycardia
@@ -39,12 +75,22 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
   }
 
   String get heartBeatClassification {
-    if (bloodGlucose < 60) {
+    if (widget.bloodGlucose < 60) {
       return "Đường huyết chậm";
-    } else if (bloodGlucose >= 60 && bloodGlucose <= 100) {
+    } else if (widget.bloodGlucose >= 60 && widget.bloodGlucose <= 100) {
       return "Đường huyết bình thường";
     } else {
       return "Đường huyết nhanh";
+    }
+  }
+
+  Color getColorBasedOnEvaluation(String evaluation) {
+    if (evaluation.toLowerCase().contains("cao")) {
+      return Colors.red;
+    } else if (evaluation.toLowerCase().contains("thấp")) {
+      return Colors.orange;
+    } else {
+      return Colors.green;
     }
   }
 
@@ -62,8 +108,44 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isButtonDisabled = !isToday(dateTime) && !isDraft;
-
+    bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Màu nền trắng
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GifView.asset(
+                'assets/gif/notes.gif',
+                width: 200,
+                height: 200,
+                frameRate: 90,
+              ),
+              SizedBox(height: 10),
+              DefaultTextStyle(
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 20,
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      "Đang thêm đường huyết...",
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      speed: Duration(milliseconds: 50), // Điều chỉnh tốc độ
+                    ),
+                  ],
+                  isRepeatingAnimation: false, // Chạy 1 lần
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -87,7 +169,7 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
                       // Row with date-time and edit button
                       Row(
                         children: [
-                          isDraft
+                          widget.isDraft
                               ? Icon(
                                   Icons.calendar_month_outlined,
                                   color: AppColors.textColor,
@@ -102,9 +184,10 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
                           Expanded(
                             child: Center(
                               child: Text(
-                                isToday(dateTime) // Check if it's today's date
+                                isToday(widget
+                                        .dateTime) // Check if it's today's date
                                     ? "Hôm nay"
-                                    : dateTime,
+                                    : widget.dateTime,
                                 style: TextStyle(
                                     color: AppColors.textColor,
                                     fontSize: 24,
@@ -113,9 +196,9 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
                               ),
                             ),
                           ),
-                          isToday(dateTime)
+                          isToday(widget.dateTime)
                               ? IconButton(
-                                  onPressed: onEdit,
+                                  onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,
                                       size: 30, color: AppColors.primaryColor),
                                 )
@@ -135,7 +218,7 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              bloodGlucose.toString(),
+                              widget.bloodGlucose.toString(),
                               style: TextStyle(
                                   fontSize: 80, fontWeight: FontWeight.w700),
                             ),
@@ -162,7 +245,7 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              getPeriodIcon(period),
+                              getPeriodIcon(widget.period),
                               color: AppColors.textPrimary,
                               size: 24,
                             ),
@@ -170,7 +253,7 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
                               width: 5,
                             ),
                             Text(
-                              period,
+                              widget.period,
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w500,
@@ -195,22 +278,47 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          // Row(
+                          //   children: [
+                          //     Icon(
+                          //       Icons.bloodtype_outlined,
+                          //       size: 30,
+                          //       color: classificationColor,
+                          //     ),
+                          //     SizedBox(
+                          //       width: 10,
+                          //     ),
+                          //     Text(
+                          //       overflow: TextOverflow.ellipsis,
+                          //       heartBeatClassification,
+                          //       style: TextStyle(
+                          //         fontSize: 26,
+                          //         color: classificationColor,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+
                           Row(
                             children: [
                               Icon(
                                 Icons.bloodtype_outlined,
                                 size: 30,
-                                color: classificationColor,
+                                color: getColorBasedOnEvaluation(
+                                    bloodGlucoseEvaluation),
                               ),
+                              SizedBox(width: 10),
                               SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                overflow: TextOverflow.ellipsis,
-                                heartBeatClassification,
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  color: classificationColor,
+                                width: MediaQuery.of(context).size.width * 0.65,
+                                child: Text(
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  bloodGlucoseEvaluation,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: getColorBasedOnEvaluation(
+                                        bloodGlucoseEvaluation),
+                                  ),
                                 ),
                               ),
                             ],
@@ -253,9 +361,56 @@ class BloodGlucoseDisplayWidget extends StatelessWidget {
             child: isButtonDisabled
                 ? SizedBox.shrink() // Use an empty widget when disabled
                 : ElevatedButton(
-                    onPressed: () {
-                      print('hehe $bloodGlucose $dateTime');
-                    },
+                    // onPressed: () {
+                    //   print('hehe ${widget.bloodGlucose} ${widget.dateTime}');
+                    // },
+
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            try {
+                              SharedPrefsHelper sharedPrefsHelper =
+                                  SharedPrefsHelper();
+                              final currentUserAccountID =
+                                  sharedPrefsHelper.getInt("accountId");
+                              final currentUserFullName =
+                                  sharedPrefsHelper.getString("fullName");
+                              final heartRateController =
+                                  ref.read(bloodGlucoseControllerProvider);
+
+                              final success =
+                                  await heartRateController.addBloodGlucose(
+                                context: context,
+                                elderlyId: currentUserAccountID ?? 0,
+                                bloodGlucose: widget.bloodGlucose.toDouble(),
+                                bloodGlucoseSource: "Thủ công",
+                                period: widget.period,
+                                createdBy: currentUserFullName ?? "Unknown",
+                              );
+                              await Future.delayed(Duration(seconds: 2));
+
+                              if (mounted) {
+                                if (success) {
+                                  Navigator.pop(context);
+                                }
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Lỗi: ${e.toString()}')),
+                              );
+                            } finally {
+                              await Future.delayed(Duration(seconds: 2));
+                              if (mounted) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondaryColor,
                       padding: EdgeInsets.all(12),

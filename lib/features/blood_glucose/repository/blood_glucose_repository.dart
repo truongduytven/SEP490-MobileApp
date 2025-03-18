@@ -3,11 +3,14 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class BloodPressureRepository {
-  Future<String> getBloodPressureEvaluation(
-      BuildContext context, int systolic, int diastolic) async {
+class BloodGlucoseRepository {
+  Future<String> getBloodGlucoseEvaluation(
+    BuildContext context,
+    double bloodGlucose,
+    String period,
+  ) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/evaluation/blood-pressure?systolic=$systolic&diastolic=$diastolic');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/evaluation/blood-glucose?bloodGlucose=${bloodGlucose}&time=$period');
 
     try {
       final response = await http.get(url);
@@ -17,10 +20,10 @@ class BloodPressureRepository {
 
         // Kiểm tra nếu status == 1
         if (data["status"] == 1) {
-          return data["data"].toString(); 
+          return data["data"].toString();
         } else {
           CherryToast.error(
-            toastDuration: Duration(seconds: 3), 
+            toastDuration: Duration(seconds: 3),
             title: Text(
               "Lỗi: Status không hợp lệ (${data["message"]})",
               style: TextStyle(color: Colors.black),
@@ -30,7 +33,7 @@ class BloodPressureRepository {
         }
       } else {
         CherryToast.error(
-          toastDuration: Duration(seconds: 3), 
+          toastDuration: Duration(seconds: 3),
           title: Text(
             "Lỗi HTTP ${response.statusCode}",
             style: TextStyle(color: Colors.black),
@@ -41,7 +44,7 @@ class BloodPressureRepository {
       }
     } catch (e) {
       CherryToast.error(
-        toastDuration: Duration(seconds: 3), 
+        toastDuration: Duration(seconds: 3),
         title: Text(
           "Lỗi kết nối API: $e",
           style: TextStyle(color: Colors.black),
@@ -51,17 +54,16 @@ class BloodPressureRepository {
     }
   }
 
-  Future<bool> addBloodPressure({
+  Future<bool> addBloodGlucose({
     required BuildContext context,
     required int elderlyId,
-    required int systolic,
-    required int diastolic,
-    required String systolicSource,
-    required String diastolicSource,
+    required double bloodGlucose,
+    required String bloodGlucoseSource,
+    required String period,
     required String createdBy,
   }) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/blood-pressure');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/blood-glucose');
 
     try {
       final response = await http.post(
@@ -72,10 +74,9 @@ class BloodPressureRepository {
         },
         body: jsonEncode({
           "accountId": elderlyId,
-          "systolic": systolic,
-          "diastolic": diastolic,
-          "systolicSource": systolicSource,
-          "diastolicSource": diastolicSource,
+          "bloodGlucose1": bloodGlucose.toString(),
+          "bloodGlucoseSource": bloodGlucoseSource,
+          "time": period,
           "createdBy": createdBy,
         }),
       );
@@ -86,7 +87,7 @@ class BloodPressureRepository {
         if (data["status"] == 1) {
           CherryToast.success(
                   toastDuration: Duration(seconds: 2),
-                  title: Text("Huyết áp đã được thêm thành công!",
+                  title: Text("Đường huyết đã được thêm thành công!",
                       style: TextStyle(color: Colors.black)))
               .show(context);
           return true;
@@ -103,7 +104,7 @@ class BloodPressureRepository {
         }
       } else {
         CherryToast.error(
-          toastDuration: Duration(seconds: 3), 
+          toastDuration: Duration(seconds: 3),
           title: Text(
             "Lỗi HTTP ${response.statusCode}",
             style: TextStyle(color: Colors.black),
@@ -114,7 +115,7 @@ class BloodPressureRepository {
       }
     } catch (e) {
       CherryToast.error(
-        toastDuration: Duration(seconds: 3), 
+        toastDuration: Duration(seconds: 3),
         title: Text(
           "Lỗi kết nối API: $e",
           style: TextStyle(color: Colors.black),

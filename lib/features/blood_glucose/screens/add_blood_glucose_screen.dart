@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/bloodGlucose/blood_glucose_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/bloodGlucose/blood_glucose_input_widget.dart';
+import 'package:sep490/features/blood_glucose/widgets/blood_glucose_display_widget.dart';
+import 'package:sep490/features/blood_glucose/widgets/blood_glucose_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddBloodGlucoseScreen extends StatefulWidget {

@@ -1,5 +1,4 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gif_view/gif_view.dart';
@@ -73,6 +72,7 @@ class _BloodPressureDisplayWidgetState
       return Colors.green;
     }
   }
+
   // String get bloodPressureClassification {
   //   print("value ${widget.systolic} ${widget.diastolic}");
   //   if (widget.systolic < 120 && widget.diastolic < 80) {
@@ -379,10 +379,10 @@ class _BloodPressureDisplayWidgetState
                     // },
 
                     onPressed: isLoading
-                        ? null // Khi đang loading thì disable button
+                        ? null 
                         : () async {
                             setState(() {
-                              isLoading = true; // Bắt đầu loading
+                              isLoading = true; 
                             });
 
                             try {
@@ -412,23 +412,18 @@ class _BloodPressureDisplayWidgetState
                                   Navigator.pop(context);
                                 }
                               }
-                              // Navigator.pop(
-                              //     context); // Quay về màn hình trước đó
+                             
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('Lỗi: ${e.toString()}')),
                               );
                             } finally {
-                              // await Future.delayed(Duration(seconds: 10));
-                              // if (!mounted) return;
-                              // setState(() {
-                              //   isLoading = false; // Kết thúc loading
-                              // });
+                            
                               await Future.delayed(Duration(
-                                  seconds: 2)); // Giữ màn hình loading lâu hơn
+                                  seconds: 2)); 
                               if (mounted) {
                                 setState(() {
-                                  isLoading = false; // Kết thúc loading
+                                  isLoading = false; 
                                 });
                               }
                             }
