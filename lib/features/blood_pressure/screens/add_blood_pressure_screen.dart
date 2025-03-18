@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/bloodPressure/blood_pressure_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/bloodPressure/blood_pressure_input_widget.dart';
+import 'package:sep490/features/blood_pressure/widgets/blood_pressure_display_widget.dart';
+import 'package:sep490/features/blood_pressure/widgets/blood_pressure_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddBloodPressureScreen extends StatefulWidget {
@@ -115,21 +115,49 @@ class _AddBloodPressureScreenState extends State<AddBloodPressureScreen> {
           ),
         ],
       ),
-      body: showBloodPressuretWidget
-          ? BloodPressureDisplayWidget(
-              isDraft: isDraft,
-              typeData: "Thủ công",
-              systolic: currentValueSystolic,
-              diastolic: currentValueDiastolic,
-              dateTime: formattedDateTime,
-              onEdit: onEdit,
-            )
-          : BloodPressureInputWidget(
-              initialValueSystolic: currentValueSystolic,
-              initialValueDiastolic: currentValueDiastolic,
-              dateTime: formattedDateTime,
-              onSubmit: onSubmit,
+      body: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          final curvedAnimation = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutBack,
+          );
+
+          return FadeTransition(
+            opacity: curvedAnimation,
+            child: ScaleTransition(
+              scale: Tween<double>(
+                begin: 0.85,
+                end: 1.0,
+              ).animate(curvedAnimation),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, 0.1),
+                  end: Offset(0, 0),
+                ).animate(curvedAnimation),
+                child: child,
+              ),
             ),
+          );
+        },
+        child: showBloodPressuretWidget
+            ? BloodPressureDisplayWidget(
+                key: ValueKey<bool>(showBloodPressuretWidget),
+                isDraft: isDraft,
+                typeData: "Thủ công",
+                systolic: currentValueSystolic,
+                diastolic: currentValueDiastolic,
+                dateTime: formattedDateTime,
+                onEdit: onEdit,
+              )
+            : BloodPressureInputWidget(
+                key: ValueKey<bool>(showBloodPressuretWidget),
+                initialValueSystolic: currentValueSystolic,
+                initialValueDiastolic: currentValueDiastolic,
+                dateTime: formattedDateTime,
+                onSubmit: onSubmit,
+              ),
+      ),
     );
   }
 }
