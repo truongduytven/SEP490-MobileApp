@@ -71,8 +71,8 @@ class HeartRateRepository {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          "elderlyId": elderlyId,
-          "heartRate": heartRate,
+          "accountId": elderlyId,
+          "heartRate1": heartRate,
           "heartRateSource": heartRateSource,
           "createdBy": createdBy,
         }),

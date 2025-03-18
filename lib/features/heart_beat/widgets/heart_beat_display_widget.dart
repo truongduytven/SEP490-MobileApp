@@ -295,7 +295,8 @@ class _HeartBeatDisplayWidgetState
                                   final heartRateController =
                                       ref.read(heartRateControllerProvider);
 
-                                  await heartRateController.addHeartRate(
+                                  final success =
+                                      await heartRateController.addHeartRate(
                                     context: context,
                                     elderlyId: currentUserAccountID ?? 0,
                                     heartRate: widget.heartBeat.toInt(),
@@ -305,7 +306,9 @@ class _HeartBeatDisplayWidgetState
                                   await Future.delayed(Duration(seconds: 2));
 
                                   if (mounted) {
-                                    Navigator.pop(context);
+                                    if (success) {
+                                      Navigator.pop(context);
+                                    }
                                   }
                                   // Navigator.pop(
                                   //     context); // Quay về màn hình trước đó
