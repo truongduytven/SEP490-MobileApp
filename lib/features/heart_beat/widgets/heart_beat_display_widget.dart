@@ -1,0 +1,283 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:sep490/features/heart_beat/controller/heart_rate_controller.dart';
+import 'package:sep490/theme/color.dart';
+
+class HeartBeatDisplayWidget extends ConsumerStatefulWidget {
+  final num heartBeat;
+  final String dateTime;
+  final VoidCallback onEdit;
+  final bool isDraft;
+  final String typeData;
+  const HeartBeatDisplayWidget({
+    super.key,
+    required this.heartBeat,
+    required this.dateTime,
+    required this.onEdit,
+    required this.isDraft,
+    required this.typeData,
+  });
+
+  @override
+  ConsumerState<HeartBeatDisplayWidget> createState() =>
+      _HeartBeatDisplayWidgetState();
+}
+
+class _HeartBeatDisplayWidgetState
+    extends ConsumerState<HeartBeatDisplayWidget> {
+  String heartRateEvaluation = "Đang đánh giá...";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchHeartRateEvaluation();
+  }
+
+  Future<void> fetchHeartRateEvaluation() async {
+    final heartRateController = ref.read(heartRateControllerProvider);
+    final result = await heartRateController.getHeartRateEvaluation(
+        context, widget.heartBeat.toInt());
+    setState(() {
+      heartRateEvaluation = result;
+    });
+  }
+
+  bool isToday(String dateTime) {
+    final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
+    final DateTime dateFromString = dateFormat.parse(dateTime);
+    final DateTime today = DateTime.now();
+    return dateFromString.year == today.year &&
+        dateFromString.month == today.month &&
+        dateFromString.day == today.day;
+  }
+
+  Color getColorBasedOnEvaluation(String evaluation) {
+    if (evaluation.toLowerCase().contains("nhanh")) {
+      return Colors.red;
+    } else if (evaluation.toLowerCase().contains("chậm")) {
+      return Colors.orange;
+    } else {
+      return Colors.green;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Card(
+                    color: AppColors.bgColor,
+                    margin: const EdgeInsets.all(20.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: const BorderSide(
+                          color: AppColors.borderColor, width: 1.5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Row with date-time and edit button
+                          Row(
+                            children: [
+                              widget.isDraft
+                                  ? Icon(
+                                      Icons.calendar_month_outlined,
+                                      color: AppColors.textColor,
+                                      size: 30,
+                                    )
+                                  : Icon(
+                                      Icons.delete_outline,
+                                      color: AppColors.primaryColor,
+                                      size: 30,
+                                    ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Center(
+                                  child: Text(
+                                    isToday(widget
+                                            .dateTime) // Check if it's today's date
+                                        ? "Hôm nay"
+                                        : widget.dateTime,
+                                    style: TextStyle(
+                                        color: AppColors.textColor,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              isToday(widget.dateTime)
+                                  ? IconButton(
+                                      onPressed: widget.onEdit,
+                                      icon: Icon(Icons.edit,
+                                          size: 30,
+                                          color: AppColors.primaryColor),
+                                    )
+                                  : Icon(
+                                      Icons.lock_outline,
+                                      size: 30,
+                                      color: AppColors.primaryColor,
+                                    )
+                            ],
+                          ),
+                          // Weight display
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  widget.heartBeat.toString(),
+                                  style: TextStyle(
+                                      fontSize: 80,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                Transform.translate(
+                                  offset: Offset(0,
+                                      -25), // Adjust the vertical position of "kg"
+                                  child: Text(
+                                    "Nhịp/phút",
+                                    style: TextStyle(
+                                        fontSize: 40,
+                                        color: AppColors.grayColor5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.borderColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.draw_outlined,
+                                  color: AppColors.textPrimary,
+                                  size: 24,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  widget.typeData,
+                                  style: TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 26,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20, bottom: 10),
+                            child: Divider(
+                                color: AppColors.grayColor4,
+                                thickness: 0.3,
+                                height: 24),
+                          ),
+
+                          SizedBox(
+                            height: 10,
+                          ),
+
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.monitor_heart_outlined,
+                                size: 30,
+                                color: getColorBasedOnEvaluation(
+                                    heartRateEvaluation), // Màu cố định
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                heartRateEvaluation, // Hiển thị đánh giá từ API
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  color: getColorBasedOnEvaluation(
+                                      heartRateEvaluation), // Màu cố định
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Lưu Button
+
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                child: isButtonDisabled
+                    ? SizedBox.shrink() // Use an empty widget when disabled
+                    : ElevatedButton(
+                        onPressed: () {
+                          print('hehe ${widget.heartBeat} ${widget.dateTime}');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondaryColor,
+                          padding: EdgeInsets.all(12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        child: Text(
+                          'Lưu',
+                          style: TextStyle(
+                            fontSize: 28,
+                            color: AppColors.bgColor,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+
+          // // Lớp phủ khi đang tải
+          // if (heartRateEvaluation == "Đang tải...")
+          //   Container(
+          //     color: Colors.black.withOpacity(0.5), // Lớp phủ mờ
+          //     child: Center(
+          //       child: Column(
+          //         mainAxisSize: MainAxisSize.min,
+          //         children: [
+          //           CircularProgressIndicator(
+          //             color: AppColors.primaryColor,
+          //           ),
+          //           SizedBox(height: 10),
+          //           Text(
+          //             "Đang tải...",
+          //             style: TextStyle(color: Colors.white, fontSize: 20),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+        ],
+      ),
+    );
+  }
+}

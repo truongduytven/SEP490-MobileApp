@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/heartBeat/heart_beat_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/heartBeat/heart_beat_input_widget.dart';
+import 'package:sep490/features/heart_beat/widgets/heart_beat_display_widget.dart';
+import 'package:sep490/features/heart_beat/widgets/heart_beat_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddHeartBeatScreen extends StatefulWidget {
@@ -109,19 +109,63 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
           ),
         ],
       ),
-      body: showHeartBeatWidget
-          ? HeartBeatDisplayWidget(
-              isDraft: isDraft,
-              typeData: "Thủ công",
-              dateTime: formattedDateTime,
-              heartBeat: currentValue,
-              onEdit: onEdit,
-            )
-          : HeartBeatInputWidget(
-              dateTime: formattedDateTime,
-              initialValue: currentValue,
-              onSubmit: onSubmit,
+      //   body: showHeartBeatWidget
+      //       ? HeartBeatDisplayWidget(
+      //           isDraft: isDraft,
+      //           typeData: "Thủ công",
+      //           dateTime: formattedDateTime,
+      //           heartBeat: currentValue,
+      //           onEdit: onEdit,
+      //         )
+      //       : HeartBeatInputWidget(
+      //           dateTime: formattedDateTime,
+      //           initialValue: currentValue,
+      //           onSubmit: onSubmit,
+      //         ),
+      body: AnimatedSwitcher(
+      
+        duration: Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          final curvedAnimation = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutBack,
+          );
+
+          return FadeTransition(
+            opacity: curvedAnimation,
+            child: ScaleTransition(
+              scale: Tween<double>(
+                begin: 0.85,
+                end: 1.0, 
+              ).animate(curvedAnimation),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, 0.1), 
+                  end: Offset(0, 0),
+                ).animate(curvedAnimation),
+                child: child,
+              ),
             ),
+          );
+        },
+        child: showHeartBeatWidget
+            ? HeartBeatDisplayWidget(
+                key: ValueKey<bool>(
+                    showHeartBeatWidget), 
+                isDraft: isDraft,
+                typeData: "Thủ công",
+                dateTime: formattedDateTime,
+                heartBeat: currentValue,
+                onEdit: onEdit,
+              )
+            : HeartBeatInputWidget(
+                key: ValueKey<bool>(
+                    showHeartBeatWidget), 
+                dateTime: formattedDateTime,
+                initialValue: currentValue,
+                onSubmit: onSubmit,
+              ),
+      ),
     );
   }
 }
