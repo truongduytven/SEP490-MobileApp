@@ -1,3 +1,4 @@
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/features/heart_beat/repository/heart_rate_repository.dart';
@@ -34,6 +35,47 @@ class HeartRateController {
       );
 
       return "Không thể lấy đánh giá";
+    }
+  }
+
+  Future<bool> addHeartRate({
+    required BuildContext context,
+    required int elderlyId,
+    required int heartRate,
+    required String heartRateSource,
+    required String createdBy,
+  }) async {
+    try {
+      final success = await heartRateRepository.addHeartRate(
+        context: context,
+        elderlyId: elderlyId,
+        heartRate: heartRate,
+        heartRateSource: heartRateSource,
+        createdBy: createdBy,
+      );
+
+      if (success) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('Nhịp tim đã được thêm thành công!'),
+        //     backgroundColor: Colors.green,
+        //   ),
+        // );
+      }
+
+      return success;
+    } catch (e) {
+      debugPrint("Error adding heart rate: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+        title: Text(
+          "Không thể thêm nhịp tim",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
     }
   }
 }

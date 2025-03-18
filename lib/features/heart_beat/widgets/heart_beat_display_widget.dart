@@ -1,6 +1,9 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/heart_beat/controller/heart_rate_controller.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -27,11 +30,15 @@ class HeartBeatDisplayWidget extends ConsumerStatefulWidget {
 class _HeartBeatDisplayWidgetState
     extends ConsumerState<HeartBeatDisplayWidget> {
   String heartRateEvaluation = "Đang đánh giá...";
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     fetchHeartRateEvaluation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(AssetImage('assets/gif/notes.gif'), context);
+    });
   }
 
   Future<void> fetchHeartRateEvaluation() async {
@@ -65,6 +72,44 @@ class _HeartBeatDisplayWidgetState
   @override
   Widget build(BuildContext context) {
     bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Màu nền trắng
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GifView.asset(
+                'assets/gif/notes.gif',
+                width: 200,
+                height: 200,
+                frameRate: 90,
+              ),
+              SizedBox(height: 10),
+              DefaultTextStyle(
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 20,
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      "Đang thêm nhịp tim...",
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      speed: Duration(milliseconds: 50), // Điều chỉnh tốc độ
+                    ),
+                  ],
+                  isRepeatingAnimation: false, // Chạy 1 lần
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       body: Stack(
@@ -233,9 +278,58 @@ class _HeartBeatDisplayWidgetState
                 child: isButtonDisabled
                     ? SizedBox.shrink() // Use an empty widget when disabled
                     : ElevatedButton(
-                        onPressed: () {
-                          print('hehe ${widget.heartBeat} ${widget.dateTime}');
-                        },
+                        onPressed: isLoading
+                            ? null // Khi đang loading thì disable button
+                            : () async {
+                                setState(() {
+                                  isLoading = true; // Bắt đầu loading
+                                });
+
+                                try {
+                                  SharedPrefsHelper sharedPrefsHelper =
+                                      SharedPrefsHelper();
+                                  final currentUserAccountID =
+                                      sharedPrefsHelper.getInt("accountId");
+                                  final currentUserFullName =
+                                      sharedPrefsHelper.getString("fullName");
+                                  final heartRateController =
+                                      ref.read(heartRateControllerProvider);
+
+                                  await heartRateController.addHeartRate(
+                                    context: context,
+                                    elderlyId: currentUserAccountID ?? 0,
+                                    heartRate: widget.heartBeat.toInt(),
+                                    heartRateSource: "Thủ công",
+                                    createdBy: currentUserFullName ?? "Unknown",
+                                  );
+                                  await Future.delayed(Duration(seconds: 2));
+
+                                  if (mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                  // Navigator.pop(
+                                  //     context); // Quay về màn hình trước đó
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Lỗi: ${e.toString()}')),
+                                  );
+                                } finally {
+                                  // await Future.delayed(Duration(seconds: 10));
+                                  // if (!mounted) return;
+                                  // setState(() {
+                                  //   isLoading = false; // Kết thúc loading
+                                  // });
+                                  await Future.delayed(Duration(
+                                      seconds:
+                                          2)); // Giữ màn hình loading lâu hơn
+                                  if (mounted) {
+                                    setState(() {
+                                      isLoading = false; // Kết thúc loading
+                                    });
+                                  }
+                                }
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondaryColor,
                           padding: EdgeInsets.all(12),
@@ -256,21 +350,39 @@ class _HeartBeatDisplayWidgetState
             ],
           ),
 
-          // // Lớp phủ khi đang tải
-          // if (heartRateEvaluation == "Đang tải...")
+          // Lớp phủ khi đang tải
+          // if (isLoading)
           //   Container(
-          //     color: Colors.black.withOpacity(0.5), // Lớp phủ mờ
+          //     color: Colors.white, // Lớp phủ mờ
           //     child: Center(
           //       child: Column(
           //         mainAxisSize: MainAxisSize.min,
           //         children: [
-          //           CircularProgressIndicator(
-          //             color: AppColors.primaryColor,
+          //           GifView.asset(
+          //             'assets/gif/notes.gif',
+          //             width: 200,
+          //             height: 200,
+          //             frameRate: 90,
           //           ),
           //           SizedBox(height: 10),
-          //           Text(
-          //             "Đang tải...",
-          //             style: TextStyle(color: Colors.white, fontSize: 20),
+          //           DefaultTextStyle(
+          //             style: TextStyle(
+          //               color: AppColors.primaryColor,
+          //               fontSize: 20,
+          //             ),
+          //             child: AnimatedTextKit(
+          //               animatedTexts: [
+          //                 TyperAnimatedText(
+          //                   "Đang thêm nhịp tim",
+          //                   textStyle: TextStyle(
+          //                     fontWeight: FontWeight.w600,
+          //                   ),
+          //                   speed: Duration(
+          //                       milliseconds: 100), // Điều chỉnh tốc độ
+          //                 ),
+          //               ],
+          //               isRepeatingAnimation: false, // Chạy 1 lần
+          //             ),
           //           ),
           //         ],
           //       ),
