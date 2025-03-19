@@ -13,21 +13,53 @@ class HereService {
       var response = await Dio().get(url);
       if (response.statusCode == 200) {
         List hospitals = response.data["items"];
+        List<Map<String, dynamic>> hospitalList = [];
+        for (var hospital in hospitals) {
+          double hospitalLat = hospital["position"]["lat"];
+          double hospitalLng = hospital["position"]["lng"];
 
-        return hospitals.map((hospital) {
-          return {
+          Map<String, String> address =
+              await getAddress(hospitalLat, hospitalLng);
+
+          hospitalList.add({
             "name": hospital["title"] ?? "Không có tên",
-            "lat": hospital["position"]["lat"],
-            "lon": hospital["position"]["lng"],
+            "lat": hospitalLat,
+            "lon": hospitalLng,
             "phone": hospital["contacts"]?[0]?["phone"]?[0]?["value"] ??
                 "Không có số điện thoại",
-          };
-        }).toList();
+            "address":
+                address["address"] ?? "Không có dữ liệu",
+          });
+        }
+
+        return hospitalList;
       }
     } catch (e) {
       print("Lỗi khi lấy danh sách bệnh viện: $e");
     }
 
     return [];
+  }
+
+  static Future<Map<String, String>> getAddress(double lat, double lng) async {
+    String url =
+        "https://revgeocode.search.hereapi.com/v1/revgeocode?at=$lat,$lng&lang=vi-VN&apiKey=$apiKey";
+
+    try {
+      var response = await Dio().get(url);
+      if (response.statusCode == 200) {
+        var data = response.data;
+        if (data["items"] != null && data["items"].isNotEmpty) {
+          var address = data["items"][0]["address"];
+
+          return {
+            "address": address["label"] ?? "Không có dữ liệu",
+          };
+        }
+      }
+    } catch (e) {
+      print("Lỗi khi lấy địa chỉ: $e");
+    }
+    return {"error": "Không thể lấy dữ liệu"};
   }
 }

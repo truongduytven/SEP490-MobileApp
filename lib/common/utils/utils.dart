@@ -136,14 +136,13 @@ String convertDateTime(String dateTime) {
 }
 
 String convertDateTimeToString(String dateTime) {
-  // '2025-02-25T03:00:00Z' to '03:00 ngày 25/02/2025'
-  var dateParts = dateTime.split('T')[0].split('-');
-  var day = dateParts[2];
-  var month = dateParts[1];
-  var year = dateParts[0];
-  var time = dateTime.split('T')[1].split(':');
-  var hour = time[0];
-  var minute = time[1];
-  var formattedDateTime = '$hour:$minute $day/$month/$year';
+  // '17-03-2025 15:23' to '03:00 ngày 25/02/2025'
+  var dateParts = dateTime.split(' ');
+  var date = dateParts[0];
+  var time = dateParts[1];
+  var timeParts = time.split(':');
+  var hour = timeParts[0];
+  var minute = timeParts[1];
+  var formattedDateTime = '$hour:$minute ngày $date';
   return formattedDateTime;
 }

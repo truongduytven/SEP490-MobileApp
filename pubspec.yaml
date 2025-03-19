@@ -87,6 +87,7 @@ dependencies:
   maplibre_gl: ^0.21.0
   webview_flutter: ^4.10.0
   url_launcher: ^6.3.1
+  flutter_overlay_window: ^0.4.5
 
 dev_dependencies:
   flutter_test:
@@ -117,6 +118,7 @@ flutter:
   assets:
     - assets/img/
     - assets/images/
+    - assets/music/
     - assets/img3D/
     - assets/icons/
     - assets/img3D/

@@ -4,6 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/overlay_service.dart';
+import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
@@ -12,9 +14,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
+  await requestOverlayPermission();
   await Firebase.initializeApp(
     options: FirebaseOptions(
       apiKey: dotenv.env['API_KEY'] ?? '',
@@ -160,6 +164,8 @@ void main() async {
     ),
   );
 
+  await OverlayService.showOverlay();
+
   /// Set navigator key for Zego Call Invitation Service
   ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
 
@@ -168,6 +174,13 @@ void main() async {
       child: MyApp(navigatorKey: navigatorKey),
     ),
   );
+}
+
+Future<void> requestOverlayPermission() async {
+  bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
+  if (!isGranted) {
+    await FlutterOverlayWindow.requestPermission();
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -182,7 +195,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   int roleId = 0;
   double buttonX = 5;
@@ -190,11 +203,53 @@ class _MyAppState extends State<MyApp> {
   final double buttonSize = 60.0;
   final double borderRadius = 50.0;
   final double edgePadding = 5.0;
-  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+  late AnimationController _controller;
+  late Animation<double> _animationX;
+  late Animation<double> _animationY;
+  bool _navigateToEmergency = false;
+  final methodChannel = MethodChannel('com.example.sepp490/overlay');
+
   @override
   void initState() {
     super.initState();
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
+    SharedPrefsHelper.roleNotifier.addListener(_onRoleChanged);
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+  }
+
+  void _onRoleChanged() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    SharedPrefsHelper.roleNotifier.removeListener(_onRoleChanged);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _animateButtonToEdge() {
+    final screenSize = MediaQuery.of(context).size;
+    double screenMid = screenSize.width / 2;
+    double targetX = (buttonX < screenMid)
+        ? edgePadding
+        : screenSize.width - buttonSize - edgePadding;
+
+    _animationX = Tween<double>(begin: buttonX, end: targetX).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    _animationY = Tween<double>(begin: buttonY, end: buttonY).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _controller.forward(from: 0).then((_) {
+      setState(() {
+        buttonX = targetX;
+      });
+    });
   }
 
   @override
@@ -202,7 +257,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'LeagueSpartan'),
       color: AppColors.bgColor,
-      home: SplashScreen(),
+      home: _navigateToEmergency ? HomeDoctorAdviseScreen() :  SplashScreen(),
       scaffoldMessengerKey: scaffoldMessengerKey,
       navigatorKey: widget.navigatorKey,
       onGenerateRoute: (settings) => generateRoute(settings),
@@ -211,68 +266,71 @@ class _MyAppState extends State<MyApp> {
         return Stack(
           children: [
             child!,
-            if(roleId == 2)
-            Positioned(
-              left: buttonX,
-              top: buttonY,
-              child: GestureDetector(
-                onPanUpdate: (details) {
-                  setState(() {
-                    buttonX += details.delta.dx;
-                    buttonY += details.delta.dy;
+            ValueListenableBuilder<int>(
+              valueListenable: SharedPrefsHelper.roleNotifier,
+              builder: (context, roleId, _) {
+                if (roleId != 2) return SizedBox();
+                return Positioned(
+                  left: _controller.isAnimating ? _animationX.value : buttonX,
+                  top: _controller.isAnimating ? _animationY.value : buttonY,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      setState(() {
+                        buttonX += details.delta.dx;
+                        buttonY += details.delta.dy;
 
-                    // Prevent button from moving out of bounds
-                    final screenSize = MediaQuery.of(context).size;
-                    // buttonX = buttonX.clamp(0, screenSize.width - buttonSize);
-                    buttonY = buttonY.clamp(edgePadding,
-                        screenSize.height - buttonSize - edgePadding);
-                  });
-                },
-                onPanEnd: (details) {
-                  setState(() {
-                    final screenSize = MediaQuery.of(context).size;
-                    double screenMid = screenSize.width / 2;
-
-                    buttonX = (buttonX < screenMid)
-                        ? edgePadding
-                        : screenSize.width - buttonSize - edgePadding;
-                  });
-                },
-                child: Container(
-                  width: buttonSize,
-                  height: buttonSize,
-                  decoration: BoxDecoration(
-                    color: Colors.red, // Button color
-                    borderRadius: BorderRadius.circular(borderRadius),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 6,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child:
-                      // IconButton(
-                      //   icon: Icon(Icons.sos, color: Colors.white, size: 30),
-                      //   onPressed: () {},
-                      // ),
-                      GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        widget.navigatorKey.currentState!.context,
-                        MaterialPageRoute(
-                            builder: (context) => EmergencyScreen()),
-                      );
+                        // Prevent button from moving out of bounds
+                        final screenSize = MediaQuery.of(context).size;
+                        // buttonX = buttonX.clamp(0, screenSize.width - buttonSize);
+                        buttonY = buttonY.clamp(edgePadding,
+                            screenSize.height - buttonSize - edgePadding);
+                      });
                     },
-                    child: Image.asset(
-                      'assets/img/SOSButton.png', // Replace with your image path
+                    onPanEnd: (_) => _animateButtonToEdge(),
+                    // (details) {
+                    //   setState(() {
+                    //     final screenSize = MediaQuery.of(context).size;
+                    //     double screenMid = screenSize.width / 2;
+
+                    //     buttonX = (buttonX < screenMid)
+                    //         ? edgePadding
+                    //         : screenSize.width - buttonSize - edgePadding;
+                    //   });
+                    // },
+
+                    child: Container(
                       width: buttonSize,
                       height: buttonSize,
+                      decoration: BoxDecoration(
+                        color: Colors.red, // Button color
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child:
+                          GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            widget.navigatorKey.currentState!.context,
+                            MaterialPageRoute(
+                                builder: (context) => EmergencyScreen()),
+                          );
+                        },
+                        child: Image.asset(
+                          'assets/img/SOSButton.png', // Replace with your image path
+                          width: buttonSize,
+                          height: buttonSize,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
 
             /// support minimizing

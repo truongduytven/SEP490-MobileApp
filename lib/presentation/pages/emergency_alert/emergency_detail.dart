@@ -1,10 +1,9 @@
 import 'dart:async';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/emergency.dart';
 import 'package:sep490/presentation/pages/emergency_alert/controller/emergency_controller.dart';
 import 'package:sep490/presentation/pages/emergency_alert/here_servies.dart';
@@ -37,11 +36,14 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
   late final MapController _mapController = MapController();
   double? userLat, userLng;
   List hospitals = [];
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int accountId = 0;
 
   @override
   void initState() {
     super.initState();
     isEmergencyList = widget.isEmergencyList;
+    accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
     if (isEmergencyList) {
       _getEmergencyList();
     } else {
@@ -54,7 +56,7 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
       isLoading = true;
     });
     EmergencyController emergencyController = EmergencyController();
-    await emergencyController.getEmergencyList(widget.emergencyId);
+    await emergencyController.getEmergencyListDetail(widget.emergencyId);
     Timer(Duration(seconds: 1), () {
       setState(() {
         isLoading = false;
@@ -92,15 +94,16 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
       double latUser = double.tryParse(lat) ?? double.nan;
       double lngUser = double.tryParse(lng) ?? double.nan;
       var position = await LocationService.getCurrentLocation();
-      var results = await HereService.getNearbyHospitals(latUser, lngUser);
-
+      var results = [];
+      if (!isEmergencyList) {
+        results = await HereService.getNearbyHospitals(latUser, lngUser);
+      }
       setState(() {
         hospitals = results;
         userLat = position.latitude;
         userLng = position.longitude;
         isLoading = false;
       });
-      print("Hospitals: $hospitals");
     } catch (e) {
       print("Lỗi khi tải bệnh viện: $e");
       setState(() {
@@ -121,8 +124,7 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
       if (canOpenApp) {
         await launchUrl(googleMapsAppUri);
       } else {
-        await launchUrl(googleMapsWebUri,
-            mode: LaunchMode.externalApplication);
+        await launchUrl(googleMapsWebUri, mode: LaunchMode.externalApplication);
       }
     } catch (e) {
       debugPrint("Error launching URL: $e");
@@ -139,17 +141,12 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
         _mapController.camera.center, _mapController.camera.zoom - 1);
   }
 
-  void _showHospitalInfo(Map<String, dynamic> hospital, BuildContext context) async {
-    String address = 'Không có địa chỉ';
-    String url = "https://revgeocode.search.hereapi.com/v1/revgeocode?at=${hospital["lat"]},${hospital["lon"]}&lang=vi-VN&apiKey=ssc7HJ2D3isw5gqCLduFMWE4Drrp5Z_Wsu1ZQ20NZtE";
-    try {
-      var response = await Dio().get(url);
-      if (response.statusCode == 200) {
-        address = response.data["items"][0]["address"]["label"];
-      }
-    } catch (e) {
-      print("Lỗi khi mở trình duyệt: $e");
-    }
+  void _focusLocation(LatLng location) {
+    _mapController.move(location, 17.0);
+  }
+
+  void _showHospitalInfo(
+      Map<String, dynamic> hospital, BuildContext context) async {
     showDialog(
       context: context,
       builder: (context) {
@@ -158,8 +155,8 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
           content: Column(
             children: [
               Text("Vị trí: (${hospital["lat"]}, ${hospital["lon"]})"),
-              Text("Địa chỉ: $address"),
-              Text("Số điện thoại: ${hospital["phone"] ?? "Không có số điện thoại"}"),
+              Text("Địa chỉ: ${hospital["address"]}"),
+              Text("Số điện thoại: ${hospital["phone"]}"),
             ],
           ),
           actions: [
@@ -171,6 +168,61 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
         );
       },
     );
+  }
+
+  void _showDialogConfirm(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.all(10),
+          title: Text("Xác nhận hỗ trợ",
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600)),
+          content: Text(
+              "Bạn có chắc chắn muốn xác nhận hỗ trợ cho người thân? Khi xác nhận hệ thống sẽ ngưng thông báo vị trí cũng như sẽ không thông báo đến bác sĩ và 115.",
+              style: TextStyle(fontSize: 22)),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Hủy", style: TextStyle(fontSize: 20)),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                setState(() {
+                  isLoading = true;
+                });
+                EmergencyController emergencyController = EmergencyController();
+                await emergencyController.confirmEmergencyInformation(
+                    widget.emergencyId, accountId);
+                Timer(Duration(seconds: 1), () {
+                  if (emergencyController.isConfirmedSuccess) {
+                    setState(() {
+                      isLoading = false;
+                      isEmergencyList = true;
+                    });
+                    _getEmergencyList();
+                  }
+                });
+              },
+              child: Text("Xác nhận", style: TextStyle(fontSize: 20)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _makePhoneCall(String phoneNumber) async {
+    final Uri phoneUri = Uri.parse("tel:$phoneNumber");
+
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+      print("Không thể thực hiện cuộc gọi đến số $phoneNumber");
+    }
   }
 
   @override
@@ -196,57 +248,74 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(widget.elderlyName,
+                  Text('${widget.elderlyName} - ${widget.phoneNumber}',
                       style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                   SizedBox(
                     height: 10,
                   ),
-                  Text('SĐT: ${widget.phoneNumber}',
+                  Text(
+                      emergencyInformationList.isNotEmpty
+                          ? 'Thời gian: ${emergencyInformationList.first.informationTime} ${emergencyInformationList.first.informationDate}'
+                          : '',
                       style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.grayColor3)),
+                  if (emergencyInformationList.isNotEmpty && !isEmergencyList)
+                    Text(
+                        'Trạng thái: ${emergencyInformationList.first.isConfirmed ? "Đã xác nhận" : "Đang đợi xác nhận"}',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.grayColor3)),
+                  if (emergencyInformationList.isNotEmpty && isEmergencyList)
+                    Text(
+                        'Xác nhận bởi: ${emergencyInformationList.first.confirmationAccountName}',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.grayColor3)),
+                  if (emergencyInformationList.isNotEmpty && isEmergencyList)
+                    Text(
+                        'Thời gian xác nhận: ${emergencyInformationList.first.confirmationTime} ${emergencyInformationList.first.confirmationDate}',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.grayColor3)),
                 ],
               ),
             ),
             Expanded(
                 child: SingleChildScrollView(
-              child: isEmergencyList
-                  ? _buildEmergencyList()
-                  : _buildEmergencyDetail(),
+              child: _buildEmergencyDetail(),
             )),
-            Center(
-              child: Text('Alo'),
-            )
+            if (!isEmergencyList)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                width: double.infinity,
+                color: Colors.transparent,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    _showDialogConfirm(context);
+                  },
+                  icon: Icon(Icons.check_circle,
+                      size: 25, color: AppColors.bgColor),
+                  label: Text('Xác nhận hỗ trợ',
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: AppColors.bgColor,
+                      )),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 25,
+                    ),
+                    backgroundColor: AppColors.secondaryColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        side: BorderSide(color: AppColors.iconColor)),
+                    shadowColor: AppColors.secondaryColor,
+                  ),
+                ),
+              ),
           ],
         ));
-  }
-
-  Widget _buildEmergencyList() {
-    return Container(
-      margin: EdgeInsets.all(10),
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        children: [
-          Text('Danh sách thông tin khẩn cấp',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
-          SizedBox(
-            height: 10,
-          ),
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('Ngày: 12/12/2021'),
-                  subtitle: Text('Thời gian: 12:00'),
-                  trailing: Icon(Icons.check_circle, color: Colors.green),
-                );
-              })
-        ],
-      ),
-    );
   }
 
   Widget _buildEmergencyDetail() {
@@ -284,11 +353,11 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
         ),
       );
     }
+
     EmergencyInformation emergencyInfo = emergencyInformationList.first;
     double lat = double.tryParse(emergencyInfo.latitude) ?? double.nan;
     double lng = double.tryParse(emergencyInfo.longitude) ?? double.nan;
     final LatLng location = LatLng(lat, lng);
-
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -298,34 +367,28 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: AppColors.secondaryColor,
-                borderRadius: BorderRadius.circular(10)),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on, color: Colors.white, size: 25),
-                SizedBox(width: 8),
                 Text(
                   'Vị trí người thân hiện tại',
                   style: TextStyle(
-                      color: AppColors.bgColor,
+                      color: AppColors.primaryColor,
                       fontSize: 20,
                       fontWeight: FontWeight.w600),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 20),
           Stack(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.45,
                 child: FlutterMap(
                   mapController: _mapController,
                   options: MapOptions(
                     initialCenter: location,
-                    initialZoom: 14.0,
+                    initialZoom: 17.0,
                   ),
                   children: [
                     TileLayer(
@@ -334,18 +397,24 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
                     ),
                     MarkerLayer(
                       markers: [
-                        Marker(
-                          point: location,
-                          width: 80.0,
-                          height: 60.0,
-                          child: Column(
-                            children: [
-                              Text("Người thân"),
-                              Icon(Icons.person_pin_circle,
-                                  color: Colors.red, size: 40),
-                            ],
-                          ),
-                        ),
+                        ...emergencyInformationList.map((e) => (Marker(
+                              point: LatLng(double.tryParse(e.latitude) ?? 0,
+                                  double.tryParse(e.longitude) ?? 0),
+                              width: 80.0,
+                              height: 80.0,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Người thân",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(e.confirmationTime),
+                                  Icon(Icons.person_pin_circle,
+                                      color: Colors.red, size: 40),
+                                ],
+                              ),
+                            ))),
                         Marker(
                           point: LatLng(userLat ?? 0, userLng ?? 0),
                           width: 50.0,
@@ -358,20 +427,21 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
                             ],
                           ),
                         ),
-                        ...hospitals.map((hospital) {
-                          return Marker(
-                            point: LatLng(hospital["lat"], hospital["lon"]),
-                            width: 50.0,
-                            height: 50.0,
-                            child: GestureDetector(
-                              onTap: () {
-                                _showHospitalInfo(hospital, context);
-                              },
-                              child: Icon(Icons.local_hospital,
-                                  color: Colors.red, size: 30),
-                            ),
-                          );
-                        }),
+                        if (!isEmergencyList)
+                          ...hospitals.map((hospital) {
+                            return Marker(
+                              point: LatLng(hospital["lat"], hospital["lon"]),
+                              width: 50.0,
+                              height: 50.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _showHospitalInfo(hospital, context);
+                                },
+                                child: Icon(Icons.local_hospital,
+                                    color: Colors.red, size: 30),
+                              ),
+                            );
+                          }),
                       ],
                     ),
                   ],
@@ -383,15 +453,24 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
                 child: Column(
                   children: [
                     FloatingActionButton(
+                      mini: true,
+                      heroTag: "focus_location",
+                      onPressed: () => _focusLocation(location),
+                      child: Icon(Icons.gps_fixed),
+                    ),
+                    SizedBox(height: 10),
+                    FloatingActionButton(
+                      mini: true,
                       heroTag: "zoom_in",
                       onPressed: _zoomIn,
                       child: Icon(Icons.add),
                     ),
                     SizedBox(height: 10),
                     FloatingActionButton(
+                      mini: true,
                       heroTag: "zoom_out",
                       onPressed: _zoomOut,
-                      child: Icon(Icons.remove),
+                      child: Icon(Icons.remove, size: 30),
                     ),
                   ],
                 ),
@@ -399,105 +478,135 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
             ],
           ),
           SizedBox(height: 20),
-          Center(
-            child: GestureDetector(
-              onTap: () {
-                _openGoogleMaps(10.8539804, 106.6698322);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.location_on, color: Colors.red, size: 30),
-                  Text(
-                    'Hoặc xem chi tiết bằng Google Maps',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                ],
+          if (!isEmergencyList)
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  _openGoogleMaps(10.8539804, 106.6698322);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.location_on, color: Colors.red, size: 30),
+                    Text(
+                      'Hoặc xem chi tiết bằng Google Maps',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.blue, decoration: TextDecoration.underline, decorationColor: Colors.blue),
+                      
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 20),
+          if (!isEmergencyList) SizedBox(height: 20),
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: AppColors.secondaryColor,
-                borderRadius: BorderRadius.circular(10)),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.camera_alt, color: Colors.white, size: 25),
-                SizedBox(width: 8),
                 Text(
                   'Hình ảnh từ camera người thân',
                   style: TextStyle(
-                      color: AppColors.bgColor,
+                      color: AppColors.primaryColor,
                       fontSize: 20,
                       fontWeight: FontWeight.w600),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              if (emergencyInfo.frontCameraImage.isNotEmpty)
-                Column(
+          SizedBox(height: 10),
+          ...emergencyInformationList.map((element) {
+            return Column(
+              children: [
+                SizedBox(height: 10),
+                Text(
+                  'Thời gian: ${emergencyInfo.confirmationTime} ${emergencyInfo.confirmationDate}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Image.network(
-                      emergencyInfo.frontCameraImage,
-                      width: MediaQuery.of(context).size.width / 2 - 20,
-                      fit: BoxFit.cover,
-                    ),
-                    SizedBox(height: 10),
-                    Text('Camera trước',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600)),
+                    if (element.frontCameraImage.isNotEmpty)
+                      Column(
+                        children: [
+                          Image.network(
+                            element.frontCameraImage,
+                            width: MediaQuery.of(context).size.width / 2 - 20,
+                            fit: BoxFit.cover,
+                          ),
+                          SizedBox(height: 10),
+                          Text('Camera trước',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    SizedBox(width: 10),
+                    if (element.rearCameraImage.isNotEmpty)
+                      Column(
+                        children: [
+                          Image.network(
+                            element.rearCameraImage,
+                            width: MediaQuery.of(context).size.width / 2 - 20,
+                            fit: BoxFit.cover,
+                          ),
+                          SizedBox(height: 10),
+                          Text('Camera sau',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
                   ],
                 ),
-
-              SizedBox(width: 10),
-
-              // Rear Camera Image
-              if (emergencyInfo.rearCameraImage.isNotEmpty)
-                Column(
-                  children: [
-                    Image.network(
-                      emergencyInfo.rearCameraImage,
-                      width: MediaQuery.of(context).size.width / 2 - 20,
-                      fit: BoxFit.cover,
-                    ),
-                    SizedBox(height: 10),
-                    Text('Camera sau',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600)),
-                  ],
-                ),
-            ],
-          ),
+              ],
+            );
+          }),
           SizedBox(height: 20),
+          if(!isEmergencyList)
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: AppColors.secondaryColor,
-                borderRadius: BorderRadius.circular(10)),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.local_hospital, color: Colors.white, size: 25),
-                SizedBox(width: 8),
                 Text(
                   'Bệnh viện gần người thân',
                   style: TextStyle(
-                      color: AppColors.bgColor,
+                      color: AppColors.primaryColor,
                       fontSize: 20,
                       fontWeight: FontWeight.w600),
                 ),
               ],
             ),
+          ),
+          if(!isEmergencyList)
+          SizedBox(height: 20),
+          if(!isEmergencyList)
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: hospitals.length,
+            itemBuilder: (context, index) {
+              Map<String, dynamic> hospital = hospitals[index];
+              return ListTile(
+                title: Text(hospital["name"] ?? "Bệnh viện không có tên"),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(hospital["phone"] ?? "Không có số điện thoại"),
+                    Text(hospital["address"] ?? "Không có địa chỉ"),
+                  ],
+                ),
+                trailing: hospital["phone"] != "Không có số điện thoại"
+                    ? IconButton(
+                        icon: Icon(Icons.phone),
+                        onPressed: () => _makePhoneCall(hospital["phone"]),
+                      )
+                    : null,
+              );
+            },
           ),
         ],
       ),

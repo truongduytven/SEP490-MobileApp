@@ -6,6 +6,7 @@ class EmergencyController {
   int? emergencyConfirmationId;
   bool isCreateSuccess = false;
   bool isConfirmed = false;
+  bool isConfirmedSuccess = false;
   List<Emergency> emergencyList = [];
   EmergencyInformation? emergencyInformation;
   List<EmergencyInformation> emergencyInformationList = [];
@@ -72,13 +73,22 @@ class EmergencyController {
   }
 
   Future<void> getEmergencyListDetail(int emergencyId) async {
-    final response = await _emergencyRepository.getEmergencyList(emergencyId);
+    final response = await _emergencyRepository.getEmergencyListDetail(emergencyId);
     if (response != null && response['isSuccess']) {
-      emergencyInformationList = response['data']
+      emergencyInformationList = response['data']['data']
           .map<EmergencyInformation>((emergency) => EmergencyInformation.fromJson(emergency))
           .toList();
     } else {
       emergencyInformationList = [];
+    }
+  }
+
+  Future<void> confirmEmergencyInformation(int emergencyId, int accountId) async {
+    final response = await _emergencyRepository.confirmEmergency(emergencyId, accountId);
+    if (response != null && response['isSuccess']) {
+      isConfirmedSuccess = true;
+    } else {
+      isConfirmedSuccess = false;
     }
   }
 

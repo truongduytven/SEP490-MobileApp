@@ -86,7 +86,6 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
   Future<void> _callEmergencyAPI() async {
     print("Gọi API Emergency Start...");
-    print(userId);
     var uri = Uri.parse(
         "https://api.diavan-valuation.asia/emergency-contacts/family-emergency-call?accountId=$userId");
 
@@ -107,6 +106,8 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           description =
               "Chúng tôi đang cố gắng liên hệ đến người thân của bạn!";
         });
+        // final player = AudioPlayer();
+        // player.play(UrlSource('assets/music/outgoing.mp3'));
         await createConfirmation(userId);
         await _sendEmergencyData();
         _checkConfirmationStatus(0);
@@ -119,7 +120,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Future<void> _checkConfirmationStatus(int attempt) async {
     if (attempt >= 3) return;
 
-    await Future.delayed(Duration(seconds: 20)); 
+    await Future.delayed(Duration(seconds: 60)); 
 
     bool isConfirmed = await _checkIsConfirmed(); 
 
