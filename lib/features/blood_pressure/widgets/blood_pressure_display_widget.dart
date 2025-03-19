@@ -321,7 +321,7 @@ class _BloodPressureDisplayWidgetState
                               ),
                               SizedBox(width: 10),
                               SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.65,
+                                width: MediaQuery.of(context).size.width * 0.6,
                                 child: Text(
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -379,10 +379,10 @@ class _BloodPressureDisplayWidgetState
                     // },
 
                     onPressed: isLoading
-                        ? null 
+                        ? null
                         : () async {
                             setState(() {
-                              isLoading = true; 
+                              isLoading = true;
                             });
 
                             try {
@@ -412,18 +412,15 @@ class _BloodPressureDisplayWidgetState
                                   Navigator.pop(context);
                                 }
                               }
-                             
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('Lỗi: ${e.toString()}')),
                               );
                             } finally {
-                            
-                              await Future.delayed(Duration(
-                                  seconds: 2)); 
+                              await Future.delayed(Duration(seconds: 2));
                               if (mounted) {
                                 setState(() {
-                                  isLoading = false; 
+                                  isLoading = false;
                                 });
                               }
                             }

@@ -25,7 +25,10 @@ class HeartRateRepository {
             toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
             title: Text(
               "Lỗi: Status không hợp lệ (${data["message"]})",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
             ),
           ).show(context);
           throw Exception("Lỗi: Status không hợp lệ (${data["message"]})");
@@ -35,7 +38,10 @@ class HeartRateRepository {
           toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
           title: Text(
             "Lỗi HTTP ${response.statusCode}",
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: Colors.black, 
+                    fontSize: 20,
+
+            ),
           ),
         ).show(context);
 
@@ -46,7 +52,10 @@ class HeartRateRepository {
         toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
         title: Text(
           "Lỗi kết nối API: $e",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black,
+                    fontSize: 20,
+
+          ),
         ),
       ).show(context);
       throw Exception("Lỗi kết nối API: $e");
@@ -79,21 +88,26 @@ class HeartRateRepository {
       );
 
       final data = jsonDecode(response.body);
-
+      print("them nhịp tim $data");
       if (response.statusCode == 200) {
         if (data["status"] == 1) {
           CherryToast.success(
-                  toastDuration: Duration(seconds: 2),
-                  title: Text("Nhịp tim đã được thêm thành công!",
-                      style: TextStyle(color: Colors.black)))
-              .show(context);
+              toastDuration: Duration(seconds: 2),
+              title: Text("Nhịp tim đã được thêm thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
           return true;
         } else {
           CherryToast.error(
             toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
             title: Text(
               "Lỗi: ${data["message"]}",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.black, 
+                    fontSize: 20,
+
+              ),
             ),
           ).show(context);
 
@@ -104,7 +118,10 @@ class HeartRateRepository {
           toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
           title: Text(
             "Lỗi HTTP ${response.statusCode}",
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: Colors.black,
+                    fontSize: 20,
+
+            ),
           ),
         ).show(context);
 
@@ -115,7 +132,10 @@ class HeartRateRepository {
         toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
         title: Text(
           "Lỗi kết nối API: $e",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black,
+                    fontSize: 20,
+
+          ),
         ),
       ).show(context);
 

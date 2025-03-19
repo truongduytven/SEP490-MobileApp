@@ -26,7 +26,10 @@ class BloodGlucoseRepository {
             toastDuration: Duration(seconds: 3),
             title: Text(
               "Lỗi: Status không hợp lệ (${data["message"]})",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
             ),
           ).show(context);
           throw Exception("Lỗi: Status không hợp lệ (${data["message"]})");
@@ -36,7 +39,10 @@ class BloodGlucoseRepository {
           toastDuration: Duration(seconds: 3),
           title: Text(
             "Lỗi HTTP ${response.statusCode}",
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
           ),
         ).show(context);
 
@@ -47,7 +53,10 @@ class BloodGlucoseRepository {
         toastDuration: Duration(seconds: 3),
         title: Text(
           "Lỗi kết nối API: $e",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
         ),
       ).show(context);
       throw Exception("Lỗi kết nối API: $e");
@@ -86,17 +95,22 @@ class BloodGlucoseRepository {
       if (response.statusCode == 200) {
         if (data["status"] == 1) {
           CherryToast.success(
-                  toastDuration: Duration(seconds: 2),
-                  title: Text("Đường huyết đã được thêm thành công!",
-                      style: TextStyle(color: Colors.black)))
-              .show(context);
+              toastDuration: Duration(seconds: 2),
+              title: Text("Đường huyết đã được thêm thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
           return true;
         } else {
           CherryToast.error(
             toastDuration: Duration(seconds: 3),
             title: Text(
               "Lỗi: ${data["message"]}",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
             ),
           ).show(context);
 
@@ -107,7 +121,10 @@ class BloodGlucoseRepository {
           toastDuration: Duration(seconds: 3),
           title: Text(
             "Lỗi HTTP ${response.statusCode}",
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
           ),
         ).show(context);
 
@@ -118,7 +135,10 @@ class BloodGlucoseRepository {
         toastDuration: Duration(seconds: 3),
         title: Text(
           "Lỗi kết nối API: $e",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
         ),
       ).show(context);
 

@@ -309,7 +309,7 @@ class _BloodGlucoseDisplayWidgetState
                               ),
                               SizedBox(width: 10),
                               SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.65,
+                                width: MediaQuery.of(context).size.width * 0.6,
                                 child: Text(
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,

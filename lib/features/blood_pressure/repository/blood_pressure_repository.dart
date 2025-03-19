@@ -17,23 +17,29 @@ class BloodPressureRepository {
 
         // Kiểm tra nếu status == 1
         if (data["status"] == 1) {
-          return data["data"].toString(); 
+          return data["data"].toString();
         } else {
           CherryToast.error(
-            toastDuration: Duration(seconds: 3), 
+            toastDuration: Duration(seconds: 3),
             title: Text(
               "Lỗi: Status không hợp lệ (${data["message"]})",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
             ),
           ).show(context);
           throw Exception("Lỗi: Status không hợp lệ (${data["message"]})");
         }
       } else {
         CherryToast.error(
-          toastDuration: Duration(seconds: 3), 
+          toastDuration: Duration(seconds: 3),
           title: Text(
             "Lỗi HTTP ${response.statusCode}",
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
           ),
         ).show(context);
 
@@ -41,10 +47,13 @@ class BloodPressureRepository {
       }
     } catch (e) {
       CherryToast.error(
-        toastDuration: Duration(seconds: 3), 
+        toastDuration: Duration(seconds: 3),
         title: Text(
           "Lỗi kết nối API: $e",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
         ),
       ).show(context);
       throw Exception("Lỗi kết nối API: $e");
@@ -85,17 +94,22 @@ class BloodPressureRepository {
       if (response.statusCode == 200) {
         if (data["status"] == 1) {
           CherryToast.success(
-                  toastDuration: Duration(seconds: 2),
-                  title: Text("Huyết áp đã được thêm thành công!",
-                      style: TextStyle(color: Colors.black)))
-              .show(context);
+              toastDuration: Duration(seconds: 2),
+              title: Text("Huyết áp đã được thêm thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
           return true;
         } else {
           CherryToast.error(
             toastDuration: Duration(seconds: 3),
             title: Text(
               "Lỗi: ${data["message"]}",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
             ),
           ).show(context);
 
@@ -103,10 +117,13 @@ class BloodPressureRepository {
         }
       } else {
         CherryToast.error(
-          toastDuration: Duration(seconds: 3), 
+          toastDuration: Duration(seconds: 3),
           title: Text(
             "Lỗi HTTP ${response.statusCode}",
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
           ),
         ).show(context);
 
@@ -114,10 +131,13 @@ class BloodPressureRepository {
       }
     } catch (e) {
       CherryToast.error(
-        toastDuration: Duration(seconds: 3), 
+        toastDuration: Duration(seconds: 3),
         title: Text(
           "Lỗi kết nối API: $e",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
         ),
       ).show(context);
 
