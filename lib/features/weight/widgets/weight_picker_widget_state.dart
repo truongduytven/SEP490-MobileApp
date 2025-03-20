@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ruler_picker/flutter_ruler_picker.dart';
-import 'package:sep490/presentation/widgets/health/weight/needle_painter.dart';
+import 'package:sep490/features/weight/widgets/needle_painter.dart';
 import 'package:sep490/theme/color.dart';
 
 class WeightPickerWidget extends StatefulWidget {

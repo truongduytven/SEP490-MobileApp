@@ -1,10 +1,14 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/weight/controller/weight_controller.dart';
 import 'package:sep490/theme/color.dart';
 
-class WeightDisplayWidget extends StatelessWidget {
-  final num weight; // in kilograms
-  final num height; // in centimeters
+class WeightDisplayWidget extends ConsumerStatefulWidget {
+  final num weight;
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
@@ -12,7 +16,6 @@ class WeightDisplayWidget extends StatelessWidget {
 
   const WeightDisplayWidget({
     required this.weight,
-    required this.height,
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
@@ -20,35 +23,69 @@ class WeightDisplayWidget extends StatelessWidget {
     super.key,
   });
 
-  /// Calculate BMI
-  double calculateBMI() {
-    double heightInMeters = height / 100; // Convert height to meters
-    return weight / (heightInMeters * heightInMeters);
+  @override
+  ConsumerState<WeightDisplayWidget> createState() =>
+      _WeightDisplayWidgetState();
+}
+
+class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
+  String weightEvaluation = "Đang đánh giá...";
+  String bmiEvaluation = "";
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchWeightEvaluation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(AssetImage('assets/gif/notes.gif'), context);
+    });
   }
 
-  /// Determine BMI classification
-  String getBMIClassification(double bmi) {
-    if (bmi < 18.5) {
-      return "Thiếu cân";
-    } else if (bmi >= 18.5 && bmi < 24.9) {
-      return "Bình Thường";
-    } else if (bmi >= 25 && bmi < 29.9) {
-      return "Thừa cân";
-    } else {
-      return "Béo phì";
-    }
+  Future<void> fetchWeightEvaluation() async {
+    SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+    final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
+    final weightController = ref.read(weightControllerProvider);
+    final result = await weightController.getWeightEvaluation(
+      context,
+      currentUserAccountID,
+      widget.weight.toDouble(),
+    );
+    setState(() {
+      weightEvaluation = result["evaluation"] ?? "Không có đánh giá";
+      bmiEvaluation = result["bmi"] ?? "Không có đánh giá";
+    });
   }
+
+  /// Calculate BMI
+  // double calculateBMI() {
+  //   double heightInMeters = widget.height / 100; // Convert height to meters
+  //   return widget.weight / (heightInMeters * heightInMeters);
+  // }
+
+  // /// Determine BMI classification
+  // String getBMIClassification(double bmi) {
+  //   if (bmi < 18.5) {
+  //     return "Thiếu cân";
+  //   } else if (bmi >= 18.5 && bmi < 24.9) {
+  //     return "Bình Thường";
+  //   } else if (bmi >= 25 && bmi < 29.9) {
+  //     return "Thừa cân";
+  //   } else {
+  //     return "Béo phì";
+  //   }
+  // }
 
   /// Get color based on BMI classification
   Color getBMIClassificationColor(String classification) {
-    switch (classification) {
-      case "Thiếu cân":
+    switch (classification.trim().toLowerCase()) {
+      case "thiếu cân":
         return Colors.blue;
-      case "Bình Thường":
+      case "bình Thường":
         return Colors.green;
-      case "Thừa cân":
+      case "thừa cân":
         return Colors.orange;
-      case "Béo phì":
+      case "béo phì":
         return Colors.red;
       default:
         return AppColors.textPrimary;
@@ -66,12 +103,48 @@ class WeightDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double bmi = calculateBMI();
-    final String bmiClassification = getBMIClassification(bmi);
-    final Color classificationColor =
-        getBMIClassificationColor(bmiClassification);
-    bool isButtonDisabled = !isToday(dateTime) && !isDraft;
-
+    // final double bmi = calculateBMI();
+    // final String bmiClassification = getBMIClassification(bmi);
+    // final Color classificationColor =
+    //     getBMIClassificationColor(bmiClassification);
+    bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Màu nền trắng
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GifView.asset(
+                'assets/gif/notes.gif',
+                width: 200,
+                height: 200,
+                frameRate: 90,
+              ),
+              SizedBox(height: 10),
+              DefaultTextStyle(
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 20,
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      "Đang thêm cân nặng...",
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      speed: Duration(milliseconds: 50), // Điều chỉnh tốc độ
+                    ),
+                  ],
+                  isRepeatingAnimation: false, // Chạy 1 lần
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,7 +168,7 @@ class WeightDisplayWidget extends StatelessWidget {
                       // Row with date-time and edit button
                       Row(
                         children: [
-                          isDraft
+                          widget.isDraft
                               ? Icon(
                                   Icons.calendar_month_outlined,
                                   color: AppColors.textColor,
@@ -110,9 +183,10 @@ class WeightDisplayWidget extends StatelessWidget {
                           Expanded(
                             child: Center(
                               child: Text(
-                                isToday(dateTime) // Check if it's today's date
+                                isToday(widget
+                                        .dateTime) // Check if it's today's date
                                     ? "Hôm nay"
-                                    : dateTime,
+                                    : widget.dateTime,
                                 style: TextStyle(
                                     color: AppColors.textColor,
                                     fontSize: 24,
@@ -121,9 +195,9 @@ class WeightDisplayWidget extends StatelessWidget {
                               ),
                             ),
                           ),
-                          isToday(dateTime)
+                          isToday(widget.dateTime)
                               ? IconButton(
-                                  onPressed: onEdit,
+                                  onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,
                                       size: 30, color: AppColors.primaryColor),
                                 )
@@ -143,7 +217,7 @@ class WeightDisplayWidget extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              weight.toStringAsFixed(1),
+                              widget.weight.toStringAsFixed(1),
                               style: TextStyle(
                                   fontSize: 80, fontWeight: FontWeight.w700),
                             ),
@@ -178,7 +252,7 @@ class WeightDisplayWidget extends StatelessWidget {
                               width: 5,
                             ),
                             Text(
-                              typeData,
+                              widget.typeData,
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w500,
@@ -206,7 +280,7 @@ class WeightDisplayWidget extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            bmi.toStringAsFixed(1),
+                            bmiEvaluation,
                             style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.w600),
                           ),
@@ -220,16 +294,17 @@ class WeightDisplayWidget extends StatelessWidget {
                           Icon(
                             Icons.speed_rounded,
                             size: 30,
-                            color: classificationColor,
+                            color: getBMIClassificationColor(weightEvaluation),
                           ),
                           SizedBox(
                             width: 10,
                           ),
                           Text(
-                            bmiClassification,
+                            weightEvaluation,
                             style: TextStyle(
                               fontSize: 26,
-                              color: classificationColor,
+                              color:
+                                  getBMIClassificationColor(weightEvaluation),
                             ),
                           ),
                         ],
@@ -248,9 +323,54 @@ class WeightDisplayWidget extends StatelessWidget {
             child: isButtonDisabled
                 ? SizedBox.shrink() // Use an empty widget when disabled
                 : ElevatedButton(
-                    onPressed: () {
-                      print('hehe $weight $bmi $dateTime');
-                    },
+                    // onPressed: () {
+                    //   print('hehe ${widget.weight} $bmi ${widget.dateTime}');
+                    // },
+
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            try {
+                              SharedPrefsHelper sharedPrefsHelper =
+                                  SharedPrefsHelper();
+                              final currentUserAccountID =
+                                  sharedPrefsHelper.getInt("accountId");
+                              final currentUserFullName =
+                                  sharedPrefsHelper.getString("fullName");
+                              final weightController =
+                                  ref.read(weightControllerProvider);
+
+                              final success = await weightController.addWeight(
+                                context: context,
+                                accountId: currentUserAccountID ?? 0,
+                                elderlyId: currentUserAccountID ?? 0,
+                                weight: widget.weight.toDouble(),
+                                weightSource: "Thủ công",
+                              );
+                              await Future.delayed(Duration(seconds: 2));
+
+                              if (mounted) {
+                                if (success) {
+                                  Navigator.pop(context);
+                                }
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Lỗi: ${e.toString()}')),
+                              );
+                            } finally {
+                              await Future.delayed(Duration(seconds: 2));
+                              if (mounted) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondaryColor,
                       padding: EdgeInsets.all(12),

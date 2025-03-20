@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/weight/weight_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/weight/weight_picker_widget_state.dart';
+import 'package:sep490/features/weight/widgets/weight_display_widget.dart';
+import 'package:sep490/features/weight/widgets/weight_picker_widget_state.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddWeight extends StatefulWidget {
@@ -106,7 +106,6 @@ class _AddWeightState extends State<AddWeight> {
           ? WeightDisplayWidget(
               isDraft: isDraft,
               typeData: "Thủ công",
-              height: 170,
               dateTime: formattedDateTime,
               weight: currentValue,
               onEdit: onEdit,

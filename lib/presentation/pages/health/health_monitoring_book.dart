@@ -6,7 +6,7 @@ import 'package:sep490/features/height/screens/add_height_screen.dart';
 import 'package:sep490/features/kidney_function/screens/add_kidney_function_screen.dart';
 import 'package:sep490/features/lipid_profile/screens/add_lipid_profile_screen.dart';
 import 'package:sep490/features/liver_enzymes/screens/add_liver_enzymes_screen.dart';
-import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
+import 'package:sep490/features/weight/screens/add_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class HealthMonitoringBook extends StatefulWidget {
