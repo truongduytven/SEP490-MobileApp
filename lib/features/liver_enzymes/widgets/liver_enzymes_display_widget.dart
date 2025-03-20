@@ -1,12 +1,13 @@
-import 'dart:math';
-
-import 'package:flutter/foundation.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/features/kidney_function/widgets/kidney_function_dialog.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/liver_enzymes/controller/liver_enzymes_controller.dart';
 import 'package:sep490/theme/color.dart';
 
-class LiverEnzymesDisplayWidget extends StatelessWidget {
+class LiverEnzymesDisplayWidget extends ConsumerStatefulWidget {
   final num altValue;
   final num alpValue;
   final num astValue;
@@ -26,6 +27,40 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
     required this.ggtValue,
     required this.typeData,
   });
+
+  @override
+  ConsumerState<LiverEnzymesDisplayWidget> createState() =>
+      _LiverEnzymesDisplayWidgetState();
+}
+
+class _LiverEnzymesDisplayWidgetState
+    extends ConsumerState<LiverEnzymesDisplayWidget> {
+  String liverEnzymesEvaluation = "Đang đánh giá...";
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLiverEnzymesEvaluation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(AssetImage('assets/gif/notes.gif'), context);
+    });
+  }
+
+  Future<void> fetchLiverEnzymesEvaluation() async {
+    final liverEnzymesController = ref.read(liverEnzymesControllerProvider);
+    final result = await liverEnzymesController.getLiverEnzymesEvaluation(
+      context,
+      widget.altValue.toDouble(),
+      widget.astValue.toDouble(),
+      widget.alpValue.toDouble(),
+      widget.ggtValue.toDouble(),
+    );
+    setState(() {
+      liverEnzymesEvaluation = result;
+    });
+  }
+
   bool isToday(String dateTime) {
     final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
     final DateTime dateFromString = dateFormat.parse(dateTime);
@@ -36,29 +71,74 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
   }
 
   Color get classificationColor {
-    if (altValue < 60) {
+    if (widget.altValue < 60) {
       return Colors.orange; // Yellow for Bradycardia
-    } else if (altValue >= 60 && altValue <= 100) {
+    } else if (widget.altValue >= 60 && widget.altValue <= 100) {
       return Colors.green; // Green for Normal
     } else {
       return Colors.red; // Red for Tachycardia
     }
   }
 
-  String get heartBeatClassification {
-    if (altValue < 60) {
-      return "Gan chậm";
-    } else if (altValue >= 60 && altValue <= 100) {
-      return "Gan bình thường";
+  // String get heartBeatClassification {
+  //   if (widget.altValue < 60) {
+  //     return "Gan chậm";
+  //   } else if (widget.altValue >= 60 && widget.altValue <= 100) {
+  //     return "Gan bình thường";
+  //   } else {
+  //     return "Gan nhanh";
+  //   }
+  // }
+  Color getColorBasedOnEvaluation(String evaluation) {
+    if (evaluation.toLowerCase().contains("cao")) {
+      return Colors.red;
+    } else if (evaluation.toLowerCase().contains("thấp")) {
+      return Colors.orange;
     } else {
-      return "Gan nhanh";
+      return Colors.green;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isButtonDisabled = !isToday(dateTime) && !isDraft;
-
+    bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Màu nền trắng
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GifView.asset(
+                'assets/gif/notes.gif',
+                width: 200,
+                height: 200,
+                frameRate: 90,
+              ),
+              SizedBox(height: 10),
+              DefaultTextStyle(
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 20,
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      "Đang thêm men gan...",
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      speed: Duration(milliseconds: 50), // Điều chỉnh tốc độ
+                    ),
+                  ],
+                  isRepeatingAnimation: false, // Chạy 1 lần
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,7 +162,7 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                       // Row with date-time and edit button
                       Row(
                         children: [
-                          isDraft
+                          widget.isDraft
                               ? Icon(
                                   Icons.calendar_month_outlined,
                                   color: AppColors.textColor,
@@ -97,9 +177,10 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                           Expanded(
                             child: Center(
                               child: Text(
-                                isToday(dateTime) // Check if it's today's date
+                                isToday(widget
+                                        .dateTime) // Check if it's today's date
                                     ? "Hôm nay"
-                                    : dateTime,
+                                    : widget.dateTime,
                                 style: TextStyle(
                                     color: AppColors.textColor,
                                     fontSize: 24,
@@ -108,9 +189,9 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                               ),
                             ),
                           ),
-                          isToday(dateTime)
+                          isToday(widget.dateTime)
                               ? IconButton(
-                                  onPressed: onEdit,
+                                  onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,
                                       size: 30, color: AppColors.primaryColor),
                                 )
@@ -142,7 +223,7 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                altValue.toDouble().toStringAsFixed(1),
+                                widget.altValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -173,7 +254,7 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                alpValue.toDouble().toStringAsFixed(1),
+                                widget.alpValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -211,7 +292,7 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                astValue.toDouble().toStringAsFixed(1),
+                                widget.astValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -242,7 +323,7 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                ggtValue.toDouble().toStringAsFixed(1),
+                                widget.ggtValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -285,7 +366,7 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                               width: 5,
                             ),
                             Text(
-                              typeData,
+                              widget.typeData,
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w500,
@@ -320,14 +401,22 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
                               SizedBox(
                                 width: 10,
                               ),
-                              Text(
-                                overflow: TextOverflow.ellipsis,
-                                heartBeatClassification,
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  color: classificationColor,
-                                ),
-                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  ...liverEnzymesEvaluation
+                                      .split("-")
+                                      .map((text) => Text(
+                                            text.trim(),
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              color: getColorBasedOnEvaluation(
+                                                  liverEnzymesEvaluation),
+                                            ),
+                                          )),
+                                ],
+                              )
                             ],
                           ),
                         ],
@@ -346,9 +435,58 @@ class LiverEnzymesDisplayWidget extends StatelessWidget {
             child: isButtonDisabled
                 ? SizedBox.shrink() // Use an empty widget when disabled
                 : ElevatedButton(
-                    onPressed: () {
-                      print('hehe $altValue $dateTime');
-                    },
+                    // onPressed: () {
+                    //   print('hehe ${widget.altValue} ${widget.dateTime}');
+                    // },
+
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            try {
+                              SharedPrefsHelper sharedPrefsHelper =
+                                  SharedPrefsHelper();
+                              final currentUserAccountID =
+                                  sharedPrefsHelper.getInt("accountId");
+                              final currentUserFullName =
+                                  sharedPrefsHelper.getString("fullName");
+                              final liverEnzymesController =
+                                  ref.read(liverEnzymesControllerProvider);
+
+                              final success =
+                                  await liverEnzymesController.addLiverEnzymes(
+                                context: context,
+                                accountId: currentUserAccountID ?? 0,
+                                elderlyId: currentUserAccountID ?? 0,
+                                alt: widget.altValue.toDouble(),
+                                ast: widget.astValue.toDouble(),
+                                alp: widget.alpValue.toDouble(),
+                                ggt: widget.ggtValue.toDouble(),
+                                liverEnzymesSource: "Thủ công",
+                              );
+                              await Future.delayed(Duration(seconds: 2));
+
+                              if (mounted) {
+                                if (success) {
+                                  Navigator.pop(context);
+                                }
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Lỗi: ${e.toString()}')),
+                              );
+                            } finally {
+                              await Future.delayed(Duration(seconds: 2));
+                              if (mounted) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondaryColor,
                       padding: EdgeInsets.all(12),

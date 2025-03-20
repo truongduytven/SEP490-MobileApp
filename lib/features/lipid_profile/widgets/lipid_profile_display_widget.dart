@@ -378,7 +378,7 @@ class _LipidProfileDisplayWidgetState
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   ...lipidProfileEvaluation
-                                      .split(" - ")
+                                      .split("-")
                                       .map((text) => Text(
                                             text.trim(),
                                             style: TextStyle(

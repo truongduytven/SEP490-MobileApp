@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/liverEnzymes/liver_enzymes_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/liverEnzymes/liver_enzymes_input_widget.dart';
+import 'package:sep490/features/liver_enzymes/widgets/liver_enzymes_display_widget.dart';
+import 'package:sep490/features/liver_enzymes/widgets/liver_enzymes_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddLiverEnzymesScreen extends StatefulWidget {

@@ -367,7 +367,7 @@ class _KidneyFunctionDisplayWidgetState
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   ...kidneyFuntionEvaluation
-                                      .split(" - ")
+                                      .split("-")
                                       .map((text) => Text(
                                             text.trim(),
                                             style: TextStyle(

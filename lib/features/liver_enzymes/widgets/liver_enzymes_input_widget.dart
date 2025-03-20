@@ -8,7 +8,7 @@ import 'package:sep490/features/lipid_profile/widgets/hdl_information_dialog.dar
 import 'package:sep490/features/lipid_profile/widgets/ldl_information_dialog.dart';
 import 'package:sep490/features/lipid_profile/widgets/total_cholesterol_information_dialog.dart';
 import 'package:sep490/features/lipid_profile/widgets/triglycerides_information_dialog.dart';
-import 'package:sep490/presentation/widgets/health/liverEnzymes/liver_enzymes_information_dialog.dart';
+import 'package:sep490/features/liver_enzymes/widgets/liver_enzymes_information_dialog.dart';
 import 'package:sep490/theme/color.dart';
 
 class LiverEnzymesInputWidget extends StatefulWidget {
