@@ -46,20 +46,20 @@ class BloodGlucoseController {
 
   Future<bool> addBloodGlucose({
     required BuildContext context,
+    required int accountId,
     required int elderlyId,
     required double bloodGlucose,
     required String bloodGlucoseSource,
     required String period,
-    required String createdBy,
   }) async {
     try {
       final success = await bloodGlucoseRepository.addBloodGlucose(
         context: context,
+        accountId: accountId,
         elderlyId: elderlyId,
         bloodGlucose: bloodGlucose,
         bloodGlucoseSource: bloodGlucoseSource,
         period: period,
-        createdBy: createdBy,
       );
 
       if (success) {}

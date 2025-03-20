@@ -47,22 +47,22 @@ class BloodPressureController {
 
   Future<bool> addBloodPressure({
     required BuildContext context,
+    required int accountId,
     required int elderlyId,
     required int systolic,
     required int diastolic,
     required String systolicSource,
     required String diastolicSource,
-    required String createdBy,
   }) async {
     try {
       final success = await bloodPressureRepository.addBloodPressure(
         context: context,
+        accountId: accountId,
         elderlyId: elderlyId,
         systolic: systolic,
         diastolic: diastolic,
         systolicSource: systolicSource,
         diastolicSource: diastolicSource,
-        createdBy: createdBy,
       );
 
       if (success) {

@@ -62,12 +62,12 @@ class BloodPressureRepository {
 
   Future<bool> addBloodPressure({
     required BuildContext context,
+    required int accountId,
     required int elderlyId,
     required int systolic,
     required int diastolic,
     required String systolicSource,
     required String diastolicSource,
-    required String createdBy,
   }) async {
     final url = Uri.parse(
         'https://api.diavan-valuation.asia/api/HealthIndicator/blood-pressure');
@@ -80,12 +80,12 @@ class BloodPressureRepository {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          "accountId": elderlyId,
+          "accountId": accountId,
+          "elderlyId": elderlyId,
           "systolic": systolic,
           "diastolic": diastolic,
           "systolicSource": systolicSource,
           "diastolicSource": diastolicSource,
-          "createdBy": createdBy,
         }),
       );
 

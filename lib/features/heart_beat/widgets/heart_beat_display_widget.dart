@@ -298,10 +298,10 @@ class _HeartBeatDisplayWidgetState
                                   final success =
                                       await heartRateController.addHeartRate(
                                     context: context,
+                                    accountId: currentUserAccountID ?? 0,
                                     elderlyId: currentUserAccountID ?? 0,
                                     heartRate: widget.heartBeat.toInt(),
                                     heartRateSource: "Thủ công",
-                                    createdBy: currentUserFullName ?? "Unknown",
                                   );
                                   await Future.delayed(Duration(seconds: 2));
 

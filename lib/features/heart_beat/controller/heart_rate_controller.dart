@@ -40,18 +40,18 @@ class HeartRateController {
 
   Future<bool> addHeartRate({
     required BuildContext context,
+    required int accountId,
     required int elderlyId,
     required int heartRate,
     required String heartRateSource,
-    required String createdBy,
   }) async {
     try {
       final success = await heartRateRepository.addHeartRate(
         context: context,
+        accountId: accountId,
         elderlyId: elderlyId,
         heartRate: heartRate,
         heartRateSource: heartRateSource,
-        createdBy: createdBy,
       );
 
       if (success) {

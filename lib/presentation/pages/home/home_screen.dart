@@ -1,10 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_height_screen.dart';

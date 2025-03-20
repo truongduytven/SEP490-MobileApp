@@ -385,11 +385,11 @@ class _BloodGlucoseDisplayWidgetState
                               final success =
                                   await heartRateController.addBloodGlucose(
                                 context: context,
+                                accountId: currentUserAccountID ?? 0,
                                 elderlyId: currentUserAccountID ?? 0,
                                 bloodGlucose: widget.bloodGlucose.toDouble(),
                                 bloodGlucoseSource: "Thủ công",
                                 period: widget.period,
-                                createdBy: currentUserFullName ?? "Unknown",
                               );
                               await Future.delayed(Duration(seconds: 2));
 

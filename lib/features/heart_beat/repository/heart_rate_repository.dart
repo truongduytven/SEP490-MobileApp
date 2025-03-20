@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:sep490/common/utils/utils.dart';
 
 class HeartRateRepository {
   Future<String> getHeartRateEvaluation(
@@ -64,10 +62,10 @@ class HeartRateRepository {
 
   Future<bool> addHeartRate({
     required BuildContext context,
+    required int accountId,
     required int elderlyId,
     required int heartRate,
     required String heartRateSource,
-    required String createdBy,
   }) async {
     final url = Uri.parse(
         'https://api.diavan-valuation.asia/api/HealthIndicator/heart-rate');
@@ -80,15 +78,14 @@ class HeartRateRepository {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          "accountId": elderlyId,
+          "accountId": accountId,
+          "elderlyId": elderlyId,
           "heartRate1": heartRate,
           "heartRateSource": heartRateSource,
-          "createdBy": createdBy,
         }),
       );
 
       final data = jsonDecode(response.body);
-      print("them nhịp tim $data");
       if (response.statusCode == 200) {
         if (data["status"] == 1) {
           CherryToast.success(

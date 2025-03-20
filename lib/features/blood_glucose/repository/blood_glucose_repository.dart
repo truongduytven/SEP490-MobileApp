@@ -65,11 +65,11 @@ class BloodGlucoseRepository {
 
   Future<bool> addBloodGlucose({
     required BuildContext context,
+    required int accountId,
     required int elderlyId,
     required double bloodGlucose,
     required String bloodGlucoseSource,
     required String period,
-    required String createdBy,
   }) async {
     final url = Uri.parse(
         'https://api.diavan-valuation.asia/api/HealthIndicator/blood-glucose');
@@ -82,11 +82,12 @@ class BloodGlucoseRepository {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          "accountId": elderlyId,
+
+          "accountId": accountId,
+          "elderlyId": elderlyId,
           "bloodGlucose1": bloodGlucose.toString(),
           "bloodGlucoseSource": bloodGlucoseSource,
           "time": period,
-          "createdBy": createdBy,
         }),
       );
 

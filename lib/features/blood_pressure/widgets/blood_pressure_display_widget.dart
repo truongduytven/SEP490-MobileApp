@@ -398,12 +398,12 @@ class _BloodPressureDisplayWidgetState
                               final success =
                                   await heartRateController.addBloodPressure(
                                 context: context,
+                                accountId: currentUserAccountID ?? 0,
                                 elderlyId: currentUserAccountID ?? 0,
                                 systolic: widget.systolic.toInt(),
                                 diastolic: widget.diastolic.toInt(),
                                 systolicSource: "Thủ công",
                                 diastolicSource: "Thủ công",
-                                createdBy: currentUserFullName ?? "Unknown",
                               );
                               await Future.delayed(Duration(seconds: 2));
 
