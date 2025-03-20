@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sep490/presentation/widgets/health/height/height_slider.dart';
-import 'package:sep490/presentation/widgets/health/height/height_styles.dart';
+import 'package:sep490/features/height/widgets/height_slider.dart';
+import 'package:sep490/features/height/widgets/height_styles.dart';
 import 'dart:math' as math;
-import 'package:sep490/presentation/widgets/health/height/widget_utils.dart';
+import 'package:sep490/features/height/widgets/widget_utils.dart';
 
 class HeightPicker extends StatefulWidget {
   final double maxHeight; // Change to double

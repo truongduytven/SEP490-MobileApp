@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/height/height_card.dart';
-import 'package:sep490/presentation/widgets/health/height/height_display_widget.dart';
+import 'package:sep490/features/height/widgets/height_card.dart';
+import 'package:sep490/features/height/widgets/height_display_widget.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddHeightScreen extends StatefulWidget {
@@ -107,7 +107,7 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
         backgroundColor: AppColors.bgColor,
         body: showHeightWidget
             ? HeightDisplayWidget(
-                weight: 50,
+                // weight: 50,
                 height: currentValue,
                 dateTime: formattedDateTime,
                 onEdit: onEdit,

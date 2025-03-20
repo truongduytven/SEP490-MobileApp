@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/widgets/health/height/height_picker.dart';
-import 'package:sep490/presentation/widgets/health/height/widget_utils.dart';
+import 'package:sep490/features/height/widgets/height_picker.dart';
+import 'package:sep490/features/height/widgets/widget_utils.dart';
 import 'package:sep490/theme/color.dart';
 
 class HeightCard extends StatefulWidget {
