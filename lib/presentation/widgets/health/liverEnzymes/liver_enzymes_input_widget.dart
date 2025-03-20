@@ -1,8 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/bun_information_dialog.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/egfr_information_dialog.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/gfr_information_dialog.dart';
+import 'package:sep490/features/kidney_function/widgets/bun_information_dialog.dart';
+import 'package:sep490/features/kidney_function/widgets/egfr_information_dialog.dart';
+import 'package:sep490/features/kidney_function/widgets/gfr_information_dialog.dart';
 import 'package:sep490/presentation/widgets/health/health_input.dart';
 import 'package:sep490/presentation/widgets/health/lipidProfile/hdl_information_dialog.dart';
 import 'package:sep490/presentation/widgets/health/lipidProfile/ldl_information_dialog.dart';

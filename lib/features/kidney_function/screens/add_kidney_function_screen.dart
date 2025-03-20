@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/features/blood_glucose/widgets/blood_glucose_display_widget.dart';
 import 'package:sep490/features/blood_glucose/widgets/blood_glucose_input_widget.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_input_widget.dart';
+import 'package:sep490/features/kidney_function/widgets/kidney_function_display_widget.dart';
+import 'package:sep490/features/kidney_function/widgets/kidney_function_input_widget.dart';
 import 'package:sep490/theme/color.dart';
 
 class AddKidneyFunctionScreen extends StatefulWidget {

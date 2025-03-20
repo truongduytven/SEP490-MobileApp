@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_display_widget.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_input_widget.dart';
 import 'package:sep490/presentation/widgets/health/lipidProfile/lipid_profile_display_widget.dart';
 import 'package:sep490/presentation/widgets/health/lipidProfile/lipid_profile_input_widget.dart';
 import 'package:sep490/theme/color.dart';

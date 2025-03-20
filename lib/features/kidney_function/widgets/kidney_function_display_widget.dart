@@ -1,12 +1,14 @@
-import 'dart:math';
-
-import 'package:flutter/foundation.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/presentation/widgets/health/kidneyFunction/kidney_function_dialog.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/kidney_function/controller/kidney_function_controller.dart';
+import 'package:sep490/features/kidney_function/widgets/kidney_function_dialog.dart';
 import 'package:sep490/theme/color.dart';
 
-class KidneyFunctionDisplayWidget extends StatelessWidget {
+class KidneyFunctionDisplayWidget extends ConsumerStatefulWidget {
   final num bunValue;
   final num gfrValue;
   final num egfrValue;
@@ -24,6 +26,39 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
     required this.gfrValue,
     required this.typeData,
   });
+
+  @override
+  ConsumerState<KidneyFunctionDisplayWidget> createState() =>
+      _KidneyFunctionDisplayWidgetState();
+}
+
+class _KidneyFunctionDisplayWidgetState
+    extends ConsumerState<KidneyFunctionDisplayWidget> {
+  String kidneyFuntionEvaluation = "Đang đánh giá...";
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchkidneyFunctionEvaluation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(AssetImage('assets/gif/notes.gif'), context);
+    });
+  }
+
+  Future<void> fetchkidneyFunctionEvaluation() async {
+    final kidneyFunctionController = ref.read(kidneyFunctionControllerProvider);
+    final result = await kidneyFunctionController.getKidneyFunctionEvaluation(
+      context,
+      widget.gfrValue.toDouble(),
+      widget.bunValue.toDouble(),
+      widget.egfrValue.toDouble(),
+    );
+    setState(() {
+      kidneyFuntionEvaluation = result;
+    });
+  }
+
   bool isToday(String dateTime) {
     final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
     final DateTime dateFromString = dateFormat.parse(dateTime);
@@ -34,29 +69,74 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
   }
 
   Color get classificationColor {
-    if (bunValue < 60) {
+    if (widget.bunValue < 60) {
       return Colors.orange; // Yellow for Bradycardia
-    } else if (bunValue >= 60 && bunValue <= 100) {
+    } else if (widget.bunValue >= 60 && widget.bunValue <= 100) {
       return Colors.green; // Green for Normal
     } else {
       return Colors.red; // Red for Tachycardia
     }
   }
 
-  String get heartBeatClassification {
-    if (bunValue < 60) {
-      return "Thận chậm";
-    } else if (bunValue >= 60 && bunValue <= 100) {
-      return "Thận bình thường";
+  // String get heartBeatClassification {
+  //   if (widget.bunValue < 60) {
+  //     return "Thận chậm";
+  //   } else if (widget.bunValue >= 60 && widget.bunValue <= 100) {
+  //     return "Thận bình thường";
+  //   } else {
+  //     return "Thận nhanh";
+  //   }
+  // }
+  Color getColorBasedOnEvaluation(String evaluation) {
+    if (evaluation.toLowerCase().contains("cao")) {
+      return Colors.red;
+    } else if (evaluation.toLowerCase().contains("thấp")) {
+      return Colors.orange;
     } else {
-      return "Thận nhanh";
+      return Colors.green;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isButtonDisabled = !isToday(dateTime) && !isDraft;
-
+    bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Màu nền trắng
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GifView.asset(
+                'assets/gif/notes.gif',
+                width: 200,
+                height: 200,
+                frameRate: 90,
+              ),
+              SizedBox(height: 10),
+              DefaultTextStyle(
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 20,
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      "Đang thêm chức năng thận...",
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      speed: Duration(milliseconds: 50), // Điều chỉnh tốc độ
+                    ),
+                  ],
+                  isRepeatingAnimation: false, // Chạy 1 lần
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,7 +160,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                       // Row with date-time and edit button
                       Row(
                         children: [
-                          isDraft
+                          widget.isDraft
                               ? Icon(
                                   Icons.calendar_month_outlined,
                                   color: AppColors.textColor,
@@ -95,9 +175,10 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                           Expanded(
                             child: Center(
                               child: Text(
-                                isToday(dateTime) // Check if it's today's date
+                                isToday(widget
+                                        .dateTime) // Check if it's today's date
                                     ? "Hôm nay"
-                                    : dateTime,
+                                    : widget.dateTime,
                                 style: TextStyle(
                                     color: AppColors.textColor,
                                     fontSize: 24,
@@ -106,9 +187,9 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                               ),
                             ),
                           ),
-                          isToday(dateTime)
+                          isToday(widget.dateTime)
                               ? IconButton(
-                                  onPressed: onEdit,
+                                  onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,
                                       size: 30, color: AppColors.primaryColor),
                                 )
@@ -140,7 +221,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                bunValue.toDouble().toStringAsFixed(1),
+                                widget.bunValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -171,7 +252,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                gfrValue.toDouble().toStringAsFixed(1),
+                                widget.gfrValue.toDouble().toStringAsFixed(1),
                                 style: TextStyle(
                                     fontSize: 50, fontWeight: FontWeight.w700),
                               ),
@@ -205,7 +286,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            egfrValue.toDouble().toStringAsFixed(1),
+                            widget.egfrValue.toDouble().toStringAsFixed(1),
                             style: TextStyle(
                                 fontSize: 50, fontWeight: FontWeight.w700),
                           ),
@@ -245,7 +326,7 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                               width: 5,
                             ),
                             Text(
-                              typeData,
+                              widget.typeData,
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w500,
@@ -275,19 +356,28 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
                               Icon(
                                 Icons.grain,
                                 size: 30,
-                                color: classificationColor,
+                                color: getColorBasedOnEvaluation(
+                                    kidneyFuntionEvaluation),
                               ),
                               SizedBox(
                                 width: 10,
                               ),
-                              Text(
-                                overflow: TextOverflow.ellipsis,
-                                heartBeatClassification,
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  color: classificationColor,
-                                ),
-                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  ...kidneyFuntionEvaluation
+                                      .split(" - ")
+                                      .map((text) => Text(
+                                            text,
+                                            style: TextStyle(
+                                              fontSize: 26,
+                                              color: getColorBasedOnEvaluation(
+                                                  kidneyFuntionEvaluation),
+                                            ),
+                                          )),
+                                ],
+                              )
                             ],
                           ),
                           Container(
@@ -342,9 +432,57 @@ class KidneyFunctionDisplayWidget extends StatelessWidget {
             child: isButtonDisabled
                 ? SizedBox.shrink() // Use an empty widget when disabled
                 : ElevatedButton(
-                    onPressed: () {
-                      print('hehe $bunValue $dateTime');
-                    },
+                    // onPressed: () {
+                    //   print('hehe ${widget.bunValue} ${widget.dateTime}');
+                    // },
+
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            try {
+                              SharedPrefsHelper sharedPrefsHelper =
+                                  SharedPrefsHelper();
+                              final currentUserAccountID =
+                                  sharedPrefsHelper.getInt("accountId");
+                              final currentUserFullName =
+                                  sharedPrefsHelper.getString("fullName");
+                              final kidneyFunctionController =
+                                  ref.read(kidneyFunctionControllerProvider);
+
+                              final success = await kidneyFunctionController
+                                  .addKidneyFunction(
+                                context: context,
+                                accountId: currentUserAccountID ?? 0,
+                                elderlyId: currentUserAccountID ?? 0,
+                                creatinine: widget.gfrValue.toDouble(),
+                                bun: widget.bunValue.toDouble(),
+                                egfr: widget.egfrValue.toDouble(),
+                                kidneyFunctionSource: "Thủ công",
+                              );
+                              await Future.delayed(Duration(seconds: 2));
+
+                              if (mounted) {
+                                if (success) {
+                                  Navigator.pop(context);
+                                }
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Lỗi: ${e.toString()}')),
+                              );
+                            } finally {
+                              await Future.delayed(Duration(seconds: 2));
+                              if (mounted) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondaryColor,
                       padding: EdgeInsets.all(12),
