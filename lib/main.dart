@@ -445,6 +445,7 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class _MyAppState extends State<MyApp> {
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
@@ -457,6 +458,7 @@ class _MyAppState extends State<MyApp> {
       home: SplashScreen(),
       scaffoldMessengerKey: scaffoldMessengerKey,
       navigatorKey: widget.navigatorKey,
+      navigatorObservers: [routeObserver],
       onGenerateRoute: (settings) => generateRoute(settings),
       debugShowCheckedModeBanner: false,
       builder: (BuildContext context, Widget? child) {

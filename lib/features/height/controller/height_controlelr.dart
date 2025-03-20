@@ -1,7 +1,6 @@
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sep490/features/heart_beat/repository/heart_rate_repository.dart';
 import 'package:sep490/features/height/repository/height_repository.dart';
 
 final heightControllerProvider = Provider<HeightControlelr>((ref) {

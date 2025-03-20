@@ -46,7 +46,7 @@ class _InfoCardState extends State<InfoCard> {
             MaterialPageRoute(builder: (context) => DetailHeartBeatScreen()));
         break;
 
-      case "Huyết Áp":
+      case "Huyết áp":
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -295,16 +295,16 @@ class _InfoCardState extends State<InfoCard> {
 }
 
 Color _getBadgeBackgroundColor(String result) {
-  switch (result) {
-    case "Rất Cao":
+  switch (result.trim().toLowerCase()) {
+    case "rất cao":
       return const Color(0xFFE53935);
-    case "Cao":
+    case "cao":
       return const Color(0xFFFFA726);
-    case "Bình Thường":
+    case "bình thường":
       return const Color(0xFF0CCB0F);
-    case "Thấp":
+    case "thấp":
       return const Color(0xFF42A5F5);
-    case "Rất Thấp":
+    case "rất thấp":
       return const Color.fromARGB(255, 195, 110, 13);
     default:
       return const Color(0xFFE0E0E0);
@@ -312,16 +312,16 @@ Color _getBadgeBackgroundColor(String result) {
 }
 
 Color _getBadgeBorderColor(String result) {
-  switch (result) {
-    case "Rất Cao":
+  switch (result.trim().toLowerCase()) {
+    case "rất cao":
       return const Color(0xFFFFCDD2);
-    case "Cao":
+    case "cao":
       return const Color(0xFFFFE0B2);
-    case "Bình Thường":
+    case "bình thường":
       return const Color(0xFF95FFBA);
-    case "Thấp":
+    case "thấp":
       return const Color(0xFFBBDEFB);
-    case "Rất Thấp":
+    case "rất thấp":
       return const Color.fromARGB(255, 237, 149, 25);
     default:
       return const Color(0xFFF5F5F5);
