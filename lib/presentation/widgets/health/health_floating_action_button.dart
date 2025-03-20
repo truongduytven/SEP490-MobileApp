@@ -5,7 +5,7 @@ import 'package:sep490/features/blood_pressure/screens/add_blood_pressure_screen
 import 'package:sep490/features/heart_beat/screens/add_heart_beat_screen.dart';
 import 'package:sep490/presentation/pages/health/add_height_screen.dart';
 import 'package:sep490/features/kidney_function/screens/add_kidney_function_screen.dart';
-import 'package:sep490/presentation/pages/health/add_lipid_profile_screen.dart';
+import 'package:sep490/features/lipid_profile/screens/add_lipid_profile_screen.dart';
 import 'package:sep490/presentation/pages/health/add_liver_enzymes_screen.dart';
 import 'package:sep490/presentation/pages/health/add_weight_screen.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';

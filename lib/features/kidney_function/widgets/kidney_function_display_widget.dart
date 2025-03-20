@@ -369,7 +369,7 @@ class _KidneyFunctionDisplayWidgetState
                                   ...kidneyFuntionEvaluation
                                       .split(" - ")
                                       .map((text) => Text(
-                                            text,
+                                            text.trim(),
                                             style: TextStyle(
                                               fontSize: 26,
                                               color: getColorBasedOnEvaluation(
