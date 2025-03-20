@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
-import 'package:sep490/overlay_service.dart';
-import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
@@ -164,10 +163,16 @@ void main() async {
     ),
   );
 
-  await OverlayService.showOverlay();
-
   /// Set navigator key for Zego Call Invitation Service
   ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+
+  await FlutterBackground.initialize(
+    androidConfig: FlutterBackgroundAndroidConfig(
+      notificationTitle: "SOS Service",
+      notificationText: "Running in background",
+      notificationIcon: AndroidResource(name: 'ic_launcher', defType: 'mipmap'),
+    ),
+  );
 
   runApp(
     ProviderScope(
@@ -208,8 +213,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animationX;
   late Animation<double> _animationY;
-  bool _navigateToEmergency = false;
-  final methodChannel = MethodChannel('com.example.sepp490/overlay');
 
   @override
   void initState() {
@@ -257,7 +260,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'LeagueSpartan'),
       color: AppColors.bgColor,
-      home: _navigateToEmergency ? HomeDoctorAdviseScreen() :  SplashScreen(),
+      home: SplashScreen(),
       scaffoldMessengerKey: scaffoldMessengerKey,
       navigatorKey: widget.navigatorKey,
       onGenerateRoute: (settings) => generateRoute(settings),
@@ -312,8 +315,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      child:
-                          GestureDetector(
+                      child: GestureDetector(
                         onTap: () {
                           Navigator.push(
                             widget.navigatorKey.currentState!.context,

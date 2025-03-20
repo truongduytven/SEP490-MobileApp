@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/data/repositories/user_pref_repository_impl.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/data/services/local_storage_service.dart';
 import 'package:sep490/domain/use_cases/user_pref_repository.dart';
+import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/pages/opening/select_sign.dart';
 import 'package:sep490/presentation/pages/opening/welcome_screen.dart';
@@ -27,11 +29,33 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), _navigateNext);
+    Timer(const Duration(seconds: 2), _checkSignal);
     FirebaseMessaging.instance.getToken().then((token) {
       setState(() {
         _token = token;
       });
+    });
+  }
+
+  Future<void> _checkSignal() async {
+    const platform = MethodChannel('com.example.sepp490/navigation');
+    bool isSignal = false;
+    platform.setMethodCallHandler((call) async {
+      if (call.method == "navigateTo") {
+        String page = call.arguments;
+        if (page == "home_doctor_advise") {
+          isSignal = true;
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return HomeDoctorAdviseScreen();
+          }));
+        }
+      }
+    });
+    Timer(const Duration(seconds: 2), () {
+      if (!isSignal) {
+        _navigateNext();
+      }
     });
   }
 
@@ -130,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       Navigator.of(context).pop();
       Fluttertoast.showToast(
-        msg: response['data']['data'] ?? "Có lỗi trong quá trình xử lý!",
+        msg: "Có lỗi trong quá trình xử lý!",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
