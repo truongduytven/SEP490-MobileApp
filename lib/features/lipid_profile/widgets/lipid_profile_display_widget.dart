@@ -382,7 +382,8 @@ class _LipidProfileDisplayWidgetState
                                       .map((text) => Text(
                                             text.trim(),
                                             style: TextStyle(
-                                              fontSize: 20,
+                                              overflow: TextOverflow.ellipsis,
+                                              fontSize: 16,
                                               color: getColorBasedOnEvaluation(
                                                   lipidProfileEvaluation),
                                             ),

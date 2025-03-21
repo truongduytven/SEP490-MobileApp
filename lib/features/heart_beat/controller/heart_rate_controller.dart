@@ -78,4 +78,30 @@ class HeartRateController {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getHeartRatetDetail({
+    required BuildContext context,
+    required int accountId,
+  }) async {
+    try {
+      final heightDetail = await heartRateRepository.getHeartRateDetail(
+        context,
+        accountId,
+      );
+
+      return heightDetail;
+    } catch (e) {
+      debugPrint("Error fetching heart rate detail: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy chi tiết nhịp tim",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return [];
+    }
+  }
 }
