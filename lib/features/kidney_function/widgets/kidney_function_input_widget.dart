@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sep490/features/kidney_function/widgets/bun_information_dialog.dart';
 import 'package:sep490/features/kidney_function/widgets/egfr_information_dialog.dart';
 import 'package:sep490/features/kidney_function/widgets/gfr_information_dialog.dart';
-import 'package:sep490/presentation/widgets/health/health_input.dart';
+import 'package:sep490/features/health/widgets/health_input.dart';
 import 'package:sep490/theme/color.dart';
 
 class KidneyFunctionInputWidget extends StatefulWidget {

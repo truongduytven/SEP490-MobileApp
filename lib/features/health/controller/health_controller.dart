@@ -43,4 +43,33 @@ class HealthController {
       return [];
     }
   }
+
+  Future<List<Map<String, String>>> getLogBookHealthIndicator(
+    BuildContext context,
+    int accountId,
+  ) async {
+    try {
+      final result = await healthRepository.getLogBookHealthIndicator(
+        context,
+        accountId,
+      );
+
+      return result;
+    } catch (e) {
+      debugPrint("Error fetching health log book indicators: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy sổ theo dõi sức khỏe: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+      ).show(context);
+
+      return [];
+    }
+  }
 }

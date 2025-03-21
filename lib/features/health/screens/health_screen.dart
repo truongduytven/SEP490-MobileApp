@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/health/controller/health_controller.dart';
 import 'package:sep490/main.dart';
-import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
+import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/header.dart';
-import 'package:sep490/presentation/widgets/health/card.dart';
-import 'package:sep490/presentation/widgets/health/skeleton_card.dart';
+import 'package:sep490/features/health/widgets/card.dart';
+import 'package:sep490/features/health/widgets/skeleton_card.dart';
 import 'package:sep490/theme/color.dart';
 
 class HealthScreen extends ConsumerStatefulWidget {
@@ -107,7 +107,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       "BloodPressure": {
         "title": "Huyết áp",
         "imageUrl": "assets/img3D/huyetap.png",
-        "unit": "BMP",
+        "unit": "mmHg",
         "average": "Trung bình trong 30 ngày",
       },
       "LipidProfile": {

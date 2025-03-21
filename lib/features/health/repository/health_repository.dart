@@ -43,6 +43,48 @@ class HealthRepository {
     }
   }
 
+  Future<List<Map<String, String>>> getLogBookHealthIndicator(
+    BuildContext context,
+    int accountId,
+  ) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/evaluation/log-book/$accountId');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data["status"] == 1) {
+          final List<dynamic> indicators = data["data"];
+          print("dtaa ne $indicators");
+          return indicators.map((indicator) {
+            return {
+              "tabs": indicator["tabs"].toString(),
+              "id": indicator["id"].toString(),
+              "indicator": indicator["indicator"].toString(),
+              "dateTime": indicator["dateTime"].toString(),
+              "dateRecorded": indicator["dateRecorded"].toString(),
+              "timeRecorded": indicator["timeRecorded"].toString(),
+              "dataType": indicator["dataType"].toString(),
+              "evaluation": indicator["evaluation"].toString(),
+            };
+          }).toList();
+        } else {
+          _showErrorToast(context, "Lỗi: ${data["message"]}");
+          throw Exception("Lỗi: ${data["message"]}");
+        }
+      } else {
+        _showErrorToast(context, "Lỗi HTTP ${response.statusCode}");
+        throw Exception("Lỗi HTTP ${response.statusCode}");
+      }
+    } catch (e) {
+      _showErrorToast(context, "Lỗi kết nối API: $e");
+      throw Exception("Lỗi kết nối API: $e");
+    }
+  }
+
   void _showErrorToast(BuildContext context, String message) {
     CherryToast.error(
       toastDuration: Duration(seconds: 3),

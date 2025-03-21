@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/health/carouse_with_save.dart';
-import 'package:sep490/presentation/widgets/health/skeleton_card.dart';
+import 'package:sep490/features/health/widgets/skeleton_card.dart';
 import 'package:sep490/theme/color.dart';
 
 class NotificationScreen extends StatelessWidget {

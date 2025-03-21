@@ -90,3 +90,105 @@ List<Map<String, String>> listData = [
     "dataAverage": "---",
   },
 ];
+ List<Map<String, String>> listDataLogBook = [
+    {
+      "title": "Thuốc",
+      "date": "11-01-2025",
+      "time": "12:34",
+      "result": "Đã bỏ qua X 1",
+      "dateTime": "11 th01  12:34",
+      "data": "Penicilin v kali 500mg",
+      "unit": "",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Huyết Áp",
+      "result": "Cao",
+      "dateTime": "11 th02  1:34",
+      "date": "11-02-2025",
+      "time": "01:34",
+      "data": "110/90",
+      "unit": "BPM",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Nhịp tim",
+      "result": "Rất Cao",
+      "dateTime": "11 th04  12:34",
+      "date": "11-04-2025",
+      "time": "12:34",
+      "data": "129",
+      "unit": "BMP",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Men gan",
+      "result": "Bình Thường",
+      "dateTime": "17 th03  11:54",
+      "date": "17-03-2025",
+      "time": "11:54",
+      "data": "123/122/124/125",
+      "unit": "UI/L",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Mỡ máu",
+      "result": "Bình Thường",
+      "dateTime": "17 th03  11:54",
+      "date": "17-03-2025",
+      "time": "11:54",
+      "data": "110/123/456/789",
+      "unit": "mmol/L",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Cân nặng",
+      "result": "Thấp",
+      "dateTime": "1 th02  2:44",
+      "date": "01-02-2024",
+      "time": "2:44",
+      "data": "45",
+      "unit": "kg",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Cân nặng",
+      "result": "Bình Thường",
+      "dateTime": "15 th01  12:44",
+      "date": "15-01-2025",
+      "time": "12:44",
+      "data": "45",
+      "unit": "kg",
+      "dataType": "Thủ công"
+    },
+    {
+      "title": "Chiều cao",
+      "result": "Bình Thường",
+      "dateTime": "19 th08  4:04",
+      "date": "19-08-2025",
+      "time": "04:04",
+      "data": "170",
+      "unit": "cm",
+      "dataType": "Thiết bị IOT"
+    },
+    {
+      "title": "Đường huyết",
+      "result": "Thấp",
+      "dateTime": "16 th03  4:04",
+      "date": "16-03-2025",
+      "time": "04:04",
+      "data": "170/Sau bữa ăn",
+      "unit": "mmol/L",
+      "dataType": "Thiết bị IOT"
+    },
+    {
+      "title": "Chức năng thận",
+      "result": "Bình Thường",
+      "dateTime": "17 th03  4:04",
+      "date": "17-03-2025",
+      "time": "04:04",
+      "data": "198/345/678",
+      "unit": "ml/phút/1.73m2",
+      "dataType": "Thiết bị IOT"
+    },
+  ];

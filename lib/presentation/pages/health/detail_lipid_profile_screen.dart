@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
+import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/health/chart/kidney_function_chart.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
 import 'package:sep490/presentation/widgets/health/chart/lipid_profile_chart.dart';
-import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
+import 'package:sep490/features/health/widgets/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
 class DetailLipidProfileScreen extends StatefulWidget {
