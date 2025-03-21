@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/health/controller/health_controller.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
+import 'package:sep490/features/health/widgets/skeleton_list.dart';
 import 'package:sep490/features/height/controller/height_controlelr.dart';
 import 'package:sep490/main.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_skeleton.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/features/health/widgets/health_floating_action_button.dart';
@@ -314,10 +316,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
             SizedBox(
               height: 400, // Adjust the height for better scrolling experience
               child: isLoading
-                  ? Center(
-                      child:
-                          CircularProgressIndicator(), // Hiển thị vòng quay loading
-                    )
+                  ? LineChartSkeleton()
                   : TabBarView(
                       controller: _tabController,
                       children: [

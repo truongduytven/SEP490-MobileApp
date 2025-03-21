@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/features/health/widgets/skeleton_list.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_skeleton.dart';
 
 class GroupMemberScreen extends StatefulWidget {
   const GroupMemberScreen({super.key});
@@ -16,7 +17,9 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
         title: const Text('Group Member'),
       ),
       body: Column(
-        children: [Text('Group Member Screen')],
+        children: [
+          Text('Group Member Screen'),
+        ],
       ),
     );
   }
