@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
@@ -5,11 +7,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shake_gesture/shake_gesture.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -200,7 +205,8 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
+class _MyAppState extends State<MyApp>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   int roleId = 0;
   double buttonX = 5;
@@ -213,22 +219,94 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animationX;
   late Animation<double> _animationY;
+  bool _isShakeTriggered = false;
+  bool _isListening = false;
+  final SpeechToText _speech = SpeechToText();
+  bool _isInEmergency = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
     SharedPrefsHelper.roleNotifier.addListener(_onRoleChanged);
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+    _initSpeech();
   }
 
   void _onRoleChanged() {
     setState(() {});
   }
 
+  void _initSpeech() async {
+    bool available = await _speech.initialize(
+      onStatus: (status) {
+        if (status == "done" && !_isInEmergency) {
+          _startListening();
+        }
+      },
+      onError: (error) {
+        print("Speech Error: $error");
+      },
+    );
+    if (available) {
+      _startListening();
+    }
+  }
+
+  void _startListening() async {
+    if (!_isListening && !_isInEmergency) {
+      _isListening = true;
+      _speech.listen(
+        onResult: (result) {
+          _processSpeech(result.recognizedWords);
+          print(result.recognizedWords);
+        },
+        localeId: "vi_VN",
+      );
+      Timer(Duration(seconds: 10), () {
+        _stopListening();
+      });
+    }
+  }
+
+  void _processSpeech(String words) {
+    words = words.toLowerCase().trim();
+    if (!_isInEmergency && (words.contains("cứu") ||
+        words.contains("cứu tôi") ||
+        words.contains("cứu với"))) {
+      _stopListening();
+      Navigator.push(
+        widget.navigatorKey.currentState!.context,
+        MaterialPageRoute(builder: (context) => HomeDoctorAdviseScreen()),
+      ).then((_) {
+        setState(() {
+          _isInEmergency = false;
+        });
+        _startListening();
+      });
+
+      setState(() {
+        _isInEmergency = true;
+      });
+    }
+  }
+
+  void _stopListening() {
+    if (_isListening) {
+      _isListening = false;
+      _speech.stop();
+
+      Future.delayed(Duration(seconds: 1), () {
+        _startListening();
+      });
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     SharedPrefsHelper.roleNotifier.removeListener(_onRoleChanged);
     _controller.dispose();
     super.dispose();
@@ -255,6 +333,19 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     });
   }
 
+  void _onShake() {
+    if (!_isShakeTriggered) {
+      _isShakeTriggered = true;
+      Navigator.push(
+        widget.navigatorKey.currentState!.context,
+        MaterialPageRoute(builder: (context) => EmergencyScreen()),
+      ).then((_) {
+        _isShakeTriggered = false;
+      });
+      print('Lắc nè');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -269,6 +360,12 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         return Stack(
           children: [
             child!,
+            ShakeGesture(
+              onShake: () {
+                _onShake();
+              },
+              child: Container(),
+            ),
             ValueListenableBuilder<int>(
               valueListenable: SharedPrefsHelper.roleNotifier,
               builder: (context, roleId, _) {
@@ -290,17 +387,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       });
                     },
                     onPanEnd: (_) => _animateButtonToEdge(),
-                    // (details) {
-                    //   setState(() {
-                    //     final screenSize = MediaQuery.of(context).size;
-                    //     double screenMid = screenSize.width / 2;
-
-                    //     buttonX = (buttonX < screenMid)
-                    //         ? edgePadding
-                    //         : screenSize.width - buttonSize - edgePadding;
-                    //   });
-                    // },
-
                     child: Container(
                       width: buttonSize,
                       height: buttonSize,
