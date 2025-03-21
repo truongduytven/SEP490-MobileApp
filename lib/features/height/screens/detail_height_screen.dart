@@ -12,6 +12,7 @@ import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart'
 import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/features/health/widgets/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DetailHeightScreen extends ConsumerStatefulWidget {
   const DetailHeightScreen({super.key});
@@ -571,12 +572,26 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                   // ),
                   SizedBox(
                     height: 150, // Ensure it has a fixed height
-                    child: MarkerPointerChart(
-                      value:
-                          _getCurrentBMIValue(), // Dynamic value based on tab
-                      result:
-                          _getCurrentBMIResult(), // Dynamic result based on tab
-                    ),
+                    child: isLoading
+                        ? Shimmer.fromColors(
+                            baseColor: const Color.fromARGB(255, 241, 236, 250),
+                            highlightColor: Colors.white,
+                            child: Container(
+                              height: 300,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.circular(10), // Bo tròn góc
+                              ),
+                            ),
+                          )
+                        : MarkerPointerChart(
+                            value:
+                                _getCurrentBMIValue(), // Dynamic value based on tab
+                            result:
+                                _getCurrentBMIResult(), // Dynamic result based on tab
+                          ),
                   ),
                 ],
               ),
