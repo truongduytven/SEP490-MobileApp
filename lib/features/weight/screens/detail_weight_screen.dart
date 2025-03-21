@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
-import 'package:sep490/features/height/controller/height_controlelr.dart';
+import 'package:sep490/features/weight/controller/weight_controller.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_skeleton.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
@@ -12,31 +12,35 @@ import 'package:sep490/features/health/widgets/health_floating_action_button.dar
 import 'package:sep490/theme/color.dart';
 import 'package:shimmer/shimmer.dart';
 
-class DetailHeightScreen extends ConsumerStatefulWidget {
-  const DetailHeightScreen({super.key});
+class DetailWeightScreen extends ConsumerStatefulWidget {
+  const DetailWeightScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<DetailHeightScreen> createState() => _DetailHeightScreenState();
+  ConsumerState<DetailWeightScreen> createState() => _DetailWeightScreenState();
 }
 
-class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
+class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
     with SingleTickerProviderStateMixin, RouteAware, WidgetsBindingObserver {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
+
+  late TabController _tabController;
+
   List<Map<String, dynamic>> dataFromApi = [];
-  // Lọc dữ liệu theo từng tab
+
   Map<String, dynamic>? dataByDate;
   Map<String, dynamic>? dataByWeek;
   Map<String, dynamic>? dataByMonth;
   Map<String, dynamic>? dataByYear;
-  // Khai báo biến chartByDate đúng kiểu
+
   Map<String, double?> chartByDate = {};
   Map<String, double?> chartByWeek = {};
   Map<String, double?> chartByMonth = {};
   Map<String, double?> chartByYear = {};
-  bool isLoading = false;
-  late TabController _tabController;
-  final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
 
+  bool isLoading = false;
+
+  final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
+  
   @override
   void initState() {
     super.initState();
@@ -84,10 +88,10 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
 
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
-    final heightController = ref.read(heightControllerProvider);
+    final weightController = ref.read(weightControllerProvider);
 
     try {
-      final result = await heightController.getHeightDetail(
+      final result = await weightController.getWeightDetail(
         context: context,
         accountId: currentUserAccountID,
       );
@@ -130,14 +134,14 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
       CherryToast.error(
         toastDuration: Duration(seconds: 3),
         title: Text(
-          "Error fetching height detail indicators: $e",
+          "Error fetching weight detail indicators: $e",
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
           ),
         ),
       ).show(context);
-      print("Error fetching height detail indicators: $e");
+      print("Error fetching weight detail indicators: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -242,7 +246,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "Chiều cao",
+          "Cân nặng",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -257,6 +261,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
         ],
       ),
       body: SingleChildScrollView(
+        // Wrap the body with SingleChildScrollView
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -293,12 +298,13 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                   : TabBarView(
                       controller: _tabController,
                       children: [
+                        // Content for 'Ngày' tab (Daily)
                         Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -313,7 +319,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByDate?["average"] as double?)?.toStringAsFixed(2) ?? "--"} cm",
+                                          "${(dataByDate?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -336,7 +342,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                 height: 300,
                                 child: LineChartWidget(
                                   data: chartByDate,
-                                  unit: "cm",
+                                  unit: "kg",
                                 ),
                               ),
                             ],
@@ -363,7 +369,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByWeek?["average"] as double?)?.toStringAsFixed(2) ?? "--"} cm",
+                                          "${(dataByWeek?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -386,13 +392,26 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                 height: 300,
                                 child: LineChartWidget(
                                   data: chartByWeek,
-                                  unit: "cm",
+                                  unit: "kg",
                                 ),
                               ),
                             ],
                           ),
                         ),
-
+                        // // Content for 'Tháng' tab (Monthly)
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(
+                        //       vertical: 30, horizontal: 10),
+                        //   child: Center(
+                        //     child: Column(
+                        //       mainAxisAlignment: MainAxisAlignment.center,
+                        //       children: const [
+                        //         Expanded(child: ColumnChartMedicine())
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                        // Content for 'Năm' tab (Yearly)
                         Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -413,7 +432,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByMonth?["average"] as double?)?.toStringAsFixed(2) ?? "--"} cm",
+                                          "${(dataByMonth?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -436,7 +455,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                 height: 300,
                                 child: LineChartWidget(
                                   data: chartByMonth,
-                                  unit: "cm",
+                                  unit: "kg",
                                 ),
                               ),
                             ],
@@ -462,7 +481,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByYear?["average"] as double?)?.toStringAsFixed(2) ?? "--"} cm",
+                                          "${(dataByYear?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -485,7 +504,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                 height: 300,
                                 child: LineChartWidget(
                                   data: chartByYear,
-                                  unit: "cm",
+                                  unit: "kg",
                                 ),
                               ),
                             ],
@@ -571,7 +590,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                           context,
                           MaterialPageRoute(
                               builder: (context) => HealthMonitoringBook(
-                                    initialTopic: "height",
+                                    initialTopic: "weight",
                                   )),
                         );
                       },

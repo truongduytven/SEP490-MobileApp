@@ -6,7 +6,7 @@ import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.da
 import 'package:sep490/presentation/pages/health/detail_heart_beat_screen.dart';
 import 'package:sep490/features/height/screens/detail_height_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
-import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
+import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';

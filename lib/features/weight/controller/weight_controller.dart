@@ -85,4 +85,30 @@ class WeightControlelr {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getWeightDetail({
+    required BuildContext context,
+    required int accountId,
+  }) async {
+    try {
+      final heightDetail = await weightRepository.getWeightDetail(
+        context,
+        accountId,
+      );
+
+      return heightDetail;
+    } catch (e) {
+      debugPrint("Error fetching weight detail: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy chi tiết cân nặng",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return [];
+    }
+  }
 }

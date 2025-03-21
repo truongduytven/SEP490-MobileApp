@@ -7,7 +7,7 @@ import 'package:sep490/presentation/pages/health/detail_kidney_function_screen.d
 import 'package:sep490/presentation/pages/health/detail_lipid_profile_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_liver_enzymes_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
-import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
+import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class InfoCard extends StatefulWidget {
