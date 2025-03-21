@@ -261,15 +261,15 @@ class _DetailBloodGlucoseScreenState extends State<DetailBloodGlucoseScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 350,
-                          child: Center(
-                            child: LineChartWidget(
-                              data: chartDataDate,
-                              unit: "mmol/L",
-                            ),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 350,
+                        //   child: Center(
+                        //     child: LineChartWidget(
+                        //       data: chartDataDate,
+                        //       unit: "mmol/L",
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

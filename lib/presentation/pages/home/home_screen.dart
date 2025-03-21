@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_heart_beat_screen.dart';
-import 'package:sep490/presentation/pages/health/detail_height_screen.dart';
+import 'package:sep490/features/height/screens/detail_height_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';

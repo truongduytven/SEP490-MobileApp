@@ -83,4 +83,30 @@ class HeightControlelr {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getHeightDetail({
+    required BuildContext context,
+    required int accountId,
+  }) async {
+    try {
+      final heightDetail = await heightRepository.getHeightDetail(
+        context,
+        accountId,
+      );
+
+      return heightDetail;
+    } catch (e) {
+      debugPrint("Error fetching height detail: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy chi tiết chiều cao",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return [];
+    }
+  }
 }

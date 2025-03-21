@@ -152,13 +152,13 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataDate,
-                            unit: "kg",
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 300,
+                        //   child: LineChartWidget(
+                        //     data: chartDataDate,
+                        //     unit: "kg",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -196,13 +196,13 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataWeek,
-                            unit: "kg",
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 300,
+                        //   child: LineChartWidget(
+                        //     data: chartDataWeek,
+                        //     unit: "kg",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -253,13 +253,13 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataMonth,
-                            unit: "kg",
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 300,
+                        //   child: LineChartWidget(
+                        //     data: chartDataMonth,
+                        //     unit: "kg",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -296,13 +296,13 @@ class _DetailWeightScreenState extends State<DetailWeightScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataYear,
-                            unit: "kg",
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 300,
+                        //   child: LineChartWidget(
+                        //     data: chartDataYear,
+                        //     unit: "kg",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

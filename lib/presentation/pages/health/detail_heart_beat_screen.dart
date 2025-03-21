@@ -149,13 +149,13 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataDate,
-                            unit: "BPM",
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 300,
+                        //   child: LineChartWidget(
+                        //     data: chartDataDate,
+                        //     unit: "BPM",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -193,13 +193,13 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataWeek,
-                            unit: "BPM",
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 300,
+                        //   child: LineChartWidget(
+                        //     data: chartDataWeek,
+                        //     unit: "BPM",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -237,13 +237,13 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataMonth,
-                            unit: "BPM",
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 300,
+                        //   child: LineChartWidget(
+                        //     data: chartDataMonth,
+                        //     unit: "BPM",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -280,13 +280,13 @@ class _DetailHeartBeatScreenState extends State<DetailHeartBeatScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 300,
-                          child: LineChartWidget(
-                            data: chartDataYear,
-                            unit: "BPM",
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 300,
+                        //   child: LineChartWidget(
+                        //     data: chartDataYear,
+                        //     unit: "BPM",
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

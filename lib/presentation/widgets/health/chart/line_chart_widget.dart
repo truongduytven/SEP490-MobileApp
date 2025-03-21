@@ -81,27 +81,48 @@ class LineChartWidget extends StatelessWidget {
                 },
               ),
             ),
+            // leftTitles: AxisTitles(
+            //   // axisNameWidget: Padding(
+            //   //   padding: const EdgeInsets.only(
+            //   //       right: 0.0), // Đẩy đơn vị ra ngoài một chút
+            //   //   child: Text(
+            //   //     unit,
+            //   //     style: const TextStyle(
+            //   //       fontSize: 16,
+            //   //       fontWeight: FontWeight.bold,
+            //   //       color: Colors.black87,
+            //   //     ),
+            //   //   ),
+            //   // ),
+            //   // axisNameSize: 24,
+            //   sideTitles: SideTitles(
+            //     showTitles: true,
+            //     reservedSize: 40,
+            //     interval: (maxY - minY) / 10,
+            //     getTitlesWidget: (value, meta) {
+            //       return Text(
+            //         value.toInt().toString(),
+            //         style: TextStyle(
+            //           fontSize: 16,
+            //           fontWeight: FontWeight.w500,
+            //           color: Colors.black54,
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
+
             leftTitles: AxisTitles(
-              // axisNameWidget: Padding(
-              //   padding: const EdgeInsets.only(
-              //       right: 0.0), // Đẩy đơn vị ra ngoài một chút
-              //   child: Text(
-              //     unit,
-              //     style: const TextStyle(
-              //       fontSize: 16,
-              //       fontWeight: FontWeight.bold,
-              //       color: Colors.black87,
-              //     ),
-              //   ),
-              // ),
-              // axisNameSize: 24,
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 40,
-                interval: (maxY - minY) / 10,
+                reservedSize: 70,
+                interval: (maxY - minY) / 5 > 1
+                    ? (maxY - minY) / 5
+                    : 1, // Tính toán khoảng cách giữa các mốc
                 getTitlesWidget: (value, meta) {
                   return Text(
-                    value.toInt().toString(),
+                    value.toStringAsFixed(
+                        1), // Hiển thị số dạng thập phân nếu cần
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,

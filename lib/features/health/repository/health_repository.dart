@@ -58,7 +58,6 @@ class HealthRepository {
 
         if (data["status"] == 1) {
           final List<dynamic> indicators = data["data"];
-          print("dtaa ne $indicators");
           return indicators.map((indicator) {
             return {
               "tabs": indicator["tabs"].toString(),
