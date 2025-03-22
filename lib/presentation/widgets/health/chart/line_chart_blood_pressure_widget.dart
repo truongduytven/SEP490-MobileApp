@@ -18,6 +18,7 @@ class LineChartBloodPressureWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("chart $data");
     final List<FlSpot> spots1 = [];
     final List<FlSpot> spots2 = [];
     int index = 0;
@@ -75,8 +76,8 @@ class LineChartBloodPressureWidget extends StatelessWidget {
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 40,
-                    interval: (maxY - minY) / 5,
+                    reservedSize: 60,
+                    interval: (maxY - minY) / 5 > 0 ? (maxY - minY) / 5 : 1,
                     getTitlesWidget: (value, meta) {
                       return Text(
                         value.toStringAsFixed(1),

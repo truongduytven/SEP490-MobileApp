@@ -33,14 +33,6 @@ class BloodPressureController {
     } catch (e) {
       debugPrint("Error fetching blood pressure evaluation: $e");
 
-      // Thông báo lỗi
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('Không thể lấy đánh giá huyết áp'),
-      //     backgroundColor: Colors.red,
-      //   ),
-      // );
-
       return "Không thể lấy đánh giá";
     }
   }
@@ -65,21 +57,14 @@ class BloodPressureController {
         diastolicSource: diastolicSource,
       );
 
-      if (success) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text('Nhịp tim đã được thêm thành công!'),
-        //     backgroundColor: Colors.green,
-        //   ),
-        // );
-      }
+      if (success) {}
 
       return success;
     } catch (e) {
       debugPrint("Error adding blood pressure: $e");
 
       CherryToast.error(
-        toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+        toastDuration: Duration(seconds: 2),
         title: Text(
           "Không thể thêm huyết áp",
           style: TextStyle(color: Colors.black),
@@ -87,6 +72,33 @@ class BloodPressureController {
       ).show(context);
 
       return false;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getBloodPressureDetail({
+    required BuildContext context,
+    required int accountId,
+  }) async {
+    try {
+      final bloodPressure =
+          await bloodPressureRepository.getBloodPressureDetail(
+        context,
+        accountId,
+      );
+
+      return bloodPressure;
+    } catch (e) {
+      debugPrint("Error fetching blood pressure detail: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy chi tiết huyết áp",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return [];
     }
   }
 }

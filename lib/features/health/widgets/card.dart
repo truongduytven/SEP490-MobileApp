@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/features/blood_glucose/screens/detail_blood_glucose_screen.dart';
-import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
+import 'package:sep490/features/blood_pressure/screens/detail_blood_pressure_screen.dart';
 import 'package:sep490/features/heart_beat/screens/detail_heart_beat_screen.dart';
 import 'package:sep490/features/height/screens/detail_height_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_kidney_function_screen.dart';

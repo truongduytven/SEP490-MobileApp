@@ -121,11 +121,6 @@ class _DetailBloodGlucoseScreenState
         chartByMonth = formatChartData(dataByMonth?["chartDatabase"]);
         chartByYear = formatChartData(dataByYear?["chartDatabase"]);
       });
-
-      print("ở đây $dataByDate");
-      // setState(() {
-      //   dataFromApi = result;
-      // });
     } catch (e) {
       CherryToast.error(
         toastDuration: Duration(seconds: 3),
