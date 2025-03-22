@@ -38,6 +38,7 @@ class SkeletonCard extends StatelessWidget {
                   highlightColor: Colors.white,
                   child: Container(
                     height: 20,
+                    width: 90,
                     decoration: BoxDecoration(
                       color: Colors
                           .white, // Đặt màu ở đây thay vì thuộc tính `color`

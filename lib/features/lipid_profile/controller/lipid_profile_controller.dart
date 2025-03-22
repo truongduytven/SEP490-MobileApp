@@ -79,4 +79,30 @@ class LipidProfileController {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getLipidProfileDetail({
+    required BuildContext context,
+    required int accountId,
+  }) async {
+    try {
+      final bloodGlucose = await lipidProfileRepository.getLipidProfileDetail(
+        context,
+        accountId,
+      );
+
+      return bloodGlucose;
+    } catch (e) {
+      debugPrint("Error fetching lipid profile detail: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy chi tiết mỡ máu",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return [];
+    }
+  }
 }
