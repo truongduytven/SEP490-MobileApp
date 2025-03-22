@@ -91,12 +91,12 @@ class WeightControlelr {
     required int accountId,
   }) async {
     try {
-      final heightDetail = await weightRepository.getWeightDetail(
+      final weightDetail = await weightRepository.getWeightDetail(
         context,
         accountId,
       );
 
-      return heightDetail;
+      return weightDetail;
     } catch (e) {
       debugPrint("Error fetching weight detail: $e");
 

@@ -221,3 +221,32 @@ final Map<String, double?> chartDataWeek = {
   "t-1": null,
   "Tuần này": 65,
 };
+
+final Map<String, double?> chartDataDateBloodGlucose = {
+  "T2": 115,
+  "T3": null,
+  "T4": 116,
+  "T5": 114,
+  "T6": null,
+  "T7": 125,
+  "Hôm nay": 115,
+};
+final Map<String, double?> chartDataMonthBloodGlucose = {
+  "11/2024": 116,
+  "12/2024": 112,
+  "T1": null,
+  "Tháng này": 118,
+};
+final Map<String, double?> chartDataYearBloodGlucose = {
+  "2023": 165,
+  "2024": null,
+  "Năm nay": 146,
+};
+final Map<String, double?> chartDataWeekBloodGlucose = {
+  "t-5": 120,
+  "t-4": null,
+  "t-3": 116,
+  "t-2": 125,
+  "t-1": null,
+  "Tuần này": 115,
+};

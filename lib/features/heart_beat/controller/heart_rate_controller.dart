@@ -84,12 +84,12 @@ class HeartRateController {
     required int accountId,
   }) async {
     try {
-      final heightDetail = await heartRateRepository.getHeartRateDetail(
+      final heartRateDetail = await heartRateRepository.getHeartRateDetail(
         context,
         accountId,
       );
 
-      return heightDetail;
+      return heartRateDetail;
     } catch (e) {
       debugPrint("Error fetching heart rate detail: $e");
 

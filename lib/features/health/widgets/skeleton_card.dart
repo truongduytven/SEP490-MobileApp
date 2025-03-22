@@ -33,18 +33,15 @@ class SkeletonCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Flexible(
-                  flex: 1, // Chỉ chiếm một phần của Row
-                  child: Shimmer.fromColors(
-                    baseColor: Color.fromARGB(255, 243, 240, 248),
-                    highlightColor: Colors.white,
-                    child: Container(
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: Colors
-                            .white, // Đặt màu ở đây thay vì thuộc tính `color`
-                        borderRadius: BorderRadius.circular(8), // Bo tròn góc
-                      ),
+                Shimmer.fromColors(
+                  baseColor: Color.fromARGB(255, 243, 240, 248),
+                  highlightColor: Colors.white,
+                  child: Container(
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: Colors
+                          .white, // Đặt màu ở đây thay vì thuộc tính `color`
+                      borderRadius: BorderRadius.circular(8), // Bo tròn góc
                     ),
                   ),
                 ),

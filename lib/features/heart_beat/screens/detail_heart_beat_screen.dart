@@ -35,6 +35,7 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
   Map<String, double?> chartByMonth = {};
   Map<String, double?> chartByYear = {};
   bool isLoading = false;
+  
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
   final Map<String, double?> chartDataDate = {
     "T2": 115,

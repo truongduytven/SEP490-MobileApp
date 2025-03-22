@@ -79,4 +79,30 @@ class BloodGlucoseController {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getBloodGlucoseDetail({
+    required BuildContext context,
+    required int accountId,
+  }) async {
+    try {
+      final bloodGlucose = await bloodGlucoseRepository.getBloodGlucoseDetail(
+        context,
+        accountId,
+      );
+
+      return bloodGlucose;
+    } catch (e) {
+      debugPrint("Error fetching blood glucose detail: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy chi tiết đường huyết",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return [];
+    }
+  }
 }
