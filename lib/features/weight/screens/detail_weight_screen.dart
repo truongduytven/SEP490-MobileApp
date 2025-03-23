@@ -126,7 +126,6 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
         chartByYear = formatChartData(dataByYear?["chartDatabase"]);
       });
 
-      print("ở đây $dataByDate");
       // setState(() {
       //   dataFromApi = result;
       // });

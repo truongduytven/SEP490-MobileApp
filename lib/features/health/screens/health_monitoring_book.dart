@@ -79,7 +79,6 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
     final healthController = ref.read(healthControllerProvider);
 
     try {
-      print("man hinh");
 
       final result = await healthController.getLogBookHealthIndicator(
         context,

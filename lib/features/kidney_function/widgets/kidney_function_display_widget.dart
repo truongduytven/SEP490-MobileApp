@@ -373,7 +373,7 @@ class _KidneyFunctionDisplayWidgetState
                                             style: TextStyle(
                                               fontSize: 26,
                                               color: getColorBasedOnEvaluation(
-                                                  kidneyFuntionEvaluation),
+                                                  text),
                                             ),
                                           )),
                                 ],

@@ -90,6 +90,7 @@ class _LipidProfileDisplayWidgetState
   //   }
   // }
   Color getColorBasedOnEvaluation(String evaluation) {
+    print("get cllor ${evaluation.toLowerCase().contains("cao")}");
     if (evaluation.toLowerCase().contains("cao")) {
       return Colors.red;
     } else if (evaluation.toLowerCase().contains("thấp")) {
@@ -385,7 +386,7 @@ class _LipidProfileDisplayWidgetState
                                               overflow: TextOverflow.ellipsis,
                                               fontSize: 16,
                                               color: getColorBasedOnEvaluation(
-                                                  lipidProfileEvaluation),
+                                                  text),
                                             ),
                                           )),
                                 ],

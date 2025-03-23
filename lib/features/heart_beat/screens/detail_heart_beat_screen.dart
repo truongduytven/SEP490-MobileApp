@@ -149,7 +149,6 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
         chartByYear = formatChartData(dataByYear?["chartDatabase"]);
       });
 
-      print("ở đây $dataByDate");
       // setState(() {
       //   dataFromApi = result;
       // });

@@ -412,7 +412,7 @@ class _LiverEnzymesDisplayWidgetState
                                             style: TextStyle(
                                               fontSize: 20,
                                               color: getColorBasedOnEvaluation(
-                                                  liverEnzymesEvaluation),
+                                                  text),
                                             ),
                                           )),
                                 ],

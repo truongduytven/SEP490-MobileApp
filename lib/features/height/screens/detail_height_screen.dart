@@ -122,7 +122,6 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
         chartByYear = formatChartData(dataByYear?["chartDatabase"]);
       });
 
-      print("ở đây $dataByDate");
       // setState(() {
       //   dataFromApi = result;
       // });
