@@ -159,8 +159,8 @@ class BloodPressureRepository {
         final data = jsonDecode(response.body);
 
         if (data["status"] == 1) {
-          final List<dynamic> heightData = data["data"];
-          return heightData.map((item) {
+          final List<dynamic> bloodPressureData = data["data"];
+          return bloodPressureData.map((item) {
             return {
               "tabs": item["tabs"],
               "average": item["average"],

@@ -85,12 +85,12 @@ class LipidProfileController {
     required int accountId,
   }) async {
     try {
-      final bloodGlucose = await lipidProfileRepository.getLipidProfileDetail(
+      final lipidProfile = await lipidProfileRepository.getLipidProfileDetail(
         context,
         accountId,
       );
 
-      return bloodGlucose;
+      return lipidProfile;
     } catch (e) {
       debugPrint("Error fetching lipid profile detail: $e");
 

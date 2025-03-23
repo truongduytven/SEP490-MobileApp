@@ -3,23 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
-import 'package:sep490/features/lipid_profile/controller/lipid_profile_controller.dart';
+import 'package:sep490/features/liver_enzymes/controller/liver_enzymes_controller.dart';
 import 'package:sep490/main.dart';
+import 'package:sep490/presentation/widgets/health/chart/kidney_function_chart.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_skeleton.dart';
+import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
 import 'package:sep490/presentation/widgets/health/chart/lipid_profile_chart.dart';
+import 'package:sep490/presentation/widgets/health/chart/liver_function_chart.dart';
 import 'package:sep490/features/health/widgets/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
-class DetailLipidProfileScreen extends ConsumerStatefulWidget {
-  const DetailLipidProfileScreen({super.key});
+class DetailLiverEnzymesScreen extends ConsumerStatefulWidget {
+  const DetailLiverEnzymesScreen({super.key});
 
   @override
-  ConsumerState<DetailLipidProfileScreen> createState() =>
-      _DetailLipidProfileScreenState();
+  ConsumerState<DetailLiverEnzymesScreen> createState() =>
+      _DetailLiverEnzymesScreenState();
 }
 
-class _DetailLipidProfileScreenState
-    extends ConsumerState<DetailLipidProfileScreen>
+class _DetailLiverEnzymesScreenState
+    extends ConsumerState<DetailLiverEnzymesScreen>
     with SingleTickerProviderStateMixin, RouteAware, WidgetsBindingObserver {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
 
@@ -38,6 +41,32 @@ class _DetailLipidProfileScreenState
 
   late TabController _tabController;
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
+  List<Map<String, dynamic>> liverDataDate = [
+    {"date": "01/07", "ALT": 30, "AST": 25, "ALP": 100, "GGT": 50},
+    {"date": "02/07", "ALT": 32, "AST": 27, "ALP": 110, "GGT": 55},
+    {"date": "03/07", "ALT": 28, "AST": 22, "ALP": 95, "GGT": 48},
+    {"date": "04/07", "ALT": 35, "AST": 30, "ALP": 105, "GGT": 52},
+    {"date": "05/07", "ALT": 29, "AST": 24, "ALP": 98, "GGT": 47},
+  ];
+  final Map<String, double?> chartDataMonth = {
+    "11/2024": 116,
+    "12/2024": 112,
+    "T1": null,
+    "Tháng này": 118,
+  };
+  final Map<String, double?> chartDataYear = {
+    "2023": 165,
+    "2024": null,
+    "Năm nay": 146,
+  };
+  final Map<String, double?> chartDataWeek = {
+    "t-5": 120,
+    "t-4": null,
+    "t-3": 116,
+    "t-2": 125,
+    "t-1": null,
+    "Tuần này": 115,
+  };
 
   @override
   void initState() {
@@ -84,10 +113,10 @@ class _DetailLipidProfileScreenState
 
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
-    final lipidProfileController = ref.read(lipidProfileControllerProvider);
+    final liverEnzymesController = ref.read(liverEnzymesControllerProvider);
 
     try {
-      final result = await lipidProfileController.getLipidProfileDetail(
+      final result = await liverEnzymesController.getLiverEnzymesDetail(
         context: context,
         accountId: currentUserAccountID,
       );
@@ -125,14 +154,14 @@ class _DetailLipidProfileScreenState
       CherryToast.error(
         toastDuration: Duration(seconds: 3),
         title: Text(
-          "Error fetching lipid profile detail indicators: $e",
+          "Error fetching liver enzymes detail indicators: $e",
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
           ),
         ),
       ).show(context);
-      print("Error fetching lipid profile indicators: $e");
+      print("Error fetching liver enzymes indicators: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -145,15 +174,17 @@ class _DetailLipidProfileScreenState
 
     return chartDatabase
         .where((entry) =>
-            entry["triglycerides"] != null ||
-            entry["ldlcholesterol"] != null ||
-            entry["hdlcholesterol"] != null)
+            entry["alt"] != null ||
+            entry["ast"] != null ||
+            entry["ggt"] != null ||
+            entry["alp"] != null)
         .map((entry) {
       return {
         "date": entry["type"], // Giữ nguyên type làm date
-        "Triglycerides": entry["triglycerides"] ?? 0,
-        "LDL": entry["ldlcholesterol"] ?? 0,
-        "HDL": entry["hdlcholesterol"] ?? 0,
+        "ALT": entry["alt"] ?? 0,
+        "AST": entry["ast"] ?? 0,
+        "ALP": entry["alp"] ?? 0,
+        "GGT": entry["ggt"] ?? 0,
       };
     }).toList();
   }
@@ -165,7 +196,7 @@ class _DetailLipidProfileScreenState
         scrolledUnderElevation: 0,
         elevation: 0,
         title: const Text(
-          "Mỡ máu",
+          "Men gan",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -247,8 +278,8 @@ class _DetailLipidProfileScreenState
                                             Text(
                                               "${dataByDate?["highestPercent"] ?? "--"} %",
                                               style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w600,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 18,
                                                   color: Colors.orange),
                                             ),
                                           ],
@@ -306,7 +337,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "HDL tb",
+                                              "ALT tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -314,7 +345,7 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["hdlcholesterolAverage"]
+                                              (dataByDate?["altAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -329,7 +360,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "LDL tb",
+                                              "ALP tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -337,7 +368,7 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["ldlcholesterolAverage"]
+                                              (dataByDate?["alpAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -352,7 +383,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "Trig tb",
+                                              "AST tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -360,7 +391,30 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["triglyceridesAverage"]
+                                              (dataByDate?["astAverage"]
+                                                          as double?)
+                                                      ?.toStringAsFixed(2) ??
+                                                  "--",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "GGT tb",
+                                              style: TextStyle(
+                                                  color: AppColors.grayColor5),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              (dataByDate?["ggtAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -375,7 +429,7 @@ class _DetailLipidProfileScreenState
                                   ],
                                 ),
                               ),
-                              LipidProfileChart(
+                              LiverFunctionChart(
                                 data: chartByDate,
                               ),
                             ],
@@ -411,8 +465,8 @@ class _DetailLipidProfileScreenState
                                             Text(
                                               "${dataByWeek?["highestPercent"] ?? "--"} %",
                                               style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w600,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 18,
                                                   color: Colors.orange),
                                             ),
                                           ],
@@ -470,7 +524,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "HDL tb",
+                                              "ALT tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -478,7 +532,7 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["hdlcholesterolAverage"]
+                                              (dataByWeek?["altAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -493,7 +547,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "LDL tb",
+                                              "ALP tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -501,7 +555,7 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["ldlcholesterolAverage"]
+                                              (dataByWeek?["alpAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -516,7 +570,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "Trig tb",
+                                              "AST tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -524,7 +578,30 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["triglyceridesAverage"]
+                                              (dataByWeek?["astAverage"]
+                                                          as double?)
+                                                      ?.toStringAsFixed(2) ??
+                                                  "--",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "GGT tb",
+                                              style: TextStyle(
+                                                  color: AppColors.grayColor5),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              (dataByWeek?["ggtAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -539,7 +616,7 @@ class _DetailLipidProfileScreenState
                                   ],
                                 ),
                               ),
-                              LipidProfileChart(
+                              LiverFunctionChart(
                                 data: chartByWeek,
                               ),
                             ],
@@ -575,8 +652,8 @@ class _DetailLipidProfileScreenState
                                             Text(
                                               "${dataByMonth?["highestPercent"] ?? "--"} %",
                                               style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w600,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 18,
                                                   color: Colors.orange),
                                             ),
                                           ],
@@ -634,7 +711,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "HDL tb",
+                                              "ALT tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -642,7 +719,7 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["hdlcholesterolAverage"]
+                                              (dataByMonth?["altAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -657,7 +734,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "LDL tb",
+                                              "ALP tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -665,7 +742,7 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["ldlcholesterolAverage"]
+                                              (dataByMonth?["alpAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -680,7 +757,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "Trig tb",
+                                              "AST tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -688,7 +765,30 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["triglyceridesAverage"]
+                                              (dataByMonth?["astAverage"]
+                                                          as double?)
+                                                      ?.toStringAsFixed(2) ??
+                                                  "--",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "GGT tb",
+                                              style: TextStyle(
+                                                  color: AppColors.grayColor5),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              (dataByMonth?["ggtAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -703,7 +803,7 @@ class _DetailLipidProfileScreenState
                                   ],
                                 ),
                               ),
-                              LipidProfileChart(
+                              LiverFunctionChart(
                                 data: chartByMonth,
                               ),
                             ],
@@ -739,8 +839,8 @@ class _DetailLipidProfileScreenState
                                             Text(
                                               "${dataByYear?["highestPercent"] ?? "--"} %",
                                               style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w600,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 18,
                                                   color: Colors.orange),
                                             ),
                                           ],
@@ -798,7 +898,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "HDL tb",
+                                              "ALT tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -806,7 +906,7 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["hdlcholesterolAverage"]
+                                              (dataByYear?["altAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -821,7 +921,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "LDL tb",
+                                              "ALP tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -829,7 +929,7 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["ldlcholesterolAverage"]
+                                              (dataByYear?["alpAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -844,7 +944,7 @@ class _DetailLipidProfileScreenState
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "Trig tb",
+                                              "AST tb",
                                               style: TextStyle(
                                                   color: AppColors.grayColor5),
                                             ),
@@ -852,7 +952,30 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["triglyceridesAverage"]
+                                              (dataByYear?["astAverage"]
+                                                          as double?)
+                                                      ?.toStringAsFixed(2) ??
+                                                  "--",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "GGT tb",
+                                              style: TextStyle(
+                                                  color: AppColors.grayColor5),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              (dataByYear?["ggtAverage"]
                                                           as double?)
                                                       ?.toStringAsFixed(2) ??
                                                   "--",
@@ -867,7 +990,7 @@ class _DetailLipidProfileScreenState
                                   ],
                                 ),
                               ),
-                              LipidProfileChart(
+                              LiverFunctionChart(
                                 data: chartByYear,
                               ),
                             ],
@@ -897,7 +1020,7 @@ class _DetailLipidProfileScreenState
                           context,
                           MaterialPageRoute(
                             builder: (context) => HealthMonitoringBook(
-                              initialTopic: "lipid_profile",
+                              initialTopic: "liver_enzym",
                             ),
                           ),
                         );

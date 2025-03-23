@@ -164,8 +164,8 @@ class LipidProfileRepository {
         final data = jsonDecode(response.body);
 
         if (data["status"] == 1) {
-          final List<dynamic> heightData = data["data"];
-          return heightData.map((item) {
+          final List<dynamic> lipidProfileData = data["data"];
+          return lipidProfileData.map((item) {
             return {
               "tabs": item["tabs"],
               "totalCholesterolAverage": item["totalCholesterolAverage"],

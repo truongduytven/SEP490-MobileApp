@@ -250,3 +250,15 @@ final Map<String, double?> chartDataWeekBloodGlucose = {
   "t-1": null,
   "Tuần này": 115,
 };
+
+
+ List<Map<String, dynamic>> lipidDataDate = [
+    {"date": "T2", "Triglycerides": 200, "LDL": 130, "HDL": 50},
+    {"date": "T3", "Triglycerides": 210, "LDL": 135, "HDL": 52},
+    {"date": "T4", "Triglycerides": 195, "LDL": 128, "HDL": 48},
+    {"date": "T5", "Triglycerides": 220, "LDL": 140, "HDL": 55},
+    {"date": "T6", "Triglycerides": 205, "LDL": 132, "HDL": 50},
+    {"date": "T7", "Triglycerides": 215, "LDL": 138, "HDL": 53},
+    {"date": "CN", "Triglycerides": 225, "LDL": 145, "HDL": 57},
+  ];
+ 

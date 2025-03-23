@@ -80,4 +80,30 @@ class LiverEnzymesController {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getLiverEnzymesDetail({
+    required BuildContext context,
+    required int accountId,
+  }) async {
+    try {
+      final liverEnzymes = await liverEnzymesRepository.getLiverEnzymesDetail(
+        context,
+        accountId,
+      );
+
+      return liverEnzymes;
+    } catch (e) {
+      debugPrint("Error fetching liver enzymes detail: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy chi tiết men gan",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return [];
+    }
+  }
 }

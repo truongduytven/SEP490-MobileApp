@@ -154,8 +154,8 @@ class HeartRateRepository {
         final data = jsonDecode(response.body);
 
         if (data["status"] == 1) {
-          final List<dynamic> heightData = data["data"];
-          return heightData.map((item) {
+          final List<dynamic> heartRateData = data["data"];
+          return heartRateData.map((item) {
             return {
               "tabs": item["tabs"],
               "average": item["average"],
