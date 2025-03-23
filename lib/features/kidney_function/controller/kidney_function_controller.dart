@@ -77,4 +77,31 @@ class KidneyFunctionController {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getKidneyFunctionDetail({
+    required BuildContext context,
+    required int accountId,
+  }) async {
+    try {
+      final kidneyFunction =
+          await kidneyFunctionRepository.getKidneyFunctionDetail(
+        context,
+        accountId,
+      );
+
+      return kidneyFunction;
+    } catch (e) {
+      debugPrint("Error fetching kidney function detail: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể lấy chi tiết chức năng thận",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return [];
+    }
+  }
 }

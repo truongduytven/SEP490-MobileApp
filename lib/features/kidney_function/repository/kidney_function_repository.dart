@@ -146,4 +146,63 @@ class KidneyFunctionRepository {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getKidneyFunctionDetail(
+    BuildContext context,
+    int id,
+  ) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/kidney-function/detail/$id');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data["status"] == 1) {
+          final List<dynamic> kidneyFunctionData = data["data"];
+          return kidneyFunctionData.map((item) {
+            return {
+              "tabs": item["tabs"],
+              "creatinineAverage": item["creatinineAverage"],
+              "bunAverage": item["bunAverage"],
+              "eGfrAverage": item["eGfrAverage"],
+              "highestPercent": item["highestPercent"],
+              "lowestPercent": item["lowestPercent"],
+              "normalPercent": item["normalPercent"],
+              "chartDatabase": item["chartDatabase"],
+            };
+          }).toList();
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(color: Colors.black, fontSize: 20),
+            ),
+          ).show(context);
+          throw Exception("Lỗi: ${data["message"]}");
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(color: Colors.black, fontSize: 20),
+          ),
+        ).show(context);
+        throw Exception("Lỗi HTTP ${response.statusCode}");
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(color: Colors.black, fontSize: 20),
+        ),
+      ).show(context);
+      throw Exception("Lỗi kết nối API: $e");
+    }
+  }
 }
