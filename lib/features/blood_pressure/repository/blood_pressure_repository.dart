@@ -145,6 +145,158 @@ class BloodPressureRepository {
     }
   }
 
+  Future<bool> updateBloodPressure({
+    required BuildContext context,
+    required int bloodPressureId,
+    required String createdBy,
+    required int systolic,
+    required int diastolic,
+  }) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-blood-pressure/$bloodPressureId?createdBy=$createdBy');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "systolic": systolic,
+          "diastolic": diastolic,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (data["status"] == 1) {
+          CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text("Huyết áp đã cập nhật thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
+          return true;
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+
+          return false;
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+
+        return false;
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteBloodPressure({
+    required BuildContext context,
+    required int bloodPressureId,
+  }) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/blood-pressure/$bloodPressureId ');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode("Inactive"),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (data["status"] == 1) {
+          CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text("Đã xóa huyết áp thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
+          return true;
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+
+          return false;
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+
+        return false;
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getBloodPressureDetail(
     BuildContext context,
     int id,

@@ -620,12 +620,19 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           // "${item["data"]} ${item['unit']}",
-                                          item["data"].toString().contains("/")
-                                              ? item["data"]
+
+                                          item["title"] == "Huyết áp"
+                                              ? ("${item["data"]} ${item['unit']}" ??
+                                                      "")
+                                                  .toString() // Đảm bảo không có giá trị null
+                                              : item["data"]
                                                       .toString()
-                                                      .split("/")[0] +
-                                                  " ${item['unit']}"
-                                              : "${item["data"]} ${item['unit']}",
+                                                      .contains("/")
+                                                  ? item["data"]
+                                                          .toString()
+                                                          .split("/")[0] +
+                                                      " ${item['unit']}"
+                                                  : "${item["data"]} ${item['unit']}",
                                           style: TextStyle(
                                               color: AppColors.textColor,
                                               fontSize: 22,

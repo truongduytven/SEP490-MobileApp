@@ -445,15 +445,7 @@ class _BloodGlucoseDisplayWidgetState
                                   period: widget.period,
                                 );
                               }
-                              // final success =
-                              //     await heartRateController.addBloodGlucose(
-                              //   context: context,
-                              //   accountId: currentUserAccountID ?? 0,
-                              //   elderlyId: currentUserAccountID ?? 0,
-                              //   bloodGlucose: widget.bloodGlucose.toDouble(),
-                              //   bloodGlucoseSource: "Thủ công",
-                              //   period: widget.period,
-                              // );
+                             
                               await Future.delayed(Duration(seconds: 2));
 
                               if (mounted) {

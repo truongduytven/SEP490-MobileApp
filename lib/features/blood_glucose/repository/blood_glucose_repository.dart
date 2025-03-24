@@ -175,7 +175,7 @@ class BloodGlucoseRepository {
         if (data["status"] == 1) {
           CherryToast.success(
               toastDuration: Duration(seconds: 2),
-              title: Text("Đường huyết đã cập nhật thêm thành công!",
+              title: Text("Đường huyết đã cập nhật thành công!",
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,

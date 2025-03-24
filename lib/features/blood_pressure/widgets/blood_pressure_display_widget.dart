@@ -112,6 +112,31 @@ class _BloodPressureDisplayWidgetState
   //   }
   //   return Colors.grey;
   // }
+  void _handleDelete() async {
+    setState(() => isLoading = true);
+
+    try {
+      final success =
+          await ref.read(bloodPressureControllerProvider).deleteBloodPressure(
+                context: context,
+                bloodPressureId: int.parse(widget.id!),
+              );
+      await Future.delayed(Duration(seconds: 2));
+
+      if (mounted && success) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +164,9 @@ class _BloodPressureDisplayWidgetState
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TyperAnimatedText(
-                      "Đang thêm huyết áp...",
+                      widget.id != null
+                          ? "Đang cập nhật huyết áp..."
+                          : "Đang thêm huyết áp...",
                       textStyle: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -183,10 +210,39 @@ class _BloodPressureDisplayWidgetState
                                   color: AppColors.textColor,
                                   size: 30,
                                 )
-                              : Icon(
-                                  Icons.delete_outline,
-                                  color: AppColors.primaryColor,
-                                  size: 30,
+                              : IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("Xác nhận xóa"),
+                                        content: Text(
+                                            "Bạn có chắc chắn muốn xóa không?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context), // Đóng hộp thoại
+                                            child: Text("Hủy"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                              // await deleteBloodGlucose();
+                                              _handleDelete();
+                                            },
+                                            child: Text("Xóa",
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.primaryColor,
+                                    size: 30,
+                                  ),
                                 ),
                           SizedBox(width: 8),
                           Expanded(
@@ -396,19 +452,44 @@ class _BloodPressureDisplayWidgetState
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
-                              final heartRateController =
+                              final bloodPressureController =
                                   ref.read(bloodPressureControllerProvider);
 
-                              final success =
-                                  await heartRateController.addBloodPressure(
-                                context: context,
-                                accountId: currentUserAccountID ?? 0,
-                                elderlyId: currentUserAccountID ?? 0,
-                                systolic: widget.systolic.toInt(),
-                                diastolic: widget.diastolic.toInt(),
-                                systolicSource: "Thủ công",
-                                diastolicSource: "Thủ công",
-                              );
+                              // final success =
+                              //     await heartRateController.addBloodPressure(
+                              //   context: context,
+                              //   accountId: currentUserAccountID ?? 0,
+                              //   elderlyId: currentUserAccountID ?? 0,
+                              //   systolic: widget.systolic.toInt(),
+                              //   diastolic: widget.diastolic.toInt(),
+                              //   systolicSource: "Thủ công",
+                              //   diastolicSource: "Thủ công",
+                              // );
+
+                              bool success;
+                              if (widget.id != null) {
+                                // Gọi hàm update nếu có id
+                                success = await bloodPressureController
+                                    .updateBloodPressure(
+                                  context: context,
+                                  bloodPressureId: int.parse(widget.id!),
+                                  createdBy: currentUserFullName ?? "Unknown",
+                                  systolic: widget.systolic.toInt(),
+                                  diastolic: widget.diastolic.toInt(),
+                                );
+                              } else {
+                                // Gọi hàm add nếu không có id
+                                success = await bloodPressureController
+                                    .addBloodPressure(
+                                  context: context,
+                                  accountId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserAccountID ?? 0,
+                                  systolic: widget.systolic.toInt(),
+                                  diastolic: widget.diastolic.toInt(),
+                                  systolicSource: "Thủ công",
+                                  diastolicSource: "Thủ công",
+                                );
+                              }
                               await Future.delayed(Duration(seconds: 2));
 
                               if (mounted) {
