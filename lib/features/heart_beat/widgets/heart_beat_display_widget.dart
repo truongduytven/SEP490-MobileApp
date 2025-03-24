@@ -72,6 +72,32 @@ class _HeartBeatDisplayWidgetState
     }
   }
 
+  void _handleDelete() async {
+    setState(() => isLoading = true);
+
+    try {
+      final success =
+          await ref.read(heartRateControllerProvider).deleteHeartRate(
+                context: context,
+                heartRateId: int.parse(widget.id!),
+              );
+      await Future.delayed(Duration(seconds: 2));
+
+      if (mounted && success) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isButtonDisabled = !widget.isDraft;
@@ -99,7 +125,9 @@ class _HeartBeatDisplayWidgetState
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TyperAnimatedText(
-                      "Đang thêm nhịp tim...",
+                      widget.id != null
+                          ? "Đang cập nhật nhịp tim..."
+                          : "Đang thêm nhịp tim...",
                       textStyle: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -146,10 +174,38 @@ class _HeartBeatDisplayWidgetState
                                       color: AppColors.textColor,
                                       size: 30,
                                     )
-                                  : Icon(
-                                      Icons.delete_outline,
-                                      color: AppColors.primaryColor,
-                                      size: 30,
+                                  : IconButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text("Xác nhận xóa"),
+                                            content: Text(
+                                                "Bạn có chắc chắn muốn xóa không?"),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                    context), // Đóng hộp thoại
+                                                child: Text("Hủy"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                  _handleDelete();
+                                                },
+                                                child: Text("Xóa",
+                                                    style: TextStyle(
+                                                        color: Colors.red)),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.delete_outline,
+                                        color: AppColors.primaryColor,
+                                        size: 30,
+                                      ),
                                     ),
                               SizedBox(width: 8),
                               Expanded(
@@ -299,14 +355,37 @@ class _HeartBeatDisplayWidgetState
                                   final heartRateController =
                                       ref.read(heartRateControllerProvider);
 
-                                  final success =
-                                      await heartRateController.addHeartRate(
-                                    context: context,
-                                    accountId: currentUserAccountID ?? 0,
-                                    elderlyId: currentUserAccountID ?? 0,
-                                    heartRate: widget.heartBeat.toInt(),
-                                    heartRateSource: "Thủ công",
-                                  );
+                                  // final success =
+                                  //     await heartRateController.addHeartRate(
+                                  //   context: context,
+                                  //   accountId: currentUserAccountID ?? 0,
+                                  //   elderlyId: currentUserAccountID ?? 0,
+                                  //   heartRate: widget.heartBeat.toInt(),
+                                  //   heartRateSource: "Thủ công",
+                                  // );
+
+                                  bool success;
+                                  if (widget.id != null) {
+                                    // Gọi hàm update nếu có id
+                                    success = await heartRateController
+                                        .updateHeartRate(
+                                      context: context,
+                                      heartRateId: int.parse(widget.id!),
+                                      createdBy:
+                                          currentUserFullName ?? "Unknown",
+                                      heartRate: widget.heartBeat.toInt(),
+                                    );
+                                  } else {
+                                    // Gọi hàm add nếu không có id
+                                    success =
+                                        await heartRateController.addHeartRate(
+                                      context: context,
+                                      accountId: currentUserAccountID ?? 0,
+                                      elderlyId: currentUserAccountID ?? 0,
+                                      heartRate: widget.heartBeat.toInt(),
+                                      heartRateSource: "Thủ công",
+                                    );
+                                  }
                                   await Future.delayed(Duration(seconds: 2));
 
                                   if (mounted) {
@@ -314,19 +393,12 @@ class _HeartBeatDisplayWidgetState
                                       Navigator.pop(context);
                                     }
                                   }
-                                  // Navigator.pop(
-                                  //     context); // Quay về màn hình trước đó
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                         content: Text('Lỗi: ${e.toString()}')),
                                   );
                                 } finally {
-                                  // await Future.delayed(Duration(seconds: 10));
-                                  // if (!mounted) return;
-                                  // setState(() {
-                                  //   isLoading = false; // Kết thúc loading
-                                  // });
                                   await Future.delayed(Duration(
                                       seconds:
                                           2)); // Giữ màn hình loading lâu hơn

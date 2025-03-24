@@ -227,7 +227,6 @@ class _BloodPressureDisplayWidgetState
                                           TextButton(
                                             onPressed: () async {
                                               Navigator.pop(context);
-                                              // await deleteBloodGlucose();
                                               _handleDelete();
                                             },
                                             child: Text("Xóa",
