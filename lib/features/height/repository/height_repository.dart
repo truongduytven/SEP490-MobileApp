@@ -90,7 +90,7 @@ class HeightRepository {
         body: jsonEncode({
           "accountId": accountId,
           "elderlyId": elderlyId,
-          "height1": height,
+          "height1": height.toStringAsFixed(1),
           "heightSource": heightSource,
         }),
       );
