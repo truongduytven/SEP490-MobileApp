@@ -109,6 +109,32 @@ class _BloodGlucoseDisplayWidgetState
         Icons.help_outline; // Default icon if not found
   }
 
+  void _handleDelete() async {
+    setState(() => isLoading = true);
+
+    try {
+      final success =
+          await ref.read(bloodGlucoseControllerProvider).deleteBloodGlucose(
+                context: context,
+                bloodGlucoseId: int.parse(widget.id!),
+              );
+      await Future.delayed(Duration(seconds: 2));
+
+      if (mounted && success) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
@@ -135,7 +161,9 @@ class _BloodGlucoseDisplayWidgetState
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TyperAnimatedText(
-                      "Đang thêm đường huyết...",
+                      widget.id != null
+                          ? "Đang cập nhật đường huyết..."
+                          : "Đang thêm đường huyết...",
                       textStyle: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -179,10 +207,39 @@ class _BloodGlucoseDisplayWidgetState
                                   color: AppColors.textColor,
                                   size: 30,
                                 )
-                              : Icon(
-                                  Icons.delete_outline,
-                                  color: AppColors.primaryColor,
-                                  size: 30,
+                              : IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("Xác nhận xóa"),
+                                        content: Text(
+                                            "Bạn có chắc chắn muốn xóa không?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context), // Đóng hộp thoại
+                                            child: Text("Hủy"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                              // await deleteBloodGlucose();
+                                              _handleDelete();
+                                            },
+                                            child: Text("Xóa",
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.primaryColor,
+                                    size: 30,
+                                  ),
                                 ),
                           SizedBox(width: 8),
                           Expanded(
@@ -282,27 +339,6 @@ class _BloodGlucoseDisplayWidgetState
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Row(
-                          //   children: [
-                          //     Icon(
-                          //       Icons.bloodtype_outlined,
-                          //       size: 30,
-                          //       color: classificationColor,
-                          //     ),
-                          //     SizedBox(
-                          //       width: 10,
-                          //     ),
-                          //     Text(
-                          //       overflow: TextOverflow.ellipsis,
-                          //       heartBeatClassification,
-                          //       style: TextStyle(
-                          //         fontSize: 26,
-                          //         color: classificationColor,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
-
                           Row(
                             children: [
                               Icon(
@@ -383,18 +419,41 @@ class _BloodGlucoseDisplayWidgetState
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
-                              final heartRateController =
+                              final bloodGlucoseController =
                                   ref.read(bloodGlucoseControllerProvider);
-
-                              final success =
-                                  await heartRateController.addBloodGlucose(
-                                context: context,
-                                accountId: currentUserAccountID ?? 0,
-                                elderlyId: currentUserAccountID ?? 0,
-                                bloodGlucose: widget.bloodGlucose.toDouble(),
-                                bloodGlucoseSource: "Thủ công",
-                                period: widget.period,
-                              );
+                              bool success;
+                              if (widget.id != null) {
+                                // Gọi hàm update nếu có id
+                                success = await bloodGlucoseController
+                                    .updateBloodGlucose(
+                                  context: context,
+                                  bloodGlucoseId: int.parse(widget.id!),
+                                  createdBy: currentUserFullName ?? "Unknown",
+                                  bloodGlucoseUpdate:
+                                      widget.bloodGlucose.toDouble(),
+                                  period: widget.period,
+                                );
+                              } else {
+                                // Gọi hàm add nếu không có id
+                                success = await bloodGlucoseController
+                                    .addBloodGlucose(
+                                  context: context,
+                                  accountId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserAccountID ?? 0,
+                                  bloodGlucose: widget.bloodGlucose.toDouble(),
+                                  bloodGlucoseSource: "Thủ công",
+                                  period: widget.period,
+                                );
+                              }
+                              // final success =
+                              //     await heartRateController.addBloodGlucose(
+                              //   context: context,
+                              //   accountId: currentUserAccountID ?? 0,
+                              //   elderlyId: currentUserAccountID ?? 0,
+                              //   bloodGlucose: widget.bloodGlucose.toDouble(),
+                              //   bloodGlucoseSource: "Thủ công",
+                              //   period: widget.period,
+                              // );
                               await Future.delayed(Duration(seconds: 2));
 
                               if (mounted) {

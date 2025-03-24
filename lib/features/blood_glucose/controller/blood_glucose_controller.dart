@@ -80,6 +80,68 @@ class BloodGlucoseController {
     }
   }
 
+  Future<bool> updateBloodGlucose({
+    required BuildContext context,
+    required int bloodGlucoseId,
+    required String createdBy,
+    required double bloodGlucoseUpdate,
+    required String period,
+  }) async {
+    try {
+      final success = await bloodGlucoseRepository.updateBloodGlucose(
+        context: context,
+        bloodGlucoseId: bloodGlucoseId,
+        createdBy: createdBy,
+        bloodGlucoseUpdate: bloodGlucoseUpdate,
+        period: period,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error updating blood glucose: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+        title: Text(
+          "Không thể cập nhật đường huyết",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteBloodGlucose({
+    required BuildContext context,
+    required int bloodGlucoseId,
+  }) async {
+    try {
+      final success = await bloodGlucoseRepository.deleteBloodGlucose(
+        context: context,
+        bloodGlucoseId: bloodGlucoseId,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error deleting blood glucose: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+        title: Text(
+          "Không thể xóa đường huyết",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getBloodGlucoseDetail({
     required BuildContext context,
     required int accountId,
