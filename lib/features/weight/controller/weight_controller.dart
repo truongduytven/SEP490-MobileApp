@@ -86,6 +86,66 @@ class WeightControlelr {
     }
   }
 
+  Future<bool> updateWeight({
+    required BuildContext context,
+    required int weightId,
+    required String createdBy,
+    required double weight,
+  }) async {
+    try {
+      final success = await weightRepository.updateWeight(
+        context: context,
+        weightId: weightId,
+        createdBy: createdBy,
+        weight: weight,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error updating weight: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể cập nhật cân nặng",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteWeight({
+    required BuildContext context,
+    required int weightId,
+  }) async {
+    try {
+      final success = await weightRepository.deleteWeight(
+        context: context,
+        weightId: weightId,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error deleting weight: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể xóa cân nặng",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getWeightDetail({
     required BuildContext context,
     required int accountId,

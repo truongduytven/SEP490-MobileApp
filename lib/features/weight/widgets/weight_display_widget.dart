@@ -103,6 +103,33 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
         dateFromString.day == today.day;
   }
 
+  void _handleDelete() async {
+    setState(() => isLoading = true);
+
+    try {
+      final success = await ref.read(weightControllerProvider).deleteWeight(
+            context: context,
+            weightId: int.parse(
+              widget.id!,
+            ),
+          );
+      await Future.delayed(Duration(seconds: 2));
+
+      if (mounted && success) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print("weight_display ${widget.id}");
@@ -134,7 +161,9 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TyperAnimatedText(
-                      "Đang thêm cân nặng...",
+                      widget.id != null
+                          ? "Đang cập nhật cân nặng..."
+                          : "Đang thêm cân nặng...",
                       textStyle: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -178,10 +207,38 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
                                   color: AppColors.textColor,
                                   size: 30,
                                 )
-                              : Icon(
-                                  Icons.delete_outline,
-                                  color: AppColors.primaryColor,
-                                  size: 30,
+                              : IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("Xác nhận xóa"),
+                                        content: Text(
+                                            "Bạn có chắc chắn muốn xóa không?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text("Hủy"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                              _handleDelete();
+                                            },
+                                            child: Text("Xóa",
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.primaryColor,
+                                    size: 30,
+                                  ),
                                 ),
                           SizedBox(width: 8),
                           Expanded(
@@ -348,13 +405,33 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
                               final weightController =
                                   ref.read(weightControllerProvider);
 
-                              final success = await weightController.addWeight(
-                                context: context,
-                                accountId: currentUserAccountID ?? 0,
-                                elderlyId: currentUserAccountID ?? 0,
-                                weight: widget.weight.toDouble(),
-                                weightSource: "Thủ công",
-                              );
+                              // final success = await weightController.addWeight(
+                              //   context: context,
+                              //   accountId: currentUserAccountID ?? 0,
+                              //   elderlyId: currentUserAccountID ?? 0,
+                              //   weight: widget.weight.toDouble(),
+                              //   weightSource: "Thủ công",
+                              // );
+
+                              bool success;
+                              if (widget.id != null) {
+                                // Gọi hàm update nếu có id
+                                success = await weightController.updateWeight(
+                                  context: context,
+                                  weightId: int.parse(widget.id!),
+                                  createdBy: currentUserFullName ?? "Unknown",
+                                  weight: widget.weight.toDouble(),
+                                );
+                              } else {
+                                // Gọi hàm add nếu không có id
+                                success = await weightController.addWeight(
+                                  context: context,
+                                  accountId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserAccountID ?? 0,
+                                  weight: widget.weight.toDouble(),
+                                  weightSource: "Thủ công",
+                                );
+                              }
                               await Future.delayed(Duration(seconds: 2));
 
                               if (mounted) {
