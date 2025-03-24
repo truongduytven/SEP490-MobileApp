@@ -102,6 +102,34 @@ class _LiverEnzymesDisplayWidgetState
     }
   }
 
+  void _handleDelete() async {
+    setState(() => isLoading = true);
+
+    try {
+      final success =
+          await ref.read(liverEnzymesControllerProvider).deleteLiverEnzymes(
+                context: context,
+                liverEnzymesId: int.parse(
+                  widget.id!,
+                ),
+              );
+      await Future.delayed(Duration(seconds: 2));
+
+      if (mounted && success) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
@@ -128,7 +156,9 @@ class _LiverEnzymesDisplayWidgetState
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TyperAnimatedText(
-                      "Đang thêm men gan...",
+                      widget.id != null
+                          ? "Đang cập nhật men gan..."
+                          : "Đang thêm men gan...",
                       textStyle: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -172,10 +202,38 @@ class _LiverEnzymesDisplayWidgetState
                                   color: AppColors.textColor,
                                   size: 30,
                                 )
-                              : Icon(
-                                  Icons.delete_outline,
-                                  color: AppColors.primaryColor,
-                                  size: 30,
+                              : IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("Xác nhận xóa"),
+                                        content: Text(
+                                            "Bạn có chắc chắn muốn xóa không?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text("Hủy"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                              _handleDelete();
+                                            },
+                                            child: Text("Xóa",
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.primaryColor,
+                                    size: 30,
+                                  ),
                                 ),
                           SizedBox(width: 8),
                           Expanded(
@@ -460,17 +518,45 @@ class _LiverEnzymesDisplayWidgetState
                               final liverEnzymesController =
                                   ref.read(liverEnzymesControllerProvider);
 
-                              final success =
-                                  await liverEnzymesController.addLiverEnzymes(
-                                context: context,
-                                accountId: currentUserAccountID ?? 0,
-                                elderlyId: currentUserAccountID ?? 0,
-                                alt: widget.altValue.toDouble(),
-                                ast: widget.astValue.toDouble(),
-                                alp: widget.alpValue.toDouble(),
-                                ggt: widget.ggtValue.toDouble(),
-                                liverEnzymesSource: "Thủ công",
-                              );
+                              // final success =
+                              //     await liverEnzymesController.addLiverEnzymes(
+                              //   context: context,
+                              //   accountId: currentUserAccountID ?? 0,
+                              //   elderlyId: currentUserAccountID ?? 0,
+                              //   alt: widget.altValue.toDouble(),
+                              //   ast: widget.astValue.toDouble(),
+                              //   alp: widget.alpValue.toDouble(),
+                              //   ggt: widget.ggtValue.toDouble(),
+                              //   liverEnzymesSource: "Thủ công",
+                              // );
+
+                              bool success;
+                              if (widget.id != null) {
+                                // Gọi hàm update nếu có id
+                                success = await liverEnzymesController
+                                    .updateLiverEnzymes(
+                                  context: context,
+                                  liverEnzymesId: int.parse(widget.id!),
+                                  createdBy: currentUserFullName ?? "Unknown",
+                                  ast: widget.astValue.toDouble(),
+                                  alt: widget.altValue.toDouble(),
+                                  alp: widget.alpValue.toDouble(),
+                                  ggt: widget.ggtValue.toDouble(),
+                                );
+                              } else {
+                                // Gọi hàm add nếu không có id
+                                success = await liverEnzymesController
+                                    .addLiverEnzymes(
+                                  context: context,
+                                  accountId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserAccountID ?? 0,
+                                  alt: widget.altValue.toDouble(),
+                                  ast: widget.astValue.toDouble(),
+                                  alp: widget.alpValue.toDouble(),
+                                  ggt: widget.ggtValue.toDouble(),
+                                  liverEnzymesSource: "Thủ công",
+                                );
+                              }
                               await Future.delayed(Duration(seconds: 2));
 
                               if (mounted) {

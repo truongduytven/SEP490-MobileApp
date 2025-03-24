@@ -150,6 +150,162 @@ class LiverEnzymesRepository {
     }
   }
 
+  Future<bool> updateLiverEnzymes({
+    required BuildContext context,
+    required int liverEnzymesId,
+    required String createdBy,
+    required double alt,
+    required double ast,
+    required double alp,
+    required double ggt,
+  }) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-liver-enzymes/$liverEnzymesId?createdBy=$createdBy');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "alt": alt,
+          "ast": ast,
+          "alp": alp,
+          "ggt": ggt,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (data["status"] == 1) {
+          CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text("Men gan đã cập nhật thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
+          return true;
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+
+          return false;
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+
+        return false;
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteLiverEnzymes({
+    required BuildContext context,
+    required int liverEnzymesId,
+  }) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/liver-enzymes/$liverEnzymesId');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode("Inactive"),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (data["status"] == 1) {
+          CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text("Đã xóa men gan thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
+          return true;
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+
+          return false;
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+
+        return false;
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getLiverEnzymesDetail(
     BuildContext context,
     int id,

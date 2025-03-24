@@ -81,6 +81,72 @@ class LiverEnzymesController {
     }
   }
 
+  Future<bool> updateLiverEnzymes({
+    required BuildContext context,
+    required int liverEnzymesId,
+    required String createdBy,
+    required double alt,
+    required double ast,
+    required double alp,
+    required double ggt,
+  }) async {
+    try {
+      final success = await liverEnzymesRepository.updateLiverEnzymes(
+        context: context,
+        liverEnzymesId: liverEnzymesId,
+        createdBy: createdBy,
+        alt: alt,
+        ast: ast,
+        alp: alp,
+        ggt: ggt,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error updating liver enzymes: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể cập nhật men gan",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteLiverEnzymes({
+    required BuildContext context,
+    required int liverEnzymesId,
+  }) async {
+    try {
+      final success = await liverEnzymesRepository.deleteLiverEnzymes(
+        context: context,
+        liverEnzymesId: liverEnzymesId,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error deleting liver enzymes: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể xóa men gan",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getLiverEnzymesDetail({
     required BuildContext context,
     required int accountId,
