@@ -150,6 +150,162 @@ class LipidProfileRepository {
     }
   }
 
+  Future<bool> updateLipidProfile({
+    required BuildContext context,
+    required int lipidProfileId,
+    required String createdBy,
+    required double totalCholesterol,
+    required double ldlCholesterol,
+    required double hdlCholesterol,
+    required double triglycerides,
+  }) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-lipid-profile/$lipidProfileId?createdBy=$createdBy');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "totalCholesterol": totalCholesterol,
+          "ldlCholesterol": ldlCholesterol,
+          "hdlCholesterol": hdlCholesterol,
+          "triglycerides": triglycerides,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (data["status"] == 1) {
+          CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text("Mỡ máu đã cập nhật thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
+          return true;
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+
+          return false;
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+
+        return false;
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteLipidProfile({
+    required BuildContext context,
+    required int lipidProfileId,
+  }) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/lipid-profile/$lipidProfileId');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode("Inactive"),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (data["status"] == 1) {
+          CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text("Đã xóa mỡ máu thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
+          return true;
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+
+          return false;
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+
+        return false;
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getLipidProfileDetail(
     BuildContext context,
     int id,

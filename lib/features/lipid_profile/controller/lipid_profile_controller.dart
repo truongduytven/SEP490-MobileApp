@@ -80,6 +80,72 @@ class LipidProfileController {
     }
   }
 
+  Future<bool> updateLipidProfile({
+    required BuildContext context,
+    required int lipidProfileId,
+    required String createdBy,
+    required double totalCholesterol,
+    required double ldlCholesterol,
+    required double hdlCholesterol,
+    required double triglycerides,
+  }) async {
+    try {
+      final success = await lipidProfileRepository.updateLipidProfile(
+        context: context,
+        lipidProfileId: lipidProfileId,
+        createdBy: createdBy,
+        totalCholesterol: totalCholesterol,
+        ldlCholesterol: ldlCholesterol,
+        hdlCholesterol: hdlCholesterol,
+        triglycerides: triglycerides,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error updating lipid profile: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể cập nhật mỡ máu",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteLipidProfile({
+    required BuildContext context,
+    required int lipidProfileId,
+  }) async {
+    try {
+      final success = await lipidProfileRepository.deleteLipidProfile(
+        context: context,
+        lipidProfileId: lipidProfileId,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error deleting lipid profile: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể xóa mỡ máu",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getLipidProfileDetail({
     required BuildContext context,
     required int accountId,
