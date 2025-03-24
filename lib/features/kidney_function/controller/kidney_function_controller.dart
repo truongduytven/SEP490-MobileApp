@@ -78,6 +78,70 @@ class KidneyFunctionController {
     }
   }
 
+  Future<bool> updateKidneyFunction({
+    required BuildContext context,
+    required int kidneyFunctionId,
+    required String createdBy,
+    required double creatinine,
+    required double bun,
+    required double eGfr,
+  }) async {
+    try {
+      final success = await kidneyFunctionRepository.updateKidneyFunction(
+        context: context,
+        kidneyFunctionId: kidneyFunctionId,
+        createdBy: createdBy,
+        creatinine: creatinine,
+        bun: bun,
+        eGfr: eGfr,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error updating kidney function: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể cập nhật chức năng thận",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteKidneyFunction({
+    required BuildContext context,
+    required int kidneyFunctionId,
+  }) async {
+    try {
+      final success = await kidneyFunctionRepository.deleteKidneyFunction(
+        context: context,
+        kidneyFunctionId: kidneyFunctionId,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error deleting kidney function: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể xóa chức năng thận",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getKidneyFunctionDetail({
     required BuildContext context,
     required int accountId,

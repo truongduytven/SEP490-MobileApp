@@ -147,6 +147,160 @@ class KidneyFunctionRepository {
     }
   }
 
+  Future<bool> updateKidneyFunction({
+    required BuildContext context,
+    required int kidneyFunctionId,
+    required String createdBy,
+    required double creatinine,
+    required double bun,
+    required double eGfr,
+  }) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-kidney-function/$kidneyFunctionId?createdBy=$createdBy');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "creatinine": creatinine,
+          "bun": bun,
+          "eGfr": eGfr,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (data["status"] == 1) {
+          CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text("Chức năng thận đã cập nhật thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
+          return true;
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+
+          return false;
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+
+        return false;
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteKidneyFunction({
+    required BuildContext context,
+    required int kidneyFunctionId,
+  }) async {
+    final url = Uri.parse(
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/kidney-function/$kidneyFunctionId');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode("Inactive"),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        if (data["status"] == 1) {
+          CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text("Đã xóa chức năng thận thành công!",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                  ))).show(context);
+          return true;
+        } else {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Lỗi: ${data["message"]}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+
+          return false;
+        }
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Lỗi HTTP ${response.statusCode}",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+
+        return false;
+      }
+    } catch (e) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Lỗi kết nối API: $e",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getKidneyFunctionDetail(
     BuildContext context,
     int id,
