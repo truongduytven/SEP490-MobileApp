@@ -105,6 +105,31 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
         dateFromString.day == today.day;
   }
 
+  void _handleDelete() async {
+    setState(() => isLoading = true);
+
+    try {
+      final success = await ref.read(heightControllerProvider).deleteHeight(
+            context: context,
+            heightId: int.parse(widget.id!),
+          );
+      await Future.delayed(Duration(seconds: 2));
+
+      if (mounted && success) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // final double bmi = calculateBMI();
@@ -135,7 +160,9 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TyperAnimatedText(
-                      "Đang thêm chiều cao...",
+                      widget.id != null
+                          ? "Đang cập nhật chiều cao..."
+                          : "Đang thêm chiều cao...",
                       textStyle: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
@@ -179,10 +206,38 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                                   color: AppColors.textColor,
                                   size: 30,
                                 )
-                              : Icon(
-                                  Icons.delete_outline,
-                                  color: AppColors.primaryColor,
-                                  size: 30,
+                              : IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("Xác nhận xóa"),
+                                        content: Text(
+                                            "Bạn có chắc chắn muốn xóa không?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context), // Đóng hộp thoại
+                                            child: Text("Hủy"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                              _handleDelete();
+                                            },
+                                            child: Text("Xóa",
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.primaryColor,
+                                    size: 30,
+                                  ),
                                 ),
                           SizedBox(width: 8),
                           Expanded(
@@ -349,13 +404,33 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                               final heightController =
                                   ref.read(heightControllerProvider);
 
-                              final success = await heightController.addHeight(
-                                context: context,
-                                accountId: currentUserAccountID ?? 0,
-                                elderlyId: currentUserAccountID ?? 0,
-                                height: widget.height.toDouble(),
-                                heightSource: "Thủ công",
-                              );
+                              // final success = await heightController.addHeight(
+                              //   context: context,
+                              //   accountId: currentUserAccountID ?? 0,
+                              //   elderlyId: currentUserAccountID ?? 0,
+                              //   height: widget.height.toDouble(),
+                              //   heightSource: "Thủ công",
+                              // );
+
+                              bool success;
+                              if (widget.id != null) {
+                                // Gọi hàm update nếu có id
+                                success = await heightController.updateHeight(
+                                  context: context,
+                                  heightId: int.parse(widget.id!),
+                                  createdBy: currentUserFullName ?? "Unknown",
+                                  height: widget.height.toDouble(),
+                                );
+                              } else {
+                                // Gọi hàm add nếu không có id
+                                success = await heightController.addHeight(
+                                  context: context,
+                                  accountId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserAccountID ?? 0,
+                                  height: widget.height.toDouble(),
+                                  heightSource: "Thủ công",
+                                );
+                              }
                               await Future.delayed(Duration(seconds: 2));
 
                               if (mounted) {

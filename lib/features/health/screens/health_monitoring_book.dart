@@ -348,9 +348,9 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           // Safely split the string
           List<String> parts = data.split("/");
           if (parts.length == 3) {
-            gfrValue = parts[0];
+            egfrValue = parts[0];
             bunValue = parts[1];
-            egfrValue = parts[2];
+            gfrValue = parts[2];
           }
         }
         // Navigate to ChieuCaoCard

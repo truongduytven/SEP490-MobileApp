@@ -220,7 +220,7 @@ class HeartRateRepository {
     required int heartRateId,
   }) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/heart-rate/$heartRateId  ');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/heart-rate/$heartRateId');
 
     try {
       final response = await http.put(

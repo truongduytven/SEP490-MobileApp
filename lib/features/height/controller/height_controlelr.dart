@@ -84,6 +84,66 @@ class HeightControlelr {
     }
   }
 
+  Future<bool> updateHeight({
+    required BuildContext context,
+    required int heightId,
+    required String createdBy,
+    required double height,
+  }) async {
+    try {
+      final success = await heightRepository.updateHeight(
+        context: context,
+        heightId: heightId,
+        createdBy: createdBy,
+        height: height,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error updating height: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể cập nhật chiều cao",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteHeight({
+    required BuildContext context,
+    required int heightId,
+  }) async {
+    try {
+      final success = await heightRepository.deleteHeight(
+        context: context,
+        heightId: heightId,
+      );
+
+      if (success) {}
+
+      return success;
+    } catch (e) {
+      debugPrint("Error deleting height: $e");
+
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Không thể xóa chiều cao",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
+
+      return false;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getHeightDetail({
     required BuildContext context,
     required int accountId,
