@@ -70,6 +70,11 @@ class _AddLipidProfileScreenState extends State<AddLipidProfileScreen> {
       currentLDLValue = updateLDLValue;
       currentHDLValue = updateHDLValue;
       showLipidProfileWidget = true;
+
+      isDraft = updatedTCValue != widget.currentTCValue ||
+          updateTGValue != widget.currentTGValue ||
+          updateHDLValue != widget.currentHDLValue ||
+          updateLDLValue != widget.currentLDLValue;
     });
   }
 

@@ -112,7 +112,8 @@ class _BloodPressureDisplayWidgetState
 
   @override
   Widget build(BuildContext context) {
-    bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    // bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    bool isButtonDisabled = !widget.isDraft;
     if (isLoading) {
       return Scaffold(
         backgroundColor: Colors.white, // Màu nền trắng

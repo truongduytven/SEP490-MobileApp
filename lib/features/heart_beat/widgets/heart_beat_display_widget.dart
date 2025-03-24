@@ -71,7 +71,8 @@ class _HeartBeatDisplayWidgetState
 
   @override
   Widget build(BuildContext context) {
-    bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    bool isButtonDisabled = !widget.isDraft;
+    // bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
 
     if (isLoading) {
       return Scaffold(

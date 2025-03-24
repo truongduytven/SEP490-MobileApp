@@ -108,7 +108,8 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
     // final String bmiClassification = getBMIClassification(bmi);
     // final Color classificationColor =
     //     getBMIClassificationColor(bmiClassification);
-    bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    // bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    bool isButtonDisabled = !widget.isDraft;
     if (isLoading) {
       return Scaffold(
         backgroundColor: Colors.white, // Màu nền trắng

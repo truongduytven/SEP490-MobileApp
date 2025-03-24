@@ -421,7 +421,7 @@ class HealthFloatingActionButton extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => AddWeight(
                         isDraft: true,
-                        currentValue: 40,
+                        currentValue: 30,
                         showWeightWidget: false,
                       )),
             );
@@ -482,7 +482,7 @@ class HealthFloatingActionButton extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => AddHeightScreen(
                         isDraft: true,
-                        currentValue: 170.0,
+                        currentValue: 145.0,
                         showHeightWidget: false,
                       )),
             );

@@ -50,6 +50,7 @@ class _AddWeightState extends State<AddWeight> {
     setState(() {
       currentValue = updatedValue;
       showWeightWidget = true;
+      isDraft = updatedValue != widget.currentValue;
     });
   }
 

@@ -79,7 +79,6 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
     final healthController = ref.read(healthControllerProvider);
 
     try {
-
       final result = await healthController.getLogBookHealthIndicator(
         context,
         currentUserAccountID,
@@ -179,8 +178,6 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
     {"label": "Mỡ máu", "value": "lipid_profile"},
     {"label": "Men gan", "value": "liver_enzym"},
   ];
-
- 
 
   late String selectedTopic;
 
@@ -340,9 +337,9 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           // Safely split the string
           List<String> parts = data.split("/");
           if (parts.length == 3) {
-            egfrValue = parts[0];
+            gfrValue = parts[0];
             bunValue = parts[1];
-            gfrValue = parts[2];
+            egfrValue = parts[2];
           }
         }
         // Navigate to ChieuCaoCard
@@ -369,8 +366,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           List<String> parts = data.split("/");
           if (parts.length == 4) {
             total = parts[0];
-            hdl = parts[1];
-            ldl = parts[2];
+            ldl = parts[1];
+            hdl = parts[2];
             tg = parts[3];
           }
         }
@@ -399,8 +396,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           List<String> parts = data.split("/");
           if (parts.length == 4) {
             alt = parts[0];
-            alp = parts[1];
-            ast = parts[2];
+            ast = parts[1];
+            alp = parts[2];
             ggt = parts[3];
           }
         }

@@ -50,6 +50,7 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
     setState(() {
       currentValue = updatedValue;
       showHeartBeatWidget = true;
+      isDraft = updatedValue != widget.currentValue;
     });
   }
 
@@ -123,7 +124,6 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
       //           onSubmit: onSubmit,
       //         ),
       body: AnimatedSwitcher(
-      
         duration: Duration(milliseconds: 300),
         transitionBuilder: (Widget child, Animation<double> animation) {
           final curvedAnimation = CurvedAnimation(
@@ -136,11 +136,11 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
             child: ScaleTransition(
               scale: Tween<double>(
                 begin: 0.85,
-                end: 1.0, 
+                end: 1.0,
               ).animate(curvedAnimation),
               child: SlideTransition(
                 position: Tween<Offset>(
-                  begin: Offset(0, 0.1), 
+                  begin: Offset(0, 0.1),
                   end: Offset(0, 0),
                 ).animate(curvedAnimation),
                 child: child,
@@ -150,8 +150,7 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
         },
         child: showHeartBeatWidget
             ? HeartBeatDisplayWidget(
-                key: ValueKey<bool>(
-                    showHeartBeatWidget), 
+                key: ValueKey<bool>(showHeartBeatWidget),
                 isDraft: isDraft,
                 typeData: "Thủ công",
                 dateTime: formattedDateTime,
@@ -159,8 +158,7 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
                 onEdit: onEdit,
               )
             : HeartBeatInputWidget(
-                key: ValueKey<bool>(
-                    showHeartBeatWidget), 
+                key: ValueKey<bool>(showHeartBeatWidget),
                 dateTime: formattedDateTime,
                 initialValue: currentValue,
                 onSubmit: onSubmit,

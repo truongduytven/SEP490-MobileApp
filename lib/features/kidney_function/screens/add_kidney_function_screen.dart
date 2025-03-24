@@ -62,6 +62,9 @@ class _AddKidneyFunctionScreenState extends State<AddKidneyFunctionScreen> {
       currenteGFRValue = updateeGFRValue;
       currentGFRValue = updateGFRValue;
       showKidneyFunctionWidget = true;
+      isDraft = updatedBUNValue != widget.currentBUNValue ||
+          updateeGFRValue != widget.currenteGFRValue ||
+          updateGFRValue != widget.currentGFRValue;
     });
   }
 

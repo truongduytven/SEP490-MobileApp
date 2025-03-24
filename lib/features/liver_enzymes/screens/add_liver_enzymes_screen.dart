@@ -70,6 +70,11 @@ class _AddLiverEnzymesScreenState extends State<AddLiverEnzymesScreen> {
       currentASTValue = updateASTValue;
       currentGGTValue = updateGGTValue;
       showLiverEnzymesWidget = true;
+
+      isDraft = updateALTValue != widget.currentALTValue ||
+          updateALPValue != widget.currentALPValue ||
+          updateASTValue != widget.currentASTValue ||
+          updateGGTValue != widget.currentGGTValue;
     });
   }
 

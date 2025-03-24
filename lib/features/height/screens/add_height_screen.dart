@@ -51,6 +51,7 @@ class _AddHeightScreenState extends State<AddHeightScreen> {
     setState(() {
       currentValue = updatedValue;
       showHeightWidget = true;
+      isDraft = updatedValue != widget.currentValue;
     });
   }
 

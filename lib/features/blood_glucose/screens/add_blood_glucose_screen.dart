@@ -55,6 +55,8 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
       currentBloodGlucoseValue = updatedValue;
       currentperiod = period;
       showBloodGlucoseWidget = true;
+      isDraft = updatedValue != widget.currentBloodGlucoseValue ||
+          period != widget.period;
     });
   }
 
