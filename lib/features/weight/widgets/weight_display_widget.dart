@@ -13,14 +13,16 @@ class WeightDisplayWidget extends ConsumerStatefulWidget {
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
+  final String? id;
 
   const WeightDisplayWidget({
+    super.key,
     required this.weight,
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
     required this.typeData,
-    super.key,
+    this.id,
   });
 
   @override
@@ -103,6 +105,7 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print("weight_display ${widget.id}");
     // final double bmi = calculateBMI();
     // final String bmiClassification = getBMIClassification(bmi);
     // final Color classificationColor =

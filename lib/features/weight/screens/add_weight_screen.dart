@@ -9,6 +9,8 @@ class AddWeight extends StatefulWidget {
   final bool showWeightWidget;
   final bool isDraft;
   final String? date;
+  final String? id;
+  final String? dataType;
 
   const AddWeight({
     super.key,
@@ -16,6 +18,8 @@ class AddWeight extends StatefulWidget {
     required this.showWeightWidget,
     required this.isDraft,
     this.date,
+    this.id,
+    this.dataType,
   });
 
   @override
@@ -103,19 +107,63 @@ class _AddWeightState extends State<AddWeight> {
           ),
         ],
       ),
-      body: showWeightWidget
-          ? WeightDisplayWidget(
-              isDraft: isDraft,
-              typeData: "Thủ công",
-              dateTime: formattedDateTime,
-              weight: currentValue,
-              onEdit: onEdit,
-            )
-          : WeightPickerWidget(
-              dateTime: formattedDateTime,
-              initialValue: currentValue,
-              onSubmit: onSubmit,
+      // body: showWeightWidget
+      //     ? WeightDisplayWidget(
+      //         isDraft: isDraft,
+      //         typeData: widget.dataType ?? "Thủ công",
+      //         dateTime: formattedDateTime,
+      //         weight: currentValue,
+      //         onEdit: onEdit,
+      //         id: widget.id,
+      //       )
+      //     : WeightPickerWidget(
+      //         dateTime: formattedDateTime,
+      //         initialValue: currentValue,
+      //         onSubmit: onSubmit,
+      //       ),
+
+      body: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          final curvedAnimation = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutBack,
+          );
+
+          return FadeTransition(
+            opacity: curvedAnimation,
+            child: ScaleTransition(
+              scale: Tween<double>(
+                begin: 0.85,
+                end: 1.0,
+              ).animate(curvedAnimation),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, 0.1),
+                  end: Offset(0, 0),
+                ).animate(curvedAnimation),
+                child: child,
+              ),
             ),
+          );
+        },
+        child: showWeightWidget
+            ? WeightDisplayWidget(
+                key: ValueKey<bool>(showWeightWidget),
+                isDraft: isDraft,
+                typeData: widget.dataType ?? "Thủ công",
+                dateTime: formattedDateTime,
+                weight: currentValue,
+                onEdit: onEdit,
+                id: widget.id,
+              )
+            : WeightPickerWidget(
+                key: ValueKey<bool>(showWeightWidget),
+                dateTime: formattedDateTime,
+                initialValue: currentValue,
+                onSubmit: onSubmit,
+              ),
+      ),
     );
   }
 }

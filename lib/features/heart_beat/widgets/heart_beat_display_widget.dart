@@ -13,6 +13,8 @@ class HeartBeatDisplayWidget extends ConsumerStatefulWidget {
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
+  final String? id;
+
   const HeartBeatDisplayWidget({
     super.key,
     required this.heartBeat,
@@ -20,6 +22,7 @@ class HeartBeatDisplayWidget extends ConsumerStatefulWidget {
     required this.onEdit,
     required this.isDraft,
     required this.typeData,
+    this.id,
   });
 
   @override

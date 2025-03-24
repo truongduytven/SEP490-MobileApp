@@ -155,6 +155,7 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
 
       return {
         "id": item["id"]?.toString() ?? "",
+        "dataType": item["dataType"]?.toString() ?? "",
         "title": titleMap[tabs] ?? tabs,
         "data": item["indicator"]?.toString() ?? "",
         "date": item["dateRecorded"]?.toString() ?? "",
@@ -246,6 +247,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           context,
           MaterialPageRoute(
               builder: (context) => AddHeartBeatScreen(
+                  id: item["id"],
+                  dataType: item["dataType"],
                   date: item['date'],
                   currentValue: num.tryParse(item["data"] ?? "") ?? 0,
                   showHeartBeatWidget: true,
@@ -270,6 +273,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           context,
           MaterialPageRoute(
               builder: (context) => AddBloodPressureScreen(
+                  id: item["id"],
+                  dataType: item["dataType"],
                   date: item['date'],
                   currentValueSystolic: num.tryParse(systolic) ?? 0,
                   currentValueDiastolic: num.tryParse(diastolic) ?? 0,
@@ -284,6 +289,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           context,
           MaterialPageRoute(
               builder: (context) => AddWeight(
+                  id: item["id"],
+                  dataType: item["dataType"],
                   date: item['date'],
                   currentValue: num.tryParse(item["data"] ?? "") ?? 0,
                   showWeightWidget: true,
@@ -297,6 +304,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           context,
           MaterialPageRoute(
               builder: (context) => AddHeightScreen(
+                  id: item["id"],
+                  dataType: item["dataType"],
                   date: item['date'],
                   currentValue: num.tryParse(item['data'] ?? "") ?? 0,
                   showHeightWidget: true,
@@ -320,6 +329,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           context,
           MaterialPageRoute(
               builder: (context) => AddBloodGlucoseScreen(
+                  id: item["id"],
+                  dataType: item["dataType"],
                   period: period,
                   date: item['date'],
                   currentBloodGlucoseValue:
@@ -347,6 +358,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           context,
           MaterialPageRoute(
               builder: (context) => AddKidneyFunctionScreen(
+                  id: item["id"],
+                  dataType: item["dataType"],
                   date: item['date'],
                   currentBUNValue: double.tryParse(bunValue) ?? 0,
                   currenteGFRValue: double.tryParse(egfrValue) ?? 0,
@@ -376,6 +389,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           context,
           MaterialPageRoute(
               builder: (context) => AddLipidProfileScreen(
+                  id: item["id"],
+                  dataType: item["dataType"],
                   date: item['date'],
                   currentHDLValue: double.tryParse(hdl) ?? 0,
                   currentLDLValue: double.tryParse(ldl) ?? 0,
@@ -406,6 +421,8 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           context,
           MaterialPageRoute(
               builder: (context) => AddLiverEnzymesScreen(
+                  id: item["id"],
+                  dataType: item["dataType"],
                   date: item['date'],
                   currentALTValue: double.tryParse(alt) ?? 0,
                   currentALPValue: double.tryParse(alp) ?? 0,

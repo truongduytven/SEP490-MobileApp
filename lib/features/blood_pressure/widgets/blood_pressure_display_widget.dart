@@ -14,6 +14,8 @@ class BloodPressureDisplayWidget extends ConsumerStatefulWidget {
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
+  final String? id;
+
   const BloodPressureDisplayWidget({
     required this.systolic,
     required this.diastolic,
@@ -22,6 +24,7 @@ class BloodPressureDisplayWidget extends ConsumerStatefulWidget {
     required this.isDraft,
     required this.typeData,
     super.key,
+    this.id,
   });
 
   @override

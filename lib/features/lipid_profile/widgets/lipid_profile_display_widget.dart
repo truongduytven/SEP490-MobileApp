@@ -16,6 +16,8 @@ class LipidProfileDisplayWidget extends ConsumerStatefulWidget {
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
+  final String? id;
+
   LipidProfileDisplayWidget({
     super.key,
     required this.dateTime,
@@ -26,6 +28,7 @@ class LipidProfileDisplayWidget extends ConsumerStatefulWidget {
     required this.ldlValue,
     required this.hdlValue,
     required this.typeData,
+    this.id,
   });
 
   @override

@@ -10,6 +10,8 @@ class AddBloodGlucoseScreen extends StatefulWidget {
   final num currentBloodGlucoseValue;
   final bool showBloodGlucoseWidget;
   final bool isDraft;
+  final String? id;
+  final String? dataType;
   const AddBloodGlucoseScreen({
     super.key,
     required this.currentBloodGlucoseValue,
@@ -17,6 +19,8 @@ class AddBloodGlucoseScreen extends StatefulWidget {
     required this.isDraft,
     required this.period,
     this.date,
+    this.id,
+    this.dataType,
   });
 
   @override
@@ -63,62 +67,105 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 10, bottom: 5, top: 5),
-            child: SizedBox(
-              width: 10,
-              height: 10,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset(
-                  "assets/img3D/treatment_medical/tieuduong.png",
-                  width: 10,
-                  height: 10,
-                  fit: BoxFit.cover,
-                ),
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10, bottom: 5, top: 5),
+          child: SizedBox(
+            width: 10,
+            height: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(
+                "assets/img3D/treatment_medical/tieuduong.png",
+                width: 10,
+                height: 10,
+                fit: BoxFit.cover,
               ),
             ),
           ),
-          title: Text(
-            "Đường huyết",
-            style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.w700,
-              color: AppColors.secondaryColor,
-            ),
-          ),
-          centerTitle: true,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                icon: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.secondaryColor,
-                  ),
-                  padding: EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.close,
-                    color: Colors.white,
-                  ),
-                ),
-                onPressed: () {
-                  FocusScope.of(context).unfocus();
-                  Future.delayed(Duration(milliseconds: 500), () {
-                    Navigator.pop(context);
-                  });
-                },
-              ),
-            ),
-          ],
         ),
-        body: showBloodGlucoseWidget
+        title: Text(
+          "Đường huyết",
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w700,
+            color: AppColors.secondaryColor,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+              icon: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.secondaryColor,
+                ),
+                padding: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                Future.delayed(Duration(milliseconds: 500), () {
+                  Navigator.pop(context);
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+      // body: showBloodGlucoseWidget
+      // ? BloodGlucoseDisplayWidget(
+      //     typeData: "Thủ công",
+      //     isDraft: isDraft,
+      //     period: currentperiod,
+      //     dateTime: formattedDateTime,
+      //     bloodGlucose: currentBloodGlucoseValue,
+      //     onEdit: onEdit,
+      //   )
+      // : BloodGlucoseInputWidget(
+      //     dateTime: formattedDateTime,
+      //     initialValue: currentBloodGlucoseValue,
+      //     period: currentperiod,
+      //     onSubmit: onSubmit,
+      //   ),
+
+      body: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          final curvedAnimation = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutBack,
+          );
+
+          return FadeTransition(
+            opacity: curvedAnimation,
+            child: ScaleTransition(
+              scale: Tween<double>(
+                begin: 0.85,
+                end: 1.0,
+              ).animate(curvedAnimation),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, 0.1),
+                  end: Offset(0, 0),
+                ).animate(curvedAnimation),
+                child: child,
+              ),
+            ),
+          );
+        },
+        child: showBloodGlucoseWidget
             ? BloodGlucoseDisplayWidget(
-                typeData: "Thủ công",
+                key: ValueKey<bool>(showBloodGlucoseWidget),
+                typeData: widget.dataType ?? "Thủ công",
+                id: widget.id,
                 isDraft: isDraft,
                 period: currentperiod,
                 dateTime: formattedDateTime,
@@ -126,11 +173,13 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
                 onEdit: onEdit,
               )
             : BloodGlucoseInputWidget(
+                key: ValueKey<bool>(showBloodGlucoseWidget),
                 dateTime: formattedDateTime,
                 initialValue: currentBloodGlucoseValue,
                 period: currentperiod,
                 onSubmit: onSubmit,
-              ));
-    // Text("Input blood glucose"));
+              ),
+      ),
+    );
   }
 }

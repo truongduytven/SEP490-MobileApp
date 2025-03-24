@@ -12,6 +12,9 @@ class AddLiverEnzymesScreen extends StatefulWidget {
   final num currentGGTValue;
   final bool showLiverEnzymesWidget;
   final bool isDraft;
+
+  final String? id;
+  final String? dataType;
   const AddLiverEnzymesScreen({
     super.key,
     this.date,
@@ -21,6 +24,8 @@ class AddLiverEnzymesScreen extends StatefulWidget {
     required this.currentGGTValue,
     required this.showLiverEnzymesWidget,
     required this.isDraft,
+    this.id,
+    this.dataType,
   });
 
   @override
@@ -134,25 +139,74 @@ class _AddLiverEnzymesScreenState extends State<AddLiverEnzymesScreen> {
           ),
         ],
       ),
-      body: showLiverEnzymesWidget
-          ? LiverEnzymesDisplayWidget(
-              altValue: currentALTValue,
-              alpValue: currentALPValue,
-              astValue: currentASTValue,
-              ggtValue: currentGGTValue,
-              typeData: "Thủ công",
-              isDraft: isDraft,
-              dateTime: formattedDateTime,
-              onEdit: onEdit,
-            )
-          : LiverEnzymesInputWidget(
-              dateTime: formattedDateTime,
-              initialALTValue: currentALTValue,
-              initialALPValue: currentALPValue,
-              initialASTValue: currentASTValue,
-              initialGGTValue: currentGGTValue,
-              onSubmit: onSubmit,
+      // body: showLiverEnzymesWidget
+      //     ? LiverEnzymesDisplayWidget(
+      //         altValue: currentALTValue,
+      //         alpValue: currentALPValue,
+      //         astValue: currentASTValue,
+      //         ggtValue: currentGGTValue,
+      //         typeData: "Thủ công",
+      //         isDraft: isDraft,
+      //         dateTime: formattedDateTime,
+      //         onEdit: onEdit,
+      //       )
+      //     : LiverEnzymesInputWidget(
+      //         dateTime: formattedDateTime,
+      //         initialALTValue: currentALTValue,
+      //         initialALPValue: currentALPValue,
+      //         initialASTValue: currentASTValue,
+      //         initialGGTValue: currentGGTValue,
+      //         onSubmit: onSubmit,
+      //       ),
+
+      body: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          final curvedAnimation = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutBack,
+          );
+
+          return FadeTransition(
+            opacity: curvedAnimation,
+            child: ScaleTransition(
+              scale: Tween<double>(
+                begin: 0.85,
+                end: 1.0,
+              ).animate(curvedAnimation),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, 0.1),
+                  end: Offset(0, 0),
+                ).animate(curvedAnimation),
+                child: child,
+              ),
             ),
+          );
+        },
+        child: showLiverEnzymesWidget
+            ? LiverEnzymesDisplayWidget(
+                key: ValueKey<bool>(showLiverEnzymesWidget),
+                altValue: currentALTValue,
+                alpValue: currentALPValue,
+                astValue: currentASTValue,
+                ggtValue: currentGGTValue,
+                typeData: widget.dataType ?? "Thủ công",
+                id: widget.id,
+                isDraft: isDraft,
+                dateTime: formattedDateTime,
+                onEdit: onEdit,
+              )
+            : LiverEnzymesInputWidget(
+                key: ValueKey<bool>(showLiverEnzymesWidget),
+                dateTime: formattedDateTime,
+                initialALTValue: currentALTValue,
+                initialALPValue: currentALPValue,
+                initialASTValue: currentASTValue,
+                initialGGTValue: currentGGTValue,
+                onSubmit: onSubmit,
+              ),
+      ),
     );
   }
 }

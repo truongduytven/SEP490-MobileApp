@@ -16,6 +16,8 @@ class KidneyFunctionDisplayWidget extends ConsumerStatefulWidget {
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
+  final String? id;
+
   KidneyFunctionDisplayWidget({
     super.key,
     required this.dateTime,
@@ -25,6 +27,7 @@ class KidneyFunctionDisplayWidget extends ConsumerStatefulWidget {
     required this.egfrValue,
     required this.gfrValue,
     required this.typeData,
+    this.id,
   });
 
   @override

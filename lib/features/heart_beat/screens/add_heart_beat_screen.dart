@@ -10,12 +10,16 @@ class AddHeartBeatScreen extends StatefulWidget {
   final num currentValue;
   final bool showHeartBeatWidget;
   final bool isDraft;
+  final String? id;
+  final String? dataType;
   const AddHeartBeatScreen({
     super.key,
     required this.currentValue,
     required this.showHeartBeatWidget,
     required this.isDraft,
     this.date,
+    this.id,
+    this.dataType,
   });
 
   @override
@@ -152,10 +156,11 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
             ? HeartBeatDisplayWidget(
                 key: ValueKey<bool>(showHeartBeatWidget),
                 isDraft: isDraft,
-                typeData: "Thủ công",
+                typeData: widget.dataType ?? "Thủ công",
                 dateTime: formattedDateTime,
                 heartBeat: currentValue,
                 onEdit: onEdit,
+                id: widget.id,
               )
             : HeartBeatInputWidget(
                 key: ValueKey<bool>(showHeartBeatWidget),

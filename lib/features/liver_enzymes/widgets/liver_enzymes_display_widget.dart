@@ -16,6 +16,8 @@ class LiverEnzymesDisplayWidget extends ConsumerStatefulWidget {
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
+  final String? id;
+
   LiverEnzymesDisplayWidget({
     super.key,
     required this.dateTime,
@@ -26,6 +28,7 @@ class LiverEnzymesDisplayWidget extends ConsumerStatefulWidget {
     required this.astValue,
     required this.ggtValue,
     required this.typeData,
+    this.id,
   });
 
   @override

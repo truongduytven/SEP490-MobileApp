@@ -14,6 +14,8 @@ class HeightDisplayWidget extends ConsumerStatefulWidget {
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
+  final String? id;
+
   const HeightDisplayWidget({
     super.key,
     // required this.weight,
@@ -22,6 +24,7 @@ class HeightDisplayWidget extends ConsumerStatefulWidget {
     required this.onEdit,
     required this.isDraft,
     required this.typeData,
+    this.id,
   });
 
   @override

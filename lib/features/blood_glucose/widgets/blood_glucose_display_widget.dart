@@ -14,6 +14,8 @@ class BloodGlucoseDisplayWidget extends ConsumerStatefulWidget {
   final bool isDraft;
   final String typeData;
   final String period;
+  final String? id;
+
   BloodGlucoseDisplayWidget({
     super.key,
     required this.bloodGlucose,
@@ -22,6 +24,7 @@ class BloodGlucoseDisplayWidget extends ConsumerStatefulWidget {
     required this.isDraft,
     required this.period,
     required this.typeData,
+    this.id,
   });
 
   @override
