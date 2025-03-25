@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
-import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/health/health_screen.dart';
 import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/ultility/ultility_screen.dart';
