@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:geolocator/geolocator.dart';
@@ -40,6 +41,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId;
   late int emergencyConfirmationId;
+  final player = AudioPlayer();
 
   @override
   void initState() {
@@ -80,6 +82,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Future<void> _cancelEmergency() async {
     _timer?.cancel();
     _isCancelled = true;
+    player.stop();
     await _callCancelEmergencyAPI();
     Navigator.pop(context);
   }
@@ -106,8 +109,8 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           description =
               "Chúng tôi đang cố gắng liên hệ đến người thân của bạn!";
         });
-        // final player = AudioPlayer();
-        // player.play(UrlSource('assets/music/outgoing.mp3'));
+        await player.setReleaseMode(ReleaseMode.loop);
+        await player.play(AssetSource('music/sos.mp3'));
         await createConfirmation(userId);
         await _sendEmergencyData();
         _checkConfirmationStatus(0);
@@ -120,9 +123,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Future<void> _checkConfirmationStatus(int attempt) async {
     if (attempt >= 3) return;
 
-    await Future.delayed(Duration(seconds: 60)); 
+    await Future.delayed(Duration(seconds: 60));
 
-    bool isConfirmed = await _checkIsConfirmed(); 
+    bool isConfirmed = await _checkIsConfirmed();
 
     if (isConfirmed) {
       print("Người thân đã xác nhận, dừng kiểm tra.");

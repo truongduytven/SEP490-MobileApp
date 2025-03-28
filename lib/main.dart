@@ -221,7 +221,7 @@ class _MyAppState extends State<MyApp>
   late Animation<double> _animationY;
   bool _isShakeTriggered = false;
   bool _isListening = false;
-  final SpeechToText _speech = SpeechToText();
+  // final SpeechToText _speech = SpeechToText();
   bool _isInEmergency = false;
 
   @override
@@ -232,77 +232,70 @@ class _MyAppState extends State<MyApp>
     SharedPrefsHelper.roleNotifier.addListener(_onRoleChanged);
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 100));
-    _initSpeech();
+    // _initSpeech();
   }
 
   void _onRoleChanged() {
     setState(() {});
   }
 
-  void _initSpeech() async {
-    bool available = await _speech.initialize(
-      onStatus: (status) {
-        if (status == "done" && !_isInEmergency) {
-          _startListening();
-        }
-      },
-      onError: (error) {
-        print("Speech Error: $error");
-      },
-    );
-    if (available) {
-      _startListening();
-    }
-  }
+  // void _initSpeech() async {
+  //   bool available = await _speech.initialize(
+  //     onStatus: (status) {
+  //       if (status == "done" && !_isInEmergency) {
+  //         _startListening();
+  //       }
+  //     },
+  //     onError: (error) {
+  //       print("Speech Error: $error");
+  //     },
+  //   );
+  //   if (available) {
+  //     _startListening();
+  //   }
+  // }
 
-  void _startListening() async {
-    if (!_isListening && !_isInEmergency) {
-      _isListening = true;
-      _speech.listen(
-        onResult: (result) {
-          _processSpeech(result.recognizedWords);
-          print(result.recognizedWords);
-        },
-        localeId: "vi_VN",
-      );
-      Timer(Duration(seconds: 10), () {
-        _stopListening();
-      });
-    }
-  }
+  // void _startListening() async {
+  //   if (!_isListening && !_isInEmergency) {
+  //     _isListening = true;
+  //     _speech.listen(
+  //       onResult: (result) {
+  //         _processSpeech(result.recognizedWords);
+  //         print(result.recognizedWords);
+  //       },
+  //       localeId: "vi_VN",
+  //     );
+  //   }
+  // }
 
-  void _processSpeech(String words) {
-    words = words.toLowerCase().trim();
-    if (!_isInEmergency && (words.contains("cứu") ||
-        words.contains("cứu tôi") ||
-        words.contains("cứu với"))) {
-      _stopListening();
-      Navigator.push(
-        widget.navigatorKey.currentState!.context,
-        MaterialPageRoute(builder: (context) => HomeDoctorAdviseScreen()),
-      ).then((_) {
-        setState(() {
-          _isInEmergency = false;
-        });
-        _startListening();
-      });
+  // void _processSpeech(String words) {
+  //   words = words.toLowerCase().trim();
+  //   if (!_isInEmergency && (words.contains("cứu") ||
+  //       words.contains("cứu tôi") ||
+  //       words.contains("cứu với"))) {
+  //     _stopListening();
+  //     Navigator.push(
+  //       widget.navigatorKey.currentState!.context,
+  //       MaterialPageRoute(builder: (context) => HomeDoctorAdviseScreen()),
+  //     ).then((_) {
+  //       setState(() {
+  //         _isInEmergency = false;
+  //       });
+  //       _startListening();
+  //     });
 
-      setState(() {
-        _isInEmergency = true;
-      });
-    }
-  }
+  //     setState(() {
+  //       _isInEmergency = true;
+  //     });
+  //   }
+  // }
 
-  void _stopListening() {
-    if (_isListening) {
-      _isListening = false;
-      _speech.stop();
-
-      Future.delayed(Duration(seconds: 1), () {
-        _startListening();
-      });
-    }
-  }
+  // void _stopListening() {
+  //   if (_isListening) {
+  //     _isListening = false;
+  //     _speech.stop();
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -352,6 +345,9 @@ class _MyAppState extends State<MyApp>
       theme: ThemeData(fontFamily: 'LeagueSpartan'),
       color: AppColors.bgColor,
       home: SplashScreen(),
+      routes: {
+        '/emergency_screen': (context) => EmergencyScreen(),
+      },
       scaffoldMessengerKey: scaffoldMessengerKey,
       navigatorKey: widget.navigatorKey,
       onGenerateRoute: (settings) => generateRoute(settings),
@@ -369,7 +365,7 @@ class _MyAppState extends State<MyApp>
             ValueListenableBuilder<int>(
               valueListenable: SharedPrefsHelper.roleNotifier,
               builder: (context, roleId, _) {
-                if (roleId != 2) return SizedBox();
+                if (roleId != 2 || _isInEmergency) return SizedBox();
                 return Positioned(
                   left: _controller.isAnimating ? _animationX.value : buttonX,
                   top: _controller.isAnimating ? _animationY.value : buttonY,
@@ -403,11 +399,18 @@ class _MyAppState extends State<MyApp>
                       ),
                       child: GestureDetector(
                         onTap: () {
+                          setState(() {
+                            _isInEmergency = true;
+                          });
                           Navigator.push(
                             widget.navigatorKey.currentState!.context,
                             MaterialPageRoute(
                                 builder: (context) => EmergencyScreen()),
-                          );
+                          ).then((_) {
+                            setState(() {
+                              _isInEmergency = false;
+                            });
+                          });
                         },
                         child: Image.asset(
                           'assets/img/SOSButton.png', // Replace with your image path

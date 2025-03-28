@@ -9,7 +9,7 @@ import 'package:sep490/data/repositories/user_pref_repository_impl.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/data/services/local_storage_service.dart';
 import 'package:sep490/domain/use_cases/user_pref_repository.dart';
-import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
+import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/pages/opening/select_sign.dart';
 import 'package:sep490/presentation/pages/opening/welcome_screen.dart';
@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
           isSignal = true;
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return HomeDoctorAdviseScreen();
+            return EmergencyScreen();
           }));
         }
       }
@@ -67,8 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       final localStorageService = LocalStorageService();
       final userPrefRepository = UserPrefRepositoryImpl(localStorageService);
-      final CheckUserOnboardingUseCase checkUserOnboardingUseCase =
-          CheckUserOnboardingUseCase(userPrefRepository);
+      final CheckUserOnboardingUseCase checkUserOnboardingUseCase = CheckUserOnboardingUseCase(userPrefRepository);
 
       final isFirstTime = await checkUserOnboardingUseCase.execute();
       if (!mounted) return;
@@ -96,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen> {
       "deviceToken": _token ?? "string",
     });
     if (response['success'] && response['data']['isSuccess']) {
-      final String accessToken = response['data']['data'];
+      final String accessToken = response['data']['data']['accessToken'] ?? '';
       var responseToken = await ApiService.getRequest("auth-management",
           headers: {
             "Content-Type": "application/json",

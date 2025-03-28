@@ -24,7 +24,8 @@ class NotificationScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               final player = AudioPlayer();
-              player.play(AssetSource('music/outgoing.mp3'));
+              player.setReleaseMode(ReleaseMode.loop);
+              player.play(AssetSource('music/sos.mp3'));
             },
             child: Text("Đánh giá"),
           ),
