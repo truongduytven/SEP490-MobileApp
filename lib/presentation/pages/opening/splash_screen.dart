@@ -72,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
       "deviceToken": _token ?? "string",
     });
     if (response['success'] && response['data']['isSuccess']) {
-      final String accessToken = response['data']['data'];
+      final String accessToken = response['data']['data']['accessToken'];
       var responseToken = await ApiService.getRequest("auth-management",
           headers: {
             "Content-Type": "application/json",

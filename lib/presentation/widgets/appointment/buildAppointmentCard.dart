@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/models/doctor.dart';
-import 'package:sep490/presentation/widgets/appointment/_infoChip.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:sep490/theme/colors_game.dart';
 
 class BuildAppointmentCard extends StatefulWidget {
   final AppoimentDoctor? appoimentDoctor;
@@ -10,8 +8,14 @@ class BuildAppointmentCard extends StatefulWidget {
   final Future<void> Function() onJoin;
   final Future<void> Function() onReport;
   final bool isListCard;
-  
-  const BuildAppointmentCard({super.key, required this.appoimentDoctor, required this.onCancel, required this.onJoin, required this.onReport, this.isListCard = false});
+
+  const BuildAppointmentCard(
+      {super.key,
+      required this.appoimentDoctor,
+      required this.onCancel,
+      required this.onJoin,
+      required this.onReport,
+      this.isListCard = false});
 
   @override
   State<BuildAppointmentCard> createState() => BuildAppointmentCardState();
@@ -46,17 +50,37 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
               children: [
                 Row(
                   children: [
-                    Text('⏰ $time', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.secondaryColor),),
+                    Text(
+                      '⏰ $time',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.secondaryColor),
+                    ),
                     const SizedBox(width: 8),
-                    Text('📅 $date', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.secondaryColor),),
+                    Text(
+                      '📅 $date',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.secondaryColor),
+                    ),
                   ],
                 ),
                 Text(
-                  widget.appoimentDoctor!.status == 'NotYet' ? '• Chưa tham gia' : widget.appoimentDoctor!.status == 'Joined' ? '• Đã tham gia' : '• Đã hủy',
+                  widget.appoimentDoctor!.status == 'NotYet'
+                      ? '• Chưa tham gia'
+                      : widget.appoimentDoctor!.status == 'Joined'
+                          ? '• Đã tham gia'
+                          : '• Đã hủy',
                   style: TextStyle(
-                    fontSize: 18,
-                    color: widget.appoimentDoctor!.status == 'NotYet' ? AppColors.primaryColor : widget.appoimentDoctor!.status == 'Joined' ? Colors.green : Colors.red,
-                  ),
+                      fontSize: 18,
+                      color: widget.appoimentDoctor!.status == 'NotYet'
+                          ? Colors.blue
+                          : widget.appoimentDoctor!.status == 'Joined'
+                              ? Colors.green
+                              : Colors.red,
+                      fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -105,7 +129,9 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                           ),
                         ),
                         Text(
-                          widget.appoimentDoctor!.isOnline ? "Online" : "Offline",
+                          widget.appoimentDoctor!.isOnline
+                              ? "Online"
+                              : "Offline",
                           style: TextStyle(
                             fontSize: 16,
                             color: AppColors.primaryColor,
@@ -119,18 +145,80 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
               ],
             ),
             const SizedBox(height: 8),
-            if(widget.isListCard)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (widget.appoimentDoctor!.status == 'NotYet')
-                  ElevatedButton(onPressed: () {}, child: Text('Hủy lịch hẹn')),
-                if (widget.appoimentDoctor!.status == 'Joined')
-                  ElevatedButton(onPressed: widget.onReport, child: Text('Báo cáo')),
-                if (widget.appoimentDoctor!.status == 'Cancelled')
-                  ElevatedButton(onPressed: () {}, child: Text('Đặt lịch hẹn'))
-              ],
-            )
+            if (widget.isListCard)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (widget.appoimentDoctor!.status == 'NotYet')
+                    ElevatedButton(
+                      onPressed: widget.onCancel,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.bgColor,
+                        side: BorderSide(color: AppColors.secondaryColor),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Hủy lịch hẹn',
+                              style:
+                                  TextStyle(color: AppColors.secondaryColor)),
+                          const SizedBox(width: 8),
+                          Icon(Icons.cancel, color: AppColors.secondaryColor),
+                        ],
+                      ),
+                    ),
+                  if (widget.appoimentDoctor!.status == 'NotYet')
+                    const SizedBox(width: 8),
+                  if (widget.appoimentDoctor!.status == 'NotYet')
+                    ElevatedButton(
+                      onPressed: widget.onJoin,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryColor,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Tham gia',
+                              style: TextStyle(color: Colors.white)),
+                          const SizedBox(width: 8),
+                          Icon(Icons.video_call_outlined, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                  if (widget.appoimentDoctor!.status == 'Joined')
+                    ElevatedButton(
+                      onPressed: widget.onReport,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Báo cáo',
+                              style: TextStyle(color: Colors.white)),
+                          const SizedBox(width: 8),
+                          Icon(Icons.assignment, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                  if (widget.appoimentDoctor!.status == 'Cancelled')
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondaryColor,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Đặt lịch hẹn',
+                              style: TextStyle(color: Colors.white)),
+                          const SizedBox(width: 8),
+                          Icon(Icons.add_alert, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                ],
+              )
           ],
         ),
       ),

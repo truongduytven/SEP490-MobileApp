@@ -14,6 +14,8 @@ class ReportAppointment extends StatefulWidget {
 }
 
 class _ReportAppointmentState extends State<ReportAppointment> {
+  final TextEditingController summaryController = TextEditingController();
+  final TextEditingController solutionController = TextEditingController();
   Report? _report;
   bool _isLoading = false;
   @override
@@ -39,33 +41,63 @@ class _ReportAppointmentState extends State<ReportAppointment> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text('Báo cáo cuộc hẹn'),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
           backgroundColor: Colors.white,
-          centerTitle: true,
+          appBar: AppBar(
+            title: Text('Báo cáo cuộc hẹn'),
+            backgroundColor: Colors.white,
+            centerTitle: true,
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                BuildAppointmentCard(
+                  appoimentDoctor: widget.appoimentDoctor,
+                  onCancel: () => Future.value(),
+                  onJoin: () => Future.value(),
+                  onReport: () => Future.value(),
+                  isListCard: false,
+                ),
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _report == null
+                        ? const Center(child: Text('Không có báo cáo'))
+                        : Expanded(
+                            child: ListView(
+                              children: [
+                                Center(child: Text('Báo cáo tổng kết', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),)),
+                                _buildContentBox(summaryController, _report!.content),
+                                const SizedBox(height: 20),
+                                Center(child: Text('Đề xuất giải pháp', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),)),
+                                _buildContentBox(solutionController, _report!.solution),
+                              ],
+                            ),
+                          ),
+              ],
+            ),
+          )),
+    );
+  }
+
+  Widget _buildContentBox(TextEditingController controller, String content) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.black, width: 1),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: null,
+        decoration: InputDecoration(
+          hintText: content,
+          enabled: false,
+          border: InputBorder.none,
         ),
-        body: Column(
-          children: [
-            BuildAppointmentCard(appoimentDoctor: widget.appoimentDoctor, onCancel: () => Future.value(), onJoin: () => Future.value(), onReport: () => Future.value(), isListCard: false,),
-            _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _report == null
-                    ? const Center(child: Text('Không có báo cáo'))
-                    : ListView(
-                        children: [
-                          ListTile(
-                            title: const Text('Nội dung báo cáo'),
-                            subtitle: Text(_report!.content),
-                          ),
-                          ListTile(
-                            title: const Text('Giải pháp'),
-                            subtitle: Text(_report!.solution),
-                          ),
-                        ],
-                      ),
-          ],
-        ));
+      ),
+    );
   }
 }

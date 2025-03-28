@@ -1,4 +1,5 @@
 class DoctorData {
+  final int accountId;
   final String fullName;
   final String avatar;
   final String dateTime;
@@ -14,6 +15,7 @@ class DoctorData {
   final List<dynamic> achievement;
 
   DoctorData({
+    required this.accountId,
     required this.fullName,
     required this.avatar,
     required this.dateTime,
@@ -31,6 +33,7 @@ class DoctorData {
 
   factory DoctorData.fromJson(Map<String, dynamic> json) {
     return DoctorData(
+      accountId: json['accountId'] ?? 0,
       fullName: json['fullName'],
       avatar: json['avatar'],
       dateTime: json['dateTime'] ?? '',
@@ -49,6 +52,7 @@ class DoctorData {
 
   Map<String, dynamic> toJson() {
     return {
+      'accountId': accountId,
       'fullName': fullName,
       'avatar': avatar,
       'dateTime': dateTime,
@@ -113,4 +117,56 @@ class Report {
       solution: json['solution'],
     );
   } 
+}
+
+class TimeSlots {
+  final String startTime;
+  final String endTime;
+
+  TimeSlots({
+    required this.startTime,
+    required this.endTime,
+  });
+
+  factory TimeSlots.fromJson(Map<String, dynamic> json) {
+    return TimeSlots(
+      startTime: json['startTime'],
+      endTime: json['endTime'],
+    );
+  }
+}
+
+class FilteredDoctor {
+  final String professorName;
+  final String professorAvatar;
+  final int professorId;
+  final String major;
+  final String? dateTime;
+  final String? date;
+  final double rating;
+  final int totalRating;
+
+  FilteredDoctor({
+    required this.professorName,
+    required this.professorAvatar,
+    required this.professorId,
+    required this.major,
+    this.dateTime,
+    this.date,
+    required this.rating,
+    required this.totalRating,
+  });
+
+  factory FilteredDoctor.fromJson(Map<String, dynamic> json) {
+    return FilteredDoctor(
+      professorName: json['professorName'],
+      professorAvatar: json['professorAvatar'],
+      professorId: json['professorId'],
+      major: json['major'] ?? 'Chưa có chuyên khoa',
+      dateTime: json['dateTime'] ?? '',
+      date: json['date'] ?? '',
+      rating: json['rating'].toDouble(),
+      totalRating: json['totalRating'] ?? 0,
+    );
+  }
 }

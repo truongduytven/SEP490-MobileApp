@@ -82,6 +82,7 @@ dependencies:
   flame: ^1.25.0
   font_awesome_flutter: ^10.8.0
   water_bottle: ^0.0.7
+  flutter_image_slideshow: ^0.1.6
 
 dev_dependencies:
   flutter_test:
