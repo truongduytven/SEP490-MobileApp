@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gif_view/gif_view.dart';
@@ -241,12 +242,25 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
 
     if (image != null) {
       Navigator.pop(context); // Đóng dialog
-      Navigator.push(
+      final result = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => CreatePrescriptionScreen(imagePath: image.path),
         ),
       );
+      // ignore: unnecessary_null_comparison
+      if (result != null) {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Không thể quét toa thuốc, vui lòng thử lại hoặc đổi sang nhập tay!",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+      }
     }
   }
 
@@ -449,7 +463,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               ? Center(
                   child: GifView.asset(
                     'assets/gif/prescription1.gif',
-                    width: 100,                 
+                    width: 100,
                     height: 100,
                     frameRate: 90,
                   ),
