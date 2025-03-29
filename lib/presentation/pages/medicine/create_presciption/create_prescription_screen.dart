@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/common/utils/utils.dart';
@@ -81,16 +82,8 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
             Navigator.pop(context);
           });
         } else {
-          Fluttertoast.showToast(
-            msg: "Có lỗi trong quá trình xử lý!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
           Navigator.pop(context);
+          Navigator.pop(context, false);
         }
       });
     }
@@ -137,10 +130,25 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
 
   void handleSavePrescription() async {
     LoadingDialog.show(context, 'assets/gif/opd.gif', 'Đang tạo toa thuốc...');
+    if (listMedicine['medication'].length == 0) {
+      Navigator.pop(context);
+      CherryToast.error(
+        toastDuration: Duration(seconds: 3),
+        title: Text(
+          "Vui lòng nhập thuốc trước khi tạo toa!",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+      return;
+    }
     String dateData = listMedicine['endDate'];
     listMedicine['endDate'] = convertDateTime(listMedicine['endDate']);
     MedicineController medicineController = MedicineController();
-    await medicineController.createPrescriptionController(listMedicine, widget.imagePath != null ? widget.imagePath! : '');
+    await medicineController.createPrescriptionController(
+        listMedicine, widget.imagePath != null ? widget.imagePath! : '');
     Timer(const Duration(seconds: 1), () {
       if (medicineController.isCreateSuccess) {
         listMedicine['endDate'] = dateData;

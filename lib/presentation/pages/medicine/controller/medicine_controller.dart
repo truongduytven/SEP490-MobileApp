@@ -68,7 +68,17 @@ class MedicineController {
   Future<void> scanMedicine (String imgPath, int userId) async {
     final response = await _medicineRepository.scanMedicine(imgPath, userId);
     if (response != null && response['isSuccess']) {
-      medicines = response['data']['data'];
+      if(response['data']['data'] != null) {
+        if(response['data']['data']['medicines'].isEmpty) {
+          medicines = null;
+          return;
+        } else {
+          medicines = response['data']['data'];
+        }
+      } else {
+        medicines = null;
+        return;
+      } 
     } else {
       medicines = null;
     }
