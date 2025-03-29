@@ -27,6 +27,11 @@ class GroupResponse {
       'data': data.map((x) => x.toJson()).toList(),
     };
   }
+
+  @override
+  String toString() {
+    return 'GroupResponse(status: $status, message: $message, data: $data)';
+  }
 }
 
 class GroupMember {
@@ -56,5 +61,10 @@ class GroupMember {
       'groupName': groupName,
       'members': members.map((member) => member.toJson()).toList(),
     };
+  }
+
+  @override
+  String toString() {
+    return 'GroupMember(groupId: $groupId, groupName: $groupName, members: $members)';
   }
 }

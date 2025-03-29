@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
-import 'package:sep490/presentation/pages/advise_doctor/home_doctor_advise.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
-import 'package:sep490/presentation/pages/health/health_screen.dart';
+import 'package:sep490/features/health/screens/health_screen.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
+import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
+import 'package:sep490/features/health/screens/health_screen.dart';
 import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/ultility/ultility_screen.dart';
 import 'package:sep490/theme/color.dart';
@@ -38,89 +43,126 @@ class _NavigationMenuState extends State<NavigationMenu> {
       case 2:
         return [
           NavigationDestination(
-            icon: Icon(Icons.home, size: 30),
-            selectedIcon: Icon(
-              Icons.home,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Trang chủ",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHome02,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHome02,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Trang chủ",
+              ),
           NavigationDestination(
-            icon: Icon(Icons.monitor_heart_outlined, size: 30),
-            selectedIcon: Icon(
-              Icons.monitor_heart_outlined,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Sức khỏe",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHealth,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHealth,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Sức khỏe",
+              ),
           NavigationDestination(
-            icon: Icon(Icons.chat_outlined, size: 30),
-            selectedIcon: Icon(
-              Icons.chat_outlined,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Trò chuyện",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedBubbleChatUser,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedBubbleChatUser,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Trò chuyện",
+              ),
           NavigationDestination(
-            icon: SvgPicture.asset('assets/icons/stethoscope.svg',
-                height: 30, width: 30),
-            selectedIcon: SvgPicture.asset(
-                'assets/icons/stethoscope_selected.svg',
-                height: 30,
-                width: 30),
-            label: "Tư vấn",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDoctor01,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDoctor01,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Tư vấn",
+              ),
           NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined, size: 30),
-            selectedIcon: Icon(
-              Icons.grid_view_outlined,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Tiện ích",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDashboardSquare03,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDashboardSquare03,
+                  
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Tiện ích",
+              ),
         ];
       case 3:
         return [
           NavigationDestination(
-            icon: Icon(Icons.home, size: 30),
-            selectedIcon: Icon(
-              Icons.home,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Trang chủ",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHome02,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHome02,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Trang chủ",
+              ),
           NavigationDestination(
-            icon: Icon(Icons.monitor_heart_outlined, size: 30),
-            selectedIcon: Icon(
-              Icons.monitor_heart_outlined,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Sức khỏe",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHealth,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHealth,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Sức khỏe",
+              ),
           NavigationDestination(
-            icon: Icon(Icons.chat_outlined, size: 30),
-            selectedIcon: Icon(
-              Icons.chat_outlined,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Trò chuyện",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedBubbleChatUser,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedBubbleChatUser,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Trò chuyện",
+              ),
           NavigationDestination(
-            icon: SvgPicture.asset('assets/icons/stethoscope.svg',
-                height: 30, width: 30),
-            selectedIcon: SvgPicture.asset(
-                'assets/icons/stethoscope_selected.svg',
-                height: 30,
-                width: 30),
-            label: "Tư vấn",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDoctor01,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDoctor01,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Tư vấn",
+              ),
           NavigationDestination(
             icon: Icon(Icons.sos, size: 30),
             selectedIcon: Icon(
@@ -134,50 +176,71 @@ class _NavigationMenuState extends State<NavigationMenu> {
       default:
         return [
           NavigationDestination(
-            icon: Icon(Icons.home, size: 30),
-            selectedIcon: Icon(
-              Icons.home,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Trang chủ",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHome02,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHome02,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Trang chủ",
+              ),
           NavigationDestination(
-            icon: Icon(Icons.monitor_heart_outlined, size: 30),
-            selectedIcon: Icon(
-              Icons.monitor_heart_outlined,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Sức khỏe",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHealth,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedHealth,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Sức khỏe",
+              ),
           NavigationDestination(
-            icon: Icon(Icons.chat_outlined, size: 30),
-            selectedIcon: Icon(
-              Icons.chat_outlined,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Trò chuyện",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedBubbleChatUser,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedBubbleChatUser,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Trò chuyện",
+              ),
           NavigationDestination(
-            icon: SvgPicture.asset('assets/icons/stethoscope.svg',
-                height: 30, width: 30),
-            selectedIcon: SvgPicture.asset(
-                'assets/icons/stethoscope_selected.svg',
-                height: 30,
-                width: 30),
-            label: "Tư vấn",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDoctor01,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDoctor01,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Tư vấn",
+              ),
           NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined, size: 30),
-            selectedIcon: Icon(
-              Icons.grid_view_outlined,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Tiện ích",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDashboardSquare03,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedDashboardSquare03,
+                  
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Tiện ích",
+              ),
         ];
     }
   }

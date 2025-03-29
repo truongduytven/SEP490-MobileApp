@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.53"
+  animated_text_kit:
+    dependency: "direct main"
+    description:
+      name: animated_text_kit
+      sha256: adba517adb7e6adeb1eb5e1c8a147dd7bc664dfdf2f5e92226b572a91393a93d
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.3"
   archive:
     dependency: transitive
     description:
@@ -185,6 +193,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.5"
+  carousel_slider:
+    dependency: "direct main"
+    description:
+      name: carousel_slider
+      sha256: "7b006ec356205054af5beaef62e2221160ea36b90fb70a35e4deacd49d0349ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   characters:
     dependency: transitive
     description:
@@ -193,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  cherry_toast:
+    dependency: "direct main"
+    description:
+      name: cherry_toast
+      sha256: "0f7631131696ce774567d0b498c3288b95beebefb620c6d3eeb3a44276a19c41"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.12.0"
   clock:
     dependency: transitive
     description:
@@ -473,14 +497,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  fl_chart:
+    dependency: "direct main"
+    description:
+      name: fl_chart
+      sha256: "5276944c6ffc975ae796569a826c38a62d2abcf264e26b88fa6f482e107f4237"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.70.2"
   flame:
     dependency: "direct main"
     description:
       name: flame
-      sha256: "8b5abd3fe76b8b3357ba777513900fa4f1c0dc5b46ab07ad7c38e8b290773bb9"
+      sha256: "03e90d4bd3bc4f6a325602914ee27509f02d8743bb7ccb9282c88192b58eeb84"
       url: "https://pub.dev"
     source: hosted
-    version: "1.25.0"
+    version: "1.26.0"
   floating:
     dependency: transitive
     description:
@@ -542,6 +574,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.2.1"
+  flutter_image_slideshow:
+    dependency: "direct main"
+    description:
+      name: flutter_image_slideshow
+      sha256: ed259d96aea889b6ddc2b641891c3b721ec8ed33e160f08f2ef11acf0438984f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -777,10 +817,10 @@ packages:
     dependency: "direct main"
     description:
       name: gif_view
-      sha256: d2441d98bcd56b3fd00e869513aeaefa56849ab62f63675e7d55f5fa4517f27e
+      sha256: "7665fe9ba03ffcad823c13564baed36513143403dc9b68f89adc9f8d7cbdb384"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   giphy_picker:
     dependency: "direct main"
     description:
@@ -813,6 +853,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  hugeicons:
+    dependency: "direct main"
+    description:
+      name: hugeicons
+      sha256: d7dd54ca1faf91b12a4b5eb9d2ce2bce3066dc0cae7209c0ddfc29e7bb48c045
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.10"
   image:
     dependency: transitive
     description:
@@ -1485,6 +1533,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  shimmer:
+    dependency: "direct main"
+    description:
+      name: shimmer
+      sha256: "5f88c883a22e9f9f299e5ba0e4f7e6054857224976a5d9f839d4ebdc94a14ac9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   simple_gesture_detector:
     dependency: transitive
     description:
@@ -1882,6 +1938,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.2"
+  water_bottle:
+    dependency: "direct main"
+    description:
+      name: water_bottle
+      sha256: "5b3692d9249b8cfe549ce03d8b3be51290d134aab2ce7d9c1f2cd73b926415db"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   web:
     dependency: transitive
     description:

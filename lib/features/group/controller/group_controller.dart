@@ -28,6 +28,41 @@ final groupMembersProvider =
     return [];
   }
 });
+final groupMembersToAddProvider =
+    FutureProvider.family<List<GroupMember>, Map<String, dynamic>>(
+        (ref, params) async {
+          
+  final BuildContext context = params['context'];
+  final String groupId = params['groupId'];
+
+  print("Fetching group members to add in provider: Group ID - $groupId");
+  final groupController = ref.read(groupControllerProvider);
+  try {
+    final members =
+        await groupController.getGroupMembersToAdd(context, groupId);
+    print("Members received in provider: $members");
+    return members;
+  } catch (e) {
+    print("Error in provider fetching group members: $e");
+    return [];
+  }
+});
+
+final roomChatDetailProvider =
+    FutureProvider.family<RoomChatDetail?, Map<String, dynamic>>(
+        (ref, params) async {
+  final groupRepository = ref.read(groupRepositoryProvider);
+  final BuildContext context = params['context'];
+  final String roomId = params['roomId'];
+  final int userId = params['userId'];
+
+  try {
+    return await groupRepository.getRoomChatDetail(context, roomId, userId);
+  } catch (e) {
+    debugPrint("Error fetching room chat detail: $e");
+    return null;
+  }
+});
 
 class GroupController {
   final GroupRepository groupRepository;
@@ -38,6 +73,17 @@ class GroupController {
       BuildContext context, int userId) async {
     try {
       return await groupRepository.getGroupMembers(context, userId);
+    } catch (e) {
+      debugPrint("Error fetching group members: $e");
+      return [];
+    }
+  }
+
+  Future<List<GroupMember>> getGroupMembersToAdd(
+      BuildContext context, String groupId) async {
+    print("add member to chat $groupId");
+    try {
+      return await groupRepository.getGroupMembersToAdd(context, groupId);
     } catch (e) {
       debugPrint("Error fetching group members: $e");
       return [];
@@ -60,5 +106,43 @@ class GroupController {
     int userId,
   ) {
     return groupRepository.getRoomChatDetail(context, roomId, userId);
+  }
+
+  Future<bool> changeNameGroupChat(
+    BuildContext context,
+    String groupId,
+    String groupName,
+  ) {
+    return groupRepository.changeNameGroupChat(
+      context,
+      groupId,
+      groupName,
+    );
+  }
+
+  Future<bool> changeAvatarGroupChat(
+    BuildContext context,
+    String groupId,
+    File groupAvatar,
+  ) {
+    return groupRepository.changeAvatarGroupChat(
+      context,
+      groupId,
+      groupAvatar,
+    );
+  }
+
+  Future<bool> outGroupChat(
+    BuildContext context,
+    int kickerId,
+    String groupId,
+    int userId,
+  ) {
+    return groupRepository.outGroupChat(
+      context,
+      kickerId,
+      groupId,
+      userId,
+    );
   }
 }

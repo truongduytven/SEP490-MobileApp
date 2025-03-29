@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
@@ -21,13 +22,11 @@ import 'package:uuid/uuid.dart';
 final chatRepositoryProvider = Provider((ref) => ChatRepository());
 
 class ChatRepository {
- 
   Timer? _statusTimer;
   Timer? _fetchTimer;
- 
+
   final StreamController<ChatRoomStatus> _statusStreamController =
       StreamController.broadcast();
-  
 
   ///fetch roomChat
   Stream<List<RoomChat>> getRoomChatStream(String userId) async* {
@@ -142,7 +141,6 @@ class ChatRepository {
     });
   }
 
-
   Future<void> sendTextMessage({
     required BuildContext context,
     required int senderId,
@@ -197,8 +195,41 @@ class ChatRepository {
       var jsonResponse = jsonDecode(responseBody);
 
       if (response.statusCode == 200 && jsonResponse['status'] == 1) {
+        String successMessage = "";
+        switch (messageType) {
+          case MessageEnum.Image:
+            successMessage = "Đã gửi ảnh thành công";
+            break;
+          case MessageEnum.Gif:
+            successMessage = "Đã gửi gif thành công";
+            break;
+          case MessageEnum.Audio:
+            successMessage = "Đã gửi ghi âm thành công";
+            break;
+          case MessageEnum.Video:
+            successMessage = "Đã gửi video thành công";
+            break;
+          default:
+            successMessage = ""; // No snackbar for text messages
+        }
+
+        if (successMessage.isNotEmpty) {
+          Fluttertoast.showToast(
+            msg: successMessage,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: const Color.fromARGB(255, 31, 232, 78),
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        }
         print("✅ Message sent successfully");
       } else {
+        showSnackBar(
+            context: context,
+            content: "Lỗi gửi tin nhắn ${jsonResponse['message']}");
+
         print("❌ Failed to send message: ${jsonResponse['message']}");
       }
     } catch (e) {
@@ -207,7 +238,6 @@ class ChatRepository {
     }
   }
 
- 
   Future<void> setChatMessaageSeen({
     required BuildContext context,
     required String roomId,

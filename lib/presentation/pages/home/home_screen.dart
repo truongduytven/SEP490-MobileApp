@@ -1,14 +1,13 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:sep490/presentation/pages/health/detail_blood_pressure_screen.dart';
-import 'package:sep490/presentation/pages/health/detail_heart_beat_screen.dart';
-import 'package:sep490/presentation/pages/health/detail_height_screen.dart';
+import 'package:sep490/features/blood_pressure/screens/detail_blood_pressure_screen.dart';
+import 'package:sep490/features/heart_beat/screens/detail_heart_beat_screen.dart';
+import 'package:sep490/features/height/screens/detail_height_screen.dart';
 import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
-import 'package:sep490/presentation/pages/health/detail_weight_screen.dart';
-import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
+import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
+import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
 import 'package:sep490/presentation/widgets/header.dart';

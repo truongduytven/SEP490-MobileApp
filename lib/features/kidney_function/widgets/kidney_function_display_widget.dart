@@ -1,0 +1,595 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gif_view/gif_view.dart';
+import 'package:intl/intl.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/kidney_function/controller/kidney_function_controller.dart';
+import 'package:sep490/features/kidney_function/widgets/kidney_function_dialog.dart';
+import 'package:sep490/theme/color.dart';
+
+class KidneyFunctionDisplayWidget extends ConsumerStatefulWidget {
+  final num bunValue;
+  final num gfrValue;
+  final num egfrValue;
+  final String dateTime;
+  final VoidCallback onEdit;
+  final bool isDraft;
+  final String typeData;
+  final String? id;
+
+  KidneyFunctionDisplayWidget({
+    super.key,
+    required this.dateTime,
+    required this.onEdit,
+    required this.isDraft,
+    required this.bunValue,
+    required this.egfrValue,
+    required this.gfrValue,
+    required this.typeData,
+    this.id,
+  });
+
+  @override
+  ConsumerState<KidneyFunctionDisplayWidget> createState() =>
+      _KidneyFunctionDisplayWidgetState();
+}
+
+class _KidneyFunctionDisplayWidgetState
+    extends ConsumerState<KidneyFunctionDisplayWidget> {
+  String kidneyFuntionEvaluation = "Đang đánh giá...";
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchkidneyFunctionEvaluation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(AssetImage('assets/gif/notes.gif'), context);
+    });
+  }
+
+  Future<void> fetchkidneyFunctionEvaluation() async {
+    final kidneyFunctionController = ref.read(kidneyFunctionControllerProvider);
+    final result = await kidneyFunctionController.getKidneyFunctionEvaluation(
+      context,
+      widget.gfrValue.toDouble(),
+      widget.bunValue.toDouble(),
+      widget.egfrValue.toDouble(),
+    );
+    setState(() {
+      kidneyFuntionEvaluation = result;
+    });
+  }
+
+  bool isToday(String dateTime) {
+    final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
+    final DateTime dateFromString = dateFormat.parse(dateTime);
+    final DateTime today = DateTime.now();
+    return dateFromString.year == today.year &&
+        dateFromString.month == today.month &&
+        dateFromString.day == today.day;
+  }
+
+  Color get classificationColor {
+    if (widget.bunValue < 60) {
+      return Colors.orange; // Yellow for Bradycardia
+    } else if (widget.bunValue >= 60 && widget.bunValue <= 100) {
+      return Colors.green; // Green for Normal
+    } else {
+      return Colors.red; // Red for Tachycardia
+    }
+  }
+
+  // String get heartBeatClassification {
+  //   if (widget.bunValue < 60) {
+  //     return "Thận chậm";
+  //   } else if (widget.bunValue >= 60 && widget.bunValue <= 100) {
+  //     return "Thận bình thường";
+  //   } else {
+  //     return "Thận nhanh";
+  //   }
+  // }
+  Color getColorBasedOnEvaluation(String evaluation) {
+    if (evaluation.toLowerCase().contains("cao")) {
+      return Colors.red;
+    } else if (evaluation.toLowerCase().contains("thấp")) {
+      return Colors.orange;
+    } else {
+      return Colors.green;
+    }
+  }
+
+  void _handleDelete() async {
+    setState(() => isLoading = true);
+
+    try {
+      final success =
+          await ref.read(kidneyFunctionControllerProvider).deleteKidneyFunction(
+                context: context,
+                kidneyFunctionId: int.parse(
+                  widget.id!,
+                ),
+              );
+      await Future.delayed(Duration(seconds: 2));
+
+      if (mounted && success) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      await Future.delayed(Duration(seconds: 2));
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // bool isButtonDisabled = !isToday(widget.dateTime) && !widget.isDraft;
+    bool isButtonDisabled = !widget.isDraft;
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Màu nền trắng
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GifView.asset(
+                'assets/gif/notes.gif',
+                width: 200,
+                height: 200,
+                frameRate: 90,
+              ),
+              SizedBox(height: 10),
+              DefaultTextStyle(
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 20,
+                ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      widget.id != null
+                          ? "Đang cập nhật chức năng thận..."
+                          : "Đang thêm chức năng thận...",
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      speed: Duration(milliseconds: 50), // Điều chỉnh tốc độ
+                    ),
+                  ],
+                  isRepeatingAnimation: false, // Chạy 1 lần
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Card(
+                color: AppColors.bgColor,
+                margin: const EdgeInsets.all(20.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(
+                      color: AppColors.borderColor, width: 1.5),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Row with date-time and edit button
+                      Row(
+                        children: [
+                          widget.isDraft
+                              ? Icon(
+                                  Icons.calendar_month_outlined,
+                                  color: AppColors.textColor,
+                                  size: 30,
+                                )
+                              : IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("Xác nhận xóa"),
+                                        content: Text(
+                                            "Bạn có chắc chắn muốn xóa không?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text("Hủy"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                              _handleDelete();
+                                            },
+                                            child: Text("Xóa",
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.primaryColor,
+                                    size: 30,
+                                  ),
+                                ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                isToday(widget
+                                        .dateTime) // Check if it's today's date
+                                    ? "Hôm nay"
+                                    : widget.dateTime,
+                                style: TextStyle(
+                                    color: AppColors.textColor,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w400),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          isToday(widget.dateTime)
+                              ? IconButton(
+                                  onPressed: widget.onEdit,
+                                  icon: Icon(Icons.edit,
+                                      size: 30, color: AppColors.primaryColor),
+                                )
+                              : Icon(
+                                  Icons.lock_outline,
+                                  size: 30,
+                                  color: AppColors.primaryColor,
+                                )
+                        ],
+                      ),
+                      // Weight display
+                      SizedBox(
+                        height: 20,
+                      ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "BUN",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                              Text(
+                                widget.bunValue.toDouble().toStringAsFixed(1),
+                                style: TextStyle(
+                                    fontSize: 50, fontWeight: FontWeight.w700),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Transform.translate(
+                                offset: Offset(0,
+                                    -25), // Adjust the vertical position of "kg"
+                                child: Text(
+                                  "mmol/L",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.grayColor5),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "GFR",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                              Text(
+                                widget.gfrValue.toDouble().toStringAsFixed(1),
+                                style: TextStyle(
+                                    fontSize: 50, fontWeight: FontWeight.w700),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Transform.translate(
+                                offset: Offset(0,
+                                    -25), // Adjust the vertical position of "kg"
+                                child: Text(
+                                  "mmol/L",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.grayColor5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "eGFR",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                          Text(
+                            widget.egfrValue.toDouble().toStringAsFixed(1),
+                            style: TextStyle(
+                                fontSize: 50, fontWeight: FontWeight.w700),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Transform.translate(
+                            offset: Offset(
+                                0, -25), // Adjust the vertical position of "kg"
+                            child: Text(
+                              " mL/min/1.73m",
+                              style: TextStyle(
+                                  fontSize: 20, color: AppColors.grayColor5),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.borderColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.draw_outlined,
+                              color: AppColors.textPrimary,
+                              size: 24,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              widget.typeData,
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 26,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 10),
+                        child: Divider(
+                            color: AppColors.grayColor4,
+                            thickness: 0.3,
+                            height: 24),
+                      ),
+
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.grain,
+                                size: 30,
+                                color: getColorBasedOnEvaluation(
+                                    kidneyFuntionEvaluation),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  ...kidneyFuntionEvaluation
+                                      .split("-")
+                                      .map((text) => Text(
+                                            text.trim(),
+                                            style: TextStyle(
+                                              fontSize: 26,
+                                              color: getColorBasedOnEvaluation(
+                                                  text),
+                                            ),
+                                          )),
+                                ],
+                              )
+                            ],
+                          ),
+                          Container(
+                            width: 25,
+                            height: 25,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.textPrimary,
+                                width: 1.5,
+                              ),
+                              color: AppColors.bgColor,
+                            ),
+                            child: Center(
+                              child: GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (BuildContext context) {
+                                      return Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.8, // 80% of screen height
+                                        padding: EdgeInsets.all(16),
+                                        child: KidneyFunctionInfoDialog(),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.question_mark_sharp,
+                                  color: AppColors.textPrimary,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Lưu Button
+
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+            child: isButtonDisabled
+                ? SizedBox.shrink() // Use an empty widget when disabled
+                : ElevatedButton(
+                    // onPressed: () {
+                    //   print('hehe ${widget.bunValue} ${widget.dateTime}');
+                    // },
+
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            try {
+                              SharedPrefsHelper sharedPrefsHelper =
+                                  SharedPrefsHelper();
+                              final currentUserAccountID =
+                                  sharedPrefsHelper.getInt("accountId");
+                              final currentUserFullName =
+                                  sharedPrefsHelper.getString("fullName");
+                              final kidneyFunctionController =
+                                  ref.read(kidneyFunctionControllerProvider);
+
+                              // final success = await kidneyFunctionController
+                              //     .addKidneyFunction(
+                              //   context: context,
+                              //   accountId: currentUserAccountID ?? 0,
+                              //   elderlyId: currentUserAccountID ?? 0,
+                              //   creatinine: widget.gfrValue.toDouble(),
+                              //   bun: widget.bunValue.toDouble(),
+                              //   egfr: widget.egfrValue.toDouble(),
+                              //   kidneyFunctionSource: "Thủ công",
+                              // );
+
+                              bool success;
+                              if (widget.id != null) {
+                                // Gọi hàm update nếu có id
+                                success = await kidneyFunctionController
+                                    .updateKidneyFunction(
+                                  context: context,
+                                  kidneyFunctionId: int.parse(widget.id!),
+                                  createdBy: currentUserFullName ?? "Unknown",
+                                  creatinine: widget.gfrValue.toDouble(),
+                                  bun: widget.bunValue.toDouble(),
+                                  eGfr: widget.egfrValue.toDouble(),
+                                );
+                              } else {
+                                // Gọi hàm add nếu không có id
+                                success = await kidneyFunctionController
+                                    .addKidneyFunction(
+                                  context: context,
+                                  accountId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserAccountID ?? 0,
+                                  creatinine: widget.gfrValue.toDouble(),
+                                  bun: widget.bunValue.toDouble(),
+                                  egfr: widget.egfrValue.toDouble(),
+                                  kidneyFunctionSource: "Thủ công",
+                                );
+                              }
+                              await Future.delayed(Duration(seconds: 2));
+
+                              if (mounted) {
+                                if (success) {
+                                  Navigator.pop(context);
+                                }
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Lỗi: ${e.toString()}')),
+                              );
+                            } finally {
+                              await Future.delayed(Duration(seconds: 2));
+                              if (mounted) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor,
+                      padding: EdgeInsets.all(12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    child: Text(
+                      'Lưu',
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: AppColors.bgColor,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
