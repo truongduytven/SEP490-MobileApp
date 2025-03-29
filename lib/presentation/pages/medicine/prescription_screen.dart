@@ -273,6 +273,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                 ...medicine,
                 "note": "nothing",
                 "treatment": "string",
+                "frequencyType": medicine['frequencyType'] != 'Select'
+                    ? medicine['frequencyType']
+                    : medicine['frequencyType'],
                 "frequencySelect": medicine['frequencyType'] != 'Select'
                     ? []
                     : medicine['frequencySelect'],
@@ -283,9 +286,10 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               })
           .toList(),
     }..remove("medicines");
-
     newObject.remove('startDate');
     newObject.remove('id');
+    newObject.remove('medicationImage');
+    newObject.remove('createdBy');
 
     MedicineController medicineController = MedicineController();
     await medicineController.updatePrescriptionController(
@@ -303,15 +307,18 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
           });
         });
       } else {
-        Fluttertoast.showToast(
-          msg: "Có lỗi trong quá trình xử lý!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            medicineController.message.isNotEmpty
+                ? medicineController.message
+                : "Có lỗi trong quá trình xử lý!",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
         Navigator.pop(context);
       }
     });
@@ -439,7 +446,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
             },
           ),
           actions: [
-            prescription != null && prescription!['medicationImage'] != ''
+            prescription != null && prescription!['medicationImage'] != 'Manually'
                 ? IconButton(
                     icon: Icon(Icons.image),
                     onPressed: () {

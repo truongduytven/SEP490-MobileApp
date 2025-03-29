@@ -21,6 +21,15 @@ class DetailMedicine extends StatefulWidget {
 class _DetailMedicineState extends State<DetailMedicine> {
   late bool hasData;
   late Map<String, dynamic> medicineData;
+  final Map<String, String> _daysOfWeekVN = {
+    'Monday': 'Thứ 2',
+    'Tuesday': 'Thứ 3',
+    'Wednesday': 'Thứ 4',
+    'Thursday': 'Thứ 5',
+    'Friday': 'Thứ 6',
+    'Saturday': 'Thứ 7',
+    'Sunday': 'Chủ nhật',
+  };
 
   @override
   void initState() {
@@ -619,7 +628,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
     required List<dynamic> frequencySelect,
   }) {
     int numberOfDays = 0;
-    if (frequencyEvery != '') {
+    if (frequencyEvery.isNotEmpty && frequencyEvery != 'Select') {
       List<String> parts = frequencyEvery.split(' ');
       numberOfDays = int.parse(parts[1]);
     }
@@ -676,7 +685,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Text(
-                            day,
+                            _daysOfWeekVN[day] ?? day,
                             style: const TextStyle(
                               fontSize: 18,
                               color: AppColors.secondaryColor,

@@ -30,7 +30,7 @@ class _EditScheduleState extends State<EditSchedule> {
   }
 
   void _addNewSchedule() async {
-    final result = '$selectedHour:${selectedMinute.toString().padLeft(2, '0')}';
+    final result = '${selectedHour.toString().padLeft(2, '0')}:${selectedMinute.toString().padLeft(2, '0')}';
     setState(() {
       schedules.add(result);
     });
