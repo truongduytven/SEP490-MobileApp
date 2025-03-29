@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/presentation/pages/health/health_monitoring_book.dart';
+import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/widgets/health/chart/column_chart_medicine.dart';
-import 'package:sep490/presentation/widgets/health/health_floating_action_button.dart';
+import 'package:sep490/features/health/widgets/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
 
 class DetailMedicineScreen extends StatefulWidget {

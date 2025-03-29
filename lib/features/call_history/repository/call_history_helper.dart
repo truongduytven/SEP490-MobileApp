@@ -18,6 +18,7 @@ class CallHistoryHelper {
       List<int> listReceiverId = callHistory.calleeIds
           .map((id) => int.parse(id)) // Convert each String to int
           .toList();
+
       final request = CallHistoryRequest(
         callerId: int.parse(callHistory.callerId),
         // listReceiverId: [int.parse(callHistory.calleeId)],
@@ -26,6 +27,12 @@ class CallHistoryHelper {
         status: callHistory.callStatus == CallStatus.success,
         isVideo: callHistory.callType == ZegoCallType.videoCall,
       );
+      if (!request.duration.contains("giây") ||
+          !request.duration.contains("phút") ||
+          !request.duration.contains("giờ")) {
+        print("Request duration does not contain 'giây', skipping API call.");
+        return;
+      }
 
       print("lịch sử cuộc gọi nè ${request.toString()}");
       // Send POST request to the API
