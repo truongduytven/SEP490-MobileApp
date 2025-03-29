@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
@@ -7,16 +10,22 @@ import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/call_history/repository/call_history_helper.dart';
 import 'package:sep490/models/call_history.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
+import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shake_gesture/shake_gesture.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
+  await requestOverlayPermission();
   await Firebase.initializeApp(
     options: FirebaseOptions(
       apiKey: dotenv.env['API_KEY'] ?? '',
@@ -427,11 +436,26 @@ void main() async {
   /// Set navigator key for Zego Call Invitation Service
   ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
 
+  await FlutterBackground.initialize(
+    androidConfig: FlutterBackgroundAndroidConfig(
+      notificationTitle: "SOS Service",
+      notificationText: "Running in background",
+      notificationIcon: AndroidResource(name: 'ic_launcher', defType: 'mipmap'),
+    ),
+  );
+
   runApp(
     ProviderScope(
       child: MyApp(navigatorKey: navigatorKey),
     ),
   );
+}
+
+Future<void> requestOverlayPermission() async {
+  bool isGranted = await FlutterOverlayWindow.isPermissionGranted();
+  if (!isGranted) {
+    await FlutterOverlayWindow.requestPermission();
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -447,15 +471,149 @@ class MyApp extends StatefulWidget {
 }
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  int roleId = 0;
+  double buttonX = 5;
+  double buttonY = 500;
+  final double buttonSize = 60.0;
+  final double borderRadius = 50.0;
+  final double edgePadding = 5.0;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+  late AnimationController _controller;
+  late Animation<double> _animationX;
+  late Animation<double> _animationY;
+  bool _isShakeTriggered = false;
+  bool _isListening = false;
+  // final SpeechToText _speech = SpeechToText();
+  bool _isInEmergency = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
+    SharedPrefsHelper.roleNotifier.addListener(_onRoleChanged);
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+    // _initSpeech();
+  }
+
+  void _onRoleChanged() {
+    setState(() {});
+  }
+
+  // void _initSpeech() async {
+  //   bool available = await _speech.initialize(
+  //     onStatus: (status) {
+  //       if (status == "done" && !_isInEmergency) {
+  //         _startListening();
+  //       }
+  //     },
+  //     onError: (error) {
+  //       print("Speech Error: $error");
+  //     },
+  //   );
+  //   if (available) {
+  //     _startListening();
+  //   }
+  // }
+
+  // void _startListening() async {
+  //   if (!_isListening && !_isInEmergency) {
+  //     _isListening = true;
+  //     _speech.listen(
+  //       onResult: (result) {
+  //         _processSpeech(result.recognizedWords);
+  //         print(result.recognizedWords);
+  //       },
+  //       localeId: "vi_VN",
+  //     );
+  //   }
+  // }
+
+  // void _processSpeech(String words) {
+  //   words = words.toLowerCase().trim();
+  //   if (!_isInEmergency && (words.contains("cứu") ||
+  //       words.contains("cứu tôi") ||
+  //       words.contains("cứu với"))) {
+  //     _stopListening();
+  //     Navigator.push(
+  //       widget.navigatorKey.currentState!.context,
+  //       MaterialPageRoute(builder: (context) => HomeDoctorAdviseScreen()),
+  //     ).then((_) {
+  //       setState(() {
+  //         _isInEmergency = false;
+  //       });
+  //       _startListening();
+  //     });
+
+  //     setState(() {
+  //       _isInEmergency = true;
+  //     });
+  //   }
+  // }
+
+  // void _stopListening() {
+  //   if (_isListening) {
+  //     _isListening = false;
+  //     _speech.stop();
+  //   }
+  // }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    SharedPrefsHelper.roleNotifier.removeListener(_onRoleChanged);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _animateButtonToEdge() {
+    final screenSize = MediaQuery.of(context).size;
+    double screenMid = screenSize.width / 2;
+    double targetX = (buttonX < screenMid)
+        ? edgePadding
+        : screenSize.width - buttonSize - edgePadding;
+
+    _animationX = Tween<double>(begin: buttonX, end: targetX).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    _animationY = Tween<double>(begin: buttonY, end: buttonY).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _controller.forward(from: 0).then((_) {
+      setState(() {
+        buttonX = targetX;
+      });
+    });
+  }
+
+  void _onShake() {
+    if (!_isShakeTriggered) {
+      _isShakeTriggered = true;
+      Navigator.push(
+        widget.navigatorKey.currentState!.context,
+        MaterialPageRoute(builder: (context) => EmergencyScreen()),
+      ).then((_) {
+        _isShakeTriggered = false;
+      });
+      print('Lắc nè');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'LeagueSpartan'),
       color: AppColors.bgColor,
       home: SplashScreen(),
+      routes: {
+        '/emergency_screen': (context) => EmergencyScreen(),
+      },
       scaffoldMessengerKey: scaffoldMessengerKey,
       navigatorKey: widget.navigatorKey,
       navigatorObservers: [routeObserver],
@@ -465,6 +623,73 @@ class _MyAppState extends State<MyApp> {
         return Stack(
           children: [
             child!,
+            ShakeGesture(
+              onShake: () {
+                _onShake();
+              },
+              child: Container(),
+            ),
+            ValueListenableBuilder<int>(
+              valueListenable: SharedPrefsHelper.roleNotifier,
+              builder: (context, roleId, _) {
+                if (roleId != 2 || _isInEmergency) return SizedBox();
+                return Positioned(
+                  left: _controller.isAnimating ? _animationX.value : buttonX,
+                  top: _controller.isAnimating ? _animationY.value : buttonY,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      setState(() {
+                        buttonX += details.delta.dx;
+                        buttonY += details.delta.dy;
+
+                        // Prevent button from moving out of bounds
+                        final screenSize = MediaQuery.of(context).size;
+                        // buttonX = buttonX.clamp(0, screenSize.width - buttonSize);
+                        buttonY = buttonY.clamp(edgePadding,
+                            screenSize.height - buttonSize - edgePadding);
+                      });
+                    },
+                    onPanEnd: (_) => _animateButtonToEdge(),
+                    child: Container(
+                      width: buttonSize,
+                      height: buttonSize,
+                      decoration: BoxDecoration(
+                        color: Colors.red, // Button color
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isInEmergency = true;
+                          });
+                          Navigator.push(
+                            widget.navigatorKey.currentState!.context,
+                            MaterialPageRoute(
+                                builder: (context) => EmergencyScreen()),
+                          ).then((_) {
+                            setState(() {
+                              _isInEmergency = false;
+                            });
+                          });
+                        },
+                        child: Image.asset(
+                          'assets/img/SOSButton.png', // Replace with your image path
+                          width: buttonSize,
+                          height: buttonSize,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
 
             /// support minimizing
             ZegoUIKitPrebuiltCallMiniOverlayPage(

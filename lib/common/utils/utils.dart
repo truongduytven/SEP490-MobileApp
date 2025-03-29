@@ -114,14 +114,8 @@ String convertTime(String time) {
 String addDaytoDate(String date, int day) {
   // '25-01-2025' add day day -> '27-01-2025'
   DateFormat format = DateFormat("dd/MM/yyyy");
-
-  // Parse start date
   DateTime start = format.parse(date);
-
-  // Add duration (days)
   DateTime endDate = start.add(Duration(days: day - 1));
-
-  // Format back to "dd/MM/yyyy"
   return format.format(endDate);
 }
 
@@ -158,4 +152,16 @@ String formatDuration(Duration duration) {
   }
 
   return parts.join(' ');
+}
+
+String convertDateTimeToString(String dateTime) {
+  // '17-03-2025 15:23' to '03:00 ngày 25/02/2025'
+  var dateParts = dateTime.split(' ');
+  var date = dateParts[0];
+  var time = dateParts[1];
+  var timeParts = time.split(':');
+  var hour = timeParts[0];
+  var minute = timeParts[1];
+  var formattedDateTime = '$hour:$minute ngày $date';
+  return formattedDateTime;
 }

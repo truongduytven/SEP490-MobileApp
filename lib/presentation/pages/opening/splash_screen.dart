@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/data/repositories/user_pref_repository_impl.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/data/services/local_storage_service.dart';
 import 'package:sep490/domain/use_cases/user_pref_repository.dart';
+import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/pages/opening/select_sign.dart';
 import 'package:sep490/presentation/pages/opening/welcome_screen.dart';
@@ -27,11 +29,33 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), _navigateNext);
+    Timer(const Duration(seconds: 2), _checkSignal);
     FirebaseMessaging.instance.getToken().then((token) {
       setState(() {
         _token = token;
       });
+    });
+  }
+
+  Future<void> _checkSignal() async {
+    const platform = MethodChannel('com.example.sepp490/navigation');
+    bool isSignal = false;
+    platform.setMethodCallHandler((call) async {
+      if (call.method == "navigateTo") {
+        String page = call.arguments;
+        if (page == "home_doctor_advise") {
+          isSignal = true;
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return EmergencyScreen();
+          }));
+        }
+      }
+    });
+    Timer(const Duration(seconds: 2), () {
+      if (!isSignal) {
+        _navigateNext();
+      }
     });
   }
 
@@ -43,8 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       final localStorageService = LocalStorageService();
       final userPrefRepository = UserPrefRepositoryImpl(localStorageService);
-      final CheckUserOnboardingUseCase checkUserOnboardingUseCase =
-          CheckUserOnboardingUseCase(userPrefRepository);
+      final CheckUserOnboardingUseCase checkUserOnboardingUseCase = CheckUserOnboardingUseCase(userPrefRepository);
 
       final isFirstTime = await checkUserOnboardingUseCase.execute();
       if (!mounted) return;
@@ -72,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen> {
       "deviceToken": _token ?? "string",
     });
     if (response['success'] && response['data']['isSuccess']) {
-      final String accessToken = response['data']['data']['accessToken'];
+      final String accessToken = response['data']['data']['accessToken'] ?? '';
       var responseToken = await ApiService.getRequest("auth-management",
           headers: {
             "Content-Type": "application/json",
@@ -130,7 +153,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       Navigator.of(context).pop();
       Fluttertoast.showToast(
-        msg: response['data']['data'] ?? "Có lỗi trong quá trình xử lý!",
+        msg: "Có lỗi trong quá trình xử lý!",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
