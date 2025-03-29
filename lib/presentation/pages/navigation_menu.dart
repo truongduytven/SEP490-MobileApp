@@ -164,14 +164,19 @@ class _NavigationMenuState extends State<NavigationMenu> {
                 label: "Tư vấn",
               ),
           NavigationDestination(
-            icon: Icon(Icons.sos, size: 30),
-            selectedIcon: Icon(
-              Icons.sos,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Khẩn cấp",
-          ),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedAmbulance,
+                  color: AppColors.iconColor,
+                  size: 30,
+                ),
+                selectedIcon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedAmbulance,
+                  color: AppColors.primaryColor,
+                  size: 30,
+                ),
+                label: "Khẩn cấp",
+              ),
+          
         ];
       default:
         return [
