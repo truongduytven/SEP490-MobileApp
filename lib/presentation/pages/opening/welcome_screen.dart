@@ -28,7 +28,7 @@ class WelcomeScreen extends StatelessWidget {
                   Text(
                     'Chào mừng bạn đã đến với',
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 32,
                       color: AppColors.secondaryColor,
                       fontWeight: FontWeight.w600,
                     ),

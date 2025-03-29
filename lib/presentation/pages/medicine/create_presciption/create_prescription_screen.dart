@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/common/utils/utils.dart';
@@ -15,9 +14,7 @@ import 'package:sep490/theme/color.dart';
 class CreatePrescriptionScreen extends StatefulWidget {
   final String? endDate;
   final String? treatment;
-  final String? imagePath;
-  const CreatePrescriptionScreen(
-      {super.key, this.endDate, this.treatment, this.imagePath});
+  const CreatePrescriptionScreen({super.key, this.endDate, this.treatment});
 
   @override
   State<CreatePrescriptionScreen> createState() =>
@@ -42,51 +39,6 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     listMedicine['treatment'] = widget.treatment ?? '';
     listMedicine['createdBy'] = sharedPrefsHelper.getString('fullName');
     listMedicine['medication'] = [];
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getScanMedicine();
-    });
-  }
-
-  void getScanMedicine() async {
-    if (widget.imagePath != null) {
-      LoadingDialog.show(
-          context, 'assets/gif/opd.gif', 'Đang quét toa thuốc...');
-      MedicineController medicineController = MedicineController();
-      await medicineController.scanMedicine(
-          widget.imagePath!, listMedicine['accountId']);
-      Timer(const Duration(seconds: 1), () {
-        if (medicineController.medicines != null) {
-          Navigator.pop(context);
-          LoadingDialog.show(context, 'assets/gif/create_success.gif',
-              'Quét toa thuốc thành công!');
-          setState(() {
-            listMedicine['treatment'] =
-                medicineController.medicines!['treatment'];
-            listMedicine['endDate'] =
-                convertDate(medicineController.medicines!['endDate']);
-            medicineController.medicines!['medicines'].forEach((element) {
-              Map<String, dynamic> medicine = {
-                'medicationName': element['medicationName'],
-                'dosage': element['dosage'],
-                'shape': element['shape'],
-                'remaining': element['remaining'],
-                'frequencyType': element['frequencyType'],
-                'frequencySelect': element['frequencySelect'] ?? [],
-                'isBeforeMeal': element['isBeforeMeal'],
-                'schedule': element['schedule'],
-              };
-              listMedicine['medication'].add(medicine);
-            });
-          });
-          Timer(const Duration(seconds: 2), () {
-            Navigator.pop(context);
-          });
-        } else {
-          Navigator.pop(context);
-          Navigator.pop(context, false);
-        }
-      });
-    }
   }
 
   void handleAddMedicine() async {
@@ -130,35 +82,21 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
 
   void handleSavePrescription() async {
     LoadingDialog.show(context, 'assets/gif/opd.gif', 'Đang tạo toa thuốc...');
-    if (listMedicine['medication'].length == 0) {
-      Navigator.pop(context);
-      CherryToast.error(
-        toastDuration: Duration(seconds: 3),
-        title: Text(
-          "Vui lòng nhập thuốc trước khi tạo toa!",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-          ),
-        ),
-      ).show(context);
-      return;
-    }
     String dateData = listMedicine['endDate'];
     listMedicine['endDate'] = convertDateTime(listMedicine['endDate']);
     MedicineController medicineController = MedicineController();
-    await medicineController.createPrescriptionController(
-        listMedicine, widget.imagePath != null ? widget.imagePath! : '');
+    await medicineController.createPrescriptionController(listMedicine);
     Timer(const Duration(seconds: 1), () {
       if (medicineController.isCreateSuccess) {
         listMedicine['endDate'] = dateData;
         Navigator.pop(context);
-        LoadingDialog.show(context, 'assets/gif/create_success.gif',
-            'Tạo toa thuốc thành công!');
+        LoadingDialog.show(context, 'assets/gif/create_success.gif', 'Tạo toa thuốc thành công!');
         Timer(const Duration(seconds: 2), () {
           Navigator.pop(context);
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => PrescriptionScreen()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PrescriptionScreen()));
         });
       } else {
         listMedicine['endDate'] = dateData;
@@ -233,6 +171,13 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Center(
+                            child: Text(
+                          'Tạo toa thuốc',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 22),
+                        )),
+                        const SizedBox(height: 10),
                         RichText(
                           text: TextSpan(
                             style: TextStyle(

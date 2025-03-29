@@ -44,7 +44,7 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> postRequestSignUp(
-      String endpoint, String imageFile) async {
+      String endpoint, File imageFile) async {
     final Uri url = Uri.parse("$_baseUrl/$endpoint");
 
     var request = http.MultipartRequest("POST", url);
@@ -52,11 +52,10 @@ class ApiService {
     request.files.add(
       await http.MultipartFile.fromPath(
         "avatar",
-        imageFile,
+        imageFile.path,
+        filename: basename(imageFile.path),
       ),
     );
-
-    // request.files.add(await http.MultipartFile.fromPath('MedicationImage', imgPath));
 
     try {
       var response = await request.send();

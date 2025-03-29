@@ -4,12 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/common/constants/common.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
-import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/presentation/pages/auth/forgot_password_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
@@ -108,7 +108,7 @@ class _SignInFormState extends State<SignInForm> {
         "deviceToken": _token ?? "string",
       });
       if (response['success'] && response['data']['isSuccess']) {
-        final String accessToken = response['data']['data']['accessToken'];
+        final String accessToken = response['data']['data'];
         var responseToken = await ApiService.getRequest("auth-management",
             headers: {
               "Content-Type": "application/json",
@@ -116,22 +116,22 @@ class _SignInFormState extends State<SignInForm> {
             });
 
         if (responseToken['success']) {
-          SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+          SharedPreferences prefs = await SharedPreferences.getInstance();
           final userData = responseToken['data']['user'];
           final int userID = userData['accountId'] ?? 0;
           final String userName = userData['fullName'] ?? '';
           final String avatar = userData['avatar'] ?? '';
-          sharedPrefsHelper.setInt(
+          prefs.setInt(
               'accountId', responseToken['data']['user']['accountId'] ?? 0);
-          sharedPrefsHelper.setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
-          sharedPrefsHelper.setString('email', emailController.text);
-          sharedPrefsHelper.setString('password', passwordController.text);
-          sharedPrefsHelper.setString('accessToken', accessToken);
-          sharedPrefsHelper.setString(
+          prefs.setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
+          prefs.setString('email', emailController.text);
+          prefs.setString('password', passwordController.text);
+          prefs.setString('accessToken', accessToken);
+          prefs.setString(
               'fullName', responseToken['data']['user']['fullName'] ?? '');
-          sharedPrefsHelper.setString(
+          prefs.setString(
               'avatar', responseToken['data']['user']['avatar'] ?? '');
-          sharedPrefsHelper.setString(
+          prefs.setString(
               'gender', responseToken['data']['user']['gender'] ?? "");
           Navigator.of(context).pop();
           Fluttertoast.showToast(

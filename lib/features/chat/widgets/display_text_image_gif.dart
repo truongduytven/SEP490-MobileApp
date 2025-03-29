@@ -136,68 +136,6 @@ class _DisplayTextImageGifState extends State<DisplayTextImageGif> {
                 ? VideoPlayerItem(
                     videoUrl: getLowResVideoUrl(widget.message),
                   )
-                : widget.type == MessageEnum.CallSuccess ||
-                        widget.type == MessageEnum.CallFailure
-                    ? _buildCallMessage(
-                        isSuccess: widget.type == MessageEnum.CallSuccess,
-                        isUserMe: isUserMe,
-                        message: widget.message)
-                    : CachedNetworkImage(imageUrl: widget.message);
+                : CachedNetworkImage(imageUrl: widget.message);
   }
-}
-
-Widget _buildCallMessage({
-  required bool isSuccess,
-  required bool isUserMe,
-  required String message,
-}) {
-  // Extract call type (video or audio) from the message
-  final isVideoCall = message.toLowerCase().contains("video");
-  final callType = isVideoCall ? "Video" : "Thoại";
-
-  // Extract duration from the message (assuming the format is "Cuộc gọi Video - 0")
-  final duration = message.split(" - ").last;
-
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(width: 8),
-        Icon(
-          isVideoCall
-              ? (isSuccess ? Icons.videocam : Icons.videocam_off)
-              : (isSuccess ? Icons.call : Icons.phone_callback_rounded),
-          color: isSuccess ? Colors.green : AppColors.primaryColor,
-          size: 24,
-        ),
-        const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Cuộc gọi $callType",
-              style: TextStyle(
-                color: isUserMe ? AppColors.bgColor : AppColors.secondaryColor,
-                fontSize: 16,
-              ),
-            ),
-            if (isSuccess)
-              Text(
-                duration,
-                style: TextStyle(
-                  color:
-                      isUserMe ? AppColors.bgColor : AppColors.secondaryColor,
-                  fontSize: 14,
-                ),
-              ),
-          ],
-        ),
-      ],
-    ),
-  );
 }

@@ -29,7 +29,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId = sharedPrefsHelper.getInt('accountId')!;
   late bool isLoading = true;
-  int indexAnimation = 0;
 
   @override
   void initState() {
@@ -145,7 +144,9 @@ class _HomeMedicineState extends State<HomeMedicine> {
     setState(() {
       isLoading = true;
     });
-    Map<String, dynamic> data = {"confirmations": []};
+    Map<String, dynamic> data = {
+      "confirmations": []
+    };
     medicines.forEach((medicine) {
       data["confirmations"].add({
         "dateTaken":
@@ -246,7 +247,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
                           _scrollToSelectedDay(); // Scroll to day 1
                           getDataPrescription();
                         });
-                        indexAnimation = 0;
                       });
                     },
                   ),
@@ -270,7 +270,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
                           _scrollToSelectedDay(); // Scroll to day 1
                           getDataPrescription();
                         });
-                        indexAnimation = 0;
                       });
                     },
                   ),
@@ -291,7 +290,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
                                   _scrollToSelectedDay();
                                   getDataPrescription();
                                 });
-                                indexAnimation = 0;
                               });
                             }
                           : null,
@@ -330,7 +328,6 @@ class _HomeMedicineState extends State<HomeMedicine> {
                             selectedDay = day;
                             getDataPrescription();
                             _scrollToSelectedDay();
-                            indexAnimation = 0;
                           });
                         },
                         child: Container(
@@ -541,113 +538,95 @@ class _HomeMedicineState extends State<HomeMedicine> {
   }
 
   Widget buildMedicineCard(Map<String, dynamic> medicine) {
-    indexAnimation++;
-    return TweenAnimationBuilder(
-      tween: Tween<Offset>(
-        begin: const Offset(0, 0.8), // Start slightly below
-        end: const Offset(0, 0), // Move to normal position
-      ),
-      duration: Duration(milliseconds: 550 + (indexAnimation * 300)),
-      curve: Curves.fastLinearToSlowEaseIn,
-      builder: (context, Offset offset, child) {
-        return Transform.translate(
-          offset: offset * MediaQuery.of(context).size.height,
-          child: Opacity(
-            opacity: (1 - offset.dy), // Fade effect
-            child: child,
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(
-            color: AppColors.grayColor1,
-            width: 1,
-          ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(
+          color: AppColors.grayColor1,
+          width: 1,
         ),
-        child: Row(
-          children: [
-            buildImgForm(medicine["shape"]),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      child: Row(
+        children: [
+          buildImgForm(medicine["shape"]),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    medicine["medicationName"],
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    "Dùng ${medicine['dosage']} vào ${medicine['time']['time']} (${medicine['isBeforeMeal'] ? 'Trước' : 'Sau'} bữa ăn)",
+                    style: const TextStyle(
+                        fontSize: 14, color: AppColors.grayColor5),
+                  ),
+                  Text(
+                    "${medicine['remaining'].toString()} viên còn lại",
+                    style: const TextStyle(
+                        fontSize: 14, color: AppColors.grayColor5),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          medicine['time']['status'] != 'Unused'
+              ? (medicine['time']['status'] == 'Taken'
+                  ? Icon(Icons.check_circle, size: 30, color: Colors.green)
+                  : Icon(Icons.cancel, size: 30, color: Colors.red))
+              : Row(
                   children: [
-                    Text(
-                      medicine["medicationName"],
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    GestureDetector(
+                      onTap: () {
+                        handleConfirmMedicine(medicine['time']['time'],
+                            medicine['medicationId'], "Skip");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Icon(
+                          Icons.cancel_outlined,
+                          color: AppColors.secondaryColor,
+                          size: 30,
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    Text(
-                      "Dùng ${medicine['dosage']} vào ${medicine['time']['time']} (${medicine['isBeforeMeal'] ? 'Trước' : 'Sau'} bữa ăn)",
-                      style: const TextStyle(
-                          fontSize: 14, color: AppColors.grayColor5),
-                    ),
-                    Text(
-                      "${medicine['remaining'].toString()} viên còn lại",
-                      style: const TextStyle(
-                          fontSize: 14, color: AppColors.grayColor5),
+                    GestureDetector(
+                      onTap: () {
+                        handleConfirmMedicine(medicine['time']['time'],
+                            medicine['medicationId'], "Taken");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Icon(
+                          Icons.check_circle,
+                          color: AppColors.secondaryColor,
+                          size: 30,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ),
-            medicine['time']['status'] != 'Unused'
-                ? (medicine['time']['status'] == 'Taken'
-                    ? Icon(Icons.check_circle, size: 30, color: Colors.green)
-                    : Icon(Icons.cancel, size: 30, color: Colors.red))
-                : Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          handleConfirmMedicine(medicine['time']['time'],
-                              medicine['medicationId'], "Skip");
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: const Icon(
-                            Icons.cancel_outlined,
-                            color: AppColors.secondaryColor,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          handleConfirmMedicine(medicine['time']['time'],
-                              medicine['medicationId'], "Taken");
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: const Icon(
-                            Icons.check_circle,
-                            color: AppColors.secondaryColor,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:sep490/theme/color.dart';
 
 // void showSnackBar({required BuildContext context, required String content}) {
@@ -111,14 +110,6 @@ String convertTime(String time) {
   return formattedTime;
 }
 
-String addDaytoDate(String date, int day) {
-  // '25-01-2025' add day day -> '27-01-2025'
-  DateFormat format = DateFormat("dd/MM/yyyy");
-  DateTime start = format.parse(date);
-  DateTime endDate = start.add(Duration(days: day - 1));
-  return format.format(endDate);
-}
-
 String convertDateTime(String dateTime) {
   // '25/02/2025' to '2025-02-25T00:00:00Z'
   var dateParts = dateTime.split('/');
@@ -131,37 +122,6 @@ String convertDateTime(String dateTime) {
   if (day.length == 1) {
     day = '0$day';
   }
-  var formattedDateTime = '$year-$month-$day' 'T00:00:00.000Z';
-  return formattedDateTime;
-}
-
-String formatDuration(Duration duration) {
-  final hours = duration.inHours;
-  final minutes = duration.inMinutes.remainder(60);
-  final seconds = duration.inSeconds.remainder(60);
-
-  final parts = <String>[];
-  if (hours > 0) {
-    parts.add('$hours giờ');
-  }
-  if (minutes > 0) {
-    parts.add('$minutes phút');
-  }
-  if (seconds > 0 || parts.isEmpty) {
-    parts.add('$seconds giây');
-  }
-
-  return parts.join(' ');
-}
-
-String convertDateTimeToString(String dateTime) {
-  // '17-03-2025 15:23' to '03:00 ngày 25/02/2025'
-  var dateParts = dateTime.split(' ');
-  var date = dateParts[0];
-  var time = dateParts[1];
-  var timeParts = time.split(':');
-  var hour = timeParts[0];
-  var minute = timeParts[1];
-  var formattedDateTime = '$hour:$minute ngày $date';
+  var formattedDateTime = '$year-$month-$day''T00:00:00.000Z';
   return formattedDateTime;
 }

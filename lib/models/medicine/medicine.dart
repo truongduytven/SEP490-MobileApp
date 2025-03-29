@@ -118,8 +118,6 @@ class Schedule {
 class PrescriptionUpdate {
   final int id;
   final String treatment;
-  final String medicationImage;
-  final String createdBy;
   final String endDate;
   final String startDate;
   final List<MedicineUpdate> medicines;
@@ -127,8 +125,6 @@ class PrescriptionUpdate {
   PrescriptionUpdate({
     required this.id,
     required this.treatment,
-    required this.medicationImage,
-    required this.createdBy,
     required this.endDate,
     required this.startDate,
     required this.medicines,
@@ -138,8 +134,6 @@ class PrescriptionUpdate {
     return PrescriptionUpdate(
       id: json['id'] ?? 0,
       treatment: json['treatment'] ?? '',
-      medicationImage: json['medicationImage'] ?? '',
-      createdBy: json['createdBy'] ?? '',
       endDate: json['endDate'] ?? '',
       startDate: json['startDate'] ?? '',
       medicines: (json['medicines'] as List)
@@ -153,8 +147,6 @@ class PrescriptionUpdate {
       'id': id,
       'treatment': treatment,
       'startDate': startDate,
-      'medicationImage': medicationImage,
-      'createdBy': createdBy,
       'endDate': endDate,
       'medicines': medicines.map((medicine) => medicine.toJson()).toList(),
     };

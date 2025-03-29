@@ -220,11 +220,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       body: Center(
         child: ElevatedButton(
           onPressed: _handleEmergency,
+          child: Text("🚨 GỌI KHẨN CẤP"),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
             textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          child: Text("🚨 GỌI KHẨN CẤP"),
         ),
       ),
     );
