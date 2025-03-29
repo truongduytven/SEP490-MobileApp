@@ -312,7 +312,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByDate?["average"] as double?)?.toStringAsFixed(2) ?? "--"} cm",
+                                          "${(dataByDate?["average"] ) ?? "--"} cm",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -362,7 +362,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByWeek?["average"] as double?)?.toStringAsFixed(2) ?? "--"} cm",
+                                          "${(dataByWeek?["average"]) ?? "--"} cm",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -412,7 +412,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByMonth?["average"] as double?)?.toStringAsFixed(2) ?? "--"} cm",
+                                          "${(dataByMonth?["average"] ) ?? "--"} cm",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -461,7 +461,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByYear?["average"] as double?)?.toStringAsFixed(2) ?? "--"} cm",
+                                          "${(dataByYear?["average"] ) ?? "--"} cm",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),

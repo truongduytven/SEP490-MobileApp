@@ -345,10 +345,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["altAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByDate?["altAverage"]) ??
                                                   "--",
+                                              // (dataByDate?["altAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -368,10 +370,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["alpAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByDate?["alpAverage"]) ??
                                                   "--",
+                                              // (dataByDate?["alpAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -391,10 +395,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["astAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByDate?["astAverage"]) ??
                                                   "--",
+                                              // (dataByDate?["astAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -414,10 +420,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["ggtAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByDate?["ggtAverage"]) ??
                                                   "--",
+                                              // (dataByDate?["ggtAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -532,10 +540,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["altAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByWeek?["altAverage"]) ??
                                                   "--",
+                                              // (dataByWeek?["altAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -555,10 +565,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["alpAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByWeek?["alpAverage"]) ??
                                                   "--",
+                                              // (dataByWeek?["alpAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -578,10 +590,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["astAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByWeek?["astAverage"]) ??
                                                   "--",
+                                              // (dataByWeek?["astAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -601,10 +615,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["ggtAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByWeek?["ggtAverage"]) ??
                                                   "--",
+                                              // (dataByWeek?["ggtAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -719,10 +735,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["altAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByMonth?["altAverage"]) ??
                                                   "--",
+                                              // (dataByMonth?["altAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -742,10 +760,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["alpAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByMonth?["alpAverage"]) ??
                                                   "--",
+                                              // (dataByMonth?["alpAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -765,10 +785,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["astAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByMonth?["astAverage"]) ??
                                                   "--",
+                                              // (dataByMonth?["astAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -788,10 +810,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["ggtAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByMonth?["ggtAverage"]) ??
                                                   "--",
+                                              // (dataByMonth?["ggtAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -906,10 +930,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["altAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByYear?["altAverage"]) ??
                                                   "--",
+                                              // (dataByYear?["altAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -929,10 +955,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["alpAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByYear?["alpAverage"]) ??
                                                   "--",
+                                              // (dataByYear?["alpAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -952,10 +980,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["astAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByYear?["astAverage"]) ??
                                                   "--",
+                                              // (dataByYear?["astAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -975,10 +1005,12 @@ class _DetailLiverEnzymesScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["ggtAverage"]
-                                                          as double?)
-                                                      ?.toStringAsFixed(2) ??
+                                              (dataByYear?["ggtAverage"]) ??
                                                   "--",
+                                              // (dataByYear?["ggtAverage"]
+                                              //             as double?)
+                                              //         ?.toStringAsFixed(2) ??
+                                              //     "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),

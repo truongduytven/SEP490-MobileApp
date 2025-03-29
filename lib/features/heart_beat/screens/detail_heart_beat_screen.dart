@@ -35,7 +35,7 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
   Map<String, double?> chartByMonth = {};
   Map<String, double?> chartByYear = {};
   bool isLoading = false;
-  
+
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
   final Map<String, double?> chartDataDate = {
     "T2": 115,
@@ -280,7 +280,8 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByDate?["average"] as double?)?.toStringAsFixed(2) ?? "--"} nhịp/phút",
+                                          // "${(dataByDate?["average"] as double?)?.toStringAsFixed(2) ?? "--"} nhịp/phút",
+                                          "${dataByDate?["average"] ?? "--"} nhịp/phút",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -330,7 +331,8 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByWeek?["average"] as double?)?.toStringAsFixed(2) ?? "--"} nhịp/phút",
+                                          // "${(dataByWeek?["average"] as double?)?.toStringAsFixed(2) ?? "--"} nhịp/phút",
+                                          "${dataByWeek?["average"] ?? "--"} nhịp/phút",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -380,7 +382,7 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByMonth?["average"] as double?)?.toStringAsFixed(2) ?? "--"} nhịp/phút",
+                                          "${(dataByMonth?["average"]) ?? "--"} nhịp/phút",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -429,7 +431,7 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByYear?["average"] as double?)?.toStringAsFixed(2) ?? "--"} nhịp/phút",
+                                          "${(dataByYear?["average"]) ?? "--"} nhịp/phút",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),

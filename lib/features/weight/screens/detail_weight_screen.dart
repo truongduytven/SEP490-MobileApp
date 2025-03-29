@@ -40,7 +40,7 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
   bool isLoading = false;
 
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
-  
+
   @override
   void initState() {
     super.initState();
@@ -368,7 +368,8 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByWeek?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
+                                          "${(dataByWeek?["average"]) ?? "--"} kg",
+                                          // "${(dataByWeek?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -431,7 +432,8 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByMonth?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
+                                          "${(dataByMonth?["average"]) ?? "--"} kg",
+                                          // "${(dataByMonth?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -480,7 +482,8 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByYear?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
+                                          "${(dataByYear?["average"]) ?? "--"} kg",
+                                          // "${(dataByYear?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
