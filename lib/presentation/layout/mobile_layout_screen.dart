@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sep490/data/helper/shared_prefs_helper.dart';
-import 'package:sep490/features/friend_request/friend_request_screen.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/features/chat/widgets/contacts_list.dart';
 import 'package:sep490/features/chat/widgets/expandable_fab.dart';
@@ -54,8 +52,6 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
 
   @override
   Widget build(BuildContext context) {
-    SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
-    final currentUserId = sharedPrefsHelper.getInt("accountId");
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -130,7 +126,7 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
           // StatusContactsScreen(),
           // const Text("COntact list"),
           const Text("Dòng trạng thái"),
-          FriendRequestScreen(requestUserId: currentUserId ?? 0)
+          const Text("Lời mời kết bạn"),
         ]),
         // floatingActionButton: FloatingActionButton(
         // onPressed: () async {
@@ -157,18 +153,16 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
         // floatingActionButton: ExpandableFab(),
         floatingActionButton: tabBarController.index == 0
             ? ExpandableFab()
-            : tabBarController.index == 1
-                ? FloatingActionButton(
-                    onPressed: () {
-                      // Navigator.pushNamed(context, SelectContactsScreen.routeName);
-                    },
-                    backgroundColor: AppColors.primaryColor,
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                  )
-                : null,
+            : FloatingActionButton(
+                onPressed: () {
+                  // Navigator.pushNamed(context, SelectContactsScreen.routeName);
+                },
+                backgroundColor: AppColors.primaryColor,
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

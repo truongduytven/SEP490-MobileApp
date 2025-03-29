@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sep490/features/health/widgets/skeleton_list.dart';
-import 'package:sep490/presentation/widgets/health/chart/line_chart_skeleton.dart';
 
 class GroupMemberScreen extends StatefulWidget {
   const GroupMemberScreen({super.key});
@@ -16,10 +14,8 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
       appBar: AppBar(
         title: const Text('Group Member'),
       ),
-      body: Column(
-        children: [
-          Text('Group Member Screen'),
-        ],
+      body: const Center(
+        child: Text('Group Member Screen'),
       ),
     );
   }

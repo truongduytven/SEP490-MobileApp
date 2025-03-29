@@ -1,10 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/presentation/pages/auth/signin_screen.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
@@ -50,14 +48,6 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
     }
   }
 
-  Future<String> getDefaultAvatarPath() async {
-    final byteData = await rootBundle.load('assets/img/default_avatar.png');
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/default_avatar.png');
-    await file.writeAsBytes(byteData.buffer.asUint8List());
-    return file.path;
-  }
-
   void handleSubmit() async {
     if (_formKey.currentState!.validate()) {
       showDialog(
@@ -90,14 +80,15 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
       String medicalApi =
           medicalRecord.map((e) => "MedicalRecord=$e").join("&");
 
-      String? storedAvatar = prefs.getString('avatar');
-      String image = (storedAvatar != null && storedAvatar.isNotEmpty)
-          ? storedAvatar
-          : await getDefaultAvatarPath();
+      final image =
+          prefs.getString('avatar') ?? "assets/img/default_avatar.png";
+      File avatarFile = File(image);
+
+      // Gửi data
 
       var response = await ApiService.postRequestSignUp(
           "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$roleId&$medicalApi&Height=$heightIndex&Weight=$weightIndex",
-          image);
+          avatarFile);
 
       Navigator.of(context).pop();
 

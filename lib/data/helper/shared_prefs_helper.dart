@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefsHelper {
-  static final ValueNotifier<int> roleNotifier = ValueNotifier<int>(0);
   static final SharedPrefsHelper _instance = SharedPrefsHelper._internal();
   SharedPreferences? _prefs;
 
@@ -29,9 +27,6 @@ class SharedPrefsHelper {
   }
 
   Future<void> setInt(String key, int value) async {
-    if(key == 'roleId') {
-      roleNotifier.value = value;
-    }
     await _prefs?.setInt(key, value);
   }
 
@@ -41,7 +36,7 @@ class SharedPrefsHelper {
 
   Future<void> clear() async {
     final isFirstTimeKey = _prefs!.getBool('is_first_time');
-    roleNotifier.value = 0;
+
     await _prefs?.clear();
 
     if(isFirstTimeKey != null) {

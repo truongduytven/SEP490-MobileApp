@@ -4,7 +4,6 @@ class Activity {
   final int activityId;
   final String title;
   final String description;
-  final int duration;
   final String startTime;
   final String endTime;
   final String createdBy;
@@ -14,7 +13,6 @@ class Activity {
     required this.activityId,
     required this.title,
     required this.description,
-    required this.duration,
     required this.startTime,
     required this.endTime,
     required this.createdBy,
@@ -25,8 +23,7 @@ class Activity {
     return Activity(
       activityId: json['activityId'],
       title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      duration: json['duration'] ?? 0,
+      description: json['description'],
       startTime: json['startTime'] ?? '',
       endTime: json['endTime'] ?? '',
       createdBy: json['createdBy'] ?? '',
@@ -39,7 +36,6 @@ class Activity {
       "activityId": activityId,
       "title": title,
       "description": description,
-      "duration": duration,
       "startTime": startTime,
       "endTime": endTime,
       "createdBy": createdBy,

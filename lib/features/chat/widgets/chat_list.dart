@@ -55,7 +55,6 @@ class _ChatListState extends ConsumerState<ChatList> {
 
     return accountIdAsync.when(
       data: (accountId) {
-        print("account in cchat lisst $accountId");
         return StreamBuilder<List<Message>>(
           stream: ref.read(chatControllerProvider).getChatStream(widget.roomId),
           builder: (context, snapshot) {

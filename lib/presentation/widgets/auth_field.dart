@@ -13,7 +13,6 @@ class AuthField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final int? maxLength;
   final FocusNode? focusNode;
-  final int? maxLines;
 
   const AuthField({
     super.key,
@@ -28,7 +27,6 @@ class AuthField extends StatelessWidget {
     this.textInputAction,
     this.maxLength,
     this.focusNode,
-    this.maxLines,
   });
 
   @override
@@ -60,7 +58,6 @@ class AuthField extends StatelessWidget {
       child: TextFormField(
         focusNode: focusNode,
         controller: controller,
-        maxLines: maxLines ?? 1,
         decoration: InputDecoration(
           labelText: labelText + (isRequired ? '*' : ''),
           labelStyle: TextStyle(color: AppColors.textColor, fontSize: 22),

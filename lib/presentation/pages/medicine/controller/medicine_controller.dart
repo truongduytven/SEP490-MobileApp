@@ -4,7 +4,6 @@ import 'package:sep490/presentation/pages/medicine/repository/medicine_repositor
 class MedicineController {
   Prescription? prescription;
   PrescriptionUpdate? prescriptionUpdate;
-  Map<String, dynamic>? medicines;
   final MedicineRepository _medicineRepository = MedicineRepository();
   bool isCreateSuccess = false;
   bool isUpdateSuccess = false;
@@ -29,8 +28,8 @@ class MedicineController {
     }
   }
 
-  Future<void> createPrescriptionController (Map<String, dynamic> presciption, String imgPath) async {
-    final response = await _medicineRepository.creatPresciption(presciption, imgPath);
+  Future<void> createPrescriptionController (Map<String, dynamic> presciption) async {
+    final response = await _medicineRepository.creatPresciption(presciption);
     if (response != null && response['isSuccess']) {
       isCreateSuccess = true;
     } else {
@@ -62,25 +61,6 @@ class MedicineController {
       isConfirmSuccess = true;
     } else {
       isConfirmSuccess = false;
-    }
-  }
-
-  Future<void> scanMedicine (String imgPath, int userId) async {
-    final response = await _medicineRepository.scanMedicine(imgPath, userId);
-    if (response != null && response['isSuccess']) {
-      if(response['data']['data'] != null) {
-        if(response['data']['data']['medicines'].isEmpty) {
-          medicines = null;
-          return;
-        } else {
-          medicines = response['data']['data'];
-        }
-      } else {
-        medicines = null;
-        return;
-      } 
-    } else {
-      medicines = null;
     }
   }
 }
