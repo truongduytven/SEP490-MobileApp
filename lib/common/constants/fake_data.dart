@@ -1,0 +1,264 @@
+List<Map<String, String>> listData = [
+  {
+    "title": "Tuân thủ uống thuốc",
+    "imageUrl": "assets/img3D/thuoc.png",
+    "result": "Bình Thường", //
+    "dateTime": "11 th01  12:34", //
+    "data": "123", //
+    "unit": "%",
+    "average": "Trung bình trong 30 ngày",
+    "dataAverage": "120", //
+  },
+  {
+    "title": "Huyết Áp",
+    "imageUrl": "assets/img3D/huyetap.png",
+    "result": "Cao",
+    "dateTime": "11 th02  1:34",
+    "data": "110/90",
+    "unit": "BPM",
+    "average": "Trung bình trong 30 ngày",
+    "dataAverage": "112/87",
+  },
+  {
+    "title": "Nhịp tim",
+    "imageUrl": "assets/img3D/nhiptim.png",
+    "result": "Rất Cao",
+    "dateTime": "11 th04  12:34",
+    "data": "129",
+    "unit": "BMP",
+    "average": "Trung bình trong 30 ngày",
+    "dataAverage": "119",
+  },
+  {
+    "title": "Cân nặng",
+    "imageUrl": "assets/img3D/cannang.png",
+    "result": "Thấp",
+    "dateTime": "1 th02  2:44",
+    "data": "45",
+    "unit": "kg",
+    "average": "So với lần đo trước",
+    "dataAverage": "+2",
+  },
+  {
+    "title": "Chiều cao",
+    "imageUrl": "assets/img3D/chieucao.png",
+    "result": "Bình Thường",
+    "dateTime": "19 th08  4:04",
+    "data": "170",
+    "unit": "cm",
+    "average": "So với lần đo trước",
+    "dataAverage": "-4",
+  },
+  {
+    "title": "Đường huyết",
+    "imageUrl": "assets/img3D/treatment_medical/tieuduong.png",
+    "result": "Bình Thường",
+    "dateTime": "19 th08  4:04",
+    "data": "123",
+    "unit": "mmol/L",
+    "average": "So với lần đo trước",
+    "dataAverage": "-23%",
+  },
+  {
+    "title": "Chức năng thận",
+    "imageUrl": "assets/img3D/treatment_medical/than.png",
+    "result": "Bình Thường",
+    "dateTime": "20 th3  4:04",
+    "data": "193.6",
+    "unit": "mL/phút/1.73m2",
+    "average": "So với lần đo trước",
+    "dataAverage": "-30%",
+  },
+  {
+    "title": "Mỡ máu",
+    "imageUrl": "assets/img3D/treatment_medical/momau.webp",
+    "result": "Bình Thường",
+    "dateTime": "19 th08  4:04",
+    "data": "189",
+    "unit": "mmol/L",
+    "average": "So với lần đo trước",
+    "dataAverage": "+20%",
+  },
+  {
+    "title": "Men gan",
+    "imageUrl": "assets/img3D/treatment_medical/gan.png",
+    "result": "Bình Thường",
+    "dateTime": "19 th08  4:04",
+    "data": "---",
+    "unit": "UI/L",
+    "average": "So với lần đo trước",
+    "dataAverage": "---",
+  },
+];
+List<Map<String, String>> listDataLogBook = [
+  {
+    "title": "Thuốc",
+    "date": "11-01-2025",
+    "time": "12:34",
+    "result": "Đã bỏ qua X 1",
+    "dateTime": "11 th01  12:34",
+    "data": "Penicilin v kali 500mg",
+    "unit": "",
+    "dataType": "Thủ công"
+  },
+  {
+    "title": "Huyết Áp",
+    "result": "Cao",
+    "dateTime": "11 th02  1:34",
+    "date": "11-02-2025",
+    "time": "01:34",
+    "data": "110/90",
+    "unit": "BPM",
+    "dataType": "Thủ công"
+  },
+  {
+    "title": "Nhịp tim",
+    "result": "Rất Cao",
+    "dateTime": "11 th04  12:34",
+    "date": "11-04-2025",
+    "time": "12:34",
+    "data": "129",
+    "unit": "BMP",
+    "dataType": "Thủ công"
+  },
+  {
+    "title": "Men gan",
+    "result": "Bình Thường",
+    "dateTime": "17 th03  11:54",
+    "date": "17-03-2025",
+    "time": "11:54",
+    "data": "123/122/124/125",
+    "unit": "UI/L",
+    "dataType": "Thủ công"
+  },
+  {
+    "title": "Mỡ máu",
+    "result": "Bình Thường",
+    "dateTime": "17 th03  11:54",
+    "date": "17-03-2025",
+    "time": "11:54",
+    "data": "110/123/456/789",
+    "unit": "mmol/L",
+    "dataType": "Thủ công"
+  },
+  {
+    "title": "Cân nặng",
+    "result": "Thấp",
+    "dateTime": "1 th02  2:44",
+    "date": "01-02-2024",
+    "time": "2:44",
+    "data": "45",
+    "unit": "kg",
+    "dataType": "Thủ công"
+  },
+  {
+    "title": "Cân nặng",
+    "result": "Bình Thường",
+    "dateTime": "15 th01  12:44",
+    "date": "15-01-2025",
+    "time": "12:44",
+    "data": "45",
+    "unit": "kg",
+    "dataType": "Thủ công"
+  },
+  {
+    "title": "Chiều cao",
+    "result": "Bình Thường",
+    "dateTime": "19 th08  4:04",
+    "date": "19-08-2025",
+    "time": "04:04",
+    "data": "170",
+    "unit": "cm",
+    "dataType": "Thiết bị IOT"
+  },
+  {
+    "title": "Đường huyết",
+    "result": "Thấp",
+    "dateTime": "16 th03  4:04",
+    "date": "16-03-2025",
+    "time": "04:04",
+    "data": "170/Sau bữa ăn",
+    "unit": "mmol/L",
+    "dataType": "Thiết bị IOT"
+  },
+  {
+    "title": "Chức năng thận",
+    "result": "Bình Thường",
+    "dateTime": "17 th03  4:04",
+    "date": "17-03-2025",
+    "time": "04:04",
+    "data": "198/345/678",
+    "unit": "ml/phút/1.73m2",
+    "dataType": "Thiết bị IOT"
+  },
+];
+
+final Map<String, double?> chartDataDate = {
+  "T2": 75,
+  "T3": null,
+  "T4": 76,
+  "T5": 74.5,
+  "T6": null,
+  "T7": 75,
+  "Hôm nay": 75,
+};
+final Map<String, double?> chartDataMonth = {
+  "11/2024": 74.5,
+  "12/2024": 72,
+  "T1": null,
+  "Tháng này": 78,
+};
+final Map<String, double?> chartDataYear = {
+  "2023": 65,
+  "2024": null,
+  "Năm nay": 46,
+};
+final Map<String, double?> chartDataWeek = {
+  "t-5": 70,
+  "t-4": null,
+  "t-3": 66,
+  "t-2": 64.5,
+  "t-1": null,
+  "Tuần này": 65,
+};
+
+final Map<String, double?> chartDataDateBloodGlucose = {
+  "T2": 115,
+  "T3": null,
+  "T4": 116,
+  "T5": 114,
+  "T6": null,
+  "T7": 125,
+  "Hôm nay": 115,
+};
+final Map<String, double?> chartDataMonthBloodGlucose = {
+  "11/2024": 116,
+  "12/2024": 112,
+  "T1": null,
+  "Tháng này": 118,
+};
+final Map<String, double?> chartDataYearBloodGlucose = {
+  "2023": 165,
+  "2024": null,
+  "Năm nay": 146,
+};
+final Map<String, double?> chartDataWeekBloodGlucose = {
+  "t-5": 120,
+  "t-4": null,
+  "t-3": 116,
+  "t-2": 125,
+  "t-1": null,
+  "Tuần này": 115,
+};
+
+
+ List<Map<String, dynamic>> lipidDataDate = [
+    {"date": "T2", "Triglycerides": 200, "LDL": 130, "HDL": 50},
+    {"date": "T3", "Triglycerides": 210, "LDL": 135, "HDL": 52},
+    {"date": "T4", "Triglycerides": 195, "LDL": 128, "HDL": 48},
+    {"date": "T5", "Triglycerides": 220, "LDL": 140, "HDL": 55},
+    {"date": "T6", "Triglycerides": 205, "LDL": 132, "HDL": 50},
+    {"date": "T7", "Triglycerides": 215, "LDL": 138, "HDL": 53},
+    {"date": "CN", "Triglycerides": 225, "LDL": 145, "HDL": 57},
+  ];
+ 

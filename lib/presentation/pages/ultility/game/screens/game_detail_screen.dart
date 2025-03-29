@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/ultility/game/screens/chu_chim_bay_screen.dart';
 import 'package:sep490/presentation/pages/ultility/game/doboom/screens/do_boom_screen.dart';
 import 'play_game_screen.dart';
 import '../caro/screens/co_caro_screen.dart';
@@ -31,7 +32,6 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   }
 
   Widget _getGameScreen(String title) {
-    print("title ne $title");
     switch (title) {
       case "Cờ caro":
         return CoCaroScreen();
@@ -44,7 +44,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       case "2048":
         return TwentyFortyEight();
       case "Chú chim bay":
-        return LatTheBaiScreen();
+        return ChuChimBayScreen();
       default:
         return PlayGameScreen(gameTitle: title); // Default screen if not found
     }

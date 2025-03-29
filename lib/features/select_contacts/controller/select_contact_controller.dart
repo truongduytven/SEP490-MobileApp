@@ -56,4 +56,12 @@ class SelectContactController {
     return selectContactRepository.acceptedFriendRequest(
         context, requestUserId, responseUserId);
   }
+  Future<bool> removeFriend(
+    BuildContext context,
+    int requestUserId,
+    int responseUserId,
+  ) {
+    return selectContactRepository.removeFriend(
+        context, requestUserId, responseUserId);
+  }
 }

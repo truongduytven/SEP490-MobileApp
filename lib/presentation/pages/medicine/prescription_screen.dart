@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gif_view/gif_view.dart';
@@ -154,17 +155,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
             const SizedBox(height: 50),
             GestureDetector(
               onTap: () async {
-                final XFile? image = await ImagePicker().pickImage(
-                  source: ImageSource.camera, // Change to gallery if needed
-                );
-                if (image != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreatePrescriptionScreen(),
-                    ),
-                  );
-                }
+                Navigator.pop(context);
+                _showImageSourceDialog();
               },
               child: Container(
                 width: 250,
@@ -199,6 +191,77 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         );
       },
     );
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                    vertical: 15, horizontal: 20), // Increase tap area
+                leading: Icon(Icons.camera_alt,
+                    size: 40, color: Colors.blue), // Bigger icon
+                title: Text(
+                  'Chụp ảnh',
+                  style: TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold), // Bigger text
+                ),
+                onTap: () => _pickImage(ImageSource.camera),
+              ),
+              Divider(),
+              ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                leading:
+                    Icon(Icons.photo_library, size: 40, color: Colors.green),
+                title: Text(
+                  'Chọn ảnh từ thư viện',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                onTap: () => _pickImage(ImageSource.gallery),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      Navigator.pop(context); // Đóng dialog
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CreatePrescriptionScreen(imagePath: image.path),
+        ),
+      );
+      // ignore: unnecessary_null_comparison
+      if (result != null) {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Không thể quét toa thuốc, vui lòng thử lại hoặc đổi sang nhập tay!",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+      }
+    }
   }
 
   void handleUpdatePrescription() async {
@@ -274,7 +337,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               },
               child: const Text(
                 'Hủy',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: AppColors.secondaryColor),
               ),
             ),
             TextButton(
@@ -299,7 +362,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                         isEdited = false;
                         getPrescription();
                       });
-                    }); 
+                    });
                   } else {
                     Fluttertoast.showToast(
                       msg: "Có lỗi trong quá trình xử lý!",
@@ -320,6 +383,29 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void handleShowImage(BuildContext context, String imagePath) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(imagePath),
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
         );
       },
     );
@@ -352,6 +438,17 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
               );
             },
           ),
+          actions: [
+            prescription != null && prescription!['medicationImage'] != ''
+                ? IconButton(
+                    icon: Icon(Icons.image),
+                    onPressed: () {
+                      handleShowImage(
+                          context, prescription!['medicationImage']);
+                    },
+                  )
+                : Container(),
+          ],
         ),
         body: Container(
           width: double.infinity,
@@ -550,50 +647,28 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                               );
                                             },
                                           )
-                                        : Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Image.asset(
-                                                'assets/img3D/toathuocrong.png',
-                                                height: 150,
-                                              ),
-                                              const SizedBox(height: 20),
-                                              Text(
-                                                'Không có thuốc',
-                                                style: TextStyle(
-                                                  fontSize: 22,
-                                                  fontWeight: FontWeight.w500,
-                                                  color:
-                                                      AppColors.secondaryColor,
+                                        : Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Image.asset(
+                                                  'assets/img3D/toathuocrong.png',
+                                                  height: 150,
                                                 ),
-                                              ),
-                                              const SizedBox(height: 20),
-                                              ElevatedButton(
-                                                onPressed:
-                                                    handleCreatePrescription,
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      AppColors.secondaryColor,
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 20,
-                                                      vertical: 12),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
-                                                  ),
-                                                ),
-                                                child: const Text(
-                                                  'Tạo toa thuốc mới',
+                                                const SizedBox(height: 20),
+                                                Text(
+                                                  'Không có thuốc',
                                                   style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.white,
+                                                    fontSize: 22,
                                                     fontWeight: FontWeight.w500,
+                                                    color: AppColors
+                                                        .secondaryColor,
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                                const SizedBox(height: 20),
+                                              ],
+                                            ),
                                           ),
                                     Container(
                                       padding: const EdgeInsets.symmetric(

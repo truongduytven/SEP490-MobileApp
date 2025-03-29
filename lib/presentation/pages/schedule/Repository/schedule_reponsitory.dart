@@ -31,7 +31,6 @@ class ScheduleRepository {
             'Content-Type': 'application/json',
           },
           body: jsonEncode(activity));   
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -53,8 +52,7 @@ class ScheduleRepository {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: jsonEncode(activity)); 
-
+          body: jsonEncode(activity));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};

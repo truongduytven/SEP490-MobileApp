@@ -6,7 +6,6 @@ import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/schedule.dart';
-import 'package:sep490/presentation/pages/medicine/controller/medicine_controller.dart';
 import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
 import 'package:sep490/presentation/pages/schedule/create_calendar_screen.dart';
 import 'package:sep490/presentation/widgets/loading/loadingImgPath.dart';
@@ -26,6 +25,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   late Timer _timer;
   late DateTime _currentTime = DateTime.now();
   final ScrollController _scrollControllerDay = ScrollController();
+  final ScrollController _scrollControllerActivity = ScrollController();
   List<Activity>? schedule;
   bool isLoading = false;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
@@ -36,6 +36,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDay();
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToNextActivity();
     });
     _currentTime = DateTime.now();
     _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
@@ -52,13 +55,28 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     });
     ScheduleController scheduleController = ScheduleController();
     await scheduleController.getSchedule(userId,
-        '$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay}');
+        '$selectedYear-${selectedMonth.toString().padLeft(2, "0")}-${selectedDay.toString().padLeft(2, "0")}');
     Timer(Duration(seconds: 2), () {
       setState(() {
         schedule = scheduleController.schedule;
         isLoading = false;
       });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToNextActivity();
+      });
     });
+  }
+
+  void _scrollToNextActivity() {
+    if (schedule == null || schedule!.isEmpty) return;
+
+    int index = int.tryParse(schedule![0].startTime.split(':')[0]) ?? 0;
+    double scrollPosition = index * 87; // Điều chỉnh theo chiều cao mỗi item
+    _scrollControllerActivity.animateTo(
+      scrollPosition,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -177,16 +195,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                     ElevatedButton.icon(
                       onPressed: () {
+                        List<Map<String, String>> time = [];
+                        for (var element in schedule!) {
+                          if (element.activityId == activity.activityId) {
+                            time.add({
+                              "startTime": element.startTime,
+                              "endTime": element.endTime,
+                            });
+                          }
+                        }  
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreateCalendarScreen(
-                              data: activity,
-                              date: "$selectedYear-$selectedMonth-$selectedDay",
-                            ),
-                          ),
-                        );
+                        handleUpdateActivity(activity, time);
                       },
                       icon: Icon(Icons.edit, color: Colors.white),
                       style: ElevatedButton.styleFrom(
@@ -205,6 +224,23 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         );
       },
     );
+  }
+
+  void handleUpdateActivity(Activity activity, List<Map<String, String>> time) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateCalendarScreen(
+          data: activity,
+          times: time,
+          date:
+              "${selectedDay.toString().padLeft(2, '0')}/${selectedMonth.toString().padLeft(2, '0')}/$selectedYear",
+        ),
+      ),
+    );
+    if (result != null) {
+      getSchedule();
+    }
   }
 
   void handleChangeStatusActivity(int activityId) async {
@@ -232,7 +268,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 Timer(const Duration(seconds: 1), () {
                   if (scheduleController.isChangeStatusSuccess) {
                     Navigator.pop(context);
-                    LoadingDialog.show(context, 'assets/gif/schedule_success.gif',
+                    LoadingDialog.show(
+                        context,
+                        'assets/gif/schedule_success.gif',
                         'Dừng hoạt động thành công!');
                     Timer(const Duration(seconds: 2), () {
                       Navigator.pop(context);
@@ -458,6 +496,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 )
               : Expanded(
                   child: SingleChildScrollView(
+                    controller: _scrollControllerActivity,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
@@ -522,7 +561,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                     final activity = filteredActivities[index];
 
                                     return GestureDetector(
-                                      onLongPress: () {
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
                                         _showActivityDialog(context, activity);
                                       },
                                       child: Container(
@@ -570,6 +610,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                   ),
                                                   const SizedBox(height: 8),
                                                   Text(
+                                                    "Còn ${activity.duration} ngày nữa",
+                                                    style: const TextStyle(
+                                                        fontSize: 14),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
                                                     '${activity.startTime} ${activity.endTime != '' ? '-' : ''} ${activity.endTime}',
                                                     style: TextStyle(
                                                         fontSize: 14,
@@ -606,6 +652,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               MaterialPageRoute(
                   builder: (context) => CreateCalendarScreen(
                         data: null,
+                        date:
+                            "${selectedDay.toString().padLeft(2, '0')}/${selectedMonth.toString().padLeft(2, '0')}/$selectedYear",
                       )));
           if (result != null) {
             getSchedule();

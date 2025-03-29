@@ -1,4 +1,7 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/health/carouse_with_save.dart';
+import 'package:sep490/features/health/widgets/skeleton_card.dart';
 import 'package:sep490/theme/color.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -18,8 +21,20 @@ class NotificationScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        child: Text("Notification Screen here"),
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              final player = AudioPlayer();
+              player.setReleaseMode(ReleaseMode.loop);
+              player.play(AssetSource('music/sos.mp3'));
+            },
+            child: Text("Đánh giá"),
+          ),
+          Center(
+            child: Text("Notification Screen here"),
+          ),
+        ],
       ),
     );
   }
