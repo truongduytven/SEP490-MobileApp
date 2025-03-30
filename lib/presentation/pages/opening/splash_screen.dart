@@ -25,16 +25,25 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   String? _token;
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
 
   @override
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 2), _checkSignal);
-    FirebaseMessaging.instance.getToken().then((token) {
-      setState(() {
-        _token = token;
+    String? tokenSaved = sharedPrefsHelper.getString('deviceToken');
+    if (tokenSaved != null) {
+      _token = tokenSaved;
+    } else {
+      FirebaseMessaging.instance.getToken().then((token) {
+        setState(() {
+          _token = token;
+        });
       });
-    });
+      if (_token != null) {
+        sharedPrefsHelper.setString('deviceToken', _token!);
+      }
+    }
   }
 
   Future<void> _checkSignal() async {
@@ -67,7 +76,8 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       final localStorageService = LocalStorageService();
       final userPrefRepository = UserPrefRepositoryImpl(localStorageService);
-      final CheckUserOnboardingUseCase checkUserOnboardingUseCase = CheckUserOnboardingUseCase(userPrefRepository);
+      final CheckUserOnboardingUseCase checkUserOnboardingUseCase =
+          CheckUserOnboardingUseCase(userPrefRepository);
 
       final isFirstTime = await checkUserOnboardingUseCase.execute();
       if (!mounted) return;

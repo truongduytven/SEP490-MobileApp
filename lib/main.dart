@@ -10,7 +10,6 @@ import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/call_history/repository/call_history_helper.dart';
 import 'package:sep490/models/call_history.dart';
-import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
@@ -26,14 +25,7 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 void main() async {
   await dotenv.load(fileName: ".env");
   await requestOverlayPermission();
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: dotenv.env['API_KEY'] ?? '',
-      appId: dotenv.env['APP_ID'] ?? '',
-      messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
-      projectId: dotenv.env['PROJECT_ID'] ?? '',
-    ),
-  );
+
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
     SystemUiOverlay.top,
@@ -45,6 +37,17 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final int? currentUserId = prefs.getInt('accountId');
   final String? fullName = prefs.getString('fullName');
+  final String? deviceToken = prefs.getString('deviceToken');
+  if (deviceToken == null) {
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: dotenv.env['API_KEY'] ?? '',
+        appId: dotenv.env['APP_ID'] ?? '',
+        messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
+        projectId: dotenv.env['PROJECT_ID'] ?? '',
+      ),
+    );
+  }
 
   /// Define a navigator key
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -469,7 +472,8 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
-  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class _MyAppState extends State<MyApp>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
