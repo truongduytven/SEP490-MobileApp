@@ -102,6 +102,8 @@ class MedicineRepository {
             'Content-Type': 'application/json',
           },
           body: jsonEncode(prescription));
+      print('response.body');
+      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};

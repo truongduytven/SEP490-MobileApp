@@ -15,14 +15,24 @@ class _EditFrequencyState extends State<EditFrequency> {
   late int _selectedDays = 1;
   final List<int> _days = List.generate(30, (index) => index + 1);
   final List<String> _daysOfWeek = [
-    'Thứ 2',
-    'Thứ 3',
-    'Thứ 4',
-    'Thứ 5',
-    'Thứ 6',
-    'Thứ 7',
-    'Chủ nhật'
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
   ];
+
+  final Map<String, String> _daysOfWeekVN = {
+    'Monday': 'Thứ 2',
+    'Tuesday': 'Thứ 3',
+    'Wednesday': 'Thứ 4',
+    'Thursday': 'Thứ 5',
+    'Friday': 'Thứ 6',
+    'Saturday': 'Thứ 7',
+    'Sunday': 'Chủ nhật',
+  };
   final Set<String> _selectedDaysOfWeek = {};
   late Map<String, dynamic> _frequencyData;
 
@@ -148,7 +158,8 @@ class _EditFrequencyState extends State<EditFrequency> {
             title,
             style: TextStyle(
                 fontSize: 22,
-                color: isSelected ? AppColors.bgColor : AppColors.secondaryColor,
+                color:
+                    isSelected ? AppColors.bgColor : AppColors.secondaryColor,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400),
           ),
         ],
@@ -227,7 +238,7 @@ class _EditFrequencyState extends State<EditFrequency> {
               children: [
                 Expanded(
                   child: Text(
-                    day,
+                    _daysOfWeekVN[day] ?? day,
                     style: TextStyle(
                       fontSize: 22,
                       color:
@@ -253,7 +264,7 @@ class _EditFrequencyState extends State<EditFrequency> {
       _frequencyData['frequencyType'] = "Every $_selectedDays day";
       _frequencyData['frequencySelect'] = [];
     } else if (_selectedFrequency == "Select") {
-      _frequencyData['frequencyType'] = "";
+      _frequencyData['frequencyType'] = "Select";
       _frequencyData['frequencySelect'] = _selectedDaysOfWeek.toList();
     }
   }

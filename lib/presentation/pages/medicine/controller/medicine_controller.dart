@@ -10,6 +10,7 @@ class MedicineController {
   bool isUpdateSuccess = false;
   bool isCancelSuccess = false;
   bool isConfirmSuccess = false;
+  String message = '';
 
   Future<void> getMedicines(int userId, String day) async {
     final response = await _medicineRepository.getMedicines(userId, day);
@@ -43,6 +44,7 @@ class MedicineController {
     if (response != null && response['isSuccess']) {
       isUpdateSuccess = true;
     } else {
+      message = response['data']['message'];
       isUpdateSuccess = false;
     }
   }

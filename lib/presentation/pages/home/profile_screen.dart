@@ -51,8 +51,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               press: () {},
             ),
             ProfileMenu(
-              text: "Lịch sử thanh toán",
-              icon: Icons.credit_card,
+              text: "Báo cáo hệ thống",
+              icon: Icons.report,
               press: () {},
             ),
             ProfileMenu(

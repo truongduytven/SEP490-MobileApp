@@ -174,7 +174,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         "https://api.diavan-valuation.asia/emergency-contacts/cancel/$userId");
 
     try {
-      final response = await http.get(uri);
+      final response = await http.post(uri);
       if (response.statusCode == 200) {
         print("Đã hủy cuộc gọi khẩn cấp!");
         if (!_completer.isCompleted) _completer.complete();

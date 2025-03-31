@@ -50,11 +50,6 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     getDoctorData();
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   void getDoctorData() async {
     setState(() {
@@ -78,12 +73,18 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     });
     DoctorController doctorController = DoctorController();
     await doctorController.getAppointmentByID(49, status);
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 1), () {
       setState(() {
         appoimentDoctor = doctorController.appoimentDoctor;
         isLoading = false;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
