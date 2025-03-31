@@ -17,24 +17,56 @@ class LipidProfileChart extends StatelessWidget {
         .toList();
   }
 
-  double getMinY() {
-    double minValue = data
-        .expand((element) =>
-            [element["LDL"], element["HDL"], element["Triglycerides"]])
-        .reduce((a, b) => a < b ? a : b)
-        .toDouble();
-    return minValue - 10; // Cộng thêm khoảng đệm
-  }
+  // double getMinY() {
+  //   double minValue = data
+  //       .expand((element) =>
+  //           [element["LDL"], element["HDL"], element["Triglycerides"]])
+  //       .reduce((a, b) => a < b ? a : b)
+  //       .toDouble();
+  //   return minValue - 10; // Cộng thêm khoảng đệm
+  // }
 
-  double getMaxY() {
-    double maxValue = data
-        .expand((element) =>
-            [element["LDL"], element["HDL"], element["Triglycerides"]])
-        .reduce((a, b) => a > b ? a : b)
-        .toDouble();
-    return maxValue + 10; // Cộng thêm khoảng đệm
-  }
+  // double getMaxY() {
+  //   double maxValue = data
+  //       .expand((element) =>
+  //           [element["LDL"], element["HDL"], element["Triglycerides"]])
+  //       .reduce((a, b) => a > b ? a : b)
+  //       .toDouble();
+  //   return maxValue + 10; // Cộng thêm khoảng đệm
+  // }
+double getMinY() {
+  if (data.isEmpty) return 0; // Default value when no data
+  
+  final values = data
+      .expand((element) => [
+            element["LDL"],
+            element["HDL"],
+            element["Triglycerides"]
+          ].where((v) => v != null)) // Filter out null values
+      .toList();
 
+  if (values.isEmpty) return 0; // Default value when all values are null
+  
+  final minValue = values.reduce((a, b) => a < b ? a : b);
+  return (minValue as num).toDouble() - 10; // Ensure numeric conversion
+}
+
+double getMaxY() {
+  if (data.isEmpty) return 100; // Default value when no data
+  
+  final values = data
+      .expand((element) => [
+            element["LDL"],
+            element["HDL"],
+            element["Triglycerides"]
+          ].where((v) => v != null)) // Filter out null values
+      .toList();
+
+  if (values.isEmpty) return 100; // Default value when all values are null
+  
+  final maxValue = values.reduce((a, b) => a > b ? a : b);
+  return (maxValue as num).toDouble() + 10; // Ensure numeric conversion
+}
   @override
   Widget build(BuildContext context) {
     return Column(

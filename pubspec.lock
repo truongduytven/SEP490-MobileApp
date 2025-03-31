@@ -509,10 +509,10 @@ packages:
     dependency: "direct main"
     description:
       name: flame
-      sha256: "03e90d4bd3bc4f6a325602914ee27509f02d8743bb7ccb9282c88192b58eeb84"
+      sha256: "6a68254f6d6a298e14bb1671147d859e73bb505e05bf2ab4fb0bf663cb3b2696"
       url: "https://pub.dev"
     source: hosted
-    version: "1.26.0"
+    version: "1.26.1"
   floating:
     dependency: transitive
     description:
@@ -817,10 +817,10 @@ packages:
     dependency: "direct main"
     description:
       name: gif_view
-      sha256: "7665fe9ba03ffcad823c13564baed36513143403dc9b68f89adc9f8d7cbdb384"
+      sha256: d2441d98bcd56b3fd00e869513aeaefa56849ab62f63675e7d55f5fa4517f27e
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.0"
   giphy_picker:
     dependency: "direct main"
     description:
@@ -865,10 +865,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: "13d3349ace88f12f4a0d175eb5c12dcdd39d35c4c109a8a13dfeb6d0bd9e31c3"
+      sha256: "4e973fcf4caae1a4be2fa0a13157aa38a8f9cb049db6529aa00b4d71abc4d928"
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.3"
+    version: "4.5.4"
   image_picker:
     dependency: "direct main"
     description:
@@ -1966,10 +1966,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_android
-      sha256: "631093a7fbd93e9690ac61d8c8f3e857efbc189fc33f712b9ad6c01a623517ef"
+      sha256: e09150b28a07933839adef0e4a088bb43e8c8d9e6b93025b01882d4067a58ab0
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.3"
+    version: "4.3.4"
   webview_flutter_platform_interface:
     dependency: transitive
     description:

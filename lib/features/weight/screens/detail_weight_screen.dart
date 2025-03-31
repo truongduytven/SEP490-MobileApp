@@ -318,7 +318,7 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByDate?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
+                                          "${(dataByDate?["average"]) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
