@@ -77,6 +77,8 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
       ),
       body: playlistAsync.when(
         loading: () => Scaffold(
+          backgroundColor:
+              isDarkMode ? Colors.grey.shade900 : Colors.grey.shade100,
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -94,12 +96,12 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
                       const Icon(Icons.music_note, size: 100),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'Đang tải nhạc...',
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : Colors.black),
                 ),
               ],
             ),
