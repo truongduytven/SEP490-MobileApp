@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/features/exercies/screens/home_exercise_screen.dart';
 import 'package:sep490/features/music/screens/home_music_screen.dart';
+import 'package:sep490/features/reading_book/screens/home_reading_book_screen.dart';
 import 'package:sep490/presentation/pages/ultility/game/screens/game_card_screen.dart';
 import 'package:sep490/presentation/pages/ultility/game/widgets/full_width_game_card.dart';
 import 'package:sep490/theme/color.dart';
@@ -138,6 +139,9 @@ class _UltilityScreenState extends State<UltilityScreen> {
                   onTap: () {
                     if (i == 0) {
                       _navigateWithAnimation(i, const GameCardScreen());
+                    } else if (i == 1) {
+                      // Index 2 là mục "Tập luyện"
+                      _navigateWithAnimation(i, HomeReadingBookScreen());
                     } else if (i == 2) {
                       // Index 2 là mục "Tập luyện"
                       _navigateWithAnimation(i, HomeExerciseScreen());

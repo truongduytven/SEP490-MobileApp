@@ -363,7 +363,7 @@ class _HomeMusicScreenState extends ConsumerState<HomeMusicScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${playlist['numberOfContent']} bài hát',
+                'Danh sách bài hát',
                 style: TextStyle(
                   color:
                       isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
