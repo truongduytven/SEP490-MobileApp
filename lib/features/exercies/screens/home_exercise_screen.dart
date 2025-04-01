@@ -98,22 +98,32 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
           ),
           SliverToBoxAdapter(
             child: isLoading
-                ? const Padding(
+                ? Padding(
                     padding: EdgeInsets.symmetric(vertical: 100),
                     child: Center(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.primaryColor),
-                            strokeWidth: 5,
+                          Image.network(
+                            'https://cdn-icons-gif.flaticon.com/17091/17091834.gif',
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const CircularProgressIndicator();
+                            },
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.music_note, size: 100),
                           ),
-                          SizedBox(height: 20),
-                          Text('Đang tải dữ liệu...',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500)),
+                          const SizedBox(height: 20),
+                          Text(
+                            'Đang tải bài tập...',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                     ),
