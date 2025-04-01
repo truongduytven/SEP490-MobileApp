@@ -10,19 +10,20 @@ class DoBoomScreen extends StatefulWidget {
 
 class _DoBoomScreenState extends State<DoBoomScreen> {
   late MineSweeperGame game;
-  int _remainingTime = 600; // 10 phút = 600 giây
+  int _remainingTime = 600;
   Timer? _timer;
+  int flagNumber = 10;
 
   @override
   void initState() {
     super.initState();
-    game = MineSweeperGame(onUpdate: _updateUI); // Truyền callback để cập nhật UI
+    game = MineSweeperGame(onUpdate: _updateUI);
     game.generateMap();
     startTimer();
   }
 
   void _updateUI() {
-    setState(() {}); // Cập nhật UI khi có sự thay đổi trong game
+    setState(() {});
   }
 
   void startTimer() {
@@ -44,6 +45,39 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Hướng dẫn chơi", style: TextStyle(fontSize: 30.0)),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text("🔹 Mục tiêu: Tìm tất cả các ô không có bom.", style: TextStyle(fontSize: 22.0)),
+                Text("🔹 Cách chơi:", style: TextStyle(fontSize: 22.0)),
+                Text("   - Nhấn một lần: Đánh dấu cờ.", style: TextStyle(fontSize: 22.0)),
+                Text("   - Nhấn đúp: Mở ô.", style: TextStyle(fontSize: 22.0)),
+                Text("🔹 Số trong ô hiển thị số lượng bom xung quanh.", style: TextStyle(fontSize: 22.0)),
+                Text("🔹 Nếu mở phải ô có bom, bạn thua.", style: TextStyle(fontSize: 22.0)),
+                Text("🔹 Sử dụng cờ để đánh dấu vị trí có bom.", style: TextStyle(fontSize: 22.0)),
+                Text("🔹 Bạn có 10 phút để hoàn thành.", style: TextStyle(fontSize: 22.0)),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Đã hiểu", style: TextStyle(fontSize: 22.0)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -71,7 +105,17 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
           "Dò bom",
           style: TextStyle(color: Colors.white),
         ),
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                _showHelpDialog();
+              },
+              icon: Icon(
+                Icons.help_outline,
+                color: Colors.white,
+                size: 30,
+              ))
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -79,58 +123,59 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20.0),
-                  padding: EdgeInsets.symmetric(horizontal: 22.0, vertical: 16.0),
-                  decoration: BoxDecoration(
-                    color: AppColor.lightPrimaryColor,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.flag,
-                        color: AppColor.accentColor,
-                        size: 34.0,
-                      ),
-                      Text(
-                        "10",
-                        style: TextStyle(
+              Container(
+                width: 130.0,
+                margin: EdgeInsets.only(left: 20.0),
+                padding: EdgeInsets.symmetric(horizontal: 22.0, vertical: 16.0),
+                decoration: BoxDecoration(
+                  color: AppColor.lightPrimaryColor,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      Icons.flag,
+                      color: AppColor.accentColor,
+                      size: 34.0,
+                    ),
+                    Text(
+                      "${flagNumber - game.gameMap.where((cell) => cell.isFlagged).length}",
+                      style: TextStyle(
                           color: Colors.white,
                           fontSize: 32.0,
                           fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20.0),
-                  padding: EdgeInsets.symmetric(horizontal: 22.0, vertical: 16.0),
-                  decoration: BoxDecoration(
-                    color: AppColor.lightPrimaryColor,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.lock_clock,
-                        color: AppColor.accentColor,
-                        size: 34.0,
-                      ),
-                      Text(
+              Container(
+                margin: EdgeInsets.only(right: 20.0),
+                padding: EdgeInsets.symmetric(horizontal: 22.0, vertical: 16.0),
+                decoration: BoxDecoration(
+                  color: AppColor.lightPrimaryColor,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      Icons.lock_clock,
+                      color: AppColor.accentColor,
+                      size: 34.0,
+                    ),
+                    SizedBox(width: 10.0),
+                    SizedBox(
+                      width: 90.0,
+                      child: Text(
                         "${(_remainingTime ~/ 60).toString().padLeft(2, '0')}:${(_remainingTime % 60).toString().padLeft(2, '0')}",
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32.0,
-                          fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontSize: 32.0,
+                            fontWeight: FontWeight.bold),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -153,12 +198,14 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      game.toggleFlag(game.gameMap[index]); // Nhấn một lần: đánh dấu lá cờ
+                      game.toggleFlag(
+                          game.gameMap[index]); // Nhấn một lần: đánh dấu lá cờ
                     });
                   },
                   onDoubleTap: () {
                     setState(() {
-                      game.getClickedCell(game.gameMap[index]); // Nhấn đúp: mở ô
+                      game.getClickedCell(
+                          game.gameMap[index]); // Nhấn đúp: mở ô
                     });
                   },
                   child: Container(
@@ -168,7 +215,8 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
                     ),
                     child: Center(
                       child: game.gameMap[index].isFlagged
-                          ? Icon(Icons.flag, color: Colors.red) // Hiển thị lá cờ
+                          ? Icon(Icons.flag,
+                              color: Colors.red) // Hiển thị lá cờ
                           : game.gameMap[index].reveal
                               ? game.gameMap[index].content is IconData
                                   ? Icon(
@@ -179,7 +227,8 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
                                   : Text(
                                       "${game.gameMap[index].content}",
                                       style: TextStyle(
-                                        color: AppColor.letterColors[game.gameMap[index].content],
+                                        color: AppColor.letterColors[
+                                            game.gameMap[index].content],
                                         fontSize: 20.0,
                                       ),
                                     )
@@ -193,9 +242,9 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
           Text(
             game.gameOver ? "Bạn đã thua" : "",
             style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 32.0),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 32.0),
           ),
           SizedBox(height: 20.0),
           RawMaterialButton(
@@ -213,11 +262,11 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
             shape: StadiumBorder(),
             padding: EdgeInsets.symmetric(horizontal: 64.0, vertical: 18.0),
             child: Text(
-              "Chơi lạilại",
+              "Chơi lại",
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 20.0),

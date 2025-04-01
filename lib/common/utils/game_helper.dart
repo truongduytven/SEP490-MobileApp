@@ -2,13 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 class Cell {
   int row;
   int col;
   dynamic content;
   bool reveal = false;
-  bool isFlagged = false; // Thêm trạng thái đánh dấu lá cờ
+  bool isFlagged = false;
   Cell(this.row, this.col, this.content, this.reveal);
 }
 
@@ -49,10 +48,18 @@ class MineSweeperGame {
 
   static void PlaceMines(int minesNumber) {
     Random random = Random();
-    for (int i = 0; i < minesNumber; i++) {
+    Set<String> placedMines = {};
+
+    while (placedMines.length < minesNumber) {
       int mineRow = random.nextInt(row);
       int mineCol = random.nextInt(col);
-      map[mineRow][mineCol] = Cell(mineRow, mineCol, FontAwesomeIcons.bomb, false);
+      String position = "$mineRow,$mineCol";
+
+      if (!placedMines.contains(position)) {
+        map[mineRow][mineCol] =
+            Cell(mineRow, mineCol, FontAwesomeIcons.bomb, false);
+        placedMines.add(position);
+      }
     }
   }
 
@@ -69,13 +76,17 @@ class MineSweeperGame {
 
   void toggleFlag(Cell cell) {
     if (!cell.reveal) {
+      if(!cell.isFlagged && gameMap.where((c) => c.isFlagged).length == 10) {
+        return;
+      }
       cell.isFlagged = !cell.isFlagged;
       if (onUpdate != null) onUpdate!(); // Thông báo cập nhật UI
     }
   }
 
   void getClickedCell(Cell cell) {
-    if (cell.isFlagged || cell.reveal) return; // Không làm gì nếu ô đã được đánh dấu hoặc đã mở
+    if (cell.isFlagged || cell.reveal)
+      return; // Không làm gì nếu ô đã được đánh dấu hoặc đã mở
 
     if (cell.content == FontAwesomeIcons.bomb) {
       showMines();
@@ -87,7 +98,7 @@ class MineSweeperGame {
 
       for (int i = max(cellRow - 1, 0); i <= min(cellRow + 1, row - 1); i++) {
         for (int j = max(cellCol - 1, 0); j <= min(cellCol + 1, col - 1); j++) {
-          if (map[i][j].content ==FontAwesomeIcons.bomb) {
+          if (map[i][j].content == FontAwesomeIcons.bomb) {
             mineCount++;
           }
         }
@@ -96,7 +107,9 @@ class MineSweeperGame {
       cell.reveal = true;
       if (mineCount == 0) {
         for (int i = max(cellRow - 1, 0); i <= min(cellRow + 1, row - 1); i++) {
-          for (int j = max(cellCol - 1, 0); j <= min(cellCol + 1, col - 1); j++) {
+          for (int j = max(cellCol - 1, 0);
+              j <= min(cellCol + 1, col - 1);
+              j++) {
             if (map[i][j].content == "") {
               getClickedCell(map[i][j]);
             }
