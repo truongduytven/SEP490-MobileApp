@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sep490/features/exercies/screens/playlist_page.dart';
 import 'dart:convert';
 
 import 'package:sep490/theme/color.dart';
@@ -194,31 +195,6 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
                                             fontSize: 16,
                                             color: Colors.grey[600])),
                                     const SizedBox(height: 16),
-                                    Container(
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.pink[50],
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                            color: Colors.pinkAccent[100]!),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          _buildStatItem(
-                                              Icons.fitness_center,
-                                              '${playlists.length}',
-                                              'Chương trình'),
-                                          _buildStatItem(
-                                              Icons.video_library,
-                                              '${playlists.fold<int>(0, (sum, item) => sum + (item['numberOfContent'] as int))}',
-                                              'Bài tập'),
-                                          _buildStatItem(Icons.timer,
-                                              'Tùy chọn', 'Thời gian')
-                                        ],
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ),
@@ -304,7 +280,16 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
   Widget _buildPlaylistCard(dynamic playlist, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Handle playlist tap
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlaylistPage(
+              playlistId: playlist['playlistId'],
+              playlistName: playlist['playlistName'],
+              imageUrl: playlist['imageUrl'],
+            ),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -321,16 +306,15 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: SizedBox(
-            width: double.infinity, // Đảm bảo chiều rộng full
+            width: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
                   child: Container(
-                    color: Colors.grey[100], // Màu nền dự phòng
+                    color: Colors.grey[100],
                     child: Stack(
-                      fit: StackFit
-                          .expand, // Đảm bảo stack fill toàn bộ không gian
+                      fit: StackFit.expand,
                       children: [
                         Image.network(
                           playlist['imageUrl'],
@@ -398,7 +382,7 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
                               size: 18, color: AppColors.primaryColor),
                           const SizedBox(width: 4),
                           Text(
-                            '${playlist['numberOfContent']} bài tập',
+                            'Xem bài tập',
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 14,

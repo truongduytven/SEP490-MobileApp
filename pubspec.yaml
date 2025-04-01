@@ -99,6 +99,7 @@ dependencies:
   shimmer: ^3.0.0
   hugeicons: ^0.0.10
   flutter_image_slideshow: ^0.1.6
+  video_player: ^2.9.5
 
 dev_dependencies:
   flutter_test:

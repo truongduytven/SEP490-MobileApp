@@ -164,8 +164,30 @@ class _HomeMusicScreenState extends ConsumerState<HomeMusicScreen> {
   Widget _buildBody(bool isDarkMode) {
     if (isLoading) {
       return Center(
-        child: CircularProgressIndicator(
-          color: isDarkMode ? Colors.pinkAccent : Colors.pink,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.network(
+              'https://cdn.pixabay.com/animation/2023/08/22/07/30/07-30-19-708_512.gif',
+              height: 150,
+              width: 150,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const CircularProgressIndicator();
+              },
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.music_note, size: 100),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Đang tải nhạc...',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black),
+            ),
+          ],
         ),
       );
     }
