@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/presentation/pages/ultility/game/2048/grid-properties.dart';
 import 'package:sep490/presentation/pages/ultility/game/flappy_bird/game/assets.dart';
 import 'package:sep490/presentation/pages/ultility/game/flappy_bird/game/flappy_bird_game.dart';
 
@@ -15,7 +16,7 @@ class GameOverScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Score: ${game.bird.score}',
+                'Điểm số: ${game.bird.score}',
                 style: const TextStyle(
                   fontSize: 60,
                   color: Colors.white,
@@ -29,8 +30,19 @@ class GameOverScreen extends StatelessWidget {
                 onPressed: onRestart,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                 child: const Text(
-                  'Restart',
-                  style: TextStyle(fontSize: 20),
+                  'Chơi lại',
+                  style: TextStyle(fontSize: 25, color: Colors.white, fontFamily: 'Game'),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: numColor),
+                child: const Text(
+                  'Trở về',
+                  style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: 'Game'),
                 ),
               ),
             ],
