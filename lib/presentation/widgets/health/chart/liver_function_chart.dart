@@ -1,4 +1,3 @@
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:sep490/theme/color.dart';
@@ -16,22 +15,57 @@ class LiverFunctionChart extends StatelessWidget {
         .toList();
   }
 
+  // double getMinY() {
+  //   double minValue = data
+  //       .expand((element) =>
+  //           [element["ALT"], element["AST"], element["ALP"], element["GGT"]])
+  //       .reduce((a, b) => a < b ? a : b)
+  //       .toDouble();
+  //   return minValue - 10;
+  // }
+
+  // double getMaxY() {
+  //   double maxValue = data
+  //       .expand((element) =>
+  //           [element["ALT"], element["AST"], element["ALP"], element["GGT"]])
+  //       .reduce((a, b) => a > b ? a : b)
+  //       .toDouble();
+  //   return maxValue + 10;
+  // }
   double getMinY() {
-    double minValue = data
-        .expand((element) =>
-            [element["ALT"], element["AST"], element["ALP"], element["GGT"]])
-        .reduce((a, b) => a < b ? a : b)
-        .toDouble();
-    return minValue - 10;
+    if (data.isEmpty) return 0; // Default value when no data
+
+    final values = data
+        .expand((element) => [
+              element["ALT"],
+              element["AST"],
+              element["ALP"],
+              element["GGT"],
+            ].where((v) => v != null)) // Filter out null values
+        .toList();
+
+    if (values.isEmpty) return 0; // Default value when all values are null
+
+    final minValue = values.reduce((a, b) => a < b ? a : b);
+    return (minValue as num).toDouble() - 10; // Ensure numeric conversion
   }
 
   double getMaxY() {
-    double maxValue = data
-        .expand((element) =>
-            [element["ALT"], element["AST"], element["ALP"], element["GGT"]])
-        .reduce((a, b) => a > b ? a : b)
-        .toDouble();
-    return maxValue + 10;
+    if (data.isEmpty) return 100; // Default value when no data
+
+    final values = data
+        .expand((element) => [
+              element["ALT"],
+              element["AST"],
+              element["ALP"],
+              element["GGT"],
+            ].where((v) => v != null)) // Filter out null values
+        .toList();
+
+    if (values.isEmpty) return 100; // Default value when all values are null
+
+    final maxValue = values.reduce((a, b) => a > b ? a : b);
+    return (maxValue as num).toDouble() + 10; // Ensure numeric conversion
   }
 
   @override
