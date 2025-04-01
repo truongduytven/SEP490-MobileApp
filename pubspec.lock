@@ -201,6 +201,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  carp_serializable:
+    dependency: transitive
+    description:
+      name: carp_serializable
+      sha256: "39f7d315f49fecd4b7eddfa3c1a08b9416ae3c640dc888de5f798246bcc2d38e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   characters:
     dependency: transitive
     description:
@@ -829,6 +837,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  health:
+    dependency: "direct main"
+    description:
+      name: health
+      sha256: fce29d93359e09b42e9231339be83dabd20baf5dc50c7ff2723bdf79ba6cfc9d
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.1.0"
   html:
     dependency: transitive
     description:
