@@ -100,6 +100,7 @@ dependencies:
   hugeicons: ^0.0.10
   flutter_image_slideshow: ^0.1.6
   health: ^12.1.0
+  confetti: ^0.8.0
 
 dev_dependencies:
   flutter_test:

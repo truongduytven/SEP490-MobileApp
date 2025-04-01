@@ -42,6 +42,7 @@ class _EmergencyListState extends State<EmergencyList>
     EmergencyController emergencyController = EmergencyController();
     await emergencyController.getEmergencyList(accountId);
     Timer(Duration(seconds: 2), () {
+      if(!mounted) return;
       setState(() {
         emergencyList = emergencyController.emergencyList;
         isLoading = false;
