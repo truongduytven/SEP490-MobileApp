@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:sep490/theme/colors_game.dart';
 import 'package:sep490/common/utils/game_logic.dart';
@@ -18,6 +19,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
   List<int> scoreboard = [0, 0, 0, 0, 0, 0, 0, 0];
   Game game = Game();
   late ConfettiController _confettiController;
+  final player = AudioPlayer();
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
 
   void celebrateWin() {
     _confettiController.play();
+    player.play(AssetSource("music/win.mp3"));
   }
 
   void aiMove() {
