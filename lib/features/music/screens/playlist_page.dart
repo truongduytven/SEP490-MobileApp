@@ -47,113 +47,123 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
         ref.read(playlistProvider(int.parse(widget.playlistId)).notifier);
     final isDarkMode = ref.watch(themeProvider.notifier).isDarkMode;
 
-    return Scaffold(
-      backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.grey.shade100,
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: () async {
+        final notifier =
+            ref.read(playlistProvider(int.parse(widget.playlistId)).notifier);
+        // Dừng phát nhạc và reset trạng thái
+        notifier.resetPlayer();
+        return true;
+      },
+      child: Scaffold(
         backgroundColor:
             isDarkMode ? Colors.grey.shade900 : Colors.grey.shade100,
-        title: Text(
-          widget.playlistName.toUpperCase(),
-          style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          color: isDarkMode ? Colors.white : Colors.black,
-          icon: const Icon(
-            Icons.arrow_back,
-          ),
-          onPressed: () {
-            final notifier = ref
-                .read(playlistProvider(int.parse(widget.playlistId)).notifier);
-
-            // Dừng phát nhạc và reset trạng thái
-            notifier.resetPlayer();
-
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: playlistAsync.when(
-        loading: () => Scaffold(
+        appBar: AppBar(
           backgroundColor:
               isDarkMode ? Colors.grey.shade900 : Colors.grey.shade100,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.network(
-                  'https://cdn.pixabay.com/animation/2023/08/22/07/30/07-30-19-708_512.gif',
-                  height: 150,
-                  width: 150,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const CircularProgressIndicator();
-                  },
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.music_note, size: 100),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Đang tải nhạc...',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black),
-                ),
-              ],
+          title: Text(
+            widget.playlistName.toUpperCase(),
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
-        error: (error, _) => Center(child: Text('Error: $error')),
-        data: (songs) {
-          return Column(
-            children: [
-              // Header với ảnh playlist
-              _buildPlaylistHeader(songs.length),
+          leading: IconButton(
+            color: isDarkMode ? Colors.white : Colors.black,
+            icon: const Icon(
+              Icons.arrow_back,
+            ),
+            onPressed: () {
+              final notifier = ref.read(
+                  playlistProvider(int.parse(widget.playlistId)).notifier);
 
-              Expanded(
-                child: ListView.builder(
-                  itemCount: songs.length,
-                  itemBuilder: (context, index) {
-                    final song = songs[index];
-                    return ListTile(
-                      title: Text(
-                        song.musicName,
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white : Colors.black,
+              // Dừng phát nhạc và reset trạng thái
+              notifier.resetPlayer();
+
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: playlistAsync.when(
+          loading: () => Scaffold(
+            backgroundColor:
+                isDarkMode ? Colors.grey.shade900 : Colors.grey.shade100,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.network(
+                    'https://cdn.pixabay.com/animation/2023/08/22/07/30/07-30-19-708_512.gif',
+                    height: 150,
+                    width: 150,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const CircularProgressIndicator();
+                    },
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.music_note, size: 100),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Đang tải nhạc...',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          error: (error, _) => Center(child: Text('Error: $error')),
+          data: (songs) {
+            return Column(
+              children: [
+                // Header với ảnh playlist
+                _buildPlaylistHeader(songs.length),
+
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: songs.length,
+                    itemBuilder: (context, index) {
+                      final song = songs[index];
+                      return ListTile(
+                        title: Text(
+                          song.musicName,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
                         ),
-                      ),
-                      subtitle: Text(song.singer),
-                      leading: SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            song.imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(
-                              Icons.music_note,
-                              size: 30,
-                              color: isDarkMode ? Colors.white : Colors.black,
+                        subtitle: Text(song.singer),
+                        leading: SizedBox(
+                          height: 60,
+                          width: 60,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              song.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Icon(
+                                Icons.music_note,
+                                size: 30,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      onTap: () => goToSong(index),
-                    );
-                  },
+                        onTap: () => goToSong(index),
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              // Now playing bar
-              if (notifier.currentSong != null) _buildNowPlayingBar(notifier),
-            ],
-          );
-        },
+                // Now playing bar
+                if (notifier.currentSong != null) _buildNowPlayingBar(notifier),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
