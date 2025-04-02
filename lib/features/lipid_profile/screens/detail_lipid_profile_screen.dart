@@ -314,13 +314,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?[
-                                                      "hdlcholesterolAverage"]) ??
-                                                  "--",
-                                              // (dataByDate?["hdlcholesterolAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByDate?[
+                                              //         "hdlcholesterolAverage"]) ??
                                               //     "--",
+                                              (dataByDate?["hdlcholesterolAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -340,13 +341,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?[
-                                                      "ldlcholesterolAverage"]) ??
-                                                  "--",
-                                              // (dataByDate?["ldlcholesterolAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByDate?[
+                                              //         "ldlcholesterolAverage"]) ??
                                               //     "--",
+                                              (dataByDate?["ldlcholesterolAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -366,13 +368,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?[
-                                                      "triglyceridesAverage"]) ??
-                                                  "--",
-                                              // (dataByDate?["triglyceridesAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByDate?[
+                                              //         "triglyceridesAverage"]) ??
                                               //     "--",
+                                              (dataByDate?["triglyceridesAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -487,13 +490,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?[
-                                                      "hdlcholesterolAverage"]) ??
-                                                  "--",
-                                              // (dataByWeek?["hdlcholesterolAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByWeek?[
+                                              //         "hdlcholesterolAverage"]) ??
                                               //     "--",
+                                              (dataByWeek?["hdlcholesterolAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -513,13 +517,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?[
-                                                      "ldlcholesterolAverage"]) ??
-                                                  "--",
-                                              // (dataByWeek?["ldlcholesterolAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByWeek?[
+                                              //         "ldlcholesterolAverage"]) ??
                                               //     "--",
+                                              (dataByWeek?["ldlcholesterolAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -539,13 +544,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?[
-                                                      "triglyceridesAverage"]) ??
-                                                  "--",
-                                              // (dataByWeek?["triglyceridesAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByWeek?[
+                                              //         "triglyceridesAverage"]) ??
                                               //     "--",
+                                              (dataByWeek?["triglyceridesAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -660,13 +666,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?[
-                                                      "hdlcholesterolAverage"]) ??
-                                                  "--",
-                                              // (dataByMonth?["hdlcholesterolAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByMonth?[
+                                              //         "hdlcholesterolAverage"]) ??
                                               //     "--",
+                                              (dataByMonth?["hdlcholesterolAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -686,13 +693,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?[
-                                                      "ldlcholesterolAverage"]) ??
-                                                  "--",
-                                              // (dataByMonth?["ldlcholesterolAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByMonth?[
+                                              //         "ldlcholesterolAverage"]) ??
                                               //     "--",
+                                              (dataByMonth?["ldlcholesterolAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -712,13 +720,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?[
-                                                      "triglyceridesAverage"]) ??
-                                                  "--",
-                                              // (dataByMonth?["triglyceridesAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByMonth?[
+                                              //         "triglyceridesAverage"]) ??
                                               //     "--",
+                                              (dataByMonth?["triglyceridesAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -833,13 +842,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?[
-                                                      "hdlcholesterolAverage"]) ??
-                                                  "--",
-                                              // (dataByYear?["hdlcholesterolAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByYear?[
+                                              //         "hdlcholesterolAverage"]) ??
                                               //     "--",
+                                              (dataByYear?["hdlcholesterolAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -859,13 +869,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?[
-                                                      "ldlcholesterolAverage"]) ??
-                                                  "--",
-                                              // (dataByYear?["ldlcholesterolAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByYear?[
+                                              //         "ldlcholesterolAverage"]) ??
                                               //     "--",
+                                              (dataByYear?["ldlcholesterolAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -885,13 +896,14 @@ class _DetailLipidProfileScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?[
-                                                      "triglyceridesAverage"]) ??
-                                                  "--",
-                                              // (dataByYear?["triglyceridesAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByYear?[
+                                              //         "triglyceridesAverage"]) ??
                                               //     "--",
+                                              (dataByYear?["triglyceridesAverage"]
+                                                              ?.toDouble() ??
+                                                          0.0)
+                                                      .toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
