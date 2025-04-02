@@ -51,9 +51,11 @@ class _FilterDoctorState extends State<FilterDoctor> {
         actions: [
           IconButton(
             onPressed: () {
-              handleConfirm(context);
+              setState(() {
+                listFilter.clear();
+              });
             },
-            icon: const Icon(Icons.check),
+            icon: const Icon(Icons.cleaning_services),
           )
         ],
       ),
@@ -119,9 +121,16 @@ class _FilterDoctorState extends State<FilterDoctor> {
     return GestureDetector(
       onTap: () {
         setState(() {
+          if (label == 'A-Z' || label == 'Z-A') {
+            listFilter.removeWhere((element) =>
+                element == 'A-Z' || element == 'Z-A');
+          } else if (label == 'Tăng dần' || label == 'Giảm dần') {
+            listFilter.removeWhere((element) =>
+                element == 'Tăng dần' || element == 'Giảm dần');
+          }  
           if (listFilter.contains(label)) {
             listFilter.remove(label);
-          } else {
+          } else { 
             listFilter.add(label);
           }
         });

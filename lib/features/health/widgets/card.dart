@@ -220,7 +220,7 @@ class _InfoCardState extends State<InfoCard> {
                               TextSpan(
                                 text: widget.data,
                                 style: const TextStyle(
-                                  fontSize: 28,
+                                  fontSize: 26,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
