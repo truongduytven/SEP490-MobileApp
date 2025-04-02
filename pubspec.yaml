@@ -101,6 +101,13 @@ dependencies:
   flutter_image_slideshow: ^0.1.6
   health: ^12.1.0
   confetti: ^0.8.0
+  video_player: ^2.9.5
+  chewie: ^1.11.0
+  flutter_pdfview: ^1.4.0
+  syncfusion_flutter_pdf: ^29.1.35
+  page_flip: ^0.2.3
+  pdf_render: ^1.4.12
+  page_flip_builder: ^0.1.4
 
 dev_dependencies:
   flutter_test:

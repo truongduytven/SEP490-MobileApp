@@ -431,10 +431,13 @@ class _KidneyFunctionInputWidgetState extends State<KidneyFunctionInputWidget> {
             ),
             Row(
               children: [
-                Text(
-                  "BUN và GFR được tính theo đơn vị",
-                  style: TextStyle(
-                    color: AppColors.grayColor5,
+                SizedBox(
+                  width: 170,
+                  child: Text(
+                    "BUN và GFR được tính theo đơn vị",
+                    style: TextStyle(
+                      color: AppColors.grayColor5,
+                    ),
                   ),
                 ),
                 Expanded(

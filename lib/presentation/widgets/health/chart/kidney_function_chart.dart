@@ -17,20 +17,47 @@ class KidneyFunctionChart extends StatelessWidget {
         .toList();
   }
 
+  // double getMinY() {
+  //   double minValue = data
+  //       .expand((element) => [element["BUN"], element["GFR"], element["eGFR"]])
+  //       .reduce((a, b) => a < b ? a : b)
+  //       .toDouble();
+  //   return minValue - 15; // Cộng thêm 20 vào giới hạn dưới
+  // }
+
+  // double getMaxY() {
+  //   double maxValue = data
+  //       .expand((element) => [element["BUN"], element["GFR"], element["eGFR"]])
+  //       .reduce((a, b) => a > b ? a : b)
+  //       .toDouble();
+  //   return maxValue + 15; // Cộng thêm 20 vào giới hạn trên
+  // }
   double getMinY() {
-    double minValue = data
-        .expand((element) => [element["BUN"], element["GFR"], element["eGFR"]])
-        .reduce((a, b) => a < b ? a : b)
-        .toDouble();
-    return minValue - 15; // Cộng thêm 20 vào giới hạn dưới
+    if (data.isEmpty) return 0; // Default value when no data
+
+    final values = data
+        .expand((element) => [element["BUN"], element["GFR"], element["eGFR"]]
+            .where((v) => v != null)) // Filter out null values
+        .toList();
+
+    if (values.isEmpty) return 0; // Default value when all values are null
+
+    final minValue = values.reduce((a, b) => a < b ? a : b);
+    return (minValue as num).toDouble() - 15; // Ensure numeric conversion
   }
 
   double getMaxY() {
-    double maxValue = data
-        .expand((element) => [element["BUN"], element["GFR"], element["eGFR"]])
-        .reduce((a, b) => a > b ? a : b)
-        .toDouble();
-    return maxValue + 15; // Cộng thêm 20 vào giới hạn trên
+    if (data.isEmpty) return 100; // Default value when no data
+
+    final values = data
+        .expand((element) => [element["BUN"], element["GFR"], element["eGFR"]]
+            .where((v) => v != null)) // Filter out null values
+        .toList();
+
+    if (values.isEmpty) return 100; // Default value when all values are null
+
+    final maxValue = values.reduce((a, b) => a > b ? a : b);
+    return (maxValue as num).toDouble() + 15; // Ensure numeric conversion
   }
 
   @override
