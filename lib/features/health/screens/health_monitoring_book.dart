@@ -119,7 +119,6 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           ),
         ),
       ).show(context);
-      print("Error fetching health log book indicators: $e");
     } finally {
       setState(() {
         isLoading = false;

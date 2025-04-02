@@ -59,6 +59,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     await doctorController.getDoctorData(49);
     await doctorController.getAppointmentByID(49, selectedStatus);
     Timer(const Duration(seconds: 2), () {
+      if(!mounted) return;
       setState(() {
         doctorData = doctorController.doctorData;
         appoimentDoctor = doctorController.appoimentDoctor;
