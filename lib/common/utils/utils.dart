@@ -165,3 +165,15 @@ String convertDateTimeToString(String dateTime) {
   var formattedDateTime = '$hour:$minute ngày $date';
   return formattedDateTime;
 }
+
+String hourFormatSleep(int time) {
+  if (time < 60) return time.toString();
+  int hour = time ~/ 60;
+  int minute = time % 60;
+  String hourString = hour.toString();
+  String minuteString = minute.toString();
+  if (minute < 10) {
+    minuteString = "0$minute";
+  }
+  return "$hourString h $minuteString";
+}

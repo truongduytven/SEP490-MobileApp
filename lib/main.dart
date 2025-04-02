@@ -16,7 +16,7 @@ import 'package:sep490/router.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:shake_gesture/shake_gesture.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+// import 'package:speech_to_text/speech_to_text.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';

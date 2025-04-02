@@ -9,10 +9,10 @@ import 'package:sep490/features/heart_beat/screens/detail_heart_beat_screen.dart
 import 'package:sep490/features/height/screens/detail_height_screen.dart';
 import 'package:sep490/models/home_model.dart';
 import 'package:sep490/models/schedule.dart';
-import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
 import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/home/controller/home_controller.dart';
+import 'package:sep490/presentation/pages/home/iot_indicator.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
 import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
@@ -77,11 +77,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     HomeController homeController = HomeController();
     await homeController.getHealthIndicator(accountId);
     Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
       setState(() {
         homeHealthIndicators = homeController.homeHealthIndicators;
       });
       if (homeController.homeHealthIndicators != null) {
         filterDataHealth();
+      } else {
+        setState(() {
+          isLoading = false;
+        });
       }
     });
   }
@@ -93,7 +98,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ScheduleController scheduleController = ScheduleController();
     await scheduleController.getSchedule(accountId,
         '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, "0")}-${DateTime.now().day.toString().padLeft(2, "0")}');
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 1), () {
+      if (!mounted) return;
       setState(() {
         schedule = scheduleController.schedule;
         isLoadingSchedule = false;
@@ -102,7 +108,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void filterDataHealth() {
-    if (homeHealthIndicators == null) return;
+    if (homeHealthIndicators == null) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
     for (var e in homeHealthIndicators!) {
       switch (e.tabs) {
         case "HeartRate":
@@ -439,13 +450,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ? schedule!.isNotEmpty
                                       ? CarouselSlider(
                                           options: CarouselOptions(
-                                            height: 170,
-                                            autoPlay: true,
-                                            enlargeCenterPage: false,
-                                            aspectRatio: 16 / 9,
-                                            viewportFraction: 0.85,
-                                            enableInfiniteScroll: false                                            
-                                          ),
+                                              height: 170,
+                                              autoPlay: true,
+                                              enlargeCenterPage: false,
+                                              aspectRatio: 16 / 9,
+                                              viewportFraction: 0.85,
+                                              enableInfiniteScroll: false),
                                           items: schedule!.map((item) {
                                             return Builder(
                                               builder: (BuildContext context) {
@@ -485,7 +495,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                       ],
                                                     ),
                                                     child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
                                                       children: [
                                                         // Activity Icon
                                                         _getActivityIcon(
@@ -498,7 +510,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                             crossAxisAlignment:
                                                                 CrossAxisAlignment
                                                                     .start,
-                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
                                                             children: [
                                                               Text(
                                                                 item.title,
@@ -564,7 +578,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       : SizedBox(
                                           height: 170,
                                           child: Column(
-                                            mainAxisAlignment: 
+                                            mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
                                               const SizedBox(height: 10),
@@ -587,7 +601,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   : SizedBox(
                                       height: 170,
                                       child: Column(
-                                        mainAxisAlignment: 
+                                        mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
                                           const SizedBox(height: 10),
@@ -648,7 +662,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 icon:
                                     'assets/img3D/thietbideotay.png', // Replace with your asset path
                                 label: 'Thiết bị đeo tay',
-                                onTap: handleClickLoading,
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              IotIndicator()));
+                                },
                               ),
                             ],
                           ),

@@ -113,7 +113,8 @@ class BigButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      height: 80,
+      margin: const EdgeInsets.only(bottom: 20),
+      height: 70,
       width: 400,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(

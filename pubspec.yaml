@@ -99,6 +99,8 @@ dependencies:
   shimmer: ^3.0.0
   hugeicons: ^0.0.10
   flutter_image_slideshow: ^0.1.6
+  health: ^12.1.0
+  confetti: ^0.8.0
   video_player: ^2.9.5
   chewie: ^1.11.0
   flutter_pdfview: ^1.4.0

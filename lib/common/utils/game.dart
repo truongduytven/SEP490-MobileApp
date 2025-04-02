@@ -17,19 +17,19 @@ class Choice{
   String? type = "";
   static var gameRule = {
     "Rock":{
-      "Rock": "It's a draw",
-      "Paper": "You lose",
-      "Scissors": "You win"
+      "Rock": "Hòa nhau",
+      "Paper": "Bạn thua",
+      "Scissors": "Bạn thắng"
     },
     "Paper":{
-      "Paper": "It's a draw",
-      "Scissors": "You lose",
-      "Rock": "You win"
+      "Paper": "Hòa nhau",
+      "Scissors": "Bạn thua",
+      "Rock": "Bạn thắng"
     },
     "Scissors":{
-      "Scissors": "It's a draw",
-      "Rock": "You lose",
-      "Paper": "You win"
+      "Scissors": "Hòa nhau",
+      "Rock": "Bạn thua",
+      "Paper": "Bạn thắng"
     }
   };
   Choice(this.type);
