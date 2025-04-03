@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
 import 'package:sep490/features/health/screens/health_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
-import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
-import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
-import 'package:sep490/features/health/screens/health_screen.dart';
 import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/ultility/ultility_screen.dart';
 import 'package:sep490/theme/color.dart';

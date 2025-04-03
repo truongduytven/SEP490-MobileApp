@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -42,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool isLoading = false;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId = 0;
+  late int roleId = 0;
   Map<String, dynamic> healthIndicators = {
     "HeartRate": "0",
     "BloodPressure": "0",
@@ -54,6 +56,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   };
   List<Activity>? schedule;
   bool isLoadingSchedule = false;
+  late List<ElderlyUser>? userList = null;
+  late int? selectedElderlyUserId;
+  late String? selectedElderlyUserName;
+  bool isShowSelectUser = false;
+  bool isLoadingDialog = false;
 
   @override
   void initState() {
@@ -64,10 +71,290 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       });
     });
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
+    roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
+    selectedElderlyUserId =
+        sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+    selectedElderlyUserName =
+        sharedPrefsHelper.getString('selectedElderlyUserName') ?? '';
     startTime = DateFormat.jm().format(activity['StartTime'] as DateTime);
     endTime = DateFormat.jm().format(activity['EndTime'] as DateTime);
-    getHealthIndicator();
-    getSchedule();
+    if (roleId == 2) {
+      getHealthIndicator();
+      getSchedule();
+    }
+    if (roleId == 3) {
+      getElderlyUser();
+    }
+  }
+
+  // void _showSelectDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //           title: Text('Chọn người già hỗ trợ'),
+  //           content: isLoadingDialog
+  //               ? Center(
+  //                   child: CircularProgressIndicator(
+  //                     color: AppColors.primaryColor,
+  //                   ),
+  //                 )
+  //               : SingleChildScrollView(
+  //                   child: Column(
+  //                     children: userList!
+  //                         .map((element) => GestureDetector(
+  //                               onTap: () {
+  //                                 setState(() {
+  //                                   selectedElderlyUserId = element.accountId;
+  //                                   selectedElderlyUserName = element.fullName;
+  //                                 });
+  //                                 sharedPrefsHelper.setInt(
+  //                                     'selectedElderlyUserId',
+  //                                     element.accountId);
+  //                                 sharedPrefsHelper.setString(
+  //                                     'selectedElderlyUserName',
+  //                                     element.fullName);
+  //                                 Navigator.pop(context);
+  //                               },
+  //                               child: (Container(
+  //                                 padding: const EdgeInsets.all(10),
+  //                                 margin: const EdgeInsets.only(bottom: 10),
+  //                                 decoration: BoxDecoration(
+  //                                   borderRadius:
+  //                                       BorderRadius.all(Radius.circular(10)),
+  //                                   color: selectedElderlyUserId ==
+  //                                           element.accountId
+  //                                       ? Colors.white
+  //                                       : null,
+  //                                   border: selectedElderlyUserId ==
+  //                                           element.accountId
+  //                                       ? Border.all(
+  //                                           color: AppColors.secondaryColor,
+  //                                           width: 1,
+  //                                         )
+  //                                       : null,
+  //                                 ),
+  //                                 child: Row(
+  //                                   children: [
+  //                                     ClipRRect(
+  //                                       borderRadius: BorderRadius.circular(50),
+  //                                       child: Image.network(
+  //                                         element.avatar,
+  //                                         width: 60,
+  //                                         height: 60,
+  //                                         fit: BoxFit.cover,
+  //                                       ),
+  //                                     ),
+  //                                     const SizedBox(width: 20),
+  //                                     Column(
+  //                                       crossAxisAlignment:
+  //                                           CrossAxisAlignment.start,
+  //                                       mainAxisAlignment:
+  //                                           MainAxisAlignment.start,
+  //                                       children: [
+  //                                         SizedBox(
+  //                                           width: MediaQuery.of(context)
+  //                                                   .size
+  //                                                   .width *
+  //                                               0.4,
+  //                                           child: Text(
+  //                                             element.fullName,
+  //                                             style: TextStyle(
+  //                                               color: AppColors.textColor,
+  //                                               fontSize: 18,
+  //                                               fontWeight: FontWeight.w700,
+  //                                             ),
+  //                                             overflow: TextOverflow.ellipsis,
+  //                                             maxLines: 2,
+  //                                           ),
+  //                                         ),
+  //                                         Text(
+  //                                           element.phoneNumber,
+  //                                           style: TextStyle(
+  //                                               fontSize: 16,
+  //                                               fontWeight: FontWeight.w400,
+  //                                               color: AppColors.textColor),
+  //                                         ),
+  //                                       ],
+  //                                     )
+  //                                   ],
+  //                                 ),
+  //                               )),
+  //                             ))
+  //                         .toList(),
+  //                   ),
+  //                 ));
+  //     },
+  //   );
+  // }
+
+  void _showSelectDialog() {
+    showDialog(
+      barrierColor: AppColors.secondaryColor.withOpacity(0.95),
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.all(20),
+          backgroundColor: AppColors.bgColor,
+          title: const Text(
+            "Hỗ trợ từ người thân",
+            style: TextStyle(
+                fontSize: 30, fontWeight: FontWeight.w600, height: 1.2),
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Chọn một người để xem hoặc thêm mới",
+                  style: TextStyle(
+                      color: AppColors.grayColor5, fontSize: 16, height: 1.2),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Flexible(
+                  child: SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: userList!.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == userList!.length) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: AppColors.borderColor,
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            margin: const EdgeInsets.symmetric(vertical: 4.0),
+                            padding: EdgeInsets.symmetric(vertical: 5),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                radius: 22,
+                                backgroundColor: Colors.transparent,
+                                child: const Icon(
+                                    Icons.person_add_alt_1_outlined,
+                                    color: AppColors.primaryColor),
+                              ),
+                              title: const Text(
+                                "Thêm người mới",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          );
+                        }
+
+                        final user = userList![index];
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedElderlyUserId =
+                                  userList![index].accountId;
+                              selectedElderlyUserName =
+                                  userList![index].fullName;
+                            });
+                            sharedPrefsHelper.setInt('selectedElderlyUserId',
+                                userList![index].accountId);
+                            sharedPrefsHelper.setString(
+                                'selectedElderlyUserName',
+                                userList![index].fullName);
+                            CherryToast.success(
+                              toastDuration: Duration(seconds: 3),
+                              title: Text(
+                                'Bạn đang hỗ trợ ${userList![index].fullName}',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ).show(context);
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: user.accountId == selectedElderlyUserId
+                                    ? AppColors.primaryColor
+                                    : AppColors.borderColor,
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 5),
+                            margin: const EdgeInsets.symmetric(vertical: 6.0),
+                            child: ListTile(
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Image.network(
+                                  user.avatar,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    user.fullName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: user.accountId ==
+                                              selectedElderlyUserId
+                                          ? AppColors.primaryColor
+                                          : AppColors.textColor,
+                                      fontWeight: user.accountId ==
+                                              selectedElderlyUserId
+                                          ? FontWeight.w600
+                                          : null,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    user.phoneNumber,
+                                    style: TextStyle(
+                                      color: AppColors.grayColor3,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: user.accountId == selectedElderlyUserId
+                                  ? const Icon(Icons.check_circle_rounded,
+                                      size: 28, color: AppColors.primaryColor)
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "Đóng",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void getHealthIndicator() async {
@@ -103,6 +390,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       setState(() {
         schedule = scheduleController.schedule;
         isLoadingSchedule = false;
+      });
+    });
+  }
+
+  void getElderlyUser() async {
+    setState(() {
+      isLoadingDialog = true;
+    });
+    HomeController homeController = HomeController();
+    await homeController.getElderlyUser(accountId);
+    Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      setState(() {
+        isLoadingDialog = false;
+        userList = homeController.elderlyUsers;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showSelectDialog();
       });
     });
   }
@@ -207,431 +512,456 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Header(),
+                      Header(onPressed: _showSelectDialog),
                       const SizedBox(height: 10),
                       Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Sức khỏe',
-                                style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textColor),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          HealthMonitoringBook(
-                                        initialTopic: "all",
+                          if (roleId == 2)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Sức khỏe',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textColor),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HealthMonitoringBook(
+                                          initialTopic: "all",
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5, vertical: 2),
-                                  child: Text(
-                                    'Xem tất cả',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      decoration: TextDecoration.underline,
-                                      color: AppColors.textColor,
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 2),
+                                    child: Text(
+                                      'Xem tất cả',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        decoration: TextDecoration.underline,
+                                        color: AppColors.textColor,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          isLoading
-                              ? SizedBox(
-                                  height: 120,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: AppColors.primaryColor,
+                              ],
+                            ),
+                          if (roleId == 2) const SizedBox(height: 20),
+                          if (roleId == 2)
+                            isLoading
+                                ? SizedBox(
+                                    height: 120,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.primaryColor,
+                                      ),
                                     ),
-                                  ),
-                                )
-                              : SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: [
-                                      HealthCard(
-                                        icon: 'assets/img3D/nhiptim.png',
-                                        label: 'Nhịp tim',
-                                        value:
-                                            '${healthIndicators['HeartRate']}',
-                                        index: 'BPM',
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailHeartBeatScreen(), // Replace with the correct screen
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      HealthCard(
-                                        icon: 'assets/img3D/huyetap.png',
-                                        label: 'Huyết áp',
-                                        value:
-                                            '${healthIndicators['BloodPressure']}',
-                                        index: 'MmHg',
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailBloodPressureScreen(), // Replace with the correct screen
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      HealthCard(
-                                        icon:
-                                            'assets/img3D/treatment_medical/momau.webp',
-                                        label: 'Mỡ máu',
-                                        value:
-                                            '${healthIndicators['LipidProfile']}',
-                                        index: 'mmol/l',
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailWeightScreen(), // Replace with the correct screen
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      HealthCard(
-                                        icon:
-                                            'assets/img3D/treatment_medical/gan.png',
-                                        label: 'Men gan',
-                                        value:
-                                            '${healthIndicators['LiverEnzyme']}',
-                                        index: 'UI/L',
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailWeightScreen(), // Replace with the correct screen
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      HealthCard(
-                                        icon:
-                                            'assets/img3D/treatment_medical/tieuduong.png',
-                                        label: 'Đường huyết',
-                                        value:
-                                            '${healthIndicators['BloodGlucose']}',
-                                        index: 'mmol/l',
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailWeightScreen(), // Replace with the correct screen
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      HealthCard(
-                                        icon:
-                                            'assets/img3D/treatment_medical/than.png',
-                                        label: 'Chức năng thận',
-                                        value:
-                                            '${healthIndicators['KidneyFunction']}',
-                                        index: 'mL/phút/1.73m2',
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailWeightScreen(), // Replace with the correct screen
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      HealthCard(
-                                        icon: 'assets/img3D/cannang.png',
-                                        label: 'Cân nặng',
-                                        value: '${healthIndicators['Weight']}',
-                                        index: 'Kg',
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailWeightScreen(), // Replace with the correct screen
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      HealthCard(
-                                        icon: 'assets/img3D/chieucao.png',
-                                        label: 'Chiều cao',
-                                        value: '${healthIndicators['Height']}',
-                                        index: 'cm',
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailHeightScreen(), // Replace with the correct screen
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Lịch trình hôm nay',
-                                style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textColor),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen()),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5, vertical: 2),
-                                  child: Text(
-                                    'Xem tất cả',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      decoration: TextDecoration.underline,
-                                      color: AppColors.textColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 15),
-                          Center(
-                            child: Text(today,
-                                style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.primaryColor)),
-                          ),
-                          isLoadingSchedule
-                              ? SizedBox(
-                                  height: 170,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: AppColors.primaryColor,
-                                    ),
-                                  ),
-                                )
-                              : schedule != null
-                                  ? schedule!.isNotEmpty
-                                      ? CarouselSlider(
-                                          options: CarouselOptions(
-                                              height: 170,
-                                              autoPlay: true,
-                                              enlargeCenterPage: false,
-                                              aspectRatio: 16 / 9,
-                                              viewportFraction: 0.85,
-                                              enableInfiniteScroll: false),
-                                          items: schedule!.map((item) {
-                                            return Builder(
-                                              builder: (BuildContext context) {
-                                                return GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ScheduleScreen(),
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: Container(
-                                                    margin: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 10,
-                                                        horizontal: 16),
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            16),
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          getColors(item.type),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: AppColors
-                                                              .secondaryColor
-                                                              .withOpacity(0.3),
-                                                          blurRadius: 4,
-                                                          offset: const Offset(
-                                                              0, 4),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    child: Row(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        // Activity Icon
-                                                        _getActivityIcon(
-                                                            item.type),
-                                                        const SizedBox(
-                                                            width: 12),
-                                                        // Activity Details
-                                                        Expanded(
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text(
-                                                                item.title,
-                                                                maxLines: 1,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    color: AppColors
-                                                                        .textColor),
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 8),
-                                                              Text(
-                                                                item.description,
-                                                                maxLines: 1,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                style:
-                                                                    const TextStyle(
-                                                                        fontSize:
-                                                                            14),
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 8),
-                                                              Text(
-                                                                "Còn ${item.duration} ngày nữa",
-                                                                style:
-                                                                    const TextStyle(
-                                                                        fontSize:
-                                                                            14),
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 8),
-                                                              Text(
-                                                                '${item.startTime} ${item.endTime != '' ? '-' : ''} ${item.endTime}',
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    color: AppColors
-                                                                        .textColor),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          }).toList(),
-                                        )
-                                      : SizedBox(
-                                          height: 170,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              const SizedBox(height: 10),
-                                              Image.asset(
-                                                  'assets/img/no-data.png',
-                                                  width: 50,
-                                                  height: 50),
-                                              const SizedBox(height: 10),
-                                              const Text(
-                                                'Không có lịch trình nào trong ngày hôm nay',
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: AppColors.textColor,
-                                                ),
+                                  )
+                                : SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        HealthCard(
+                                          icon: 'assets/img3D/nhiptim.png',
+                                          label: 'Nhịp tim',
+                                          value:
+                                              '${healthIndicators['HeartRate']}',
+                                          index: 'BPM',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailHeartBeatScreen(), // Replace with the correct screen
                                               ),
-                                            ],
-                                          ),
-                                        )
-                                  : SizedBox(
-                                      height: 170,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const SizedBox(height: 10),
-                                          Image.asset('assets/img/no-data.png',
-                                              width: 50, height: 50),
-                                          const SizedBox(height: 10),
-                                          const Text(
-                                            'Không có lịch trình nào trong ngày hôm nay',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColors.textColor,
-                                            ),
-                                          ),
-                                        ],
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon: 'assets/img3D/huyetap.png',
+                                          label: 'Huyết áp',
+                                          value:
+                                              '${healthIndicators['BloodPressure']}',
+                                          index: 'MmHg',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailBloodPressureScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/momau.webp',
+                                          label: 'Mỡ máu',
+                                          value:
+                                              '${healthIndicators['LipidProfile']}',
+                                          index: 'mmol/l',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/gan.png',
+                                          label: 'Men gan',
+                                          value:
+                                              '${healthIndicators['LiverEnzyme']}',
+                                          index: 'UI/L',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/tieuduong.png',
+                                          label: 'Đường huyết',
+                                          value:
+                                              '${healthIndicators['BloodGlucose']}',
+                                          index: 'mmol/l',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/than.png',
+                                          label: 'Chức năng thận',
+                                          value:
+                                              '${healthIndicators['KidneyFunction']}',
+                                          index: 'mL/phút/1.73m2',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon: 'assets/img3D/cannang.png',
+                                          label: 'Cân nặng',
+                                          value:
+                                              '${healthIndicators['Weight']}',
+                                          index: 'Kg',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon: 'assets/img3D/chieucao.png',
+                                          label: 'Chiều cao',
+                                          value:
+                                              '${healthIndicators['Height']}',
+                                          index: 'cm',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailHeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                          if (roleId == 2) const SizedBox(height: 20),
+                          if (roleId == 2)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Lịch trình hôm nay',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textColor),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ScheduleScreen()),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 2),
+                                    child: Text(
+                                      'Xem tất cả',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        decoration: TextDecoration.underline,
+                                        color: AppColors.textColor,
                                       ),
                                     ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Tùy chọn khác',
-                                style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textColor),
-                              ),
-                            ],
-                          ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          if (roleId == 2) SizedBox(height: 15),
+                          if (roleId == 2)
+                            Center(
+                              child: Text(today,
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.primaryColor)),
+                            ),
+                          if (roleId == 2)
+                            isLoadingSchedule
+                                ? SizedBox(
+                                    height: 170,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  )
+                                : schedule != null
+                                    ? schedule!.isNotEmpty
+                                        ? CarouselSlider(
+                                            options: CarouselOptions(
+                                                height: 170,
+                                                autoPlay: true,
+                                                enlargeCenterPage: false,
+                                                aspectRatio: 16 / 9,
+                                                viewportFraction: 0.85,
+                                                enableInfiniteScroll: false),
+                                            items: schedule!.map((item) {
+                                              return Builder(
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ScheduleScreen(),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      margin: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 10,
+                                                          horizontal: 16),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16),
+                                                      decoration: BoxDecoration(
+                                                        color: getColors(
+                                                            item.type),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: AppColors
+                                                                .secondaryColor
+                                                                .withOpacity(
+                                                                    0.3),
+                                                            blurRadius: 4,
+                                                            offset:
+                                                                const Offset(
+                                                                    0, 4),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          // Activity Icon
+                                                          _getActivityIcon(
+                                                              item.type),
+                                                          const SizedBox(
+                                                              width: 12),
+                                                          // Activity Details
+                                                          Expanded(
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  item.title,
+                                                                  maxLines: 1,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: AppColors
+                                                                          .textColor),
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 8),
+                                                                Text(
+                                                                  item.description,
+                                                                  maxLines: 1,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          14),
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 8),
+                                                                Text(
+                                                                  "Còn ${item.duration} ngày nữa",
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          14),
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 8),
+                                                                Text(
+                                                                  '${item.startTime} ${item.endTime != '' ? '-' : ''} ${item.endTime}',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      color: AppColors
+                                                                          .textColor),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            }).toList(),
+                                          )
+                                        : SizedBox(
+                                            height: 170,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const SizedBox(height: 10),
+                                                Image.asset(
+                                                    'assets/img/no-data.png',
+                                                    width: 50,
+                                                    height: 50),
+                                                const SizedBox(height: 10),
+                                                const Text(
+                                                  'Không có lịch trình nào trong ngày hôm nay',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: AppColors.textColor,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                    : SizedBox(
+                                        height: 170,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            Image.asset(
+                                                'assets/img/no-data.png',
+                                                width: 50,
+                                                height: 50),
+                                            const SizedBox(height: 10),
+                                            const Text(
+                                              'Không có lịch trình nào trong ngày hôm nay',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColors.textColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                          if (roleId == 2) const SizedBox(height: 20),
+                          if (roleId == 2)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Tùy chọn khác',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textColor),
+                                ),
+                              ],
+                            ),
+                          if (roleId == 3)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Tùy chọn',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textColor),
+                                ),
+                              ],
+                            ),
                           SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -652,10 +982,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                               _buildCategoryCard(
                                 icon:
-                                    'assets/img3D/uong_nuoc.png', // Replace with your asset path
-                                label: 'Nhắc nhở uống nước',
+                                    'assets/img3D/calendar_create.webp', // Replace with your asset path
+                                label: 'Lịch trình hằng ngày',
                                 onTap: () {
-                                  print("Bác sĩ clicked");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ScheduleScreen(),
+                                    ),
+                                  );
                                 },
                               ),
                               _buildCategoryCard(
