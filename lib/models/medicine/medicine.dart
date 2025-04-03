@@ -192,7 +192,7 @@ class MedicineUpdate {
       shape: json['shape'],
       remaining: json['remaining'],
       frequencyType: json['frequencyType'],
-      frequencySelect: json['frequencySelect'],
+      frequencySelect: json['frequencySelect'] ?? [],
       isBeforeMeal: json['isBeforeMeal'],
       schedule: json['schedule'],
     );
