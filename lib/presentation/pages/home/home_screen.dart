@@ -980,6 +980,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   );
                                 },
                               ),
+                              if(roleId == 3)
                               _buildCategoryCard(
                                 icon:
                                     'assets/img3D/calendar_create.webp', // Replace with your asset path
