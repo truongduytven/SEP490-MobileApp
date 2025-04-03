@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
-import 'package:sep490/presentation/pages/home/group_member_screen.dart';
 import 'package:sep490/presentation/pages/home/profile_screen.dart';
 import 'package:sep490/presentation/pages/notification/notification_screen.dart';
 import 'package:sep490/features/health/widgets/health_floating_action_button.dart';
@@ -8,7 +7,8 @@ import 'package:sep490/theme/color.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 class Header extends StatefulWidget {
-  const Header({super.key});
+  final void Function()? onPressed;
+  const Header({super.key, this.onPressed});
 
   @override
   State<Header> createState() => _HeaderState();
@@ -19,7 +19,7 @@ class _HeaderState extends State<Header> {
   late String fullName = SharedPrefsHelper().getString('fullName') ?? '';
   late String avatar = SharedPrefsHelper().getString('avatar') ??
       'https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg';
-
+  late int roleId = SharedPrefsHelper().getInt('roleId') ?? 0;
   // @override
   // void initState() {
   //   super.initState();
@@ -127,15 +127,9 @@ class _HeaderState extends State<Header> {
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => GroupMemberScreen()),
-                          );
-                        },
+                        onPressed: widget.onPressed,
                         icon: Icon(
-                          Icons.group,
+                          Icons.autorenew_rounded,
                           color: AppColors.textColor,
                           size: 20,
                         )),

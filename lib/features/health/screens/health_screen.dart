@@ -22,10 +22,18 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> dataFromApi = [];
   bool isLoading = false;
+  late int accountId = 0;
+  late int roleId = 0;
+  late int selectedElderlyUserId = 0;
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
 
   @override
   void initState() {
     super.initState();
+    accountId = sharedPrefsHelper.getInt("accountId") ?? 0;
+    roleId = sharedPrefsHelper.getInt("roleId") ?? 0;
+    selectedElderlyUserId =
+        sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
     fetchHealthIndicator();
     WidgetsBinding.instance.addObserver(this);
   }
@@ -61,8 +69,13 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       isLoading = true;
     });
 
-    SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
-    final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
+    final int currentUserAccountID;
+    if (roleId == 2) {
+      currentUserAccountID = accountId;
+    } else {
+      currentUserAccountID = selectedElderlyUserId;
+    } 
+
     final healthController = ref.read(healthControllerProvider);
 
     try {
@@ -201,10 +214,10 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     SizedBox(
                       width: 10,
                     ),
-                    const Text(
+                    Text(
                       "Sức khỏe của tôi",
                       style:
-                          TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+                          const TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
                     ),
                     IconButton(
                         onPressed: () {
