@@ -697,6 +697,12 @@ class _MyAppState extends State<MyApp>
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker',
+      fullScreenIntent: true,
+      enableVibration: true,
+      playSound: true,
+      timeoutAfter: 5000,
+      channelShowBadge: true,
+      category: AndroidNotificationCategory.message,
     );
 
     const NotificationDetails platformChannelSpecifics =
