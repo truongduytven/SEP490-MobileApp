@@ -76,7 +76,7 @@ dependencies:
   flutter_styled_toast: ^2.2.1
   flutter_contacts: ^1.1.9+2
   dio: ^5.8.0+1
-  firebase_messaging: ^15.2.4
+  firebase_messaging: ^15.2.5
   firebase_core: ^3.12.1
   flutter_dotenv: ^5.2.1
   flame: ^1.25.0
@@ -108,6 +108,7 @@ dependencies:
   page_flip: ^0.2.3
   pdf_render: ^1.4.12
   page_flip_builder: ^0.1.4
+  flutter_local_notifications: ^19.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
@@ -11,6 +12,7 @@ import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/call_history/repository/call_history_helper.dart';
 import 'package:sep490/models/call_history.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
+import 'package:sep490/presentation/pages/notification/notification_screen.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
 import 'package:sep490/theme/color.dart';
@@ -21,6 +23,11 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Nhận thông báo trong nền: ${message.data}");
+}
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -37,17 +44,35 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final int? currentUserId = prefs.getInt('accountId');
   final String? fullName = prefs.getString('fullName');
-  final String? deviceToken = prefs.getString('deviceToken');
+  // final String? deviceToken = prefs.getString('deviceToken');
+  // if (deviceToken == null) {
+  //   await Firebase.initializeApp(
+  //     options: FirebaseOptions(
+  //       apiKey: dotenv.env['API_KEY'] ?? '',
+  //       appId: dotenv.env['APP_ID'] ?? '',
+  //       messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
+  //       projectId: dotenv.env['PROJECT_ID'] ?? '',
+  //     ),
+  //   );
+  // }
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: dotenv.env['API_KEY'] ?? '',
+      appId: dotenv.env['APP_ID'] ?? '',
+      messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
+      projectId: dotenv.env['PROJECT_ID'] ?? '',
+    ),
+  );
+
+  /// Lấy device token
+  String? deviceToken = prefs.getString('deviceToken');
   if (deviceToken == null) {
-    await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: dotenv.env['API_KEY'] ?? '',
-        appId: dotenv.env['APP_ID'] ?? '',
-        messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
-        projectId: dotenv.env['PROJECT_ID'] ?? '',
-      ),
-    );
+    deviceToken = await FirebaseMessaging.instance.getToken();
+    if (deviceToken != null) {
+      await prefs.setString('deviceToken', deviceToken);
+    }
   }
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   /// Define a navigator key
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -503,6 +528,7 @@ class _MyAppState extends State<MyApp>
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 100));
     // _initSpeech();
+    _setupFirebaseMessaging();
   }
 
   void _onRoleChanged() {
@@ -606,6 +632,51 @@ class _MyAppState extends State<MyApp>
         _isShakeTriggered = false;
       });
       print('Lắc nè');
+    }
+  }
+
+  void _setupFirebaseMessaging() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // Lấy FCM Token
+    String? token = await messaging.getToken();
+    print("✅ FCM Token: $token");
+    // Nhận thông báo khi ứng dụng đang mở
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("Nhận thông báo khi mở app: ${message.notification!.title}");
+    });
+    // Xử lý khi mở ứng dụng từ trạng thái đã đóng
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
+      if (message != null) {
+        print(
+            "📌 Nhấn vào thông báo khi app đóng: ${message.notification?.title}");
+        _handleNotificationNavigation(message.notification?.title ?? "");
+      }
+    });
+
+    // Xử lý khi nhấn vào thông báo khi app đang chạy nền
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print(
+          "📌 Nhấn vào thông báo khi app chạy nền: ${message.notification?.title}");
+      _handleNotificationNavigation(message.notification?.title ?? "");
+    });
+  }
+
+  void _handleNotificationNavigation(String title) {
+    final navigator = widget.navigatorKey.currentState;
+    if (navigator == null) {
+      print("⚠️ Không tìm thấy Navigator để điều hướng!");
+      return;
+    }
+
+    if (title.contains("Test")) {
+      navigator.push(
+        MaterialPageRoute(builder: (context) => NotificationScreen()),
+      );
+    } else if (title.contains("News")) {
+      navigator.pushNamed('/news');
     }
   }
 
