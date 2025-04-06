@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/common/utils/utils.dart';
@@ -518,6 +519,8 @@ class _MyAppState extends State<MyApp>
   bool _isListening = false;
   // final SpeechToText _speech = SpeechToText();
   bool _isInEmergency = false;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
@@ -529,6 +532,7 @@ class _MyAppState extends State<MyApp>
         AnimationController(vsync: this, duration: Duration(milliseconds: 100));
     // _initSpeech();
     _setupFirebaseMessaging();
+    _initializeLocalNotifications();
   }
 
   void _onRoleChanged() {
@@ -637,13 +641,33 @@ class _MyAppState extends State<MyApp>
 
   void _setupFirebaseMessaging() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
 
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('✅ Đã được cấp quyền thông báo');
+    } else {
+      print('❌ Không được cấp quyền thông báo');
+    }
     // Lấy FCM Token
     String? token = await messaging.getToken();
     print("✅ FCM Token: $token");
     // Nhận thông báo khi ứng dụng đang mở
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("Nhận thông báo khi mở app: ${message.notification!.title}");
+    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("Nhận thông báo khi mở app: ${message.notification?.title}");
+
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+
+      if (notification != null && android != null) {
+        _showLocalNotification(notification);
+      }
     });
     // Xử lý khi mở ứng dụng từ trạng thái đã đóng
     FirebaseMessaging.instance
@@ -664,6 +688,28 @@ class _MyAppState extends State<MyApp>
     });
   }
 
+  void _showLocalNotification(RemoteNotification notification) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'high_importance_channel', // ID
+      'Thông báo', // Tên kênh
+      channelDescription: 'Kênh dành cho thông báo quan trọng',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      platformChannelSpecifics,
+    );
+  }
+
   void _handleNotificationNavigation(String title) {
     final navigator = widget.navigatorKey.currentState;
     if (navigator == null) {
@@ -678,6 +724,16 @@ class _MyAppState extends State<MyApp>
     } else if (title.contains("News")) {
       navigator.pushNamed('/news');
     }
+  }
+
+  void _initializeLocalNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/launcher_ic');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   @override
