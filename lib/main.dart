@@ -707,6 +707,7 @@ class _MyAppState extends State<MyApp>
       notification.title,
       notification.body,
       platformChannelSpecifics,
+      payload: notification.title, // Đưa payload vào thông báo (ở đây là title)
     );
   }
 
@@ -726,6 +727,15 @@ class _MyAppState extends State<MyApp>
     }
   }
 
+  // void _initializeLocalNotifications() async {
+  //   const AndroidInitializationSettings initializationSettingsAndroid =
+  //       AndroidInitializationSettings('@mipmap/launcher_ic');
+
+  //   final InitializationSettings initializationSettings =
+  //       InitializationSettings(android: initializationSettingsAndroid);
+
+  //   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  // }
   void _initializeLocalNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/launcher_ic');
@@ -733,7 +743,22 @@ class _MyAppState extends State<MyApp>
     final InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          _onNotificationSelected, // Instance method will work for this
+      // onDidReceiveBackgroundNotificationResponse:
+      //     _onNotificationSelectedStatic, // Static method for background handling
+    );
+  }
+
+  Future<void> _onNotificationSelected(
+      NotificationResponse notificationResponse) async {
+    // You can use the payload to navigate or process the data passed with the notification.
+    if (notificationResponse.payload != null) {
+      // Process the payload (could be the title, id, etc.)
+      _handleNotificationNavigation(notificationResponse.payload!);
+    }
   }
 
   @override
