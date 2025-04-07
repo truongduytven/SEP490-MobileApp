@@ -109,6 +109,10 @@ dependencies:
   pdf_render: ^1.4.12
   page_flip_builder: ^0.1.4
   flutter_local_notifications: ^19.0.0
+  syncfusion_flutter_calendar: ^29.1.35
+  flutter_staggered_grid_view: ^0.7.0
+  flutter_portal: ^1.1.4
+  flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
