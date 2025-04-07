@@ -199,7 +199,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Header(),
+                Header(isChooseElderly: false,),
                 const SizedBox(height: 20),
                 Row(
                   children: [

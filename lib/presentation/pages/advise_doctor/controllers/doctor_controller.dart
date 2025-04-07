@@ -4,10 +4,15 @@ import 'package:sep490/presentation/pages/advise_doctor/repositories/doctor_repo
 class DoctorController {
   final DoctorRepository _doctorRepository = DoctorRepository();
   DoctorData? doctorData;
+  PackageData? packageData;
   List<AppoimentDoctor>? appoimentDoctor;
   List<TimeSlots>? listAppoimentDoctor;
   Report? report;
   List<FilteredDoctor>? listFilterDoctor;
+  List<ComboData>? comboData;
+  CheckoutResponse? checkoutResponse;
+  bool isOrderSuccess = false;
+  bool isConfirmedSuccess = false;
 
   Future<void> getDoctorData(int accountId) async {
     final response = await _doctorRepository.getDoctorDataById(accountId);
@@ -27,11 +32,37 @@ class DoctorController {
     }
   }
 
-  Future<void> getAppointmentByID(int accountId, String type) async {
-    final response = await _doctorRepository.getAppointmentByID(accountId, type);
+  Future<void> getPackageUser(int accountId) async {
+    final response = await _doctorRepository.getPackageUser(accountId);
+    if (response != null && response['isSuccess']) {
+      packageData = PackageData.fromJson(response['data']['data']);
+    } else {
+      packageData = null;
+    }
+  }
+
+  Future<void> getComboData() async {
+    final response = await _doctorRepository.getComboData();
     if (response != null && response['isSuccess']) {
       List<dynamic> data = response['data']['data'];
-      appoimentDoctor = data.map((item) => AppoimentDoctor.fromJson(item)).toList();
+      print(data);
+      if (data.isEmpty) {
+        comboData = null;
+        return;
+      }
+      comboData = data.map((item) => ComboData.fromJson(item)).toList();
+    } else {
+      comboData = null;
+    }
+  }
+
+  Future<void> getAppointmentByID(int accountId, String type) async {
+    final response =
+        await _doctorRepository.getAppointmentByID(accountId, type);
+    if (response != null && response['isSuccess']) {
+      List<dynamic> data = response['data']['data'];
+      appoimentDoctor =
+          data.map((item) => AppoimentDoctor.fromJson(item)).toList();
     } else {
       appoimentDoctor = null;
     }
@@ -50,11 +81,12 @@ class DoctorController {
     final response = await _doctorRepository.getTimeSlotById(accountId, date);
     if (response != null && response['isSuccess']) {
       List<dynamic> data = response['data']['data']['timeEachSlots'];
-      if(data.isEmpty) {
+      if (data.isEmpty) {
         listAppoimentDoctor = null;
         return;
       }
-      listAppoimentDoctor = data.map((item) => TimeSlots.fromJson(item)).toList();
+      listAppoimentDoctor =
+          data.map((item) => TimeSlots.fromJson(item)).toList();
     } else {
       listAppoimentDoctor = null;
     }
@@ -64,13 +96,45 @@ class DoctorController {
     final response = await _doctorRepository.getFilterDoctor(filterEnter);
     if (response != null && response['isSuccess']) {
       List<dynamic> data = response['data']['data'];
-      if(data.isEmpty) {
+      if (data.isEmpty) {
         listFilterDoctor = null;
         return;
       }
-      listFilterDoctor = data.map((item) => FilteredDoctor.fromJson(item)).toList();
+      listFilterDoctor =
+          data.map((item) => FilteredDoctor.fromJson(item)).toList();
     } else {
       listFilterDoctor = null;
+    }
+  }
+
+  Future<void> checkout(
+      int accountId, int elderlyId, int subscriptionId) async {
+    final response =
+        await _doctorRepository.checkout(accountId, elderlyId, subscriptionId);
+    if (response != null && response['isSuccess']) {
+      checkoutResponse = CheckoutResponse.fromJson(response['data']['data']);
+    } else {
+      checkoutResponse = null;
+    }
+  }
+
+  Future<void> checkOrderStatus(String transId) async {
+    final response =
+        await _doctorRepository.checkOrderStatus(transId);
+    if (response != null && response['isSuccess']) {
+      isOrderSuccess = response['data']['status'] == 1;
+    } else {
+      isOrderSuccess = false;
+    }
+  }
+
+  Future<void> confirmCheckout(String transId) async {
+    final response =
+        await _doctorRepository.confirmCheckout(transId);
+    if (response != null && response['isSuccess']) {
+      isConfirmedSuccess = response['data']['status'] == 1;
+    } else {
+      isConfirmedSuccess = false;
     }
   }
 }

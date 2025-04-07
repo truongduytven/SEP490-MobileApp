@@ -25,6 +25,7 @@ class HomeHealthIndicator {
 }
 
 class ElderlyUser {
+  int elderlyId;
   int accountId;
   int roleId;
   String email;
@@ -42,6 +43,7 @@ class ElderlyUser {
   bool isSuperAdmin;
 
   ElderlyUser({
+    required this.elderlyId,
     required this.accountId,
     required this.roleId,
     required this.email,
@@ -61,6 +63,7 @@ class ElderlyUser {
 
   factory ElderlyUser.fromJson(Map<String, dynamic> json) {
     return ElderlyUser(
+      elderlyId: json['elderlyId'] ?? 0,
       accountId: json['accountId'] ?? 0,
       roleId: json['roleId'] ?? 0,
       email: json['email'] ?? '',

@@ -40,6 +40,43 @@ class DoctorRepository {
     }
   }
 
+  Future<dynamic> getPackageUser(int account) async {
+    try {
+      final response = await http
+          .get(Uri.parse("$baseUrl/booking-management/user-booking/$account"));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> getComboData() async {
+    try {
+      final response = await http.get(Uri.parse("$baseUrl/combo-management"));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
   Future<dynamic> getAppointmentByID(int account, String type) async {
     try {
       final response = await http.get(Uri.parse(
@@ -174,5 +211,65 @@ class DoctorRepository {
       }
     }
     return data;
+  }
+
+  Future<dynamic> checkout(
+      int accountId, int elderlyId, int subscriptionId) async {
+    try {
+      final response = await http.post(Uri.parse("$baseUrl/booking-management"),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            "accountId": accountId,
+            "elderlyId": elderlyId,
+            "subscriptionId": subscriptionId
+          }));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> checkOrderStatus(String transId) async {
+    try {
+      final response = await http.get(Uri.parse("$baseUrl/booking-management/order-status?transId=$transId"));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> confirmCheckout(String transId) async {
+    try {
+      final response = await http.put(Uri.parse("$baseUrl/booking-management/confirm?apptransid=$transId"));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
   }
 }

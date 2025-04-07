@@ -177,3 +177,10 @@ String hourFormatSleep(int time) {
   }
   return "$hourString h $minuteString";
 }
+
+String convertMoney(double money) {
+  // 1000000 -> 1.000.000
+  final formatter = NumberFormat('#,##0', 'vi_VN');
+  String formattedMoney = formatter.format(money);
+  return formattedMoney;
+}

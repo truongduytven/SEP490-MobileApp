@@ -89,7 +89,7 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
                   )),
               centerTitle: true,
               background: Image.network(
-                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+                'https://www.btaskee.com/wp-content/uploads/2023/09/The-duc-duong-sinh-la-mot-hinh-thuc-tap-luyen-nhe-nhang-nham-cai-thien-suc-khoe.jpg',
                 fit: BoxFit.cover,
                 color: Colors.black.withOpacity(0.3),
                 colorBlendMode: BlendMode.darken,
