@@ -26,21 +26,27 @@ class _WorkScheduleState extends State<WorkSchedule> {
   final ScrollController _horizontalScrollController = ScrollController();
   final ScrollController _headerScrollController = ScrollController();
   final ScrollController _verticalScrollController = ScrollController();
+  final ScrollController _timeColumnScrollController = ScrollController();
   @override
   void initState() {
     super.initState();
     _initializeTimeSlots();
     _headerScrollController.addListener(_syncHeaderToContent);
     _horizontalScrollController.addListener(_syncContentToHeader);
+    _verticalScrollController.addListener(_syncContentToTimeColumn);
+    _timeColumnScrollController.addListener(_syncTimeColumnToContent);
   }
 
   @override
   void dispose() {
     _headerScrollController.removeListener(_syncHeaderToContent);
     _horizontalScrollController.removeListener(_syncContentToHeader);
+    _verticalScrollController.removeListener(_syncContentToTimeColumn);
+    _timeColumnScrollController.removeListener(_syncTimeColumnToContent);
     _horizontalScrollController.dispose();
     _headerScrollController.dispose();
     _verticalScrollController.dispose();
+    _timeColumnScrollController.dispose();
     super.dispose();
   }
 
@@ -52,6 +58,27 @@ class _WorkScheduleState extends State<WorkSchedule> {
     for (int day = 0; day < 5; day++) {
       for (int hour = 8; hour < 17; hour++) {
         _timeSlots[day][hour] = true;
+      }
+    }
+  }
+
+  void _syncContentToTimeColumn() {
+    if (_verticalScrollController.hasClients &&
+        _timeColumnScrollController.hasClients) {
+      final contentOffset = _verticalScrollController.offset;
+      if ((contentOffset - _timeColumnScrollController.offset).abs() > 1.0) {
+        _timeColumnScrollController.jumpTo(contentOffset);
+      }
+    }
+  }
+
+  // Đồng bộ cuộn từ cột giờ sang nội dung chính
+  void _syncTimeColumnToContent() {
+    if (_timeColumnScrollController.hasClients &&
+        _verticalScrollController.hasClients) {
+      final timeColumnOffset = _timeColumnScrollController.offset;
+      if ((timeColumnOffset - _verticalScrollController.offset).abs() > 1.0) {
+        _verticalScrollController.jumpTo(timeColumnOffset);
       }
     }
   }
@@ -256,10 +283,12 @@ class _WorkScheduleState extends State<WorkSchedule> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Fixed time column
+              // Fixed time column với ScrollController mới
               SizedBox(
                 width: 80,
                 child: ListView.builder(
+                  controller:
+                      _timeColumnScrollController, // Thêm controller này
                   physics: const ClampingScrollPhysics(),
                   itemCount: 24,
                   itemBuilder: (context, hour) => _buildTimeLabel(hour, theme),
@@ -273,6 +302,8 @@ class _WorkScheduleState extends State<WorkSchedule> {
                   child: SizedBox(
                     width: 700,
                     child: ListView.builder(
+                      controller:
+                          _verticalScrollController, // Sử dụng controller này cho cuộn dọc
                       physics: const ClampingScrollPhysics(),
                       itemCount: 24,
                       itemBuilder: (context, hour) =>
