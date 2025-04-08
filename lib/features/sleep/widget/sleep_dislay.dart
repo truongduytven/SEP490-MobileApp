@@ -5,7 +5,7 @@ import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
-import 'package:sep490/features/heart_beat/controller/heart_rate_controller.dart';
+import 'package:sep490/features/sleep/controller/sleep_controller.dart';
 import 'package:sep490/theme/color.dart';
 
 class SleepDisplay extends ConsumerStatefulWidget {
@@ -27,31 +27,15 @@ class SleepDisplay extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<SleepDisplay> createState() =>
-      _SleepDisplayState();
+  ConsumerState<SleepDisplay> createState() => _SleepDisplayState();
 }
 
-class _SleepDisplayState
-    extends ConsumerState<SleepDisplay> {
-  String heartRateEvaluation = "Đang đánh giá...";
+class _SleepDisplayState extends ConsumerState<SleepDisplay> {
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    fetchBloodOxygenEvaluation();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      precacheImage(AssetImage('assets/gif/notes.gif'), context);
-    });
-  }
-
-  Future<void> fetchBloodOxygenEvaluation() async {
-    final heartRateController = ref.read(heartRateControllerProvider);
-    final result = await heartRateController.getHeartRateEvaluation(
-        context, widget.sleep.toInt());
-    setState(() {
-      heartRateEvaluation = result;
-    });
   }
 
   bool isToday(String dateTime) {
@@ -63,22 +47,12 @@ class _SleepDisplayState
         dateFromString.day == today.day;
   }
 
-  Color getColorBasedOnEvaluation(String evaluation) {
-    if (evaluation.toLowerCase().contains("nhanh")) {
-      return Colors.red;
-    } else if (evaluation.toLowerCase().contains("chậm")) {
-      return Colors.orange;
-    } else {
-      return Colors.green;
-    }
-  }
-
   void _handleDelete() async {
     setState(() => isLoading = true);
 
     try {
       final success =
-          await ref.read(heartRateControllerProvider).deleteHeartRate(
+          await ref.read(sleepControllerProvider).deleteHeartRate(
                 context: context,
                 heartRateId: int.parse(widget.id!),
               );
@@ -223,18 +197,24 @@ class _SleepDisplayState
                                   ),
                                 ),
                               ),
-                              isToday(widget.dateTime)
-                                  ? IconButton(
-                                      onPressed: widget.onEdit,
-                                      icon: Icon(Icons.edit,
-                                          size: 30,
-                                          color: AppColors.primaryColor),
-                                    )
-                                  : Icon(
+                              widget.typeData == 'Tự động'
+                                  ? Icon(
                                       Icons.lock_outline,
                                       size: 30,
                                       color: AppColors.primaryColor,
                                     )
+                                  : isToday(widget.dateTime)
+                                      ? IconButton(
+                                          onPressed: widget.onEdit,
+                                          icon: Icon(Icons.edit,
+                                              size: 30,
+                                              color: AppColors.primaryColor),
+                                        )
+                                      : Icon(
+                                          Icons.lock_outline,
+                                          size: 30,
+                                          color: AppColors.primaryColor,
+                                        )
                             ],
                           ),
                           // Weight display
@@ -293,36 +273,9 @@ class _SleepDisplayState
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20, bottom: 10),
-                            child: Divider(
-                                color: AppColors.grayColor4,
-                                thickness: 0.3,
-                                height: 24),
-                          ),
 
                           SizedBox(
-                            height: 10,
-                          ),
-
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.monitor_heart_outlined,
-                                size: 30,
-                                color: getColorBasedOnEvaluation(
-                                    heartRateEvaluation), // Màu cố định
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                heartRateEvaluation, // Hiển thị đánh giá từ API
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  color: getColorBasedOnEvaluation(
-                                      heartRateEvaluation), // Màu cố định
-                                ),
-                              ),
-                            ],
+                            height: 30,
                           ),
                         ],
                       ),
@@ -350,40 +303,22 @@ class _SleepDisplayState
                                       SharedPrefsHelper();
                                   final currentUserAccountID =
                                       sharedPrefsHelper.getInt("accountId");
-                                  final currentUserFullName =
-                                      sharedPrefsHelper.getString("fullName");
                                   final heartRateController =
-                                      ref.read(heartRateControllerProvider);
-
-                                  // final success =
-                                  //     await heartRateController.addHeartRate(
-                                  //   context: context,
-                                  //   accountId: currentUserAccountID ?? 0,
-                                  //   elderlyId: currentUserAccountID ?? 0,
-                                  //   heartRate: widget.heartBeat.toInt(),
-                                  //   heartRateSource: "Thủ công",
-                                  // );
+                                      ref.read(sleepControllerProvider);
 
                                   bool success;
                                   if (widget.id != null) {
                                     // Gọi hàm update nếu có id
-                                    success = await heartRateController
-                                        .updateHeartRate(
-                                      context: context,
-                                      heartRateId: int.parse(widget.id!),
-                                      createdBy:
-                                          currentUserFullName ?? "Unknown",
-                                      heartRate: widget.sleep.toInt(),
-                                    );
+                                    success = false;
                                   } else {
                                     // Gọi hàm add nếu không có id
                                     success =
-                                        await heartRateController.addHeartRate(
+                                        await heartRateController.addBloodOxygen(
                                       context: context,
                                       accountId: currentUserAccountID ?? 0,
                                       elderlyId: currentUserAccountID ?? 0,
-                                      heartRate: widget.sleep.toInt(),
-                                      heartRateSource: "Thủ công",
+                                      sleep: widget.sleep.toInt(),
+                                      sleepSource: widget.typeData,
                                     );
                                   }
                                   await Future.delayed(Duration(seconds: 2));

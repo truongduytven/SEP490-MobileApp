@@ -485,8 +485,8 @@ class _BloodPressureDisplayWidgetState
                                   elderlyId: currentUserAccountID ?? 0,
                                   systolic: widget.systolic.toInt(),
                                   diastolic: widget.diastolic.toInt(),
-                                  systolicSource: "Thủ công",
-                                  diastolicSource: "Thủ công",
+                                  systolicSource: widget.typeData,
+                                  diastolicSource: widget.typeData,
                                 );
                               }
                               await Future.delayed(Duration(seconds: 2));

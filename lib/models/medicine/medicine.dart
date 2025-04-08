@@ -68,7 +68,7 @@ class Medicine {
       shape: json['shape'],
       remaining: json['remaining'],
       frequencyType: json['frequencyType'],
-      frequencySelect: json['frequencySelect'],
+      frequencySelect: json['frequencySelect'] ?? [],
       isBeforeMeal: json['isBeforeMeal'],
       schedule: (json['schedule'] as List)
           .map((item) => Schedule.fromJson(item))

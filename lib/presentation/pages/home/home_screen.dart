@@ -309,6 +309,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       userList = homeController.elderlyUsers;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (userList == null) {
+        return;
+      }
+      if (sharedPrefsHelper.getInt('selectedElderlyUserId') != null) {
+        return;
+      }
+      if (userList!.isNotEmpty && selectedElderlyUserId == 0) {
+        selectedElderlyUserId = userList![0].accountId;
+        selectedElderlyUserName = userList![0].fullName;
+        sharedPrefsHelper.setInt(
+            'selectedElderlyUserId', userList![0].accountId);
+        sharedPrefsHelper.setString(
+            'selectedElderlyUserName', userList![0].fullName);
+        sharedPrefsHelper.setInt('selectedElderlyId', userList![0].elderlyId);
+      }
       _showSelectDialog();
     });
   }

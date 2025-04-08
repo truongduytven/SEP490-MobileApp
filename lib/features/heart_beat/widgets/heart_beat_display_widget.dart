@@ -383,7 +383,7 @@ class _HeartBeatDisplayWidgetState
                                       accountId: currentUserAccountID ?? 0,
                                       elderlyId: currentUserAccountID ?? 0,
                                       heartRate: widget.heartBeat.toInt(),
-                                      heartRateSource: "Thủ công",
+                                      heartRateSource: widget.typeData,
                                     );
                                   }
                                   await Future.delayed(Duration(seconds: 2));

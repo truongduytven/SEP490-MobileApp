@@ -30,7 +30,7 @@ class StepsController {
     }
   }
 
-  Future<bool> addBloodOxygen({
+  Future<bool> addSteps({
     required BuildContext context,
     required int accountId,
     required int elderlyId,
@@ -62,7 +62,7 @@ class StepsController {
       CherryToast.error(
         toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
         title: Text(
-          "Không thể thêm nhịp tim",
+          "Không thể thêm số bước chân",
           style: TextStyle(color: Colors.black),
         ),
       ).show(context);

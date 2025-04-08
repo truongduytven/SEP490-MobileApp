@@ -255,17 +255,24 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                               ),
                             ),
                           ),
-                          isToday(widget.dateTime)
-                              ? IconButton(
-                                  onPressed: widget.onEdit,
-                                  icon: Icon(Icons.edit,
-                                      size: 30, color: AppColors.primaryColor),
-                                )
-                              : Icon(
+                          widget.typeData == 'Tự động'
+                              ? Icon(
                                   Icons.lock_outline,
                                   size: 30,
                                   color: AppColors.primaryColor,
                                 )
+                              : isToday(widget.dateTime)
+                                  ? IconButton(
+                                      onPressed: widget.onEdit,
+                                      icon: Icon(Icons.edit,
+                                          size: 30,
+                                          color: AppColors.primaryColor),
+                                    )
+                                  : Icon(
+                                      Icons.lock_outline,
+                                      size: 30,
+                                      color: AppColors.primaryColor,
+                                    )
                         ],
                       ),
                       // Weight display
@@ -428,7 +435,7 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                                   accountId: currentUserAccountID ?? 0,
                                   elderlyId: currentUserAccountID ?? 0,
                                   height: widget.height.toDouble(),
-                                  heightSource: "Thủ công",
+                                  heightSource: widget.typeData,
                                 );
                               }
                               await Future.delayed(Duration(seconds: 2));

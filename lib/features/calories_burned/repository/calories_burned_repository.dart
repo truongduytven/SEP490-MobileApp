@@ -68,7 +68,7 @@ class CaloriesBurnedRepository {
     required String caloriesBurnedSource,
   }) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/heart-rate');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/calories-consumption');
 
     try {
       final response = await http.post(
@@ -80,8 +80,8 @@ class CaloriesBurnedRepository {
         body: jsonEncode({
           "accountId": accountId,
           "elderlyId": elderlyId,
-          "heartRate1": caloriesBurned,
-          "heartRateSource": caloriesBurnedSource,
+          "caloriesConsumption1": caloriesBurned,
+          "caloriesConsumptionSource": caloriesBurnedSource,
         }),
       );
 
@@ -140,87 +140,12 @@ class CaloriesBurnedRepository {
     }
   }
 
-  // Future<bool> updateHeartRate({
-  //   required BuildContext context,
-  //   required int heartRateId,
-  //   required String createdBy,
-  //   required int heartRate,
-  // }) async {
-  //   final url = Uri.parse(
-  //       'https://api.diavan-valuation.asia/api/HealthIndicator/update-heart-rate/$heartRateId?createdBy=$createdBy');
-
-  //   try {
-  //     final response = await http.put(
-  //       url,
-  //       headers: {
-  //         'accept': '*/*',
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: jsonEncode(heartRate),
-  //     );
-
-  //     final data = jsonDecode(response.body);
-
-  //     if (response.statusCode == 200) {
-  //       if (data["status"] == 1) {
-  //         CherryToast.success(
-  //             toastDuration: Duration(seconds: 2),
-  //             title: Text("Nhịp tim đã cập nhật thành công!",
-  //                 style: TextStyle(
-  //                   color: Colors.black,
-  //                   fontSize: 20,
-  //                 ))).show(context);
-  //         return true;
-  //       } else {
-  //         CherryToast.error(
-  //           toastDuration: Duration(seconds: 3),
-  //           title: Text(
-  //             "Lỗi: ${data["message"]}",
-  //             style: TextStyle(
-  //               color: Colors.black,
-  //               fontSize: 20,
-  //             ),
-  //           ),
-  //         ).show(context);
-
-  //         return false;
-  //       }
-  //     } else {
-  //       CherryToast.error(
-  //         toastDuration: Duration(seconds: 3),
-  //         title: Text(
-  //           "Lỗi HTTP ${response.statusCode}",
-  //           style: TextStyle(
-  //             color: Colors.black,
-  //             fontSize: 20,
-  //           ),
-  //         ),
-  //       ).show(context);
-
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     CherryToast.error(
-  //       toastDuration: Duration(seconds: 3),
-  //       title: Text(
-  //         "Lỗi kết nối API: $e",
-  //         style: TextStyle(
-  //           color: Colors.black,
-  //           fontSize: 20,
-  //         ),
-  //       ),
-  //     ).show(context);
-
-  //     return false;
-  //   }
-  // }
-
   Future<bool> deleteCaloriesBurned({
     required BuildContext context,
     required int caloriesBurnedId,
   }) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/heart-rate/$caloriesBurnedId');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/caloriesConsumption/$caloriesBurnedId');
 
     try {
       final response = await http.put(
@@ -293,7 +218,7 @@ class CaloriesBurnedRepository {
     int id,
   ) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/heartRate/detail/$id');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/caloriesConsumption/detail/$id');
 
     try {
       final response = await http.get(url);

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/calories_burned/controller/calories_burned_controller.dart';
 import 'package:sep490/features/heart_beat/controller/heart_rate_controller.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -30,26 +31,15 @@ class CaloriesBurnedDislay extends ConsumerStatefulWidget {
       _CaloriesBurnedDislayState();
 }
 
-class _CaloriesBurnedDislayState
-    extends ConsumerState<CaloriesBurnedDislay> {
+class _CaloriesBurnedDislayState extends ConsumerState<CaloriesBurnedDislay> {
   String heartRateEvaluation = "Đang đánh giá...";
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    fetchBloodOxygenEvaluation();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       precacheImage(AssetImage('assets/gif/notes.gif'), context);
-    });
-  }
-
-  Future<void> fetchBloodOxygenEvaluation() async {
-    final heartRateController = ref.read(heartRateControllerProvider);
-    final result = await heartRateController.getHeartRateEvaluation(
-        context, widget.caloriesBurned.toInt());
-    setState(() {
-      heartRateEvaluation = result;
     });
   }
 
@@ -62,24 +52,14 @@ class _CaloriesBurnedDislayState
         dateFromString.day == today.day;
   }
 
-  Color getColorBasedOnEvaluation(String evaluation) {
-    if (evaluation.toLowerCase().contains("nhanh")) {
-      return Colors.red;
-    } else if (evaluation.toLowerCase().contains("chậm")) {
-      return Colors.orange;
-    } else {
-      return Colors.green;
-    }
-  }
-
   void _handleDelete() async {
     setState(() => isLoading = true);
 
     try {
       final success =
-          await ref.read(heartRateControllerProvider).deleteHeartRate(
+          await ref.read(caloriesBurnedControllerProvider).deleteHeartRate(
                 context: context,
-                heartRateId: int.parse(widget.id!),
+                caloriesBurnedId: int.parse(widget.id!),
               );
       await Future.delayed(Duration(seconds: 2));
 
@@ -223,18 +203,24 @@ class _CaloriesBurnedDislayState
                                   ),
                                 ),
                               ),
-                              isToday(widget.dateTime)
-                                  ? IconButton(
-                                      onPressed: widget.onEdit,
-                                      icon: Icon(Icons.edit,
-                                          size: 30,
-                                          color: AppColors.primaryColor),
-                                    )
-                                  : Icon(
+                              widget.typeData == 'Tự động'
+                                  ? Icon(
                                       Icons.lock_outline,
                                       size: 30,
                                       color: AppColors.primaryColor,
                                     )
+                                  : isToday(widget.dateTime)
+                                      ? IconButton(
+                                          onPressed: widget.onEdit,
+                                          icon: Icon(Icons.edit,
+                                              size: 30,
+                                              color: AppColors.primaryColor),
+                                        )
+                                      : Icon(
+                                          Icons.lock_outline,
+                                          size: 30,
+                                          color: AppColors.primaryColor,
+                                        )
                             ],
                           ),
                           // Weight display
@@ -293,36 +279,9 @@ class _CaloriesBurnedDislayState
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20, bottom: 10),
-                            child: Divider(
-                                color: AppColors.grayColor4,
-                                thickness: 0.3,
-                                height: 24),
-                          ),
 
                           SizedBox(
-                            height: 10,
-                          ),
-
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.monitor_heart_outlined,
-                                size: 30,
-                                color: getColorBasedOnEvaluation(
-                                    heartRateEvaluation), // Màu cố định
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                heartRateEvaluation, // Hiển thị đánh giá từ API
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  color: getColorBasedOnEvaluation(
-                                      heartRateEvaluation), // Màu cố định
-                                ),
-                              ),
-                            ],
+                            height: 30,
                           ),
                         ],
                       ),
@@ -350,40 +309,23 @@ class _CaloriesBurnedDislayState
                                       SharedPrefsHelper();
                                   final currentUserAccountID =
                                       sharedPrefsHelper.getInt("accountId");
-                                  final currentUserFullName =
-                                      sharedPrefsHelper.getString("fullName");
-                                  final heartRateController =
-                                      ref.read(heartRateControllerProvider);
-
-                                  // final success =
-                                  //     await heartRateController.addHeartRate(
-                                  //   context: context,
-                                  //   accountId: currentUserAccountID ?? 0,
-                                  //   elderlyId: currentUserAccountID ?? 0,
-                                  //   heartRate: widget.heartBeat.toInt(),
-                                  //   heartRateSource: "Thủ công",
-                                  // );
+                                  final heartRateController = ref
+                                      .read(caloriesBurnedControllerProvider);
 
                                   bool success;
                                   if (widget.id != null) {
                                     // Gọi hàm update nếu có id
-                                    success = await heartRateController
-                                        .updateHeartRate(
-                                      context: context,
-                                      heartRateId: int.parse(widget.id!),
-                                      createdBy:
-                                          currentUserFullName ?? "Unknown",
-                                      heartRate: widget.caloriesBurned.toInt(),
-                                    );
+                                    success = false;
                                   } else {
                                     // Gọi hàm add nếu không có id
-                                    success =
-                                        await heartRateController.addHeartRate(
+                                    success = await heartRateController
+                                        .addBloodOxygen(
                                       context: context,
                                       accountId: currentUserAccountID ?? 0,
                                       elderlyId: currentUserAccountID ?? 0,
-                                      heartRate: widget.caloriesBurned.toInt(),
-                                      heartRateSource: "Thủ công",
+                                      caloriesBurned:
+                                          widget.caloriesBurned.toInt(),
+                                      caloriesBurnedSource: widget.typeData,
                                     );
                                   }
                                   await Future.delayed(Duration(seconds: 2));

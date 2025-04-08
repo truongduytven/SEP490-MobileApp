@@ -210,7 +210,7 @@ class PackageData {
       note: json['note'],
       status: json['status'],
       transactionId: json['transactionId'],
-      professorId: json['professorId'],
+      professorId: json['professorId'] ?? 0,
     );
   }
 }

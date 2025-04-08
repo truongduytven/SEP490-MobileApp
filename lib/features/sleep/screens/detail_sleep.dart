@@ -3,25 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
-import 'package:sep490/features/height/controller/height_controlelr.dart';
+import 'package:sep490/features/heart_beat/controller/heart_rate_controller.dart';
+import 'package:sep490/features/sleep/controller/sleep_controller.dart';
+import 'package:sep490/features/steps/controller/steps_controller.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_skeleton.dart';
 import 'package:sep490/presentation/widgets/health/chart/line_chart_widget.dart';
-import 'package:sep490/presentation/widgets/health/chart/marker_pointer_chart.dart';
 import 'package:sep490/features/health/widgets/health_floating_action_button.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:shimmer/shimmer.dart';
 
-class DetailHeightScreen extends ConsumerStatefulWidget {
-  const DetailHeightScreen({super.key});
+class DetailSleepScreen extends ConsumerStatefulWidget {
+  const DetailSleepScreen({super.key});
 
   @override
-  ConsumerState<DetailHeightScreen> createState() => _DetailHeightScreenState();
+  ConsumerState<DetailSleepScreen> createState() =>
+      _DetailSleepScreenState();
 }
 
-class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
+class _DetailSleepScreenState extends ConsumerState<DetailSleepScreen>
     with SingleTickerProviderStateMixin, RouteAware, WidgetsBindingObserver {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
+  late TabController _tabController;
+
   List<Map<String, dynamic>> dataFromApi = [];
   // Lọc dữ liệu theo từng tab
   Map<String, dynamic>? dataByDate;
@@ -34,17 +37,45 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
   Map<String, double?> chartByMonth = {};
   Map<String, double?> chartByYear = {};
   bool isLoading = false;
-  late TabController _tabController;
+
   final List<String> tabs = ['Ngày', 'Tuần', 'Tháng', 'Năm'];
+  final Map<String, double?> chartDataDate = {
+    "T2": 115,
+    "T3": null,
+    "T4": 116,
+    "T5": 114,
+    "T6": null,
+    "T7": 125,
+    "Hôm nay": 215,
+  };
+  final Map<String, double?> chartDataMonth = {
+    "11/2024": 116,
+    "12/2024": 112,
+    "T1": null,
+    "Tháng này": 118,
+  };
+  final Map<String, double?> chartDataYear = {
+    "2023": 165,
+    "2024": null,
+    "Năm nay": 146,
+  };
+  final Map<String, double?> chartDataWeek = {
+    "t-5": 120,
+    "t-4": null,
+    "t-3": 116,
+    "t-2": 125,
+    "t-1": null,
+    "Tuần này": 115,
+  };
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
     _tabController.addListener(() {
-      setState(() {}); // This ensures the UI updates when the tab changes
+      setState(() {});
     });
-    fetchHeightDetail();
+    fetchHeartTRateDetail();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -54,15 +85,13 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
 
     _tabController.dispose();
 
-    WidgetsBinding.instance
-        .removeObserver(this); // Xóa observer khi widget bị hủy
-    routeObserver.unsubscribe(this); // Hủy đăng ký RouteAware khi widget bị hủy
+    WidgetsBinding.instance.removeObserver(this);
+    routeObserver.unsubscribe(this);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Đăng ký RouteAware để theo dõi sự kiện navigation
     final route = ModalRoute.of(context);
     if (route is PageRoute) {
       // Kiểm tra xem route có phải là PageRoute không
@@ -74,25 +103,25 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
   @override
   void didPopNext() {
     // Khi màn hình này được hiển thị lại sau khi pop từ màn hình khác
-    fetchHeightDetail(); // Gọi lại API
+    fetchHeartTRateDetail(); // Gọi lại API
   }
 
-  Future<void> fetchHeightDetail() async {
+  Future<void> fetchHeartTRateDetail() async {
     setState(() {
       isLoading = true;
     });
 
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
-    final heightController = ref.read(heightControllerProvider);
+    final heartRateController = ref.read(sleepControllerProvider);
     final currentSelectedElderlyId = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
-      final result = await heightController.getHeightDetail(
+      final result = await heartRateController.getHeartRatetDetail(
         context: context,
-        accountId: currentSelectedElderlyId == 0
-            ? currentUserAccountID
-            : currentSelectedElderlyId,
+        accountId: currentSelectedElderlyId != 0 
+            ? currentSelectedElderlyId
+            : currentUserAccountID,
       );
       for (var item in result) {
         switch (item["tabs"]) {
@@ -132,14 +161,14 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
       CherryToast.error(
         toastDuration: Duration(seconds: 3),
         title: Text(
-          "Error fetching height detail indicators: $e",
+          "Error fetching heart rate detail indicators: $e",
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
           ),
         ),
       ).show(context);
-      print("Error fetching height detail indicators: $e");
+      print("Error fetching heart rate indicators: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -164,75 +193,15 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
     return formattedData;
   }
 
-  double _getCurrentBMIValue() {
-    String evaluation;
-    switch (_tabController.index) {
-      case 0:
-        evaluation = dataByDate?["evaluation"] ?? "0.0";
-        break;
-      case 1:
-        evaluation = dataByWeek?["evaluation"] ?? "0.0";
-        break;
-      case 2:
-        evaluation = dataByMonth?["evaluation"] ?? "0.0";
-        break;
-      case 3:
-        evaluation = dataByYear?["evaluation"] ?? "0.0";
-        break;
-      default:
-        evaluation = "0.0";
-    }
-    // Chuyển đổi từ String sang double
-    double value = double.tryParse(evaluation) ?? 0.0;
-    // Làm tròn đến 2 chữ số thập phân
-    return double.parse(value.toStringAsFixed(2));
-  }
-
-  String _getCurrentBMIResult() {
-    double bmiValue;
-    switch (_tabController.index) {
-      case 0:
-        bmiValue = double.tryParse(dataByDate?["evaluation"] ?? "0.0") ?? 0.0;
-        break;
-      case 1:
-        bmiValue = double.tryParse(dataByWeek?["evaluation"] ?? "0.0") ?? 0.0;
-        break;
-      case 2:
-        bmiValue = double.tryParse(dataByMonth?["evaluation"] ?? "0.0") ?? 0.0;
-        break;
-      case 3:
-        bmiValue = double.tryParse(dataByYear?["evaluation"] ?? "0.0") ?? 0.0;
-        break;
-      default:
-        bmiValue = 0.0;
-    }
-
-    // Đánh giá BMI
-    if (bmiValue < 18.5) {
-      return "Thiếu cân";
-    } else if (bmiValue >= 18.5 && bmiValue <= 24.9) {
-      return "Bình thường";
-    } else if (bmiValue >= 25 && bmiValue <= 29.9) {
-      return "Thừa cân";
-    } else if (bmiValue >= 30) {
-      return "Béo phì";
-    } else {
-      return "--";
-    }
-  }
-
-  Color getBMIColor(String? bmiValue) {
-    double? bmi = double.tryParse(bmiValue ?? "");
-    if (bmi == null) return Colors.grey; // Trả về màu xám nếu BMI không hợp lệ
-
-    if (bmi < 18.5) {
-      return Colors.blue; // Gầy
-    } else if (bmi < 25) {
+  Color getBMIColor(String? result) {
+    if (result?.trim().toLowerCase() == "cao") {
+      return Colors.red;
+    } else if (result?.trim().toLowerCase() == "n/a") {
       return Colors.green; // Bình thường
-    } else if (bmi < 30) {
-      return Colors.orange; // Thừa cân
+    } else if (result?.trim().toLowerCase() == "thấp") {
+      return Colors.blue;
     } else {
-      return Colors.red; // Béo phì
+      return Colors.orange;
     }
   }
 
@@ -244,7 +213,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "Chiều cao",
+          "Thời gian ngủ",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w700,
@@ -289,18 +258,19 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
             ),
             // Use Expanded for TabBarView
             SizedBox(
-              height: 400, // Adjust the height for better scrolling experience
+              height: 400,
               child: isLoading
                   ? LineChartSkeleton()
                   : TabBarView(
                       controller: _tabController,
                       children: [
+                        // Content for 'Ngày' tab (Daily)
                         Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -315,7 +285,8 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByDate?["average"] ) ?? "--"} cm",
+                                          // "${(dataByDate?["average"] as double?)?.toStringAsFixed(2) ?? "--"} nhịp/phút",
+                                          "${dataByDate?["average"] ?? "--"} phút",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -323,7 +294,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                       ],
                                     ),
                                     Text(
-                                      "BMI: ${dataByDate?["evaluation"] ?? "--"} ",
+                                      " ${dataByDate?["evaluation"] != null && dataByDate?["evaluation"] == "N/A" ? "Bình thường" : "--"} ",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 18,
@@ -338,7 +309,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                 height: 300,
                                 child: LineChartWidget(
                                   data: chartByDate,
-                                  unit: "cm",
+                                  unit: "BPM",
                                 ),
                               ),
                             ],
@@ -365,7 +336,8 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByWeek?["average"]) ?? "--"} cm",
+                                          // "${(dataByWeek?["average"] as double?)?.toStringAsFixed(2) ?? "--"} nhịp/phút",
+                                          "${dataByWeek?["average"] ?? "--"} phút",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -373,7 +345,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                       ],
                                     ),
                                     Text(
-                                      "BMI: ${dataByWeek?["evaluation"] ?? "--"} ",
+                                      " ${dataByDate?["evaluation"] != null && dataByDate?["evaluation"] == "N/A" ? "Bình thường" : "--"} ",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 18,
@@ -388,7 +360,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                 height: 300,
                                 child: LineChartWidget(
                                   data: chartByWeek,
-                                  unit: "cm",
+                                  unit: "BPM",
                                 ),
                               ),
                             ],
@@ -415,7 +387,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByMonth?["average"] ) ?? "--"} cm",
+                                          "${(dataByMonth?["average"]) ?? "--"} phút",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -423,7 +395,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                       ],
                                     ),
                                     Text(
-                                      "BMI: ${dataByMonth?["evaluation"] ?? "--"} ",
+                                      " ${dataByDate?["evaluation"] != null && dataByDate?["evaluation"] == "N/A" ? "Bình thường" : "--"} ",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 18,
@@ -438,7 +410,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                 height: 300,
                                 child: LineChartWidget(
                                   data: chartByMonth,
-                                  unit: "cm",
+                                  unit: "BPM",
                                 ),
                               ),
                             ],
@@ -464,7 +436,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByYear?["average"] ) ?? "--"} cm",
+                                          "${(dataByYear?["average"]) ?? "--"} phút",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -472,7 +444,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                       ],
                                     ),
                                     Text(
-                                      "BMI: ${dataByYear?["evaluation"] ?? "--"} ",
+                                      " ${dataByDate?["evaluation"] != null && dataByDate?["evaluation"] == "N/A" ? "Bình thường" : "--"} ",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 18,
@@ -487,7 +459,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                                 height: 300,
                                 child: LineChartWidget(
                                   data: chartByYear,
-                                  unit: "cm",
+                                  unit: "BPM",
                                 ),
                               ),
                             ],
@@ -498,58 +470,6 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
             ),
             const SizedBox(height: 20),
             // Marker Pointer Chart
-            Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey
-                        .withOpacity(0.5), // Shadow color (light pink)
-                    blurRadius: 0.05, // Blur radius for the shadow
-                    offset: Offset(
-                        1, 1), // Offset for the shadow (horizontal, vertical)
-                  ),
-                ],
-                color: AppColors.bgColor,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: AppColors.secondaryColor, // Pink border color
-                  width: 0.05, // Adjust the border width as needed
-                ),
-              ),
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Tỉ số khối cơ thể(BMI)",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    height: 150, // Ensure it has a fixed height
-                    child: isLoading
-                        ? Shimmer.fromColors(
-                            baseColor: const Color.fromARGB(255, 241, 236, 250),
-                            highlightColor: Colors.white,
-                            child: Container(
-                              height: 300,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          )
-                        : MarkerPointerChart(
-                            value: _getCurrentBMIValue(),
-                            result: _getCurrentBMIResult(),
-                          ),
-                  ),
-                ],
-              ),
-            ),
 
             const SizedBox(height: 20),
 
@@ -573,7 +493,7 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
                           context,
                           MaterialPageRoute(
                               builder: (context) => HealthMonitoringBook(
-                                    initialTopic: "height",
+                                    initialTopic: "sleep_time",
                                   )),
                         );
                       },

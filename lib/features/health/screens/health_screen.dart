@@ -74,7 +74,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       currentUserAccountID = accountId;
     } else {
       currentUserAccountID = selectedElderlyUserId;
-    } 
+    }
 
     final healthController = ref.read(healthControllerProvider);
 
@@ -147,6 +147,30 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         "unit": "mL/phút/1.73m2",
         "average": "So với lần đo trước",
       },
+      "BloodOxygen": {
+        "title": "Oxy trong máu",
+        "imageUrl": "assets/img3D/oxy_mau.png",
+        "unit": "%",
+        "average": "So với lần đo trước",
+      },
+      "FootStep": {
+        "title": "Số bước chân",
+        "imageUrl": "assets/img3D/buoc_chan.png",
+        "unit": "bước",
+        "average": "So với lần đo trước",
+      },
+      "SleepTime": {
+        "title": "Thời gian ngủ",
+        "imageUrl": "assets/img3D/giac_ngu.png",
+        "unit": "phút",
+        "average": "So với lần đo trước",
+      },
+      "CaloriesConsumption": {
+        "title": "Lượng calo tiêu thụ",
+        "imageUrl": "assets/img3D/kcal.png",
+        "unit": "kcal",
+        "average": "So với lần đo trước",
+      },
     };
 
     return apiData.map((item) {
@@ -154,17 +178,17 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       final Map<String, String> info = extraInfo[originalTitle] ??
           {
             "title": originalTitle,
-            "imageUrl": "assets/img3D/default.png",
+            "imageUrl": "assets/img/default_avatar.png",
             "unit": "Không có",
             "average": "Không có",
           };
 
       return {
         "title": info["title"]!,
-        "imageUrl": info["imageUrl"] ?? "assets/img3D/default.png",
+        "imageUrl": info["imageUrl"] ?? "assets/img/default_avatar.png",
         "unit": info["unit"]!,
         "average": info["average"]!,
-        "result": item["evaluation"].toString(),
+        "result": item["evaluation"].toString() == "N/A" ? "Bình thường" : item["evaluation"].toString(),
         "dateTime": item["dateTime"].toString(),
         "data": item["indicator"].toString(),
         "dataAverage": item["averageIndicator"].toString(),
@@ -199,7 +223,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Header(isChooseElderly: false,),
+                Header(
+                  isChooseElderly: false,
+                ),
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -216,8 +242,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     ),
                     Text(
                       "Sức khỏe của tôi",
-                      style:
-                          const TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 28, fontWeight: FontWeight.w600),
                     ),
                     IconButton(
                         onPressed: () {
@@ -265,34 +291,34 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                           itemCount: dataFromApi.length + 1,
                           itemBuilder: (context, index) {
                             if (index == dataFromApi.length) {
-                              return Card(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 4),
-                                color: AppColors.bgColor,
-                                elevation: 4,
-                                shape: RoundedRectangleBorder(
-                                  // side: const BorderSide(
-                                  //     color: AppColors.secondaryColor, width: 0.1),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    HealthMonitoringBook(
-                                                      initialTopic: "all",
-                                                    )),
-                                          );
-                                        },
-                                        child: Row(
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            HealthMonitoringBook(
+                                              initialTopic: "all",
+                                            )),
+                                  );
+                                },
+                                child: Card(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 4),
+                                  color: AppColors.bgColor,
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    // side: const BorderSide(
+                                    //     color: AppColors.secondaryColor, width: 0.1),
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
                                           children: [
                                             ClipRRect(
                                               borderRadius:
@@ -328,12 +354,12 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 20,
-                                      ),
-                                    ],
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );

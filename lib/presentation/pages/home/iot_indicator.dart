@@ -34,7 +34,7 @@ class _IotIndicatorState extends State<IotIndicator> {
     HealthDataType.WEIGHT,
     HealthDataType.HEIGHT,
   ];
-  bool requested = false;
+  bool requested = true;
   var today = DateTime.now();
   List<HealthDataPoint> healthData = [];
   var permissions = [
@@ -66,20 +66,21 @@ class _IotIndicatorState extends State<IotIndicator> {
     }
     await health.configure();
     try {
-      requested = await health.requestAuthorization(types);
+      await health.requestAuthorization(types);
       await health.requestAuthorization(types, permissions: permissions);
       setState(() {
+        requested = true;
         isHealthConnectAvailable = true;
-        hasPermission = requested;
+        hasPermission = true;
       });
     } catch (e) {
       if (e.toString().contains("Health Connect is not available")) {
         setState(() {
+          requested = false;
           isHealthConnectAvailable = false;
           hasPermission = false;
         });
       } else {
-        print("Other error: $e");
       }
     }
   }
@@ -374,8 +375,7 @@ class _IotIndicatorState extends State<IotIndicator> {
     try {
       data = await health.getHealthDataFromTypes(
         types: typesAuth,
-        startTime: DateTime(today.year, today.month, today.day, 0, 0, 0)
-            .subtract(Duration(days: 1)),
+        startTime: DateTime(today.year, today.month, today.day, 0, 0, 0),
         endTime: today,
       );
       if (data.isNotEmpty) {
@@ -651,6 +651,7 @@ class _IotIndicatorState extends State<IotIndicator> {
                 fontSize: 25,
                 fontWeight: FontWeight.w600)),
         backgroundColor: AppColors.bgColor,
+        centerTitle: true,
       ),
       body: Container(
           width: double.infinity,
@@ -732,6 +733,7 @@ class _IotIndicatorState extends State<IotIndicator> {
                           const SizedBox(height: 20),
                           Text(
                             'Vui lòng cấp quyền truy cập dữ liệu sức khỏe',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w600),
                           ),
@@ -741,14 +743,14 @@ class _IotIndicatorState extends State<IotIndicator> {
                               openAppSettings();
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryColor,
+                              backgroundColor: AppColors.secondaryColor,
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 10),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            child: Text('Cấp quyền'),
+                            child: Text('Cấp quyền', style: TextStyle(color: AppColors.bgColor),),
                           ),
                         ],
                       ),

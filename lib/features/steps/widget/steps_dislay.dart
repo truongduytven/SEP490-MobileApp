@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
-import 'package:sep490/features/heart_beat/controller/heart_rate_controller.dart';
+import 'package:sep490/features/steps/controller/steps_controller.dart';
 import 'package:sep490/theme/color.dart';
 
 class StepsDislay extends ConsumerStatefulWidget {
@@ -26,30 +26,18 @@ class StepsDislay extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<StepsDislay> createState() =>
-      _StepsDislayState();
+  ConsumerState<StepsDislay> createState() => _StepsDislayState();
 }
 
-class _StepsDislayState
-    extends ConsumerState<StepsDislay> {
+class _StepsDislayState extends ConsumerState<StepsDislay> {
   String heartRateEvaluation = "Đang đánh giá...";
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    fetchBloodOxygenEvaluation();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       precacheImage(AssetImage('assets/gif/notes.gif'), context);
-    });
-  }
-
-  Future<void> fetchBloodOxygenEvaluation() async {
-    final heartRateController = ref.read(heartRateControllerProvider);
-    final result = await heartRateController.getHeartRateEvaluation(
-        context, widget.steps.toInt());
-    setState(() {
-      heartRateEvaluation = result;
     });
   }
 
@@ -76,11 +64,10 @@ class _StepsDislayState
     setState(() => isLoading = true);
 
     try {
-      final success =
-          await ref.read(heartRateControllerProvider).deleteHeartRate(
-                context: context,
-                heartRateId: int.parse(widget.id!),
-              );
+      final success = await ref.read(stepsControllerProvider).deleteHeartRate(
+            context: context,
+            stepsId: int.parse(widget.id!),
+          );
       await Future.delayed(Duration(seconds: 2));
 
       if (mounted && success) {
@@ -223,18 +210,24 @@ class _StepsDislayState
                                   ),
                                 ),
                               ),
-                              isToday(widget.dateTime)
-                                  ? IconButton(
-                                      onPressed: widget.onEdit,
-                                      icon: Icon(Icons.edit,
-                                          size: 30,
-                                          color: AppColors.primaryColor),
-                                    )
-                                  : Icon(
+                              widget.typeData == 'Tự động'
+                                  ? Icon(
                                       Icons.lock_outline,
                                       size: 30,
                                       color: AppColors.primaryColor,
                                     )
+                                  : isToday(widget.dateTime)
+                                      ? IconButton(
+                                          onPressed: widget.onEdit,
+                                          icon: Icon(Icons.edit,
+                                              size: 30,
+                                              color: AppColors.primaryColor),
+                                        )
+                                      : Icon(
+                                          Icons.lock_outline,
+                                          size: 30,
+                                          color: AppColors.primaryColor,
+                                        )
                             ],
                           ),
                           // Weight display
@@ -293,36 +286,9 @@ class _StepsDislayState
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20, bottom: 10),
-                            child: Divider(
-                                color: AppColors.grayColor4,
-                                thickness: 0.3,
-                                height: 24),
-                          ),
 
                           SizedBox(
-                            height: 10,
-                          ),
-
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.monitor_heart_outlined,
-                                size: 30,
-                                color: getColorBasedOnEvaluation(
-                                    heartRateEvaluation), // Màu cố định
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                heartRateEvaluation, // Hiển thị đánh giá từ API
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  color: getColorBasedOnEvaluation(
-                                      heartRateEvaluation), // Màu cố định
-                                ),
-                              ),
-                            ],
+                            height: 30,
                           ),
                         ],
                       ),
@@ -350,40 +316,21 @@ class _StepsDislayState
                                       SharedPrefsHelper();
                                   final currentUserAccountID =
                                       sharedPrefsHelper.getInt("accountId");
-                                  final currentUserFullName =
-                                      sharedPrefsHelper.getString("fullName");
                                   final heartRateController =
-                                      ref.read(heartRateControllerProvider);
-
-                                  // final success =
-                                  //     await heartRateController.addHeartRate(
-                                  //   context: context,
-                                  //   accountId: currentUserAccountID ?? 0,
-                                  //   elderlyId: currentUserAccountID ?? 0,
-                                  //   heartRate: widget.heartBeat.toInt(),
-                                  //   heartRateSource: "Thủ công",
-                                  // );
+                                      ref.read(stepsControllerProvider);
 
                                   bool success;
                                   if (widget.id != null) {
-                                    // Gọi hàm update nếu có id
-                                    success = await heartRateController
-                                        .updateHeartRate(
-                                      context: context,
-                                      heartRateId: int.parse(widget.id!),
-                                      createdBy:
-                                          currentUserFullName ?? "Unknown",
-                                      heartRate: widget.steps.toInt(),
-                                    );
+                                    success = false;
                                   } else {
                                     // Gọi hàm add nếu không có id
                                     success =
-                                        await heartRateController.addHeartRate(
+                                        await heartRateController.addSteps(
                                       context: context,
                                       accountId: currentUserAccountID ?? 0,
                                       elderlyId: currentUserAccountID ?? 0,
-                                      heartRate: widget.steps.toInt(),
-                                      heartRateSource: "Thủ công",
+                                      steps: widget.steps.toInt(),
+                                      stepsSource: widget.typeData,
                                     );
                                   }
                                   await Future.delayed(Duration(seconds: 2));
