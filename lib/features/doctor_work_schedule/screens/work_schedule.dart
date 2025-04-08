@@ -639,6 +639,7 @@ class WorkSchedule extends StatefulWidget {
 
 class _WorkScheduleState extends State<WorkSchedule> {
   final WorkScheduleController _controller = WorkScheduleController();
+  bool _isEditing = false;
   Future<void> _loadSchedule() async {
     await _controller.fetchSchedule(widget.accountId);
     if (mounted) setState(() {});
@@ -676,56 +677,177 @@ class _WorkScheduleState extends State<WorkSchedule> {
             ),
           ),
         ),
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.today, size: 28),
+        //     tooltip: 'Tuần hiện tại',
+        //     onPressed: _controller.showCurrentWeek,
+        //   ),
+        // ],
         actions: [
-          IconButton(
-            icon: const Icon(Icons.today, size: 28),
-            tooltip: 'Tuần hiện tại',
-            onPressed: _controller.showCurrentWeek,
-          ),
-        ],
-      ),
-      body: _controller.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _controller.hasData
-              ? Column(
-                  children: [
-                    WorkScheduleHeader(controller: _controller),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: colors.surfaceVariant.withOpacity(0.1),
-                        ),
-                        child: WorkScheduleTable(controller: _controller),
-                      ),
-                    ),
-                  ],
-                )
-              : _buildNoScheduleUI(),
-      floatingActionButton: _controller.hasData
-          ? FloatingActionButton.extended(
-              icon: const Icon(Icons.save_rounded, size: 28),
-              label: const Text('LƯU LỊCH', style: TextStyle(fontSize: 16)),
-              onPressed: _controller.saveSchedule,
-              backgroundColor: colors.primary,
-              foregroundColor: colors.onPrimary,
-              elevation: 4,
-            )
-          : FloatingActionButton.extended(
-              icon: const Icon(Icons.add, size: 28),
-              label: const Text('THÊM LỊCH', style: TextStyle(fontSize: 16)),
+          if (_controller.hasData && !_isEditing)
+            IconButton(
+              icon: const Icon(Icons.edit),
               onPressed: () {
-                // Khởi tạo lịch mặc định khi người dùng muốn thêm lịch
-                _controller.initializeTimeSlots();
                 setState(() {
-                  _controller.hasData = true;
+                  _isEditing = true;
                 });
               },
-              backgroundColor: colors.primary,
-              foregroundColor: colors.onPrimary,
-              elevation: 4,
             ),
+          if (_controller.hasData && _isEditing)
+            IconButton(
+              icon: const Icon(Icons.cancel),
+              onPressed: () {
+                setState(() {
+                  _isEditing = false;
+                });
+              },
+            ),
+          if (_controller.hasData && _isEditing)
+            IconButton(
+              icon: const Icon(Icons.today),
+              onPressed: _controller.showCurrentWeek,
+            ),
+        ],
+      ),
+      body: _buildBody(theme, colors),
+      floatingActionButton: _buildFloatingActionButton(colors),
     );
+  }
+
+  Widget _buildBody(ThemeData theme, ColorScheme colors) {
+    if (_controller.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (!_controller.hasData) {
+      return _buildNoScheduleUI();
+    }
+
+    return Column(
+      children: [
+        WorkScheduleHeader(controller: _controller),
+        const SizedBox(height: 8),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: colors.surfaceVariant.withOpacity(0.1),
+            ),
+            child: _isEditing
+                ? WorkScheduleTable(controller: _controller)
+                : _buildScheduleView(theme, colors),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScheduleView(ThemeData theme, ColorScheme colors) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Header với các ngày trong tuần
+          _buildDayHeaders(theme),
+          // Danh sách các khung giờ
+          ..._buildTimeSlots(theme, colors),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDayHeaders(ThemeData theme) {
+    return Row(
+      children: [
+        const SizedBox(width: 80), // Cột giờ
+        ...List.generate(
+            7,
+            (day) => Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      _controller.days[day],
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                )),
+      ],
+    );
+  }
+
+  List<Widget> _buildTimeSlots(ThemeData theme, ColorScheme colors) {
+    return List.generate(24, (hour) {
+      return Row(
+        children: [
+          // Cột giờ
+          SizedBox(
+            width: 80,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                _controller.timeLabels[hour],
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+          ),
+          // Các ô lịch
+          ...List.generate(
+              7,
+              (day) => Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.all(2),
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: _controller.timeSlots[day][hour]
+                            ? colors.primary.withOpacity(0.2)
+                            : colors.surfaceVariant,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: colors.outline.withOpacity(0.1),
+                        ),
+                      ),
+                      child: _controller.timeSlots[day][hour]
+                          ? Icon(Icons.check_circle,
+                              color: colors.primary, size: 20)
+                          : null,
+                    ),
+                  )),
+        ],
+      );
+    });
+  }
+
+  Widget? _buildFloatingActionButton(ColorScheme colors) {
+    if (!_controller.hasData) {
+      return FloatingActionButton.extended(
+        icon: const Icon(Icons.add),
+        label: const Text('THÊM LỊCH'),
+        onPressed: () {
+          _controller.initializeTimeSlots();
+          setState(() {
+            _controller.hasData = true;
+            _isEditing = true; // Tự động vào chế độ chỉnh sửa
+          });
+        },
+      );
+    }
+
+    if (_isEditing) {
+      return FloatingActionButton.extended(
+        icon: const Icon(Icons.save),
+        label: const Text('LƯU LỊCH'),
+        onPressed: () async {
+          await _controller.saveSchedule();
+          setState(() {
+            _isEditing = false;
+          });
+        },
+      );
+    }
+
+    return null;
   }
 
   Widget _buildNoScheduleUI() {
