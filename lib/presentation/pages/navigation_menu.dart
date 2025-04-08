@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/doctor_work_schedule/screens/schedule.dart';
 import 'package:sep490/features/doctor_work_schedule/screens/work_schedule.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
@@ -28,6 +29,7 @@ class NavigationMenu extends StatefulWidget {
 class _NavigationMenuState extends State<NavigationMenu> {
   int _selectedIndex = 0;
   late int _roleId = 0;
+  late int _accountId = 0;
   final SharedPrefsHelper _sharedPrefsHelper = SharedPrefsHelper();
 
   @override
@@ -35,6 +37,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
     super.initState();
     _selectedIndex = widget.keyIndex;
     _roleId = _sharedPrefsHelper.getInt('roleId') ?? 2;
+    _accountId = _sharedPrefsHelper.getInt('accountId') ?? 0;
   }
 
   List<Widget> _widgetOptions(int roleId) {
@@ -346,7 +349,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
         case 0:
           return HomeScreen();
         case 1:
-          return WorkSchedule();
+          return WorkSchedule(
+            accountId: _accountId,
+          );
         case 2:
           return MobileLayoutScreen();
         case 3:
