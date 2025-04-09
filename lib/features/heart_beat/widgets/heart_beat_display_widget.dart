@@ -349,9 +349,11 @@ class _HeartBeatDisplayWidgetState
                                   SharedPrefsHelper sharedPrefsHelper =
                                       SharedPrefsHelper();
                                   final currentUserAccountID =
-                                      sharedPrefsHelper.getInt("accountId");
+                                      sharedPrefsHelper.getInt("accountId") ?? 0;
                                   final currentUserFullName =
-                                      sharedPrefsHelper.getString("fullName");
+                                      sharedPrefsHelper.getString("fullName") ?? '';
+                                  final currentUserElderlyID =
+                                      sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
                                   final heartRateController =
                                       ref.read(heartRateControllerProvider);
 
@@ -371,8 +373,7 @@ class _HeartBeatDisplayWidgetState
                                         .updateHeartRate(
                                       context: context,
                                       heartRateId: int.parse(widget.id!),
-                                      createdBy:
-                                          currentUserFullName ?? "Unknown",
+                                      createdBy: currentUserFullName,
                                       heartRate: widget.heartBeat.toInt(),
                                     );
                                   } else {
@@ -380,8 +381,10 @@ class _HeartBeatDisplayWidgetState
                                     success =
                                         await heartRateController.addHeartRate(
                                       context: context,
-                                      accountId: currentUserAccountID ?? 0,
-                                      elderlyId: currentUserAccountID ?? 0,
+                                      accountId: currentUserAccountID,
+                                      elderlyId: currentUserElderlyID != 0
+                                          ? currentUserElderlyID
+                                          : currentUserAccountID,
                                       heartRate: widget.heartBeat.toInt(),
                                       heartRateSource: widget.typeData,
                                     );

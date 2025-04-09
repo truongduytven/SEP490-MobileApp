@@ -408,6 +408,9 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
+                              final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final heightController =
                                   ref.read(heightControllerProvider);
 
@@ -433,7 +436,7 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                                 success = await heightController.addHeight(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
                                   height: widget.height.toDouble(),
                                   heightSource: widget.typeData,
                                 );

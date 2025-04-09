@@ -515,6 +515,9 @@ class _LiverEnzymesDisplayWidgetState
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
+                              final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final liverEnzymesController =
                                   ref.read(liverEnzymesControllerProvider);
 
@@ -549,7 +552,7 @@ class _LiverEnzymesDisplayWidgetState
                                     .addLiverEnzymes(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
                                   alt: widget.altValue.toDouble(),
                                   ast: widget.astValue.toDouble(),
                                   alp: widget.alpValue.toDouble(),

@@ -409,6 +409,9 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
+                            final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final weightController =
                                   ref.read(weightControllerProvider);
 
@@ -434,7 +437,7 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
                                 success = await weightController.addWeight(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
                                   weight: widget.weight.toDouble(),
                                   weightSource: widget.typeData,
                                 );

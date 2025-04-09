@@ -453,6 +453,9 @@ class _BloodPressureDisplayWidgetState
                                   sharedPrefsHelper.getString("fullName");
                               final bloodPressureController =
                                   ref.read(bloodPressureControllerProvider);
+                              final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
 
                               // final success =
                               //     await heartRateController.addBloodPressure(
@@ -482,7 +485,7 @@ class _BloodPressureDisplayWidgetState
                                     .addBloodPressure(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
                                   systolic: widget.systolic.toInt(),
                                   diastolic: widget.diastolic.toInt(),
                                   systolicSource: widget.typeData,

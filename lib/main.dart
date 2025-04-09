@@ -156,6 +156,7 @@ void main() async {
         final callDuration = startTime != null
             ? callEndTime.difference(startTime!)
             : Duration.zero; // Check if startTime is null
+        startTime = null; // Reset startTime after call ends
         print(
             "cuộc gọi bị hủy ${event.invitationData!.invitationID} ${event.invitationData!.invitees}  ${event.invitationData!.inviter} heeeeehah");
 

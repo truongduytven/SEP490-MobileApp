@@ -15,6 +15,7 @@ class DoctorController {
   bool isConfirmedSuccess = false;
   bool isSelectDoctorSuccess = false;
   bool isBookingAppointmentSuccess = false;
+  bool isCancelSuccess = false;
 
   Future<void> getDoctorData(int accountId) async {
     final response = await _doctorRepository.getDoctorDataById(accountId);
@@ -121,8 +122,7 @@ class DoctorController {
   }
 
   Future<void> checkOrderStatus(String transId) async {
-    final response =
-        await _doctorRepository.checkOrderStatus(transId);
+    final response = await _doctorRepository.checkOrderStatus(transId);
     if (response != null && response['isSuccess']) {
       isOrderSuccess = response['data']['data']['return_code'] == 1;
     } else {
@@ -131,8 +131,7 @@ class DoctorController {
   }
 
   Future<void> confirmCheckout(String transId) async {
-    final response =
-        await _doctorRepository.confirmCheckout(transId);
+    final response = await _doctorRepository.confirmCheckout(transId);
     if (response != null && response['isSuccess']) {
       isConfirmedSuccess = response['data']['status'] == 1;
     } else {
@@ -149,14 +148,24 @@ class DoctorController {
       isSelectDoctorSuccess = false;
     }
   }
-  
-  Future<void> bookingAppointment(int elderlyId, int timeSlotId, String day, String description) async {
-    final response =
-        await _doctorRepository.bookingAppointment(elderlyId, timeSlotId, day, description);
+
+  Future<void> bookingAppointment(
+      int elderlyId, int timeSlotId, String day, String description) async {
+    final response = await _doctorRepository.bookingAppointment(
+        elderlyId, timeSlotId, day, description);
     if (response != null && response['isSuccess']) {
       isBookingAppointmentSuccess = response['data']['status'] == 1;
     } else {
       isBookingAppointmentSuccess = false;
+    }
+  }
+
+  Future<void> cancelAppointment(int appointmentId) async {
+    final response = await _doctorRepository.cancelAppointment(appointmentId);
+    if (response != null && response['isSuccess']) {
+      isCancelSuccess = response['data']['status'] == 1;
+    } else {
+      isCancelSuccess = false;
     }
   }
 }

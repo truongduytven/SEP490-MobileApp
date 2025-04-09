@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:gif_view/gif_view.dart';
@@ -143,6 +144,48 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
           // ignore: unnecessary_cast
           route as PageRoute<dynamic>); // Ép kiểu thành PageRoute<dynamic>
     }
+  }
+
+  void cancelAppointment(int appointmentId) async {
+    setState(() {
+      isLoadingAppointment = true;
+    });
+    DoctorController doctorController = DoctorController();
+    await doctorController.cancelAppointment(appointmentId);
+    Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      if (doctorController.isCancelSuccess) {
+        CherryToast.success(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Hủy cuộc hẹn thành công",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+        getDoctorData();
+        checkIsPackage();
+        setState(() {
+          isLoadingAppointment = false;
+        });
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Hủy cuộc hẹn thất bại",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+        setState(() {
+          isLoadingAppointment = false;
+        });
+      }
+    });
   }
 
   @override
@@ -452,13 +495,10 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                         children: appoimentDoctor!
                             .map((item) => BuildAppointmentCard(
                                   appoimentDoctor: item,
-                                  onCancel: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ReportAppointment(
-                                                appoimentDoctor: item,
-                                              ))),
+                                  onCancel: () async => {
+                                    cancelAppointment(
+                                        item.professorAppointmentId)
+                                  },
                                   onJoin: () => Future.value(),
                                   onReport: () => Navigator.push(
                                       context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
@@ -26,6 +27,7 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
   late String time;
   late String date;
   late bool isAllowed;
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
 
   @override
   void initState() {
@@ -33,6 +35,9 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
     time = widget.appoimentDoctor!.dateTime.split(' ')[1];
     date = widget.appoimentDoctor!.dateTime.split(' ')[0];
     isAllowed = isJoinAllowed;
+    if(isJoinAllowed) {
+      sharedPrefsHelper.setString('appoinmentId', widget.appoimentDoctor!.professorAppointmentId.toString());
+    }
   }
 
   String _formatDateTime(String input) {
@@ -174,7 +179,7 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
               ],
             ),
             const SizedBox(height: 8),
-            if(widget.appoimentDoctor!.status == 'NotYet')
+            if (widget.appoimentDoctor!.status == 'NotYet')
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -215,7 +220,9 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                     const SizedBox(width: 8),
                   if (widget.appoimentDoctor!.status == 'NotYet' && isAllowed)
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.bgColor,
                         side: BorderSide(color: AppColors.primaryColor),
@@ -235,7 +242,32 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                         ],
                       ),
                     ),
-                  if (widget.appoimentDoctor!.status == 'Joined')
+                  if (widget.appoimentDoctor!.status == 'Joined' &&
+                      !widget.appoimentDoctor!.isFeedback)
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.bgColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(color: AppColors.primaryColor),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Đánh giá',
+                              style: TextStyle(color: AppColors.primaryColor)),
+                          const SizedBox(width: 8),
+                          Icon(Icons.star, color: AppColors.primaryColor),
+                        ],
+                      ),
+                    ),
+                  
+                  SizedBox(width: 8),
+
+                  if (widget.appoimentDoctor!.status == 'Joined' &&
+                      widget.appoimentDoctor!.isReport)
                     ElevatedButton(
                       onPressed: widget.onReport,
                       style: ElevatedButton.styleFrom(
@@ -244,26 +276,27 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Báo cáo',
+                          Text('Xem báo cáo',
                               style: TextStyle(color: Colors.white)),
                           const SizedBox(width: 8),
                           Icon(Icons.assignment, color: Colors.white),
                         ],
                       ),
                     ),
-                  if (widget.appoimentDoctor!.status == 'Cancelled')
+                  if (widget.appoimentDoctor!.status == 'Joined' &&
+                      !widget.appoimentDoctor!.isReport)
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: widget.onReport,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondaryColor,
+                        backgroundColor: AppColors.primaryColor,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Đặt lịch hẹn',
+                          Text('Xem báo cáo',
                               style: TextStyle(color: Colors.white)),
                           const SizedBox(width: 8),
-                          Icon(Icons.add_alert, color: Colors.white),
+                          Icon(Icons.assignment, color: Colors.white),
                         ],
                       ),
                     ),
@@ -287,9 +320,6 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
         name: user.name,
       );
     }).toList();
-
-    print("Calling users: ${invitees.map((e) => e.name).join(', ')}");
-    print(isJoinAllowed);
 
     return ZegoSendCallInvitationButton(
       isVideoCall: isVideoCall,
