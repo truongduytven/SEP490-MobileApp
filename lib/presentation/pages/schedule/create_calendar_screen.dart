@@ -41,6 +41,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
   late String fullName = "";
   late bool isUpdate = false;
   DateTime selectedDate = DateTime.now();
+  late int selectedElderlyUserId = 0;
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
     }
     setState(() {
       accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
+      selectedElderlyUserId = sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
       isUpdate = widget.data != null ? true : false;
       fullName = sharedPrefsHelper.getString('fullName') ?? "";
       titleController.text = widget.data != null ? widget.data!.title : "";
@@ -252,7 +254,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
       int duration = endDate.difference(startDate).inDays + 1;
 
       Map<String, dynamic> data = {
-        "accountId": accountId,
+        "accountId": selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId,
         "title": titleController.text,
         "description": descriptionController.text,
         "startDate":

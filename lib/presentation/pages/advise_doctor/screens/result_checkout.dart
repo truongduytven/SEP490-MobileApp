@@ -123,87 +123,94 @@ class _ResultCheckoutState extends State<ResultCheckout>
         });
       } else {
         _timer?.cancel();
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) => NavigationMenu(keyIndex: 3),
-        ));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationMenu(keyIndex: 3),
+            ));
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bgColor,
-        body: SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: isLoading
-          ? Center(
-              child: GifView.asset(
-                'assets/gif/payment.gif',
-                width: 100,
-                height: 100,
-                frameRate: 60,
-              ),
-            )
-          : isCheckoutSuccess
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/img/payment_success.png',
-                        height: 150,
-                        width: 150,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Thanh toán thành công!!',
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.secondaryColor,
+    // ignore: deprecated_member_use
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+          backgroundColor: AppColors.bgColor,
+          body: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: isLoading
+                ? Center(
+                    child: GifView.asset(
+                      'assets/gif/payment.gif',
+                      width: 100,
+                      height: 100,
+                      frameRate: 60,
+                    ),
+                  )
+                : isCheckoutSuccess
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/img/payment_success.png',
+                              height: 150,
+                              width: 150,
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Thanh toán thành công!!',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.secondaryColor,
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                "$_countdown",
+                                style: TextStyle(
+                                    fontSize: 50,
+                                    color: AppColors.secondaryColor),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/img/payment_failure.png',
+                              height: 150,
+                              width: 150,
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Thanh toán thất bại!!',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.secondaryColor,
+                              ),
+                            ),
+                            const Text(
+                              'Vui lòng thử lại sau',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.secondaryColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Center(
-                        child: Text(
-                          "$_countdown",
-                          style: TextStyle(
-                              fontSize: 50, color: AppColors.secondaryColor),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/img/payment_failure.png',
-                        height: 150,
-                        width: 150,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Thanh toán thất bại!!',
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.secondaryColor,
-                        ),
-                      ),
-                      const Text(
-                        'Vui lòng thử lại sau',
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.secondaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-    ));
+          )),
+    );
   }
 }

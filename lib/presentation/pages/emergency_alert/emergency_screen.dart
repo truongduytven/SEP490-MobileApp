@@ -40,7 +40,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   String description = "Cuộc gọi khẩn cấp sẽ được thực hiện sau:";
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId;
-  late int emergencyConfirmationId;
+  late int emergencyConfirmationId = 0;
   final player = AudioPlayer();
 
   @override
@@ -87,6 +87,33 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     Navigator.pop(context);
   }
 
+  void showDialogCancel() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Hủy cuộc gọi khẩn cấp"),
+          content: Text("Bạn có chắc chắn muốn hủy cuộc gọi khẩn cấp không?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Không"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _cancelEmergency();
+              },
+              child: Text("Có"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _callEmergencyAPI() async {
     print("Gọi API Emergency Start...");
     var uri = Uri.parse(
@@ -121,25 +148,40 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   }
 
   Future<void> _checkConfirmationStatus(int attempt) async {
-    if (attempt >= 3) return;
+    if (attempt >= 3) {
+      setState(() {
+        title = "Cuộc gọi khẩn cấp không được xác nhận!";
+        description =
+            "Chúng tôi đã gửi thông tin khẩn cấp đến người thân của bạn nhưng họ vẫn chưa xác nhận!";
+      });
+      player.stop();
+      return;
+    };
 
-    await Future.delayed(Duration(seconds: 60));
+    await Future.delayed(Duration(seconds: 30));
 
     bool isConfirmed = await _checkIsConfirmed();
 
     if (isConfirmed) {
-      print("Người thân đã xác nhận, dừng kiểm tra.");
+      setState(() {
+        title = "Đã xác nhận cuộc gọi khẩn cấp!";
+        description =
+            "Người thân của bạn đã xác nhận cuộc gọi khẩn cấp và đang trên đường đến!";
+      });
       return;
     } else {
-      print("Chưa xác nhận, gửi lại dữ liệu khẩn cấp...");
-      // await _sendEmergencyData();
+      setState(() {
+        title = "Chưa xác nhận cuộc gọi khẩn cấp!";
+        description =
+            "Chúng tôi đã gửi thông tin khẩn cấp đến người thân của bạn và đang chờ tín hiệu từ họ!";
+      });
+      await _sendEmergencyData();
 
-      // if (attempt == 1) {
-      //   print("Chưa xác nhận sau 2 lần, gọi bác sĩ...");
-      //   await _callDoctorAPI();
-      // }
+      if (attempt == 1) {
+         await _callDoctorAPI();
+      }
+      _checkConfirmationStatus(attempt + 1);
       return;
-      // _checkConfirmationStatus(attempt + 1);
     }
   }
 
@@ -152,21 +194,25 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     return false;
   }
 
-  // Future<void> _callDoctorAPI() async {
-  //   var uri = Uri.parse(
-  //       "https://api.diavan-valuation.asia/emergency-contacts/call-doctor/$userId");
+  Future<void> _callDoctorAPI() async {
+    var uri = Uri.parse(
+        "https://api.diavan-valuation.asia/emergency-contacts/doctor-emergency-call?accountId=$userId");
 
-  //   try {
-  //     final response = await http.post(uri);
-  //     if (response.statusCode == 200) {
-  //       print("Gọi bác sĩ thành công!");
-  //     } else {
-  //       print("Lỗi gọi bác sĩ: ${response.statusCode}");
-  //     }
-  //   } catch (e) {
-  //     print("Lỗi gọi API bác sĩ: $e");
-  //   }
-  // }
+    try {
+      final response = await http.post(uri);
+      if (response.statusCode == 200) {
+        setState(() {
+          title = "Đang gọi bác sĩ...";
+          description =
+              "Chúng tôi đang cố gắng liên hệ đến bác sĩ của bạn!";
+        });
+      } else {
+        print("Lỗi gọi bác sĩ: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Lỗi gọi API bác sĩ: $e");
+    }
+  }
 
   Future<void> _callCancelEmergencyAPI() async {
     print("Gọi API Cancel Emergency...");
@@ -175,6 +221,21 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
     try {
       final response = await http.post(uri);
+      if (response.statusCode == 200) {
+        print("Đã hủy cuộc gọi khẩn cấp!");
+        if (!_completer.isCompleted) _completer.complete();
+      } else {
+        print("Lỗi hủy cuộc gọi khẩn cấp!");
+      }
+    } catch (e) {
+      print("Lỗi gọi API Cancel: $e");
+    }
+
+    var uri2 = Uri.parse(
+        "https://api.diavan-valuation.asia/emergency-contacts/confirmation?accountId=$userId&emergencyId=$emergencyConfirmationId");
+
+    try {
+      final response = await http.post(uri2);
       if (response.statusCode == 200) {
         print("Đã hủy cuộc gọi khẩn cấp!");
         if (!_completer.isCompleted) _completer.complete();
@@ -280,25 +341,6 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     print("Ảnh sau: $backImagePath");
   }
 
-  // 🔹 3. Ghi âm 15 giây
-  // Future<void> _recordAudio() async {
-  //   if (await Permission.microphone.request().isGranted) {
-  //     Directory tempDir = await getTemporaryDirectory();
-  //     audioPath =
-  //         '${tempDir.path}/emergency_audio.m4a';
-  //     await record.start(
-  //       const RecordConfig(encoder: AudioEncoder.aacLc),
-  //       path: audioPath ?? '',
-  //     );
-  //     print("Bắt đầu ghi âm...");
-  //     await Future.delayed(Duration(seconds: 15));
-  //     await record.stop();
-  //     print("Ghi âm xong: $audioPath");
-  //   } else {
-  //     print("Không có quyền truy cập microphone!");
-  //   }
-  // }
-
   // 🔹 4. Lấy vị trí GPS
   Future<void> _getLocation() async {
     LocationPermission permission = await Geolocator.requestPermission();
@@ -314,39 +356,6 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         "Vị trí: ${_currentPosition!.latitude}, ${_currentPosition!.longitude}");
   }
 
-  // // 🔹 5. Tracking vị trí liên tục
-  // void _startLocationTracking() {
-  //   _locationTimer = Timer.periodic(Duration(seconds: 10), (Timer t) async {
-  //     await _getLocation();
-  //     if (_currentPosition != null) {
-  //       await _sendLiveLocation();
-  //     }
-  //   });
-  // }
-
-  // // 🔹 6. Gửi vị trí tracking
-  // Future<void> _sendLiveLocation() async {
-  //   var uri = Uri.parse("https://your-backend.com/api/live-location");
-  //   var response = await http.post(uri,
-  //       body: jsonEncode({
-  //         "latitude": _currentPosition?.latitude ?? 0.0,
-  //         "longitude": _currentPosition?.longitude ?? 0.0,
-  //         "timestamp": DateTime.now().toIso8601String(),
-  //       }),
-  //       headers: {"Content-Type": "application/json"});
-  //   if (response.statusCode == 200) {
-  //     print("Gửi vị trí liên tục thành công!");
-  //   } else {
-  //     print("Lỗi gửi vị trí: ${response.statusCode}");
-  //   }
-  // }
-  // Future<void> _handleEmergency() async {
-  //   await _captureImages();
-  //   await _recordAudio();
-  //   await _getLocation();
-  //   await _sendEmergencyData();
-  // }
-
   @override
   void dispose() {
     _timer?.cancel();
@@ -358,94 +367,97 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blueGrey[50],
-      body: SafeArea(
-        bottom: true,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-
-              SizedBox(height: 10),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text(
-                  description,
-                  style: TextStyle(fontSize: 22, color: Colors.black54),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.blueGrey[50],
+        body: SafeArea(
+          bottom: true,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
-              ),
-
-              SizedBox(height: 20),
-
-              if (!isCompleteCreateConfirmation)
-                Center(
+      
+                SizedBox(height: 10),
+      
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
-                    "$_countdown",
-                    style: TextStyle(fontSize: 50, color: Colors.red),
+                    description,
+                    style: TextStyle(fontSize: 22, color: Colors.black54),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-
-              // 🔹 Nút đếm ngược
-              Expanded(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Pulsator(
-                      style: const PulseStyle(color: Colors.red),
-                      count: _count,
-                      duration: Duration(seconds: _duration),
-                      repeat: _repeatCount,
+      
+                SizedBox(height: 20),
+      
+                if (!isCompleteCreateConfirmation)
+                  Center(
+                    child: Text(
+                      "$_countdown",
+                      style: TextStyle(fontSize: 50, color: Colors.red),
                     ),
-                    Center(
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        padding: EdgeInsets.all(20.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Lottie.asset(
-                          "assets/img/AnimationSOS.json",
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-                          frameRate: FrameRate.max,
+                  ),
+      
+                // 🔹 Nút đếm ngược
+                Expanded(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Pulsator(
+                        style: const PulseStyle(color: Colors.red),
+                        count: _count,
+                        duration: Duration(seconds: _duration),
+                        repeat: _repeatCount,
+                      ),
+                      Center(
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          padding: EdgeInsets.all(20.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Lottie.asset(
+                            "assets/img/AnimationSOS.json",
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                            frameRate: FrameRate.max,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 50),
-
-              // 🔹 Nút "Hủy"
-              if (!isCompleteCreateConfirmation)
-                ElevatedButton(
-                  onPressed: _cancelEmergency,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text(
-                    "Hủy",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    ],
                   ),
                 ),
-            ],
+      
+                SizedBox(height: 50),
+      
+                // 🔹 Nút "Hủy"
+                if (!isCompleteCreateConfirmation)
+                  ElevatedButton(
+                    onPressed: _countdown == 0 ? showDialogCancel : _cancelEmergency ,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text(
+                      "Hủy",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

@@ -102,6 +102,7 @@ class _DoctorDetailState extends State<DoctorDetail>
     DoctorController doctorController = DoctorController();
     await doctorController.getDoctorDetails(widget.doctorId);
     Timer(const Duration(seconds: 1), () {
+      if(!mounted) return;
       setState(() {
         doctorData = doctorController.doctorData;
         isLoading = false;

@@ -927,6 +927,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     );
                                   },
                                 ),
+                              if(roleId == 2)
                               _buildCategoryCard(
                                 icon:
                                     'assets/img3D/thietbideotay.png', // Replace with your asset path

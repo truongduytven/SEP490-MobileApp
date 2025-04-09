@@ -138,7 +138,9 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     final route = ModalRoute.of(context);
     if (route is PageRoute) {
       // Kiểm tra xem route có phải là PageRoute không
-      routeObserver.subscribe(this,
+      routeObserver.subscribe(
+          this,
+          // ignore: unnecessary_cast
           route as PageRoute<dynamic>); // Ép kiểu thành PageRoute<dynamic>
     }
   }
@@ -293,38 +295,49 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                             ),
                           ),
                           SizedBox(height: 20),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 15),
-                            width: double.infinity,
-                            color: Colors.transparent,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => PackageList()));
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.secondaryColor,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 10),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                    side: BorderSide(
-                                        color: AppColors.secondaryColor,
-                                        width: 1),
-                                  )),
-                              icon: Icon(Icons.payment,
-                                  size: 25, color: AppColors.bgColor),
-                              label: const Text('Mua gói ngay',
+                          roleId == 3
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 15),
+                                  width: double.infinity,
+                                  color: Colors.transparent,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PackageList()));
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            AppColors.secondaryColor,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 10),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          side: BorderSide(
+                                              color: AppColors.secondaryColor,
+                                              width: 1),
+                                        )),
+                                    icon: Icon(Icons.payment,
+                                        size: 25, color: AppColors.bgColor),
+                                    label: const Text('Mua gói ngay',
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                          color: AppColors.bgColor,
+                                          fontWeight: FontWeight.w400,
+                                        )),
+                                  ),
+                                )
+                              : Text(
+                                  'Bạn hãy nhờ người thân mua gói dịch vụ cho bạn!',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 25,
-                                    color: AppColors.bgColor,
-                                    fontWeight: FontWeight.w400,
-                                  )),
-                            ),
-                          ),
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primaryColor)),
                         ]),
                   ),
       ),
@@ -431,36 +444,34 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                 ),
               )
             : (appoimentDoctor != null && appoimentDoctor!.isNotEmpty)
-                ? Column(
-                    children: [
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: appoimentDoctor!
-                              .map((item) => BuildAppointmentCard(
-                                    appoimentDoctor: item,
-                                    onCancel: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReportAppointment(
-                                                  appoimentDoctor: item,
-                                                ))),
-                                    onJoin: () => Future.value(),
-                                    onReport: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReportAppointment(
-                                                  appoimentDoctor: item,
-                                                ))),
-                                    isListCard: true,
-                                  ))
-                              .toList(),
-                        ),
+                ? Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: appoimentDoctor!
+                            .map((item) => BuildAppointmentCard(
+                                  appoimentDoctor: item,
+                                  onCancel: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ReportAppointment(
+                                                appoimentDoctor: item,
+                                              ))),
+                                  onJoin: () => Future.value(),
+                                  onReport: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ReportAppointment(
+                                                appoimentDoctor: item,
+                                              ))),
+                                  isListCard: true,
+                                ))
+                            .toList(),
                       ),
-                    ],
+                    ),
                   )
                 : Expanded(
                     child: Column(
@@ -474,14 +485,6 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                       ],
                     ),
                   ),
-      ],
-    );
-  }
-
-  Widget _buildWarning() {
-    return Column(
-      children: [
-        Text('Cảnh báo'),
       ],
     );
   }

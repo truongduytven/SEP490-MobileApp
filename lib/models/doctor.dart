@@ -76,6 +76,8 @@ class AppoimentDoctor {
   final String professorName;
   final String dateTime;
   final String status;
+  final bool isReport;
+  final bool isFeedback;
   final bool isOnline;
   final List<Account> people;
 
@@ -86,6 +88,8 @@ class AppoimentDoctor {
     required this.dateTime,
     required this.status,
     required this.isOnline,
+    required this.isReport,
+    required this.isFeedback,
     required this.people,
   });
 
@@ -97,6 +101,8 @@ class AppoimentDoctor {
       dateTime: json['dateTime'],
       status: json['status'],
       isOnline: json['isOnline'],
+      isReport: json['isReport'],
+      isFeedback: json['isFeedback'],
       people: (json['people'] as List)
           .map((item) => Account.fromJson(item))
           .toList(),

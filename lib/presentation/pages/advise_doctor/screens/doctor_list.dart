@@ -36,6 +36,7 @@ class _DoctorListState extends State<DoctorList> {
     DoctorController doctorController = DoctorController();
     await doctorController.getFilterDoctor(filterEnter);
     Timer(Duration(seconds: 1), () {
+      if(!mounted) return;
       setState(() {
         listFilterDoctor = doctorController.listFilterDoctor;
         isLoading = false;

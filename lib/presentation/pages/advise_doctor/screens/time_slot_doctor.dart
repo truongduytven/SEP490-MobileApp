@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
-import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
@@ -60,6 +59,7 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
     await doctorController.getDoctorData(
         selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId);
     Timer(const Duration(seconds: 2), () {
+      if(!mounted) return;
       setState(() {
         doctorData = doctorController.doctorData;
         isLoading = false;

@@ -32,6 +32,7 @@ class _ReportAppointmentState extends State<ReportAppointment> {
     await doctorController
         .getReportById(widget.appoimentDoctor!.professorAppointmentId);
     Timer(const Duration(seconds: 2), () {
+      if(!mounted) return;
       setState(() {
         _report = doctorController.report!;
         _isLoading = false;
