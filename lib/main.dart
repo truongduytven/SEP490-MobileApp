@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/common/utils/utils.dart';
@@ -11,6 +13,7 @@ import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/call_history/repository/call_history_helper.dart';
 import 'package:sep490/models/call_history.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_screen.dart';
+import 'package:sep490/presentation/pages/notification/notification_screen.dart';
 import 'package:sep490/presentation/pages/opening/splash_screen.dart';
 import 'package:sep490/router.dart';
 import 'package:sep490/theme/color.dart';
@@ -21,6 +24,11 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Nhận thông báo trong nền: ${message.data}");
+}
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -37,17 +45,35 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final int? currentUserId = prefs.getInt('accountId');
   final String? fullName = prefs.getString('fullName');
-  final String? deviceToken = prefs.getString('deviceToken');
+  // final String? deviceToken = prefs.getString('deviceToken');
+  // if (deviceToken == null) {
+  //   await Firebase.initializeApp(
+  //     options: FirebaseOptions(
+  //       apiKey: dotenv.env['API_KEY'] ?? '',
+  //       appId: dotenv.env['APP_ID'] ?? '',
+  //       messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
+  //       projectId: dotenv.env['PROJECT_ID'] ?? '',
+  //     ),
+  //   );
+  // }
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: dotenv.env['API_KEY'] ?? '',
+      appId: dotenv.env['APP_ID'] ?? '',
+      messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
+      projectId: dotenv.env['PROJECT_ID'] ?? '',
+    ),
+  );
+
+  /// Lấy device token
+  String? deviceToken = prefs.getString('deviceToken');
   if (deviceToken == null) {
-    await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: dotenv.env['API_KEY'] ?? '',
-        appId: dotenv.env['APP_ID'] ?? '',
-        messagingSenderId: dotenv.env['MESSAGE_SENDER_ID'] ?? '',
-        projectId: dotenv.env['PROJECT_ID'] ?? '',
-      ),
-    );
+    deviceToken = await FirebaseMessaging.instance.getToken();
+    if (deviceToken != null) {
+      await prefs.setString('deviceToken', deviceToken);
+    }
   }
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   /// Define a navigator key
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -493,6 +519,8 @@ class _MyAppState extends State<MyApp>
   bool _isListening = false;
   // final SpeechToText _speech = SpeechToText();
   bool _isInEmergency = false;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
@@ -503,6 +531,8 @@ class _MyAppState extends State<MyApp>
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 100));
     // _initSpeech();
+    _setupFirebaseMessaging();
+    _initializeLocalNotifications();
   }
 
   void _onRoleChanged() {
@@ -606,6 +636,130 @@ class _MyAppState extends State<MyApp>
         _isShakeTriggered = false;
       });
       print('Lắc nè');
+    }
+  }
+
+  void _setupFirebaseMessaging() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('✅ Đã được cấp quyền thông báo');
+    } else {
+      print('❌ Không được cấp quyền thông báo');
+    }
+    // Lấy FCM Token
+    String? token = await messaging.getToken();
+    print("✅ FCM Token: $token");
+    // Nhận thông báo khi ứng dụng đang mở
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("Nhận thông báo khi mở app: ${message.notification!.title}");
+    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("Nhận thông báo khi mở app: ${message.notification?.title}");
+
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+
+      if (notification != null && android != null) {
+        _showLocalNotification(notification);
+      }
+    });
+    // Xử lý khi mở ứng dụng từ trạng thái đã đóng
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
+      if (message != null) {
+        print(
+            "📌 Nhấn vào thông báo khi app đóng: ${message.notification?.title}");
+        _handleNotificationNavigation(message.notification?.title ?? "");
+      }
+    });
+
+    // Xử lý khi nhấn vào thông báo khi app đang chạy nền
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print(
+          "📌 Nhấn vào thông báo khi app chạy nền: ${message.notification?.title}");
+      _handleNotificationNavigation(message.notification?.title ?? "");
+    });
+  }
+
+  void _showLocalNotification(RemoteNotification notification) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'high_importance_channel', // ID
+      'Thông báo', // Tên kênh
+      channelDescription: 'Kênh dành cho thông báo quan trọng',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+      fullScreenIntent: true,
+      enableVibration: true,
+      playSound: true,
+      timeoutAfter: 5000,
+      channelShowBadge: true,
+      category: AndroidNotificationCategory.message,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      platformChannelSpecifics,
+      payload: notification.title, // Đưa payload vào thông báo (ở đây là title)
+    );
+  }
+
+  void _handleNotificationNavigation(String title) {
+    final navigator = widget.navigatorKey.currentState;
+    if (navigator == null) {
+      print("⚠️ Không tìm thấy Navigator để điều hướng!");
+      return;
+    }
+
+    navigator.push(
+      MaterialPageRoute(builder: (context) => NotificationScreen()),
+    );
+  }
+
+  // void _initializeLocalNotifications() async {
+  //   const AndroidInitializationSettings initializationSettingsAndroid =
+  //       AndroidInitializationSettings('@mipmap/launcher_ic');
+
+  //   final InitializationSettings initializationSettings =
+  //       InitializationSettings(android: initializationSettingsAndroid);
+
+  //   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  // }
+  void _initializeLocalNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/launcher_ic');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          _onNotificationSelected, // Instance method will work for this
+      // onDidReceiveBackgroundNotificationResponse:
+      //     _onNotificationSelectedStatic, // Static method for background handling
+    );
+  }
+
+  Future<void> _onNotificationSelected(
+      NotificationResponse notificationResponse) async {
+    // You can use the payload to navigate or process the data passed with the notification.
+    if (notificationResponse.payload != null) {
+      // Process the payload (could be the title, id, etc.)
+      _handleNotificationNavigation(notificationResponse.payload!);
     }
   }
 
