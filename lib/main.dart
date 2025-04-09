@@ -724,13 +724,9 @@ class _MyAppState extends State<MyApp>
       return;
     }
 
-    if (title.contains("Test")) {
-      navigator.push(
-        MaterialPageRoute(builder: (context) => NotificationScreen()),
-      );
-    } else if (title.contains("News")) {
-      navigator.pushNamed('/news');
-    }
+    navigator.push(
+      MaterialPageRoute(builder: (context) => NotificationScreen()),
+    );
   }
 
   // void _initializeLocalNotifications() async {
