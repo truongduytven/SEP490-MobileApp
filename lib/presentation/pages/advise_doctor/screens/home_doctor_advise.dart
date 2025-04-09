@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/main.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/doctor_list.dart';
@@ -22,8 +23,8 @@ class HomeDoctorAdviseScreen extends StatefulWidget {
 }
 
 class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
-    with SingleTickerProviderStateMixin {
-  final List<String> tabs = ['Lịch hẹn', 'Cảnh báo', 'Bác sĩ'];
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver, RouteAware {
+  final List<String> tabs = ['Lịch hẹn', 'Bác sĩ'];
   Map<String, String> statusOptions = {
     "Tất cả": "All",
     "Chưa tham gia": "NotYet",
@@ -47,29 +48,45 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
   ];
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId = 0;
+  late int selectedElderlyUserId = 0;
+  late String fullName = "";
+  late String selectedElderlyUserName = "";
+  late int roleId = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
+    selectedElderlyUserId =
+        sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+    selectedElderlyUserName =
+        sharedPrefsHelper.getString('selectedElderlyUserName') ?? "";
+    fullName = sharedPrefsHelper.getString('fullName') ?? "";
+    roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
     getDoctorData();
     checkIsPackage();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void getDoctorData() async {
     setState(() {
       isLoading = true;
+      isLoadingAppointment = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.getDoctorData(accountId);
-    await doctorController.getAppointmentByID(accountId, selectedStatus);
+    await doctorController.getDoctorData(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId);
+    await doctorController.getAppointmentByID(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId,
+        selectedStatus);
     Timer(const Duration(seconds: 2), () {
       if (!mounted) return;
       setState(() {
         doctorData = doctorController.doctorData;
         appoimentDoctor = doctorController.appoimentDoctor;
         isLoading = false;
+        isLoadingAppointment = false;
       });
     });
   }
@@ -79,7 +96,8 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
       isLoading = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.getPackageUser(accountId);
+    await doctorController.getPackageUser(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId);
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {
@@ -92,22 +110,43 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
 
   void getAppointmentByStatus(String status) async {
     setState(() {
-      isLoading = true;
+      isLoadingAppointment = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.getAppointmentByID(49, status);
+    await doctorController.getAppointmentByID(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId, status);
     Timer(const Duration(seconds: 1), () {
       setState(() {
         appoimentDoctor = doctorController.appoimentDoctor;
-        isLoading = false;
+        isLoadingAppointment = false;
       });
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
+    routeObserver.unsubscribe(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Đăng ký RouteAware để theo dõi sự kiện navigation
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      // Kiểm tra xem route có phải là PageRoute không
+      routeObserver.subscribe(this,
+          route as PageRoute<dynamic>); // Ép kiểu thành PageRoute<dynamic>
+    }
+  }
+
+  @override
+  void didPopNext() {
+    getDoctorData();
+    checkIsPackage(); // Gọi lại API
   }
 
   @override
@@ -116,7 +155,10 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
         title: isPackage
-            ? Text('Lịch hẹn với bác sĩ',
+            ? Text(
+                'Lịch hẹn của ${selectedElderlyUserName == "" ? fullName : selectedElderlyUserName}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25))
             : Text('Mua gói dịch vụ',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25)),
@@ -178,7 +220,6 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                             children: [
                               _buildTabContent(1),
                               _buildTabContent(2),
-                              _buildTabContent(3),
                             ],
                           ),
                         ),
@@ -287,11 +328,17 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                         ]),
                   ),
       ),
-      floatingActionButton: isPackage
+      floatingActionButton: (isPackage && roleId == 3)
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.push(context,
+                final result = Navigator.push(context,
                     MaterialPageRoute(builder: (context) => TimeSlotDoctor()));
+                result.then((value) {
+                  if (value != null) {
+                    getDoctorData();
+                    checkIsPackage();
+                  }
+                });
               },
               shape: CircleBorder(),
               backgroundColor: AppColors.primaryColor,
@@ -307,8 +354,6 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
         case 1:
           return _buildSchdule();
         case 2:
-          return _buildWarning();
-        case 3:
           return _buildDoctor();
         default:
           return Container();
@@ -417,14 +462,17 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                       ),
                     ],
                   )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/img/no-data.png',
-                          width: 100, height: 100),
-                      SizedBox(height: 10),
-                      Text('Không có dữ liệu', style: TextStyle(fontSize: 20)),
-                    ],
+                : Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/img/no-data.png',
+                            width: 70, height: 70),
+                        SizedBox(height: 10),
+                        Text('Không có dữ liệu',
+                            style: TextStyle(fontSize: 20)),
+                      ],
+                    ),
                   ),
       ],
     );
@@ -453,7 +501,50 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
             ),
           )
         : Center(
-            child: Text('Không có dữ liệu'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/img/no-data.png', width: 70, height: 70),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text('Dường như bạn chưa lựa chọn bác sĩ cho gói này!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: AppColors.secondaryColor,
+                      )),
+                ),
+                const SizedBox(height: 10),
+                if (selectedElderlyUserId != 0)
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DoctorList(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: BorderSide(
+                            color: AppColors.secondaryColor, width: 1),
+                      ),
+                    ),
+                    child: Text('Chọn bác sĩ ngay',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.bgColor,
+                          fontWeight: FontWeight.w400,
+                        )),
+                  ),
+              ],
+            ),
           );
   }
 

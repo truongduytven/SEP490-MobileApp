@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class BuildAppointmentCard extends StatefulWidget {
   final AppoimentDoctor? appoimentDoctor;
@@ -24,12 +25,40 @@ class BuildAppointmentCard extends StatefulWidget {
 class BuildAppointmentCardState extends State<BuildAppointmentCard> {
   late String time;
   late String date;
+  late bool isAllowed;
 
   @override
   void initState() {
     super.initState();
     time = widget.appoimentDoctor!.dateTime.split(' ')[1];
     date = widget.appoimentDoctor!.dateTime.split(' ')[0];
+    isAllowed = isJoinAllowed;
+  }
+
+  String _formatDateTime(String input) {
+    // From: "09/04/2025 15:00"
+    final parts = input.split(' ');
+    final dateParts = parts[0].split('/');
+    final timePart = parts[1];
+
+    // Format to ISO string: "2025-04-09T15:00:00"
+    return "${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T$timePart:00";
+  }
+
+  bool get isJoinAllowed {
+    // Combine date and time into full string like "09/04/2025 15:00"
+    final fullDateTimeStr = "${date.trim()} ${time.trim()}";
+
+    // Parse the string into DateTime
+    final appointmentTime = DateTime.parse(
+      _formatDateTime(fullDateTimeStr),
+    );
+
+    // Get current time
+    final now = DateTime.now();
+
+    // Check if current time is within 5 minutes before or later
+    return now.isAfter(appointmentTime.subtract(Duration(minutes: 5)));
   }
 
   @override
@@ -145,6 +174,20 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
               ],
             ),
             const SizedBox(height: 8),
+            if(widget.appoimentDoctor!.status == 'NotYet')
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Bạn có thể tham gia khi đúng thời gian buổi hẹn",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.secondaryColor,
+                    ),
+                  ),
+                ],
+              ),
             if (widget.isListCard)
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -160,8 +203,9 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('Hủy lịch hẹn',
-                              style:
-                                  TextStyle(color: AppColors.secondaryColor)),
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.secondaryColor)),
                           const SizedBox(width: 8),
                           Icon(Icons.cancel, color: AppColors.secondaryColor),
                         ],
@@ -169,19 +213,25 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                     ),
                   if (widget.appoimentDoctor!.status == 'NotYet')
                     const SizedBox(width: 8),
-                  if (widget.appoimentDoctor!.status == 'NotYet')
+                  if (widget.appoimentDoctor!.status == 'NotYet' && isAllowed)
                     ElevatedButton(
-                      onPressed: widget.onJoin,
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondaryColor,
+                        backgroundColor: AppColors.bgColor,
+                        side: BorderSide(color: AppColors.primaryColor),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('Tham gia',
-                              style: TextStyle(color: Colors.white)),
+                              style: TextStyle(
+                                  fontSize: 16, color: AppColors.primaryColor)),
                           const SizedBox(width: 8),
-                          Icon(Icons.video_call_outlined, color: Colors.white),
+                          sendCallButton(
+                            isVideoCall: true,
+                            inviteeUsers: widget.appoimentDoctor!.people,
+                            onCallFinished: onSendCallInvitationFinished,
+                          ),
                         ],
                       ),
                     ),
@@ -223,5 +273,55 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
         ),
       ),
     );
+  }
+
+  Widget sendCallButton({
+    required bool isVideoCall,
+    required List<Account> inviteeUsers,
+    void Function(String code, String message, List<String>)? onCallFinished,
+  }) {
+    // Convert List<User> to List<ZegoUIKitUser>
+    List<ZegoUIKitUser> invitees = inviteeUsers.map((user) {
+      return ZegoUIKitUser(
+        id: user.id.toString(), // Ensure ID is a string
+        name: user.name,
+      );
+    }).toList();
+
+    print("Calling users: ${invitees.map((e) => e.name).join(', ')}");
+    print(isJoinAllowed);
+
+    return ZegoSendCallInvitationButton(
+      isVideoCall: isVideoCall,
+      invitees: invitees,
+      resourceID: 'zego_data',
+      iconSize: const Size(20, 20),
+      buttonSize: const Size(30, 30),
+      onPressed: isAllowed ? onCallFinished : null,
+      icon: ButtonIcon(
+        icon: isVideoCall
+            ? Icon(Icons.video_call, color: AppColors.primaryColor)
+            : Icon(Icons.phone, color: AppColors.primaryColor),
+      ),
+    );
+  }
+
+  void onSendCallInvitationFinished(
+    String code,
+    String message,
+    List<String> errorInvitees,
+  ) {
+    if (errorInvitees.isNotEmpty) {
+      var userIDs = errorInvitees.take(5).join(' ');
+      var errorMessage = "User doesn't exist or is offline: $userIDs";
+
+      if (code.isNotEmpty) {
+        errorMessage += ', code: $code, message:$message';
+      }
+
+      debugPrint(errorMessage);
+    } else if (code.isNotEmpty) {
+      debugPrint('Call failed: code: $code, message:$message');
+    }
   }
 }

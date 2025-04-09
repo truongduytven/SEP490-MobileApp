@@ -1,6 +1,6 @@
 class AppSecrets {
-  static const int appId = 613301678;
+  static const int appId = 1375170522;
 
   static const String appSign =
-      "a93cb0c55936ab7b94337abfe1edbd079cf8b1175e5aa7484d2a97a89e591e73";
+      "09b0e733e5f19728c3e7095b016676c5ad8cdd2692e243b262ac9dd201c3e199";
 }

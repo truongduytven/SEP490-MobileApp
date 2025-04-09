@@ -77,7 +77,7 @@ class AppoimentDoctor {
   final String dateTime;
   final String status;
   final bool isOnline;
-  final List<int> listAccountId;
+  final List<Account> people;
 
   AppoimentDoctor({
     required this.professorAppointmentId,
@@ -86,7 +86,7 @@ class AppoimentDoctor {
     required this.dateTime,
     required this.status,
     required this.isOnline,
-    required this.listAccountId,
+    required this.people,
   });
 
   factory AppoimentDoctor.fromJson(Map<String, dynamic> json) {
@@ -97,7 +97,26 @@ class AppoimentDoctor {
       dateTime: json['dateTime'],
       status: json['status'],
       isOnline: json['isOnline'],
-      listAccountId: json['accountId'].cast<int>(),
+      people: (json['people'] as List)
+          .map((item) => Account.fromJson(item))
+          .toList(),
+    );
+  }
+}
+
+class Account {
+  final int id;
+  final String name;
+
+  Account({
+    required this.id,
+    required this.name,
+  });
+
+  factory Account.fromJson(Map<String, dynamic> json) {
+    return Account(
+      id: json['id'],
+      name: json['name'],
     );
   }
 }
@@ -120,16 +139,19 @@ class Report {
 }
 
 class TimeSlots {
+  final int timeSlotId;
   final String startTime;
   final String endTime;
 
   TimeSlots({
+    required this.timeSlotId,
     required this.startTime,
     required this.endTime,
   });
 
   factory TimeSlots.fromJson(Map<String, dynamic> json) {
     return TimeSlots(
+      timeSlotId: json['timeSlotId'],
       startTime: json['startTime'],
       endTime: json['endTime'],
     );

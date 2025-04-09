@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,7 +37,6 @@ class _ResultCheckoutState extends State<ResultCheckout>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     createCheckout();
-    _startCountdown();
   }
 
   @override
@@ -84,14 +84,13 @@ class _ResultCheckoutState extends State<ResultCheckout>
   void checkPaymentStatus() async {
     DoctorController doctorController = DoctorController();
     await doctorController.checkOrderStatus(trans_id);
+    print('Check order status: ');
     Timer(Duration(seconds: 2), () {
       if (doctorController.isOrderSuccess) {
         confirmCheckout();
-        setState(() {
-          isCheckoutSuccess = true;
-        });
       } else {
         setState(() {
+          isLoading = false;
           isCheckoutSuccess = false;
         });
       }
@@ -102,10 +101,12 @@ class _ResultCheckoutState extends State<ResultCheckout>
     DoctorController doctorController = DoctorController();
     await doctorController.confirmCheckout(trans_id);
     Timer(Duration(seconds: 2), () {
-      if (doctorController.isOrderSuccess) {
+      if (doctorController.isConfirmedSuccess) {
         setState(() {
+          isLoading = false;
           isCheckoutSuccess = true;
         });
+        _startCountdown();
       } else {
         setState(() {
           isCheckoutSuccess = false;
@@ -122,6 +123,9 @@ class _ResultCheckoutState extends State<ResultCheckout>
         });
       } else {
         _timer?.cancel();
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) => NavigationMenu(keyIndex: 3),
+        ));
       }
     });
   }
@@ -129,6 +133,7 @@ class _ResultCheckoutState extends State<ResultCheckout>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
         body: SizedBox(
       width: double.infinity,
       height: double.infinity,

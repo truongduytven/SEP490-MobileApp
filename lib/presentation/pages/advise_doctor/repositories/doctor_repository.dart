@@ -241,7 +241,7 @@ class DoctorRepository {
 
   Future<dynamic> checkOrderStatus(String transId) async {
     try {
-      final response = await http.get(Uri.parse("$baseUrl/booking-management/order-status?transId=$transId"));
+      final response = await http.get(Uri.parse("$baseUrl/booking-management/order-status?appTransId=$transId"));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -259,6 +259,57 @@ class DoctorRepository {
   Future<dynamic> confirmCheckout(String transId) async {
     try {
       final response = await http.put(Uri.parse("$baseUrl/booking-management/confirm?apptransid=$transId"));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> selectDoctor(int professorId, int elderlyId) async {
+    try {
+      final response = await http.put(Uri.parse("$baseUrl/api/Professor/user-subscription-professor"),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            "professorId": professorId,
+            "elderlyId": elderlyId
+          }));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> bookingAppointment(int elderlyId, int timeSlotId, String day, String description)async {
+    try {
+      final response = await http.post(Uri.parse("$baseUrl/api/Professor/professor-appointment"),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            "elderlyId": elderlyId,
+            "timeSlotId": timeSlotId,
+            "day": day,
+            "description": description
+          })
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};

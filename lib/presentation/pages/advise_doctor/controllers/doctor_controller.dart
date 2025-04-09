@@ -13,6 +13,8 @@ class DoctorController {
   CheckoutResponse? checkoutResponse;
   bool isOrderSuccess = false;
   bool isConfirmedSuccess = false;
+  bool isSelectDoctorSuccess = false;
+  bool isBookingAppointmentSuccess = false;
 
   Future<void> getDoctorData(int accountId) async {
     final response = await _doctorRepository.getDoctorDataById(accountId);
@@ -122,7 +124,7 @@ class DoctorController {
     final response =
         await _doctorRepository.checkOrderStatus(transId);
     if (response != null && response['isSuccess']) {
-      isOrderSuccess = response['data']['status'] == 1;
+      isOrderSuccess = response['data']['data']['return_code'] == 1;
     } else {
       isOrderSuccess = false;
     }
@@ -135,6 +137,26 @@ class DoctorController {
       isConfirmedSuccess = response['data']['status'] == 1;
     } else {
       isConfirmedSuccess = false;
+    }
+  }
+
+  Future<void> selectDoctor(int professorId, int elderlyId) async {
+    final response =
+        await _doctorRepository.selectDoctor(professorId, elderlyId);
+    if (response != null && response['isSuccess']) {
+      isSelectDoctorSuccess = response['data']['status'] == 1;
+    } else {
+      isSelectDoctorSuccess = false;
+    }
+  }
+  
+  Future<void> bookingAppointment(int elderlyId, int timeSlotId, String day, String description) async {
+    final response =
+        await _doctorRepository.bookingAppointment(elderlyId, timeSlotId, day, description);
+    if (response != null && response['isSuccess']) {
+      isBookingAppointmentSuccess = response['data']['status'] == 1;
+    } else {
+      isBookingAppointmentSuccess = false;
     }
   }
 }

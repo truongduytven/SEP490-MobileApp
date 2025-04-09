@@ -55,7 +55,7 @@ class _PackageListState extends State<PackageList> {
         } else {
           setState(() {
             comboData = doctorController.comboData!
-                .where((element) => element.status != 'Inactive')
+                .where((element) => element.status == 'Active')
                 .toList();
             isLoading = false;
           });
