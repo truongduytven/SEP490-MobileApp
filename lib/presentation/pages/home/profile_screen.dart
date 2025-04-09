@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/group_family/screens/group_family.dart';
 import 'package:sep490/features/report/screens/report_screen.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/auth/signin_screen.dart';
@@ -44,7 +45,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ProfileMenu(
               text: "Nhóm gia đình",
               icon: Icons.group,
-              press: () {},
+              press: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GroupFamily()),
+                );
+              },
             ),
             ProfileMenu(
               text: "Gói đang sử dụng",
