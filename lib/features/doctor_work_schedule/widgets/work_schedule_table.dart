@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/theme/color.dart';
 import 'work_schedule_controller.dart';
+
 class WorkScheduleTable extends StatefulWidget {
   final WorkScheduleController controller;
   const WorkScheduleTable({super.key, required this.controller});
@@ -99,13 +100,13 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  DateFormat('dd').format(date),
-                  style: textTheme.titleMedium?.copyWith(
-                    color: isToday ? colors.onPrimary : AppColors.primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                // Text(
+                //   DateFormat('dd').format(date),
+                //   style: textTheme.titleMedium?.copyWith(
+                //     color: isToday ? colors.onPrimary : AppColors.primaryColor,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -123,8 +124,9 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
           child: ListView.builder(
             controller: widget.controller.timeColumnScrollController,
             physics: const ClampingScrollPhysics(),
-            itemCount: 24,
-            itemBuilder: (context, hour) => _buildTimeLabel(hour, theme),
+            itemCount: 16, // Thay từ 24 xuống 16 (từ 5-20h là 16 giờ)
+            itemBuilder: (context, index) =>
+                _buildTimeLabel(index + 5, theme), // Bắt đầu từ giờ thứ 5
           ),
         ),
         Expanded(
@@ -136,8 +138,9 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
               child: ListView.builder(
                 controller: widget.controller.verticalScrollController,
                 physics: const ClampingScrollPhysics(),
-                itemCount: 24,
-                itemBuilder: (context, hour) => _buildTimeRow(hour, theme),
+                itemCount: 16, // Tương tự như trên
+                itemBuilder: (context, index) =>
+                    _buildTimeRow(index + 5, theme), // Bắt đầu từ giờ thứ 5
               ),
             ),
           ),
@@ -147,6 +150,11 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
   }
 
   Widget _buildTimeLabel(int hour, ThemeData theme) {
+    // Nếu giờ nằm ngoài khoảng 5-20h, không hiển thị
+    if (hour < 5 || hour >= 20) {
+      return const SizedBox.shrink();
+    }
+
     final colors = theme.colorScheme;
     final textTheme = theme.textTheme;
     final isCurrentHour = hour == DateTime.now().hour;
@@ -189,6 +197,28 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
   }
 
   Widget _buildTimeSlot(int day, int hour, ThemeData theme) {
+    // Kiểm tra nếu giờ nằm ngoài khoảng 5-20h
+    if (hour < 5 || hour >= 20) {
+      return Container(
+        width: 100,
+        padding: const EdgeInsets.all(4),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Colors.grey.withOpacity(0.1),
+              width: 0.8,
+            ),
+          ),
+          child: Center(
+            child: Icon(Icons.block,
+                color: Colors.grey.withOpacity(0.3), size: 24),
+          ),
+        ),
+      );
+    }
+
     final colors = theme.colorScheme;
     final isSelected = widget.controller.timeSlots[day][hour];
     final date = widget.controller.currentWeekStart.add(Duration(days: day));

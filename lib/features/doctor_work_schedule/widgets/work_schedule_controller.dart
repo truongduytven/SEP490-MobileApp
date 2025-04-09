@@ -139,7 +139,7 @@ class WorkScheduleController {
     }
 
     return {
-      'professorId': userId, 
+      'professorId': userId,
       'listTime': listTime,
     };
   }
