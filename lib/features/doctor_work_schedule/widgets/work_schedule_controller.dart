@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+
 class WorkScheduleController {
   final List<String> days = [
     'THỨ HAI',
@@ -23,7 +25,8 @@ class WorkScheduleController {
   final ScrollController headerScrollController = ScrollController();
   final ScrollController verticalScrollController = ScrollController();
   final ScrollController timeColumnScrollController = ScrollController();
-
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int userId = sharedPrefsHelper.getInt('accountId')!;
   BuildContext? _context;
 
   bool _isLoading = true;
@@ -74,10 +77,10 @@ class WorkScheduleController {
     try {
       // Chuẩn bị dữ liệu để gửi lên API
       final scheduleData = _convertToApiFormat();
-
+      print('res ne $scheduleData');
       // Gọi API để lưu lịch
       final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/api/Professor/schedule'),
+        Uri.parse('https://api.diavan-valuation.asia/api/Professor'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(scheduleData),
       );
@@ -97,8 +100,8 @@ class WorkScheduleController {
     }
   }
 
-  List<Map<String, dynamic>> _convertToApiFormat() {
-    final List<Map<String, dynamic>> result = [];
+  Map<String, dynamic> _convertToApiFormat() {
+    final List<Map<String, dynamic>> listTime = [];
     const dayNames = [
       'Monday',
       'Tuesday',
@@ -110,36 +113,35 @@ class WorkScheduleController {
     ];
 
     for (int day = 0; day < 7; day++) {
-      final timeSlotsForDay = <Map<String, String>>[];
       int? startHour;
 
       for (int hour = 0; hour < 24; hour++) {
         if (timeSlots[day][hour]) {
           startHour ??= hour;
         } else if (startHour != null) {
-          timeSlotsForDay.add({
-            'start': '${startHour.toString().padLeft(2, '0')}:00',
-            'end': '${hour.toString().padLeft(2, '0')}:00',
+          listTime.add({
+            'dayOfWeek': dayNames[day],
+            'startTime': '${startHour.toString().padLeft(2, '0')}:00',
+            'endTime': '${hour.toString().padLeft(2, '0')}:00',
           });
           startHour = null;
         }
       }
 
-      // Thêm slot cuối cùng nếu có
+      // Nếu còn slot cuối chưa được thêm (kết thúc lúc 24:00)
       if (startHour != null) {
-        timeSlotsForDay.add({
-          'start': '${startHour.toString().padLeft(2, '0')}:00',
-          'end': '24:00',
+        listTime.add({
+          'dayOfWeek': dayNames[day],
+          'startTime': '${startHour.toString().padLeft(2, '0')}:00',
+          'endTime': '24:00',
         });
       }
-
-      result.add({
-        'dayOfWeek': dayNames[day],
-        'times': timeSlotsForDay,
-      });
     }
 
-    return result;
+    return {
+      'professorId': userId, 
+      'listTime': listTime,
+    };
   }
 
   void _parseApiData(List<dynamic> apiData) {
@@ -272,65 +274,6 @@ class WorkScheduleController {
 
   void changeWeek(int delta) {
     currentWeekStart = currentWeekStart.add(Duration(days: 7 * delta));
-  }
-
-  Widget _buildSaveScheduleDialog(List<String> selectedSlots) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'XÁC NHẬN LỊCH LÀM VIỆC',
-            style: Theme.of(_context!).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(_context!).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Bạn đã chọn ${selectedSlots.length} khung giờ làm việc',
-            style: Theme.of(_context!).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 16),
-          if (selectedSlots.isEmpty)
-            const Text('Chưa có khung giờ nào được chọn')
-          else
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: selectedSlots.length,
-                itemBuilder: (context, index) => ListTile(
-                  leading: Icon(Icons.access_time_rounded,
-                      color: Theme.of(_context!).colorScheme.primary),
-                  title: Text(selectedSlots[index]),
-                ),
-              ),
-            ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(_context!),
-                  child: const Text('HỦY'),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(_context!);
-                    _showSnackBar('Đã lưu lịch làm việc thành công');
-                  },
-                  child: const Text('LƯU LỊCH'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 
   void _showSnackBar(String message) {

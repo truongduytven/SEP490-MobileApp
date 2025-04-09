@@ -31,7 +31,6 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
   }
 
   Widget _buildHeaderRow(ThemeData theme) {
-    final colors = theme.colorScheme;
     final textTheme = theme.textTheme;
 
     return SizedBox(
