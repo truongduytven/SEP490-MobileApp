@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:sep490/theme/color.dart';
 import 'work_schedule_controller.dart';
-
 class WorkScheduleTable extends StatefulWidget {
   final WorkScheduleController controller;
-
   const WorkScheduleTable({super.key, required this.controller});
-
   @override
   State<WorkScheduleTable> createState() => _WorkScheduleTableState();
 }
@@ -24,7 +21,7 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         _buildHeaderRow(theme),
@@ -47,7 +44,7 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
               child: Text(
                 'GIỜ',
                 style: textTheme.titleSmall?.copyWith(
-                  color: colors.primary,
+                  color: AppColors.primaryColor,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
                 ),
@@ -59,7 +56,8 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
               scrollDirection: Axis.horizontal,
               controller: widget.controller.headerScrollController,
               child: Row(
-                children: List.generate(7, (day) => _buildDayHeader(day, theme)),
+                children:
+                    List.generate(7, (day) => _buildDayHeader(day, theme)),
               ),
             ),
           ),
@@ -82,10 +80,12 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
             decoration: BoxDecoration(
-              color: isToday ? colors.primary : colors.surface,
+              color: isToday ? AppColors.primaryColor : colors.surface,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isToday ? colors.primary : colors.outline.withOpacity(0.2),
+                color: isToday
+                    ? AppColors.primaryColor
+                    : colors.outline.withOpacity(0.2),
                 width: 1,
               ),
             ),
@@ -103,7 +103,7 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
                 Text(
                   DateFormat('dd').format(date),
                   style: textTheme.titleMedium?.copyWith(
-                    color: isToday ? colors.onPrimary : colors.primary,
+                    color: isToday ? colors.onPrimary : AppColors.primaryColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -164,13 +164,13 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           decoration: BoxDecoration(
-            color: isCurrentHour ? colors.primaryContainer : null,
+            color: isCurrentHour ? AppColors.primaryLowColor : null,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             widget.controller.timeLabels[hour],
             style: textTheme.bodyMedium?.copyWith(
-              color: isCurrentHour ? colors.onPrimaryContainer : colors.onSurface,
+              color: isCurrentHour ? AppColors.primaryColor : colors.onSurface,
               fontWeight: isCurrentHour ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -211,21 +211,22 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
           curve: Curves.easeInOut,
           decoration: BoxDecoration(
             color: isSelected
-                ? colors.primary.withOpacity(isCurrentTimeSlot ? 0.4 : 0.2)
+                ? AppColors.primaryColor
+                    .withOpacity(isCurrentTimeSlot ? 0.4 : 0.2)
                 : (isCurrentTimeSlot
-                    ? colors.primaryContainer.withOpacity(0.3)
+                    ? AppColors.primaryColor.withOpacity(0.2)
                     : Colors.transparent),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isSelected
-                  ? colors.primary.withOpacity(0.6)
+                  ? AppColors.primaryColor.withOpacity(0.6)
                   : colors.outline.withOpacity(0.1),
               width: isSelected ? 1.5 : 0.8,
             ),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                        color: colors.primary.withOpacity(0.1),
+                        color: AppColors.primaryColor.withOpacity(0.1),
                         blurRadius: 6,
                         offset: const Offset(0, 2)),
                   ]
@@ -241,11 +242,11 @@ class _WorkScheduleTableState extends State<WorkScheduleTable> {
               child: isSelected
                   ? Icon(Icons.check_circle_rounded,
                       key: const ValueKey('selected'),
-                      color: colors.primary,
+                      color: AppColors.primaryColor,
                       size: 24)
                   : Icon(Icons.circle_outlined,
                       key: const ValueKey('unselected'),
-                      color: colors.outline.withOpacity(0.3),
+                      color: AppColors.primaryColor.withOpacity(0.3),
                       size: 24),
             ),
           ),

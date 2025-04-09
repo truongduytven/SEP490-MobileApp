@@ -622,11 +622,13 @@
 //     return a.year == b.year && a.month == b.month && a.day == b.day;
 //   }
 // }
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sep490/features/doctor_work_schedule/widgets/work_schedule_controller.dart';
 import 'package:sep490/features/doctor_work_schedule/widgets/work_schedule_header.dart';
 import 'package:sep490/features/doctor_work_schedule/widgets/work_schedule_table.dart';
+import 'package:sep490/theme/color.dart';
 
 class WorkSchedule extends StatefulWidget {
   final int accountId;
@@ -671,7 +673,7 @@ class _WorkScheduleState extends State<WorkSchedule> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [colors.primary, colors.primaryContainer],
+              colors: [AppColors.primaryLowColor, AppColors.primaryLowColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -778,45 +780,123 @@ class _WorkScheduleState extends State<WorkSchedule> {
   }
 
   List<Widget> _buildTimeSlots(ThemeData theme, ColorScheme colors) {
-    return List.generate(24, (hour) {
-      return Row(
+    final List<Widget> slots = [];
+
+    // Lọc ra các khung giờ có lịch
+    for (int hour = 0; hour < 24; hour++) {
+      bool hasSchedule = false;
+      for (int day = 0; day < 7; day++) {
+        if (_controller.timeSlots[day][hour]) {
+          hasSchedule = true;
+          break;
+        }
+      }
+
+      if (hasSchedule) {
+        slots.add(
+          Row(
+            children: [
+              // Cột giờ
+              SizedBox(
+                width: 80,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    _controller.timeLabels[hour],
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ),
+              ),
+              // Các ô lịch
+              ...List.generate(
+                  7,
+                  (day) => Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.all(2),
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: _controller.timeSlots[day][hour]
+                                ? AppColors.primaryColor.withOpacity(0.2)
+                                : AppColors.primaryLowColor.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(
+                              color: colors.outline.withOpacity(0.1),
+                            ),
+                          ),
+                          child: _controller.timeSlots[day][hour]
+                              ? Icon(Icons.check_circle,
+                                  color: AppColors.primaryColor, size: 20)
+                              : null,
+                        ),
+                      )),
+            ],
+          ),
+        );
+      }
+    }
+
+    // Nếu không có lịch nào trong tuần
+    if (slots.isEmpty) {
+      return [_buildEmptyScheduleUI(theme)];
+    }
+
+    return slots;
+  }
+
+  Widget _buildEmptyScheduleUI(ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Cột giờ
-          SizedBox(
-            width: 80,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                _controller.timeLabels[hour],
-                style: theme.textTheme.bodySmall,
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceVariant.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.schedule_outlined,
+              size: 64,
+              color: theme.colorScheme.onSurface.withOpacity(0.5),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Chưa có lịch làm việc',
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.8),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              'Bạn chưa thiết lập lịch làm việc cho tuần này. '
+              'Hãy bắt đầu bằng cách nhấn nút bên dưới.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
               ),
             ),
           ),
-          // Các ô lịch
-          ...List.generate(
-              7,
-              (day) => Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.all(2),
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: _controller.timeSlots[day][hour]
-                            ? colors.primary.withOpacity(0.2)
-                            : colors.surfaceVariant,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: colors.outline.withOpacity(0.1),
-                        ),
-                      ),
-                      child: _controller.timeSlots[day][hour]
-                          ? Icon(Icons.check_circle,
-                              color: colors.primary, size: 20)
-                          : null,
-                    ),
-                  )),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.add),
+            label: const Text('TẠO LỊCH LÀM VIỆC'),
+            onPressed: () {
+              _controller.initializeTimeSlots();
+              setState(() {
+                _controller.hasData = true;
+                _isEditing = true;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+          ),
         ],
-      );
-    });
+      ),
+    );
   }
 
   Widget? _buildFloatingActionButton(ColorScheme colors) {
@@ -826,28 +906,283 @@ class _WorkScheduleState extends State<WorkSchedule> {
         label: const Text('THÊM LỊCH'),
         onPressed: () {
           _controller.initializeTimeSlots();
-          setState(() {
-            _controller.hasData = true;
-            _isEditing = true; // Tự động vào chế độ chỉnh sửa
-          });
+          setState(
+            () {
+              _controller.hasData = true;
+              _isEditing = true; // Tự động vào chế độ chỉnh sửa
+            },
+          );
         },
       );
     }
 
     if (_isEditing) {
       return FloatingActionButton.extended(
-        icon: const Icon(Icons.save),
-        label: const Text('LƯU LỊCH'),
-        onPressed: () async {
-          await _controller.saveSchedule();
-          setState(() {
-            _isEditing = false;
-          });
-        },
+        backgroundColor: AppColors.primaryLowColor.withOpacity(0.9),
+        icon: const Icon(
+          Icons.save,
+          color: AppColors.primaryColor,
+        ),
+        label: const Text(
+          'LƯU LỊCH',
+          style: TextStyle(
+            color: AppColors.primaryColor,
+          ),
+        ),
+        // onPressed: () async {
+        //   await _controller.saveSchedule();
+        //   setState(() {
+        //     _isEditing = false;
+        //   });
+        // },
+        onPressed: () => _showSaveConfirmationDialog(),
       );
     }
 
     return null;
+  }
+
+  // Future<void> _showSaveConfirmationDialog() async {
+  //   final selectedSlots = <String>[];
+
+  //   for (int day = 0; day < 7; day++) {
+  //     for (int hour = 0; hour < 24; hour++) {
+  //       if (_controller.timeSlots[day][hour]) {
+  //         selectedSlots
+  //             .add('${_controller.days[day]} ${_controller.timeLabels[hour]}');
+  //       }
+  //     }
+  //   }
+  //   print('selected schedule $selectedSlots');
+  //   final shouldSave = await showModalBottomSheet<bool>(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  //     ),
+  //     builder: (context) => DraggableScrollableSheet(
+  //       expand: false,
+  //       initialChildSize: 0.5, // start at 50% of screen height
+  //       minChildSize: 0.3,
+  //       maxChildSize: 0.9,
+  //       builder: (context, scrollController) => SingleChildScrollView(
+  //         controller: scrollController,
+  //         child: Padding(
+  //           padding: EdgeInsets.only(
+  //             bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+  //             left: 16,
+  //             right: 16,
+  //             top: 16,
+  //           ),
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               const Center(
+  //                 child: Text(
+  //                   'XÁC NHẬN LỊCH LÀM VIỆC',
+  //                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 12),
+  //               Text(
+  //                 'Bạn đã chọn ${selectedSlots.length} khung giờ làm việc',
+  //                 style: Theme.of(context).textTheme.bodyLarge,
+  //               ),
+  //               const SizedBox(height: 12),
+  //               if (selectedSlots.isEmpty)
+  //                 const Text('Chưa có khung giờ nào được chọn')
+  //               else
+  //                 ListView.builder(
+  //                   shrinkWrap: true,
+  //                   physics: const NeverScrollableScrollPhysics(),
+  //                   itemCount: selectedSlots.length,
+  //                   itemBuilder: (context, index) => ListTile(
+  //                     leading: Icon(Icons.access_time,
+  //                         color: AppColors.primaryColor),
+  //                     title: Text(selectedSlots[index]),
+  //                   ),
+  //                 ),
+  //               const SizedBox(height: 16),
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.end,
+  //                 children: [
+  //                   TextButton(
+  //                     onPressed: () => Navigator.pop(context, false),
+  //                     child: const Text('HỦY'),
+  //                   ),
+  //                   ElevatedButton(
+  //                     onPressed: () => Navigator.pop(context, true),
+  //                     child: const Text('LƯU LỊCH'),
+  //                   ),
+  //                 ],
+  //               ),
+  //               const SizedBox(height: 16),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+
+  //   if (shouldSave == true) {
+  //     await _controller.saveSchedule();
+  //     setState(() {
+  //       _isEditing = false;
+  //     });
+  //   }
+  // }
+  Future<void> _showSaveConfirmationDialog() async {
+    final selectedSlots = <String>[];
+
+    for (int day = 0; day < 7; day++) {
+      for (int hour = 0; hour < 24; hour++) {
+        if (_controller.timeSlots[day][hour]) {
+          selectedSlots
+              .add('${_controller.days[day]} ${_controller.timeLabels[hour]}');
+        }
+      }
+    }
+
+    print('selected schedule $selectedSlots');
+
+    // Gộp giờ theo từng ngày
+    Map<String, List<String>> _groupTimeSlots(List<String> slots) {
+      final Map<String, List<String>> grouped = {};
+
+      for (final slot in slots) {
+        final lastSpaceIndex = slot.lastIndexOf(' ');
+        if (lastSpaceIndex == -1) continue;
+
+        final day = slot.substring(0, lastSpaceIndex);
+        final time = slot.substring(lastSpaceIndex + 1);
+
+        grouped.putIfAbsent(day, () => []).add(time);
+      }
+
+      for (final times in grouped.values) {
+        times.sort();
+      }
+
+      return grouped;
+    }
+
+    List<String> _formatGroupedTimeSlots(Map<String, List<String>> grouped) {
+      final List<String> results = [];
+
+      for (final entry in grouped.entries) {
+        final day = entry.key;
+        final times = entry.value;
+
+        if (times.isEmpty) continue;
+
+        List<List<String>> ranges = [];
+        List<String> currentRange = [times.first];
+
+        for (int i = 1; i < times.length; i++) {
+          final prev = int.parse(times[i - 1].split(':')[0]);
+          final current = int.parse(times[i].split(':')[0]);
+
+          if (current == prev + 1) {
+            currentRange.add(times[i]);
+          } else {
+            ranges.add(currentRange);
+            currentRange = [times[i]];
+          }
+        }
+        ranges.add(currentRange);
+
+        final formattedRanges = ranges.map((range) {
+          final startTime = range.first;
+          final endHour = int.parse(range.last.split(':')[0]) + 1;
+          final endTime = '${endHour.toString().padLeft(2, '0')}:00';
+          return '$startTime - $endTime';
+        }).join(', ');
+
+        results.add('$day: $formattedRanges');
+      }
+
+      return results;
+    }
+
+    final groupedSlots = _groupTimeSlots(selectedSlots);
+    final formattedSlots = _formatGroupedTimeSlots(groupedSlots);
+    print("sau format $formattedSlots");
+    final shouldSave = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => SingleChildScrollView(
+          controller: scrollController,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              left: 16,
+              right: 16,
+              top: 16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(
+                  child: Text(
+                    'XÁC NHẬN LỊCH LÀM VIỆC',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Text(
+                //   'Bạn đã chọn ${selectedSlots.length} khung giờ làm việc',
+                //   style: Theme.of(context).textTheme.bodyLarge,
+                // ),
+                const SizedBox(height: 12),
+                if (selectedSlots.isEmpty)
+                  const Text('Chưa có khung giờ nào được chọn')
+                else
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: formattedSlots.length,
+                    itemBuilder: (context, index) => ListTile(
+                      leading: Icon(Icons.access_time,
+                          color: AppColors.primaryColor),
+                      title: Text(formattedSlots[index]),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('HỦY'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('LƯU LỊCH'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (shouldSave == true) {
+      await _controller.saveSchedule();
+      setState(() {
+        _isEditing = false;
+      });
+    }
   }
 
   Widget _buildNoScheduleUI() {
