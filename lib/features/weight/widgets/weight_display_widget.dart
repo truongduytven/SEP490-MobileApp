@@ -256,17 +256,24 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
                               ),
                             ),
                           ),
-                          isToday(widget.dateTime)
-                              ? IconButton(
-                                  onPressed: widget.onEdit,
-                                  icon: Icon(Icons.edit,
-                                      size: 30, color: AppColors.primaryColor),
-                                )
-                              : Icon(
+                          widget.typeData == 'Tự động'
+                              ? Icon(
                                   Icons.lock_outline,
                                   size: 30,
                                   color: AppColors.primaryColor,
                                 )
+                              : isToday(widget.dateTime)
+                                  ? IconButton(
+                                      onPressed: widget.onEdit,
+                                      icon: Icon(Icons.edit,
+                                          size: 30,
+                                          color: AppColors.primaryColor),
+                                    )
+                                  : Icon(
+                                      Icons.lock_outline,
+                                      size: 30,
+                                      color: AppColors.primaryColor,
+                                    )
                         ],
                       ),
                       // Weight display
@@ -402,6 +409,9 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
+                            final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final weightController =
                                   ref.read(weightControllerProvider);
 
@@ -427,9 +437,9 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
                                 success = await weightController.addWeight(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
                                   weight: widget.weight.toDouble(),
-                                  weightSource: "Thủ công",
+                                  weightSource: widget.typeData,
                                 );
                               }
                               await Future.delayed(Duration(seconds: 2));

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/blood_glucose/screens/add_blood_glucose_screen.dart';
+import 'package:sep490/features/blood_oxygen/screens/add_blood_oxygen.dart';
 import 'package:sep490/features/blood_pressure/screens/add_blood_pressure_screen.dart';
+import 'package:sep490/features/calories_burned/screens/add_calories_burned.dart';
 import 'package:sep490/features/health/controller/health_controller.dart';
 import 'package:sep490/features/health/widgets/skeleton_list.dart';
 import 'package:sep490/features/heart_beat/screens/add_heart_beat_screen.dart';
@@ -11,6 +13,8 @@ import 'package:sep490/features/height/screens/add_height_screen.dart';
 import 'package:sep490/features/kidney_function/screens/add_kidney_function_screen.dart';
 import 'package:sep490/features/lipid_profile/screens/add_lipid_profile_screen.dart';
 import 'package:sep490/features/liver_enzymes/screens/add_liver_enzymes_screen.dart';
+import 'package:sep490/features/sleep/screens/add_sleep.dart';
+import 'package:sep490/features/steps/screens/add_steps.dart';
 import 'package:sep490/features/weight/screens/add_weight_screen.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/theme/color.dart';
@@ -77,11 +81,13 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
     final healthController = ref.read(healthControllerProvider);
+    final selectedElderlyId =
+        sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
       final result = await healthController.getLogBookHealthIndicator(
         context,
-        currentUserAccountID,
+        selectedElderlyId == 0 ? currentUserAccountID : selectedElderlyId,
       );
 
       final formattedData = formatApiData(result);
@@ -89,7 +95,7 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
       formattedData.sort((a, b) {
         String convertDateFormat(String date) {
           List<String> parts = date.split("-");
-          return "${parts[2]}-${parts[1]}-${parts[0]}"; // YYYY-MM-DD
+          return "${parts[2]}-${parts[1]}-${parts[0]}";
         }
 
         String formatTime(String time) {
@@ -103,7 +109,7 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
         DateTime dateTimeB = DateTime.parse(
             '${convertDateFormat(b["date"]!)} ${formatTime(b["time"]!)}');
 
-        return dateTimeB.compareTo(dateTimeA); // Sắp xếp giảm dần
+        return dateTimeB.compareTo(dateTimeA);
       });
       setState(() {
         dataFromApi = formattedData;
@@ -119,7 +125,6 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
           ),
         ),
       ).show(context);
-      print("Error fetching health log book indicators: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -136,7 +141,11 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
       "HeartRate": "Nhịp tim",
       "KidneyFunction": "Chức năng thận",
       "LipidProfile": "Mỡ máu",
-      "LiverEnzyme": "Men gan"
+      "LiverEnzyme": "Men gan",
+      "BloodOxygen": "Oxy máu",
+      "FootStep": "Bước chân",
+      "SleepTime": "Thời gian ngủ",
+      "CaloriesConsumption": "Tiêu thụ calories",
     };
 
     const Map<String, String> unitMap = {
@@ -147,7 +156,11 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
       "HeartRate": "bpm",
       "KidneyFunction": "ml/phút/1.73m2",
       "LipidProfile": "mmol/L",
-      "LiverEnzyme": "UI/L"
+      "LiverEnzyme": "UI/L",
+      "BloodOxygen": "%",
+      "FootStep": "bước",
+      "SleepTime": "phút",
+      "CaloriesConsumption": "kcal",
     };
 
     return result.map((item) {
@@ -161,7 +174,7 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
         "date": item["dateRecorded"]?.toString() ?? "",
         "time": item["timeRecorded"]?.toString() ?? "",
         "dateTime": item["dateTime"]?.toString() ?? "",
-        "result": item["evaluation"]?.toString() ?? "",
+        "result": item["evaluation"]?.toString() != null ? (item["evaluation"]?.toString() == 'N/A' ? "Bình thường" : item["evaluation"].toString()) : "",
         "unit": unitMap[tabs] ?? "",
       };
     }).toList();
@@ -171,13 +184,16 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
     {"label": "Tất cả", "value": "all"},
     {"label": "Huyết áp", "value": "blood_pressure"},
     {"label": "Nhịp tim", "value": "heart_rate"},
-    // {"label": "Thuốc", "value": "medicine"},
     {"label": "Cân nặng", "value": "weight"},
     {"label": "Chiều cao", "value": "height"},
     {"label": "Đường huyết", "value": "blood_glucose"},
     {"label": "Chức năng thận", "value": "kidney_function"},
     {"label": "Mỡ máu", "value": "lipid_profile"},
     {"label": "Men gan", "value": "liver_enzym"},
+    {"label": "Oxy máu", "value": "blood_oxygen"},
+    {"label": "Bước chân", "value": "foot_step"},
+    {"label": "Thời gian ngủ", "value": "sleep_time"},
+    {"label": "Tiêu thụ calories", "value": "calories_consumption"},
   ];
 
   late String selectedTopic;
@@ -219,6 +235,14 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
         return "assets/img3D/treatment_medical/momau.webp";
       case "Men gan":
         return "assets/img3D/treatment_medical/gan.png";
+      case "Oxy máu":
+        return "assets/img3D/oxy_mau.png";
+      case "Bước chân":
+        return "assets/img3D/buoc_chan.png";
+      case "Thời gian ngủ":
+        return "assets/img3D/giac_ngu.png";
+      case "Tiêu thụ calories":
+        return "assets/img3D/kcal.png";
       default:
         return "assets/img/Logo.png";
     }
@@ -432,6 +456,62 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
                   isDraft: false)),
         );
         break;
+      case "Oxy máu":
+        // Navigate to NhịpTimCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddBloodOxygen(
+                  id: item["id"],
+                  dataType: item["dataType"],
+                  date: item['date'],
+                  currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+                  showHeartBeatWidget: true,
+                  isDraft: false)),
+        );
+        break;
+      case "Buớc chân":
+        // Navigate to NhịpTimCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddSteps(
+                  id: item["id"],
+                  dataType: item["dataType"],
+                  date: item['date'],
+                  currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+                  showHeartBeatWidget: true,
+                  isDraft: false)),
+        );
+        break;
+      case "Thời gian ngủ":
+        // Navigate to NhịpTimCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddSleep(
+                  id: item["id"],
+                  dataType: item["dataType"],
+                  date: item['date'],
+                  currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+                  showHeartBeatWidget: true,
+                  isDraft: false)),
+        );
+        break;
+      case "Tiêu thụ calories":
+        // Navigate to NhịpTimCard
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddCaloriesBurned(
+                  id: item["id"],
+                  dataType: item["dataType"],
+                  date: item['date'],
+                  currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+                  showHeartBeatWidget: true,
+                  isDraft: false)),
+        );
+        break;
 
       default:
         // Handle case where the title doesn't match any of the above
@@ -530,7 +610,7 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
                         children: filteredGroupedData.entries.map((entry) {
                           final date = entry.key;
                           final items = entry.value;
-
+      
                           return TweenAnimationBuilder(
                             tween: Tween<Offset>(
                               begin:
@@ -620,7 +700,7 @@ class _HealthMonitoringBookState extends ConsumerState<HealthMonitoringBook>
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           // "${item["data"]} ${item['unit']}",
-
+      
                                           item["title"] == "Huyết áp"
                                               ? ("${item["data"]} ${item['unit']}" ??
                                                       "")

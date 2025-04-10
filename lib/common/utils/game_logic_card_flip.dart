@@ -5,22 +5,22 @@ class Game {
   List<String>? gameImg;
 
   List<String> card_list = [
-    "assets/img/social_15707749.png",
-    "assets/img/youtube_3938026.png",
-    "assets/img/check_14025690.png",
-    "assets/img/social_15707749.png",
-    "assets/img/youtube_3938026.png",
-    "assets/img/linkedin_3536505.png",
-    "assets/img/linkedin_3536505.png",
-    "assets/img/check_14025690.png",
-    "assets/img/classical.png",
-    "assets/img/classical.png",
-    "assets/img/cave.png",
-    "assets/img/cave.png",
-    "assets/img/geological.png",
-    "assets/img/geological.png",
-    "assets/img/potrait.png",
-    "assets/img/potrait.png",
+    "assets/img/latbai1.jpg",
+    "assets/img/latbai1.jpg",
+    "assets/img/latbai2.png",
+    "assets/img/latbai2.png",
+    "assets/img/latbai3.jpg",
+    "assets/img/latbai3.jpg",
+    "assets/img/latbai4.png",
+    "assets/img/latbai4.png",
+    "assets/img/latbai5.png",
+    "assets/img/latbai5.png",
+    "assets/img/latbai6.png",
+    "assets/img/latbai6.png",
+    "assets/img/latbai7.png",
+    "assets/img/latbai7.png",
+    "assets/img/latbai8.jpeg",
+    "assets/img/latbai8.jpeg",
   ];
 
   List<Map<int, String>> matchCheck = [];

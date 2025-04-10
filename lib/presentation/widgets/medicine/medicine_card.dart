@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/common/utils/utils.dart';
-import 'package:sep490/models/medicine/medicine.dart';
 import 'package:sep490/presentation/widgets/medicine/img_form.dart';
 import 'package:sep490/theme/color.dart';
 

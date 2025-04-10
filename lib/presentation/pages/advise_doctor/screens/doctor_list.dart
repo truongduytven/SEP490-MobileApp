@@ -36,6 +36,7 @@ class _DoctorListState extends State<DoctorList> {
     DoctorController doctorController = DoctorController();
     await doctorController.getFilterDoctor(filterEnter);
     Timer(Duration(seconds: 1), () {
+      if(!mounted) return;
       setState(() {
         listFilterDoctor = doctorController.listFilterDoctor;
         isLoading = false;
@@ -209,16 +210,19 @@ class _DoctorListState extends State<DoctorList> {
                             ),
                           ),
                           if (doctor.dateTime!.isNotEmpty)
-                            Row(
-                              children: [
-                                Text('Slot gần nhất: ${doctor.dateTime}',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: AppColors.grayColor3,
-                                        fontWeight: FontWeight.w600)),
-                              ],
+                            SizedBox(
+                              width: 300,
+                              child: Row(
+                                children: [
+                                  Text('Slot: ${doctor.dateTime}',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.grayColor3,
+                                          fontWeight: FontWeight.w600)),
+                                ],
+                              ),
                             ),
                           if (doctor.date!.isNotEmpty)
                             Row(

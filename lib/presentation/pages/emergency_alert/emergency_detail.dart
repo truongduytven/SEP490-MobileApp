@@ -58,6 +58,7 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
     EmergencyController emergencyController = EmergencyController();
     await emergencyController.getEmergencyListDetail(widget.emergencyId);
     Timer(Duration(seconds: 1), () {
+      if (!mounted) return;
       setState(() {
         isLoading = false;
         emergencyInformationList = emergencyController.emergencyInformationList;
@@ -72,6 +73,7 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
     EmergencyController emergencyController = EmergencyController();
     await emergencyController.getEmergencyDetail(widget.emergencyId);
     Timer(Duration(seconds: 1), () {
+      if (!mounted) return;
       setState(() {
         isLoading = false;
         if (emergencyController.emergencyInformation != null) {

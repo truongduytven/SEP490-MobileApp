@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/doctor_work_schedule/screens/schedule.dart';
+import 'package:sep490/features/doctor_work_schedule/screens/work_schedule.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
 import 'package:sep490/features/health/screens/health_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
-import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
-import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
-import 'package:sep490/features/health/screens/health_screen.dart';
 import 'package:sep490/presentation/pages/home/home_screen.dart';
 import 'package:sep490/presentation/pages/ultility/ultility_screen.dart';
 import 'package:sep490/theme/color.dart';
@@ -17,8 +14,7 @@ import 'package:flutter/services.dart';
 
 class NavigationMenu extends StatefulWidget {
   final int keyIndex;
-  const NavigationMenu(
-      {super.key, required this.keyIndex});
+  const NavigationMenu({super.key, required this.keyIndex});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -28,14 +24,15 @@ class NavigationMenu extends StatefulWidget {
 class _NavigationMenuState extends State<NavigationMenu> {
   int _selectedIndex = 0;
   late int _roleId = 0;
+  late int _accountId = 0;
   final SharedPrefsHelper _sharedPrefsHelper = SharedPrefsHelper();
-
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.keyIndex;
     _roleId = _sharedPrefsHelper.getInt('roleId') ?? 2;
+    _accountId = _sharedPrefsHelper.getInt('accountId') ?? 0;
   }
 
   List<Widget> _widgetOptions(int roleId) {
@@ -43,209 +40,206 @@ class _NavigationMenuState extends State<NavigationMenu> {
       case 2:
         return [
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHome02,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHome02,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Trang chủ",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome02,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome02,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trang chủ",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHealth,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHealth,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Sức khỏe",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHealth,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHealth,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Sức khỏe",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedBubbleChatUser,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedBubbleChatUser,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Trò chuyện",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trò chuyện",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDoctor01,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDoctor01,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Tư vấn",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDoctor01,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDoctor01,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Tư vấn",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDashboardSquare03,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDashboardSquare03,
-                  
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Tiện ích",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDashboardSquare03,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDashboardSquare03,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Tiện ích",
+          ),
         ];
       case 3:
         return [
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHome02,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHome02,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Trang chủ",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome02,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome02,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trang chủ",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHealth,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHealth,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Sức khỏe",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHealth,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHealth,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Sức khỏe",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedBubbleChatUser,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedBubbleChatUser,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Trò chuyện",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trò chuyện",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDoctor01,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDoctor01,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Tư vấn",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDoctor01,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDoctor01,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Tư vấn",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedAmbulance,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedAmbulance,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Khẩn cấp",
-              ),
-          
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedAmbulance,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedAmbulance,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Khẩn cấp",
+          ),
         ];
       default:
         return [
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHome02,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHome02,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Trang chủ",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome02,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedHome02,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trang chủ",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHealth,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedHealth,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Sức khỏe",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedCalendar03,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedCalendar03,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Lịch làm việc",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedBubbleChatUser,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedBubbleChatUser,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Trò chuyện",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trò chuyện",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDoctor01,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDoctor01,
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Tư vấn",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDoctor01,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDoctor01,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Tư vấn",
+          ),
           NavigationDestination(
-                icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDashboardSquare03,
-                  color: AppColors.iconColor,
-                  size: 30,
-                ),
-                selectedIcon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedDashboardSquare03,
-                  
-                  color: AppColors.primaryColor,
-                  size: 30,
-                ),
-                label: "Tiện ích",
-              ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDashboardSquare03,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedDashboardSquare03,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Tiện ích",
+          ),
         ];
     }
   }
@@ -350,7 +344,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
         case 0:
           return HomeScreen();
         case 1:
-          return HealthScreen();
+          return WorkSchedule(
+            accountId: _accountId,
+          );
         case 2:
           return MobileLayoutScreen();
         case 3:

@@ -22,7 +22,7 @@ class HealthCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.only(right: 30),
         child: Column(
           children: [
             CircleAvatar(

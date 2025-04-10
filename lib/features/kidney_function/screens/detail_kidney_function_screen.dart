@@ -111,11 +111,14 @@ class _DetailKidneyFunctionScreenState
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
     final kidneyFunctionController = ref.read(kidneyFunctionControllerProvider);
+    final currentSelectedElderlyId = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
       final result = await kidneyFunctionController.getKidneyFunctionDetail(
         context: context,
-        accountId: currentUserAccountID,
+        accountId: currentSelectedElderlyId == 0
+            ? currentUserAccountID
+            : currentSelectedElderlyId,
       );
       for (var item in result) {
         switch (item["tabs"]) {
@@ -340,12 +343,12 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["bunAverage"]) ??
-                                                  "--",
-                                              // (dataByDate?["bunAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByDate?["bunAverage"]) ??
                                               //     "--",
+                                              (dataByDate?["bunAverage"]
+                                                        ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -365,13 +368,13 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?[
-                                                      "creatinineAverage"]) ??
-                                                  "--",
-                                              // (dataByDate?["creatinineAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByDate?[
+                                              //         "creatinineAverage"]) ??
                                               //     "--",
+                                              (dataByDate?["creatinineAverage"]
+                                                          ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -391,12 +394,12 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByDate?["eGfrAverage"]) ??
-                                                  "--",
-                                              // (dataByDate?["eGfrAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByDate?["eGfrAverage"]) ??
                                               //     "--",
+                                              (dataByDate?["eGfrAverage"]
+                                                         ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -511,12 +514,12 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["bunAverage"]) ??
-                                                  "--",
-                                              // (dataByWeek?["bunAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByWeek?["bunAverage"]) ??
                                               //     "--",
+                                              (dataByWeek?["bunAverage"]
+                                                          ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -536,13 +539,13 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?[
-                                                      "creatinineAverage"]) ??
-                                                  "--",
-                                              // (dataByWeek?["creatinineAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByWeek?[
+                                              //         "creatinineAverage"]) ??
                                               //     "--",
+                                              (dataByWeek?["creatinineAverage"]
+                                                         ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -562,12 +565,12 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByWeek?["eGfrAverage"]) ??
-                                                  "--",
-                                              // (dataByWeek?["eGfrAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByWeek?["eGfrAverage"]) ??
                                               //     "--",
+                                              (dataByWeek?["eGfrAverage"]
+                                                         ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -682,12 +685,12 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["bunAverage"]) ??
-                                                  "--",
-                                              // (dataByMonth?["bunAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByMonth?["bunAverage"]) ??
                                               //     "--",
+                                              (dataByMonth?["bunAverage"]
+                                                         ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -707,13 +710,13 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?[
-                                                      "creatinineAverage"]) ??
-                                                  "--",
-                                              // (dataByMonth?["creatinineAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByMonth?[
+                                              //         "creatinineAverage"]) ??
                                               //     "--",
+                                              (dataByMonth?["creatinineAverage"]
+                                                         ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -733,12 +736,12 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByMonth?["eGfrAverage"]) ??
-                                                  "--",
-                                              // (dataByMonth?["eGfrAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByMonth?["eGfrAverage"]) ??
                                               //     "--",
+                                              (dataByMonth?["eGfrAverage"]
+                                                          ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -853,12 +856,12 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["bunAverage"]) ??
-                                                  "--",
-                                              // (dataByYear?["bunAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByYear?["bunAverage"]) ??
                                               //     "--",
+                                              (dataByYear?["bunAverage"]
+                                                          ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -878,13 +881,13 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?[
-                                                      "creatinineAverage"]) ??
-                                                  "--",
-                                              // (dataByYear?["creatinineAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByYear?[
+                                              //         "creatinineAverage"]) ??
                                               //     "--",
+                                              (dataByYear?["creatinineAverage"]
+                                                          ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),
@@ -904,12 +907,12 @@ class _DetailKidneyFunctionScreenState
                                               width: 5,
                                             ),
                                             Text(
-                                              (dataByYear?["eGfrAverage"]) ??
-                                                  "--",
-                                              // (dataByYear?["eGfrAverage"]
-                                              //             as double?)
-                                              //         ?.toStringAsFixed(2) ??
+                                              // (dataByYear?["eGfrAverage"]) ??
                                               //     "--",
+                                              (dataByYear?["eGfrAverage"]
+                                                         ?.toDouble() ??
+                                                          0.0).toStringAsFixed(2) ??
+                                                  "--",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600),

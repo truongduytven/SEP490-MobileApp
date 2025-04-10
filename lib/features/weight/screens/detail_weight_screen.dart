@@ -89,11 +89,15 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
     final weightController = ref.read(weightControllerProvider);
+    final currentSelectedElderlyId =
+        sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
       final result = await weightController.getWeightDetail(
         context: context,
-        accountId: currentUserAccountID,
+        accountId: currentSelectedElderlyId == 0
+            ? currentUserAccountID
+            : currentSelectedElderlyId,
       );
       for (var item in result) {
         switch (item["tabs"]) {
@@ -318,7 +322,7 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
                                               color: AppColors.grayColor5),
                                         ),
                                         Text(
-                                          "${(dataByDate?["average"] as double?)?.toStringAsFixed(2) ?? "--"} kg",
+                                          "${(dataByDate?["average"]) ?? "--"} kg",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),

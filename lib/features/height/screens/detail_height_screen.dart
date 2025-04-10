@@ -85,11 +85,14 @@ class _DetailHeightScreenState extends ConsumerState<DetailHeightScreen>
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
     final heightController = ref.read(heightControllerProvider);
+    final currentSelectedElderlyId = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
       final result = await heightController.getHeightDetail(
         context: context,
-        accountId: currentUserAccountID,
+        accountId: currentSelectedElderlyId == 0
+            ? currentUserAccountID
+            : currentSelectedElderlyId,
       );
       for (var item in result) {
         switch (item["tabs"]) {

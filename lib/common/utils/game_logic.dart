@@ -3,15 +3,21 @@ import 'dart:math';
 import 'player.dart';
 
 class Game {
-  static final boardlenth = 9;
+  static final boardLength = 9;
   static final blocSize = 100.0;
 
   List<String>? board;
+  int difficulty = 1; // Mặc định là cấp độ dễ
 
   static List<String>? initGameBoard() =>
-      List.generate(boardlenth, (index) => Player.empty);
+      List.generate(boardLength, (index) => Player.empty);
 
-  bool winnerCheck(String player, int index, List<int> scoreboard, int gridSize) {
+  void setDifficulty(int level) {
+    difficulty = level;
+  }
+
+  bool winnerCheck(
+      String player, int index, List<int> scoreboard, int gridSize) {
     int row = index ~/ 3;
     int col = index % 3;
     int score = player == "X" ? 1 : -1;
@@ -22,34 +28,20 @@ class Game {
     if (row == col) scoreboard[2 * gridSize] += score;
     if (gridSize - 1 - col == row) scoreboard[2 * gridSize + 1] += score;
 
-    if (scoreboard.contains(3) || scoreboard.contains(-3)) {
-      return true;
-    }
-
-    return false;
+    return scoreboard.contains(3) || scoreboard.contains(-3);
   }
 
   int evaluateBoard(List<String> board) {
-    // Kiểm tra xem AI ("O") có thắng không
-    if (winnerCheck("O", 0, List.filled(8, 0), 3)) {
-      return 10;
-    }
-    // Kiểm tra xem người chơi ("X") có thắng không
-    if (winnerCheck("X", 0, List.filled(8, 0), 3)) {
-      return -10;
-    }
-    // Nếu không ai thắng, trả về 0 (hòa)
+    if (winnerCheck("O", 0, List.filled(8, 0), 3)) return 10;
+    if (winnerCheck("X", 0, List.filled(8, 0), 3)) return -10;
     return 0;
   }
 
-  int minimax(List<String> board, int depth, bool isMaximizing, int alpha, int beta) {
+  int minimax(
+      List<String> board, int depth, bool isMaximizing, int alpha, int beta) {
     int score = evaluateBoard(board);
-
-    // Nếu AI thắng, trả về điểm số
     if (score == 10) return score - depth;
-    // Nếu người chơi thắng, trả về điểm số
     if (score == -10) return score + depth;
-    // Nếu bảng đầy, trả về 0 (hòa)
     if (board.every((cell) => cell != Player.empty)) return 0;
 
     if (isMaximizing) {
@@ -61,9 +53,7 @@ class Game {
           board[i] = Player.empty;
           bestScore = max(bestScore, currentScore);
           alpha = max(alpha, bestScore);
-          if (beta <= alpha) {
-            break; // Alpha-Beta Pruning
-          }
+          if (beta <= alpha) break;
         }
       }
       return bestScore;
@@ -76,20 +66,20 @@ class Game {
           board[i] = Player.empty;
           bestScore = min(bestScore, currentScore);
           beta = min(beta, bestScore);
-          if (beta <= alpha) {
-            break; // Alpha-Beta Pruning
-          }
+          if (beta <= alpha) break;
         }
       }
       return bestScore;
     }
   }
 
-  int checkImmediateWinOrBlock(List<String> board, String player) {
+  int checkImmediateWinOrBlock(
+      List<String> board, String player, List<int> scoreboard) {
     for (int i = 0; i < board.length; i++) {
       if (board[i] == Player.empty) {
+        List<int> boardData = List.from(scoreboard);
         board[i] = player;
-        if (winnerCheck(player, i, List.filled(8, 0), 3)) {
+        if (winnerCheck(player, i, boardData, 3)) {
           board[i] = Player.empty;
           return i;
         }
@@ -99,16 +89,32 @@ class Game {
     return -1;
   }
 
-  int findBestMove(List<String> board) {
-    // Kiểm tra xem AI có thể chiến thắng ngay không
-    int winningMove = checkImmediateWinOrBlock(board, "O");
+  int findBestMove(List<String> board, List<int> scoreboard) {
+    return difficulty == 1
+        ? getEasyMove(board, scoreboard)
+        : getHardMove(board, scoreboard);
+  }
+
+  int getEasyMove(List<String> board, List<int> scoreboard) {
+    var emptyIndexes = List.generate(board.length, (i) => i)
+        .where((i) => board[i] == Player.empty)
+        .toList();
+    return emptyIndexes.isNotEmpty
+        ? emptyIndexes[Random().nextInt(emptyIndexes.length)]
+        : -1;
+  }
+
+  int getHardMove(List<String> board, List<int> scoreboard) {
+    print('Khó nè');
+    int winningMove = checkImmediateWinOrBlock(board, "O", scoreboard);
     if (winningMove != -1) return winningMove;
 
-    // Kiểm tra xem người chơi có thể chiến thắng ngay không và chặn lại
-    int blockingMove = checkImmediateWinOrBlock(board, "X");
+    int blockingMove = checkImmediateWinOrBlock(board, "X", scoreboard);
     if (blockingMove != -1) return blockingMove;
 
-    // Nếu không, sử dụng Minimax để chọn nước đi tốt nhất
+    int forcedMove = checkDoubleThreat(board, "X");
+    if (forcedMove != -1) return forcedMove;
+
     int bestScore = -1000;
     int bestMove = -1;
 
@@ -125,5 +131,33 @@ class Game {
     }
 
     return bestMove;
+  }
+
+  int checkDoubleThreat(List<String> board, String player) {
+    List<int> threatMoves = [];
+
+    for (int i = 0; i < board.length; i++) {
+      if (board[i] == Player.empty) {
+        board[i] = player;
+        int threatCount = 0;
+
+        for (int j = 0; j < board.length; j++) {
+          if (board[j] == Player.empty) {
+            board[j] = player;
+            if (winnerCheck(player, j, List.filled(8, 0), 3)) {
+              threatCount++;
+            }
+            board[j] = Player.empty;
+          }
+        }
+
+        if (threatCount >= 2) {
+          threatMoves.add(i);
+        }
+        board[i] = Player.empty;
+      }
+    }
+
+    return threatMoves.isNotEmpty ? threatMoves.first : -1;
   }
 }

@@ -416,9 +416,12 @@ class _BloodGlucoseDisplayWidgetState
                               SharedPrefsHelper sharedPrefsHelper =
                                   SharedPrefsHelper();
                               final currentUserAccountID =
-                                  sharedPrefsHelper.getInt("accountId");
+                                  sharedPrefsHelper.getInt("accountId") ?? 0;
                               final currentUserFullName =
-                                  sharedPrefsHelper.getString("fullName");
+                                  sharedPrefsHelper.getString("fullName") ?? '';
+                              final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final bloodGlucoseController =
                                   ref.read(bloodGlucoseControllerProvider);
                               bool success;
@@ -428,7 +431,9 @@ class _BloodGlucoseDisplayWidgetState
                                     .updateBloodGlucose(
                                   context: context,
                                   bloodGlucoseId: int.parse(widget.id!),
-                                  createdBy: currentUserFullName ?? "Unknown",
+                                  createdBy: currentUserFullName != ''
+                                      ? currentUserFullName
+                                      : "Unknown",
                                   bloodGlucoseUpdate:
                                       widget.bloodGlucose.toDouble(),
                                   period: widget.period,
@@ -438,14 +443,16 @@ class _BloodGlucoseDisplayWidgetState
                                 success = await bloodGlucoseController
                                     .addBloodGlucose(
                                   context: context,
-                                  accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  accountId: currentUserAccountID,
+                                  elderlyId: currentUserElderlyID != 0
+                                      ? currentUserElderlyID
+                                      : currentUserAccountID,
                                   bloodGlucose: widget.bloodGlucose.toDouble(),
                                   bloodGlucoseSource: "Thủ công",
                                   period: widget.period,
                                 );
                               }
-                             
+
                               await Future.delayed(Duration(seconds: 2));
 
                               if (mounted) {
@@ -489,6 +496,160 @@ class _BloodGlucoseDisplayWidgetState
   }
 }
 
+// void _showAccountDialog(BuildContext context) {
+//   showDialog(
+//     barrierColor: AppColors.secondaryColor.withOpacity(0.95),
+//     context: context,
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         insetPadding: EdgeInsets.all(20),
+//         backgroundColor: AppColors.bgColor,
+//         contentPadding: EdgeInsets.zero,
+//         content: SizedBox(
+//           height: 460, // Increased height to fit the source text
+//           child: Padding(
+//             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Center(
+//                   child: Text(
+//                     "Về đường huyết",
+//                     style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 10),
+//                 Row(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: const [
+//                     Expanded(
+//                       child: Text(
+//                         "Mức đường huyết là lượng glucose trong máu. Glucose là một loại đường có trong thực phẩm chúng ta ăn, và nó cũng được hình thành và lưu trữ bên trong cơ thể.",
+//                         style: TextStyle(
+//                             fontSize: 16, color: AppColors.grayColor5),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 20),
+//                 Expanded(
+//                   child: Column(
+//                     children: [
+//                       // Row(
+//                       //   children: [
+//                       //     Expanded(
+//                       //       child: Text(
+//                       //         "Cao",
+//                       //         style: TextStyle(
+//                       //             fontSize: 24, fontWeight: FontWeight.w500),
+//                       //       ),
+//                       //     ),
+//                       //     Expanded(
+//                       //       child: ElevatedButton(
+//                       //         onPressed: () {},
+//                       //         style: ElevatedButton.styleFrom(
+//                       //           backgroundColor: Colors.orange,
+//                       //           padding: EdgeInsets.symmetric(vertical: 12),
+//                       //           shape: RoundedRectangleBorder(
+//                       //             borderRadius: BorderRadius.circular(12),
+//                       //           ),
+//                       //         ),
+//                       //         child: Text(
+//                       //           "> 9.94 mmol/L",
+//                       //           style: TextStyle(
+//                       //               color: Colors.white, fontSize: 16),
+//                       //         ),
+//                       //       ),
+//                       //     ),
+//                       //   ],
+//                       // ),
+//                       // const SizedBox(height: 20),
+//                       // Row(
+//                       //   children: [
+//                       //     Expanded(
+//                       //       child: Text(
+//                       //         "Trong mức bình thường",
+//                       //         style: TextStyle(
+//                       //             fontSize: 23, fontWeight: FontWeight.w500),
+//                       //       ),
+//                       //     ),
+//                       //     Expanded(
+//                       //       child: ElevatedButton(
+//                       //         onPressed: () {},
+//                       //         style: ElevatedButton.styleFrom(
+//                       //           backgroundColor: Colors.green,
+//                       //           padding: EdgeInsets.symmetric(vertical: 12),
+//                       //           shape: RoundedRectangleBorder(
+//                       //             borderRadius: BorderRadius.circular(12),
+//                       //           ),
+//                       //         ),
+//                       //         child: Text(
+//                       //           "3.83 - 9.94 mmol/L",
+//                       //           style: TextStyle(
+//                       //               color: Colors.white, fontSize: 16),
+//                       //         ),
+//                       //       ),
+//                       //     ),
+//                       //   ],
+//                       // ),
+//                       // const SizedBox(height: 20),
+//                       // Row(
+//                       //   children: [
+//                       //     Expanded(
+//                       //       child: Text(
+//                       //         "Thấp",
+//                       //         style: TextStyle(
+//                       //             fontSize: 24, fontWeight: FontWeight.w500),
+//                       //       ),
+//                       //     ),
+//                       //     Expanded(
+//                       //       child: ElevatedButton(
+//                       //         onPressed: () {},
+//                       //         style: ElevatedButton.styleFrom(
+//                       //           backgroundColor: Colors.lightBlueAccent,
+//                       //           padding: EdgeInsets.symmetric(vertical: 12),
+//                       //           shape: RoundedRectangleBorder(
+//                       //             borderRadius: BorderRadius.circular(12),
+//                       //           ),
+//                       //         ),
+//                       //         child: Text(
+//                       //           "< 3.83 mmol/L",
+//                       //           style: TextStyle(
+//                       //               color: Colors.white, fontSize: 16),
+//                       //         ),
+//                       //       ),
+//                       //     ),
+//                       //   ],
+//                       // ),
+//                     ],
+//                   ),
+//                 ),
+//                 const SizedBox(height: 10),
+//                 Center(
+//                   child: Text(
+//                     "Nguồn: Hiệp hội Tiểu đường Hoa Kỳ (ADA)",
+//                     style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () {
+//               Navigator.of(context).pop();
+//             },
+//             child: const Text(
+//               "Đóng",
+//               style: TextStyle(fontSize: 20),
+//             ),
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
 void _showAccountDialog(BuildContext context) {
   showDialog(
     barrierColor: AppColors.secondaryColor.withOpacity(0.95),
@@ -499,7 +660,7 @@ void _showAccountDialog(BuildContext context) {
         backgroundColor: AppColors.bgColor,
         contentPadding: EdgeInsets.zero,
         content: SizedBox(
-          height: 460, // Increased height to fit the source text
+          height: 650, // Tăng chiều cao để chứa thêm thông tin
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
             child: Column(
@@ -512,6 +673,7 @@ void _showAccountDialog(BuildContext context) {
                   ),
                 ),
                 const SizedBox(height: 10),
+                // Giới thiệu chung
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
@@ -525,103 +687,84 @@ void _showAccountDialog(BuildContext context) {
                   ],
                 ),
                 const SizedBox(height: 20),
+                // Thông tin chi tiết
                 Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "Cao",
-                              style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                "> 9.94 mmol/L",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "Trong mức bình thường",
-                              style: TextStyle(
-                                  fontSize: 23, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                "3.83 - 9.94 mmol/L",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "Thấp",
-                              style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.lightBlueAccent,
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                "< 3.83 mmol/L",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Đường huyết cao
+                        _buildInfoSection(
+                          title: "1. Đường huyết cao",
+                          causes: [
+                            "Kháng insulin hoặc thiếu insulin (tiểu đường tuýp 1, tuýp 2)",
+                            "Chế độ ăn nhiều đường, tinh bột",
+                            "Ít vận động thể chất",
+                            "Căng thẳng kéo dài",
+                            "Tác dụng phụ của thuốc (ví dụ: corticosteroid)"
+                          ],
+                          symptoms: [
+                            "Khát nước liên tục",
+                            "Đi tiểu nhiều",
+                            "Mờ mắt",
+                            "Mệt mỏi kéo dài",
+                            "Vết thương lâu lành"
+                          ],
+                          prevention: [
+                            "Kiểm soát chế độ ăn (giảm đường, tăng chất xơ)",
+                            "Tập thể dục 30 phút/ngày",
+                            "Dùng thuốc theo chỉ định bác sĩ",
+                            "Theo dõi đường huyết định kỳ"
+                          ],
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(height: 20),
+                        // Đường huyết bình thường
+                        _buildInfoSection(
+                          title: "2. Đường huyết bình thường ",
+                          description:
+                              "Mức đường huyết an toàn cho người khỏe mạnh khi đói: 3.9 - 5.5 mmol/L, sau ăn 2 giờ: < 7.8 mmol/L.",
+                          color: Colors.green,
+                        ),
+                        const SizedBox(height: 20),
+                        // Đường huyết thấp
+                        _buildInfoSection(
+                          title: "3. Đường huyết thấp",
+                          causes: [
+                            "Dùng quá liều thuốc hạ đường huyết",
+                            "Bỏ bữa hoặc ăn quá ít carbohydrate",
+                            "Vận động quá sức",
+                            "Uống rượu khi đói"
+                          ],
+                          symptoms: [
+                            "Run tay, vã mồ hôi",
+                            "Chóng mặt, choáng váng",
+                            "Đói cồn cào",
+                            "Tim đập nhanh",
+                            "Lú lẫn hoặc ngất xỉu (trường hợp nặng)"
+                          ],
+                          prevention: [
+                            "Ăn đủ bữa, không bỏ bữa sáng",
+                            "Mang theo đồ ăn nhẹ (bánh quy, kẹo) khi ra ngoài",
+                            "Kiểm tra đường huyết nếu có triệu chứng",
+                            "Ngừng ngay hoạt động thể lực khi thấy dấu hiệu hạ đường huyết"
+                          ],
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
+                // Nguồn tham khảo
                 Center(
                   child: Text(
-                    "Nguồn: Hiệp hội Tiểu đường Hoa Kỳ (ADA)",
-                    style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                    "Nguồn: Hiệp hội Tiểu đường Hoa Kỳ (ADA) & Hiệp hội Nội tiết Việt Nam",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontStyle: FontStyle.italic,
+                      color: AppColors.grayColor5,
+                    ),
                   ),
                 ),
               ],
@@ -630,9 +773,7 @@ void _showAccountDialog(BuildContext context) {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text(
               "Đóng",
               style: TextStyle(fontSize: 20),
@@ -641,5 +782,62 @@ void _showAccountDialog(BuildContext context) {
         ],
       );
     },
+  );
+}
+
+// Widget phụ để tạo các section thông tin
+Widget _buildInfoSection({
+  required String title,
+  String? description,
+  List<String>? causes,
+  List<String>? symptoms,
+  List<String>? prevention,
+  required Color color,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+      const SizedBox(height: 8),
+      if (description != null)
+        Text(
+          description,
+          style: const TextStyle(fontSize: 16),
+        ),
+      if (causes != null) ...[
+        const SizedBox(height: 8),
+        const Text(
+          "Nguyên nhân:",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        ...causes
+            .map((e) => Text("• $e", style: const TextStyle(fontSize: 16))),
+      ],
+      if (symptoms != null) ...[
+        const SizedBox(height: 8),
+        const Text(
+          "Triệu chứng:",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        ...symptoms
+            .map((e) => Text("• $e", style: const TextStyle(fontSize: 16))),
+      ],
+      if (prevention != null) ...[
+        const SizedBox(height: 8),
+        const Text(
+          "Cách phòng tránh:",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        ...prevention
+            .map((e) => Text("• $e", style: const TextStyle(fontSize: 16))),
+      ],
+    ],
   );
 }

@@ -255,17 +255,24 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                               ),
                             ),
                           ),
-                          isToday(widget.dateTime)
-                              ? IconButton(
-                                  onPressed: widget.onEdit,
-                                  icon: Icon(Icons.edit,
-                                      size: 30, color: AppColors.primaryColor),
-                                )
-                              : Icon(
+                          widget.typeData == 'Tự động'
+                              ? Icon(
                                   Icons.lock_outline,
                                   size: 30,
                                   color: AppColors.primaryColor,
                                 )
+                              : isToday(widget.dateTime)
+                                  ? IconButton(
+                                      onPressed: widget.onEdit,
+                                      icon: Icon(Icons.edit,
+                                          size: 30,
+                                          color: AppColors.primaryColor),
+                                    )
+                                  : Icon(
+                                      Icons.lock_outline,
+                                      size: 30,
+                                      color: AppColors.primaryColor,
+                                    )
                         ],
                       ),
                       // Weight display
@@ -401,6 +408,9 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
+                              final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final heightController =
                                   ref.read(heightControllerProvider);
 
@@ -426,9 +436,9 @@ class _HeightDisplayWidgetState extends ConsumerState<HeightDisplayWidget> {
                                 success = await heightController.addHeight(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
                                   height: widget.height.toDouble(),
-                                  heightSource: "Thủ công",
+                                  heightSource: widget.typeData,
                                 );
                               }
                               await Future.delayed(Duration(seconds: 2));

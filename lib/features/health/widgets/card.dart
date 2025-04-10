@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/features/blood_glucose/screens/detail_blood_glucose_screen.dart';
+import 'package:sep490/features/blood_oxygen/screens/detail_blood_oxygen.dart';
 import 'package:sep490/features/blood_pressure/screens/detail_blood_pressure_screen.dart';
+import 'package:sep490/features/calories_burned/screens/detail_calories_burned.dart';
 import 'package:sep490/features/heart_beat/screens/detail_heart_beat_screen.dart';
 import 'package:sep490/features/height/screens/detail_height_screen.dart';
 import 'package:sep490/features/kidney_function/screens/detail_kidney_function_screen.dart';
 import 'package:sep490/features/lipid_profile/screens/detail_lipid_profile_screen.dart';
 import 'package:sep490/features/liver_enzymes/screens/detail_liver_enzymes_screen.dart';
+import 'package:sep490/features/sleep/screens/detail_sleep.dart';
+import 'package:sep490/features/steps/screens/detail_steps.dart';
 import 'package:sep490/presentation/pages/health/detail_medicine_screen.dart';
 import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
 import 'package:sep490/theme/color.dart';
@@ -96,6 +100,38 @@ class _InfoCardState extends State<InfoCard> {
             context,
             MaterialPageRoute(
                 builder: (context) => DetailLiverEnzymesScreen()));
+        break;
+
+      case "Oxy trong máu":
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailBloodOxygen()));
+        break;
+
+      case "Số bước chân":
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailStepScreen()));
+        break;
+
+      case "Thời gian ngủ":
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailSleepScreen()));
+        break;
+
+      case "Lượng calo tiêu thụ":
+        // Navigate to ChieuCaoCard
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailCaloriesBurnedScreen()));
         break;
 
       default:
@@ -220,7 +256,7 @@ class _InfoCardState extends State<InfoCard> {
                               TextSpan(
                                 text: widget.data,
                                 style: const TextStyle(
-                                  fontSize: 28,
+                                  fontSize: 26,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),

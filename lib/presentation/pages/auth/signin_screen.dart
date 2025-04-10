@@ -75,28 +75,6 @@ class SignInScreen extends StatelessWidget {
                     ),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.08),
                     SignInForm(),
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.04),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "hoặc tiếp tục với",
-                          style:
-                              TextStyle(color: Color(0xFF757575), fontSize: 20),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SocalCard(
-                          icon: SvgPicture.asset('assets/icons/googleIcon.svg',
-                              width: 50, height: 50),
-                          press: () {},
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
