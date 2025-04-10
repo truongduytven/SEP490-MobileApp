@@ -36,7 +36,8 @@
     <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
     <uses-permission android:name="android.permission.health.READ_WEIGHT" />
     <uses-permission android:name="android.permission.health.READ_HEIGHT" />
-
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
@@ -55,6 +56,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_ic"
         android:label="Tiện ích người già">
+        
         <receiver
             android:name=".SOSWidget"
             android:exported="false">

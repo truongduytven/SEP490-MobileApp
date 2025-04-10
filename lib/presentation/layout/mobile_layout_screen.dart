@@ -20,7 +20,7 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
   @override
   void initState() {
     super.initState();
-    tabBarController = TabController(length: 3, vsync: this);
+    tabBarController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addObserver(this);
     tabBarController.addListener(() {
       setState(() {}); // This ensures the UI updates when the tab changes
@@ -57,7 +57,7 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserId = sharedPrefsHelper.getInt("accountId");
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -115,9 +115,9 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
                 Tab(
                   text: 'Đoạn chat',
                 ),
-                Tab(
-                  text: 'Dòng trạng thái',
-                ),
+                // Tab(
+                //   text: 'Dòng trạng thái',
+                // ),
                 Tab(
                   text: 'Lời mời kết bạn',
                 ),
@@ -129,7 +129,7 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
           ContactsList(),
           // StatusContactsScreen(),
           // const Text("COntact list"),
-          const Text("Dòng trạng thái"),
+          // const Text("Dòng trạng thái"),
           FriendRequestScreen(requestUserId: currentUserId ?? 0)
         ]),
         // floatingActionButton: FloatingActionButton(
