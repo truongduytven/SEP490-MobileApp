@@ -29,7 +29,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   List<Activity>? schedule;
   bool isLoading = false;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
-  late int userId = sharedPrefsHelper.getInt('accountId')!;
+  late int userId = 0;
+  late int selectedElderlyUserId = 0;
+  late String selectedElderlyUserName = '';
 
   @override
   void initState() {
@@ -41,6 +43,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       _scrollToNextActivity();
     });
     _currentTime = DateTime.now();
+    userId = sharedPrefsHelper.getInt('accountId') ?? 0;
+    selectedElderlyUserId =
+        sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+    selectedElderlyUserName =
+        sharedPrefsHelper.getString('selectedElderlyUserName') ?? '';
     _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
       setState(() {
         _currentTime = DateTime.now();
@@ -54,9 +61,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       isLoading = true;
     });
     ScheduleController scheduleController = ScheduleController();
-    await scheduleController.getSchedule(userId,
+    await scheduleController.getSchedule(
+        selectedElderlyUserId == 0 ? userId : selectedElderlyUserId,
         '$selectedYear-${selectedMonth.toString().padLeft(2, "0")}-${selectedDay.toString().padLeft(2, "0")}');
     Timer(Duration(seconds: 2), () {
+      if (!mounted) return;
       setState(() {
         schedule = scheduleController.schedule;
         isLoading = false;
@@ -203,7 +212,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               "endTime": element.endTime,
                             });
                           }
-                        }  
+                        }
                         Navigator.pop(context);
                         handleUpdateActivity(activity, time);
                       },
@@ -226,7 +235,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-  void handleUpdateActivity(Activity activity, List<Map<String, String>> time) async {
+  void handleUpdateActivity(
+      Activity activity, List<Map<String, String>> time) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -313,7 +323,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgColor,
         title: Text(
-          'Lịch của tôi',
+          'Lịch của ${selectedElderlyUserName != '' ? selectedElderlyUserName : 'tôi'}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w600,
@@ -331,56 +343,60 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                DropdownButton<int>(
-                  value: selectedMonth,
-                  items: List.generate(12, (index) => index + 1).map((month) {
-                    return DropdownMenuItem<int>(
-                      value: month,
-                      child: Text('Tháng $month',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: selectedMonth == month
-                                  ? AppColors.primaryColor
-                                  : AppColors.textColor)),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedMonth = value!;
-                      selectedDay = 1;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _scrollToSelectedDay();
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<int>(
+                    value: selectedMonth,
+                    items: List.generate(12, (index) => index + 1).map((month) {
+                      return DropdownMenuItem<int>(
+                        value: month,
+                        child: Text('Tháng $month',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: selectedMonth == month
+                                    ? AppColors.primaryColor
+                                    : AppColors.textColor)),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedMonth = value!;
+                        selectedDay = 1;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _scrollToSelectedDay();
+                        });
+                        getSchedule();
                       });
-                      getSchedule();
-                    });
-                  },
+                    },
+                  ),
                 ),
-                DropdownButton<int>(
-                  value: selectedYear,
-                  items: List.generate(
-                    2050 - 2025 + 1,
-                    (index) => 2025 + index,
-                  ).map((year) {
-                    return DropdownMenuItem<int>(
-                      value: year,
-                      child: Text('Năm $year',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: selectedYear == year
-                                  ? AppColors.primaryColor
-                                  : AppColors.textColor)),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedYear = value!;
-                      selectedDay = 1;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _scrollToSelectedDay(); // Scroll to day 1
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<int>(
+                    value: selectedYear,
+                    items: List.generate(
+                      2030 - 2025 + 1,
+                      (index) => 2025 + index,
+                    ).map((year) {
+                      return DropdownMenuItem<int>(
+                        value: year,
+                        child: Text('Năm $year',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: selectedYear == year
+                                    ? AppColors.primaryColor
+                                    : AppColors.textColor)),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedYear = value!;
+                        selectedDay = 1;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _scrollToSelectedDay(); // Scroll to day 1
+                        });
+                        getSchedule();
                       });
-                      getSchedule();
-                    });
-                  },
+                    },
+                  ),
                 ),
                 Container(
                   decoration: BoxDecoration(),

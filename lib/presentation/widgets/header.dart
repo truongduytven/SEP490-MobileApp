@@ -8,7 +8,8 @@ import 'package:sep490/theme/color.dart';
 
 class Header extends StatefulWidget {
   final void Function()? onPressed;
-  const Header({super.key, this.onPressed});
+  final bool isChooseElderly;
+  const Header({super.key, this.onPressed, required this.isChooseElderly});
 
   @override
   State<Header> createState() => _HeaderState();
@@ -20,19 +21,6 @@ class _HeaderState extends State<Header> {
   late String avatar = SharedPrefsHelper().getString('avatar') ??
       'https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg';
   late int roleId = SharedPrefsHelper().getInt('roleId') ?? 0;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _getDataUser();
-  // }
-
-  // void _getDataUser() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     fullName = prefs.getString('fullName') ?? '';
-  //     avatar = prefs.getString('avatar') ?? '';
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +105,7 @@ class _HeaderState extends State<Header> {
             ),
             Row(
               children: [
+                if(widget.isChooseElderly)
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: Container(
@@ -161,6 +150,7 @@ class _HeaderState extends State<Header> {
                     ),
                   ),
                 ),
+                if(roleId != 2)
                 HealthFloatingActionButton(isDialOpen: isDialOpen),
               ],
             ),

@@ -416,9 +416,12 @@ class _BloodGlucoseDisplayWidgetState
                               SharedPrefsHelper sharedPrefsHelper =
                                   SharedPrefsHelper();
                               final currentUserAccountID =
-                                  sharedPrefsHelper.getInt("accountId");
+                                  sharedPrefsHelper.getInt("accountId") ?? 0;
                               final currentUserFullName =
-                                  sharedPrefsHelper.getString("fullName");
+                                  sharedPrefsHelper.getString("fullName") ?? '';
+                              final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final bloodGlucoseController =
                                   ref.read(bloodGlucoseControllerProvider);
                               bool success;
@@ -428,7 +431,9 @@ class _BloodGlucoseDisplayWidgetState
                                     .updateBloodGlucose(
                                   context: context,
                                   bloodGlucoseId: int.parse(widget.id!),
-                                  createdBy: currentUserFullName ?? "Unknown",
+                                  createdBy: currentUserFullName != ''
+                                      ? currentUserFullName
+                                      : "Unknown",
                                   bloodGlucoseUpdate:
                                       widget.bloodGlucose.toDouble(),
                                   period: widget.period,
@@ -438,8 +443,10 @@ class _BloodGlucoseDisplayWidgetState
                                 success = await bloodGlucoseController
                                     .addBloodGlucose(
                                   context: context,
-                                  accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  accountId: currentUserAccountID,
+                                  elderlyId: currentUserElderlyID != 0
+                                      ? currentUserElderlyID
+                                      : currentUserAccountID,
                                   bloodGlucose: widget.bloodGlucose.toDouble(),
                                   bloodGlucoseSource: "Thủ công",
                                   period: widget.period,

@@ -59,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late List<ElderlyUser>? userList = null;
   late int? selectedElderlyUserId;
   late String? selectedElderlyUserName;
+  late int? selectedElderlyId;
   bool isShowSelectUser = false;
   bool isLoadingDialog = false;
 
@@ -76,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
     selectedElderlyUserName =
         sharedPrefsHelper.getString('selectedElderlyUserName') ?? '';
+    selectedElderlyId = sharedPrefsHelper.getInt('selectedElderlyId') ?? 0;
     startTime = DateFormat.jm().format(activity['StartTime'] as DateTime);
     endTime = DateFormat.jm().format(activity['EndTime'] as DateTime);
     if (roleId == 2) {
@@ -86,107 +88,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       getElderlyUser();
     }
   }
-
-  // void _showSelectDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //           title: Text('Chọn người già hỗ trợ'),
-  //           content: isLoadingDialog
-  //               ? Center(
-  //                   child: CircularProgressIndicator(
-  //                     color: AppColors.primaryColor,
-  //                   ),
-  //                 )
-  //               : SingleChildScrollView(
-  //                   child: Column(
-  //                     children: userList!
-  //                         .map((element) => GestureDetector(
-  //                               onTap: () {
-  //                                 setState(() {
-  //                                   selectedElderlyUserId = element.accountId;
-  //                                   selectedElderlyUserName = element.fullName;
-  //                                 });
-  //                                 sharedPrefsHelper.setInt(
-  //                                     'selectedElderlyUserId',
-  //                                     element.accountId);
-  //                                 sharedPrefsHelper.setString(
-  //                                     'selectedElderlyUserName',
-  //                                     element.fullName);
-  //                                 Navigator.pop(context);
-  //                               },
-  //                               child: (Container(
-  //                                 padding: const EdgeInsets.all(10),
-  //                                 margin: const EdgeInsets.only(bottom: 10),
-  //                                 decoration: BoxDecoration(
-  //                                   borderRadius:
-  //                                       BorderRadius.all(Radius.circular(10)),
-  //                                   color: selectedElderlyUserId ==
-  //                                           element.accountId
-  //                                       ? Colors.white
-  //                                       : null,
-  //                                   border: selectedElderlyUserId ==
-  //                                           element.accountId
-  //                                       ? Border.all(
-  //                                           color: AppColors.secondaryColor,
-  //                                           width: 1,
-  //                                         )
-  //                                       : null,
-  //                                 ),
-  //                                 child: Row(
-  //                                   children: [
-  //                                     ClipRRect(
-  //                                       borderRadius: BorderRadius.circular(50),
-  //                                       child: Image.network(
-  //                                         element.avatar,
-  //                                         width: 60,
-  //                                         height: 60,
-  //                                         fit: BoxFit.cover,
-  //                                       ),
-  //                                     ),
-  //                                     const SizedBox(width: 20),
-  //                                     Column(
-  //                                       crossAxisAlignment:
-  //                                           CrossAxisAlignment.start,
-  //                                       mainAxisAlignment:
-  //                                           MainAxisAlignment.start,
-  //                                       children: [
-  //                                         SizedBox(
-  //                                           width: MediaQuery.of(context)
-  //                                                   .size
-  //                                                   .width *
-  //                                               0.4,
-  //                                           child: Text(
-  //                                             element.fullName,
-  //                                             style: TextStyle(
-  //                                               color: AppColors.textColor,
-  //                                               fontSize: 18,
-  //                                               fontWeight: FontWeight.w700,
-  //                                             ),
-  //                                             overflow: TextOverflow.ellipsis,
-  //                                             maxLines: 2,
-  //                                           ),
-  //                                         ),
-  //                                         Text(
-  //                                           element.phoneNumber,
-  //                                           style: TextStyle(
-  //                                               fontSize: 16,
-  //                                               fontWeight: FontWeight.w400,
-  //                                               color: AppColors.textColor),
-  //                                         ),
-  //                                       ],
-  //                                     )
-  //                                   ],
-  //                                 ),
-  //                               )),
-  //                             ))
-  //                         .toList(),
-  //                   ),
-  //                 ));
-  //     },
-  //   );
-  // }
 
   void _showSelectDialog() {
     showDialog(
@@ -265,6 +166,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             sharedPrefsHelper.setString(
                                 'selectedElderlyUserName',
                                 userList![index].fullName);
+                            sharedPrefsHelper.setInt('selectedElderlyId',
+                                userList![index].elderlyId);
                             CherryToast.success(
                               toastDuration: Duration(seconds: 3),
                               title: Text(
@@ -400,15 +303,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
     HomeController homeController = HomeController();
     await homeController.getElderlyUser(accountId);
-    Timer(const Duration(seconds: 1), () {
-      if (!mounted) return;
-      setState(() {
-        isLoadingDialog = false;
-        userList = homeController.elderlyUsers;
-      });
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showSelectDialog();
-      });
+    if (!mounted) return;
+    setState(() {
+      isLoadingDialog = false;
+      userList = homeController.elderlyUsers;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (userList == null) {
+        return;
+      }
+      if (sharedPrefsHelper.getInt('selectedElderlyUserId') != null) {
+        return;
+      }
+      if (userList!.isNotEmpty && selectedElderlyUserId == 0) {
+        selectedElderlyUserId = userList![0].accountId;
+        selectedElderlyUserName = userList![0].fullName;
+        sharedPrefsHelper.setInt(
+            'selectedElderlyUserId', userList![0].accountId);
+        sharedPrefsHelper.setString(
+            'selectedElderlyUserName', userList![0].fullName);
+        sharedPrefsHelper.setInt('selectedElderlyId', userList![0].elderlyId);
+      }
+      _showSelectDialog();
     });
   }
 
@@ -512,7 +428,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Header(onPressed: _showSelectDialog),
+                      Header(
+                        onPressed: _showSelectDialog,
+                        isChooseElderly: roleId == 3,
+                      ),
                       const SizedBox(height: 10),
                       Column(
                         children: [
@@ -980,20 +899,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   );
                                 },
                               ),
-                              if(roleId == 3)
-                              _buildCategoryCard(
-                                icon:
-                                    'assets/img3D/calendar_create.webp', // Replace with your asset path
-                                label: 'Lịch trình hằng ngày',
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ScheduleScreen(),
-                                    ),
-                                  );
-                                },
-                              ),
+                              if (roleId == 3)
+                                _buildCategoryCard(
+                                  icon:
+                                      'assets/img3D/calendar_create.webp', // Replace with your asset path
+                                  label: 'Lịch trình hằng ngày',
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ScheduleScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              if (roleId == 2)
+                                _buildCategoryCard(
+                                  icon:
+                                      'assets/img3D/uong_nuoc.png', // Replace with your asset path
+                                  label: 'Uống nước',
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ScheduleScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              if(roleId == 2)
                               _buildCategoryCard(
                                 icon:
                                     'assets/img3D/thietbideotay.png', // Replace with your asset path

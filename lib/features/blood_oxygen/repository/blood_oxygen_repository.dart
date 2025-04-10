@@ -7,7 +7,7 @@ class BloodOxygenRepository {
   Future<String> getHeartRateEvaluation(
       BuildContext context, int heartRate) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/evaluation/heart-rate?heartRate=$heartRate');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/evaluation/blood-oxygen?bloodOxygen=$heartRate');
 
     try {
       final response = await http.get(url);
@@ -17,7 +17,7 @@ class BloodOxygenRepository {
 
         // Kiểm tra nếu status == 1
         if (data["status"] == 1) {
-          return data["data"].toString(); // Trả về dữ liệu nếu status == 1
+          return data["data"].toString();
         } else {
           CherryToast.error(
             toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
@@ -67,8 +67,7 @@ class BloodOxygenRepository {
     required int oxygen,
     required String oxygenSource,
   }) async {
-    final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/heart-rate');
+    final url = Uri.parse('https://api.diavan-valuation.asia/api/HealthIndicator/blood-oxygen');
 
     try {
       final response = await http.post(
@@ -80,8 +79,7 @@ class BloodOxygenRepository {
         body: jsonEncode({
           "accountId": accountId,
           "elderlyId": elderlyId,
-          "heartRate1": oxygen,
-          "heartRateSource": oxygenSource,
+          "bloodOxygen1": oxygen,
         }),
       );
 
@@ -220,7 +218,7 @@ class BloodOxygenRepository {
     required int oxygenId,
   }) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/heart-rate/$oxygenId');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/bloodOxygen/$oxygenId');
 
     try {
       final response = await http.put(
@@ -293,7 +291,7 @@ class BloodOxygenRepository {
     int id,
   ) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/heartRate/detail/$id');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/bloodOxygen/detail/$id');
 
     try {
       final response = await http.get(url);

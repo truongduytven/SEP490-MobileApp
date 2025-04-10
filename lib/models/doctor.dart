@@ -76,8 +76,10 @@ class AppoimentDoctor {
   final String professorName;
   final String dateTime;
   final String status;
+  final bool isReport;
+  final bool isFeedback;
   final bool isOnline;
-  final List<int> listAccountId;
+  final List<Account> people;
 
   AppoimentDoctor({
     required this.professorAppointmentId,
@@ -86,7 +88,9 @@ class AppoimentDoctor {
     required this.dateTime,
     required this.status,
     required this.isOnline,
-    required this.listAccountId,
+    required this.isReport,
+    required this.isFeedback,
+    required this.people,
   });
 
   factory AppoimentDoctor.fromJson(Map<String, dynamic> json) {
@@ -97,7 +101,28 @@ class AppoimentDoctor {
       dateTime: json['dateTime'],
       status: json['status'],
       isOnline: json['isOnline'],
-      listAccountId: json['accountId'].cast<int>(),
+      isReport: json['isReport'],
+      isFeedback: json['isFeedback'],
+      people: (json['people'] as List)
+          .map((item) => Account.fromJson(item))
+          .toList(),
+    );
+  }
+}
+
+class Account {
+  final int id;
+  final String name;
+
+  Account({
+    required this.id,
+    required this.name,
+  });
+
+  factory Account.fromJson(Map<String, dynamic> json) {
+    return Account(
+      id: json['id'],
+      name: json['name'],
     );
   }
 }
@@ -116,20 +141,23 @@ class Report {
       content: json['content'],
       solution: json['solution'],
     );
-  } 
+  }
 }
 
 class TimeSlots {
+  final int timeSlotId;
   final String startTime;
   final String endTime;
 
   TimeSlots({
+    required this.timeSlotId,
     required this.startTime,
     required this.endTime,
   });
 
   factory TimeSlots.fromJson(Map<String, dynamic> json) {
     return TimeSlots(
+      timeSlotId: json['timeSlotId'],
       startTime: json['startTime'],
       endTime: json['endTime'],
     );
@@ -170,3 +198,153 @@ class FilteredDoctor {
     );
   }
 }
+
+class PackageData {
+  final int bookingId;
+  final int accountId;
+  final int elderlyId;
+  final int subscriptionId;
+  final double price;
+  final String bookingDate;
+  final String paymentMethod;
+  final String note;
+  final String status;
+  final int transactionId;
+  final int professorId;
+
+  PackageData({
+    required this.bookingId,
+    required this.accountId,
+    required this.elderlyId,
+    required this.subscriptionId,
+    required this.price,
+    required this.bookingDate,
+    required this.paymentMethod,
+    required this.note,
+    required this.status,
+    required this.transactionId,
+    required this.professorId,
+  });
+
+  factory PackageData.fromJson(Map<String, dynamic> json) {
+    return PackageData(
+      bookingId: json['bookingId'],
+      accountId: json['accountId'],
+      elderlyId: json['elderlyId'],
+      subscriptionId: json['subscriptionId'],
+      price: json['price'].toDouble(),
+      bookingDate: json['bookingDate'],
+      paymentMethod: json['paymentMethod'],
+      note: json['note'],
+      status: json['status'],
+      transactionId: json['transactionId'],
+      professorId: json['professorId'] ?? 0,
+    );
+  }
+}
+
+class ComboData {
+  final int subscriptionId;
+  final String name;
+  final String description;
+  final double fee;
+  final int validityPeriod;
+  final String createdDate;
+  final String createdTime;
+  final String updatedTime;
+  final String updatedDate;
+  final String status;
+  final int accountId;
+  final int numberOfMeeting;
+
+  ComboData({
+    required this.subscriptionId,
+    required this.name,
+    required this.description,
+    required this.fee,
+    required this.validityPeriod,
+    required this.createdTime,
+    required this.updatedTime,
+    required this.status,
+    required this.accountId,
+    required this.numberOfMeeting,
+    required this.createdDate,
+    required this.updatedDate,
+  });
+
+  factory ComboData.fromJson(Map<String, dynamic> json) {
+    return ComboData(
+      subscriptionId: json['subscriptionId'],
+      name: json['name'],
+      description: json['description'],
+      fee: json['fee'],
+      validityPeriod: json['validityPeriod'],
+      createdTime: json['createdTime'],
+      updatedTime: json['updatedTime'],
+      status: json['status'],
+      accountId: json['accountId'] ?? 0,
+      numberOfMeeting: json['numberOfMeeting'] ?? 0,
+      createdDate: json['createdDate'],
+      updatedDate: json['updatedDate'],
+    );
+  }
+}
+
+class CheckoutResponse {
+  final int returnCode;
+  final String returnMessage;
+  final int subReturnCode;
+  final String subReturnMessage;
+  final String orderUrl;
+  final String zpTransToken;
+  final String orderToken;
+  final String qrCode;
+  final String appTransId;
+
+  CheckoutResponse({
+    required this.returnCode,
+    required this.returnMessage,
+    required this.subReturnCode,
+    required this.subReturnMessage,
+    required this.orderUrl,
+    required this.zpTransToken,
+    required this.orderToken,
+    required this.qrCode,
+    required this.appTransId,
+  });
+
+  factory CheckoutResponse.fromJson(Map<String, dynamic> json) {
+    return CheckoutResponse(
+      returnCode: json['return_code'],
+      returnMessage: json['return_message'],
+      subReturnCode: json['sub_return_code'],
+      subReturnMessage: json['sub_return_message'],
+      orderUrl: json['order_url'],
+      zpTransToken: json['zp_trans_token'],
+      orderToken: json['order_token'],
+      qrCode: json['qr_code'] ?? '', 
+      appTransId: json['app_trans_id'],
+    );
+  }
+}
+
+class FeedBackDoctor {
+  final String createdBy;
+  final String content;
+  final int star;
+
+  FeedBackDoctor({
+    required this.createdBy,
+    required this.content,
+    required this.star,
+  });
+
+  factory FeedBackDoctor.fromJson(Map<String, dynamic> json) {
+    return FeedBackDoctor(
+      createdBy: json['createdBy'],
+      content: json['content'],
+      star: json['star'],
+    );
+  }
+}
+

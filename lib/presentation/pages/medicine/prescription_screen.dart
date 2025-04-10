@@ -27,6 +27,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   Map<String, dynamic>? prescription;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId = sharedPrefsHelper.getInt('accountId')!;
+  late int selectedElderlyUserId =
+      sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+  late int roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
   bool isLoading = false;
   bool isEdited = false;
 
@@ -39,8 +42,9 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   void getPrescription() async {
     isLoading = true;
     MedicineController medicineController = MedicineController();
-    await medicineController.getPresciption(userId);
+    await medicineController.getPresciption(selectedElderlyUserId == 0 ? userId : selectedElderlyUserId);
     Timer(Duration(seconds: 2), () {
+      if (!mounted) return;
       setState(() {
         prescription = medicineController.prescriptionUpdate?.toJson();
         isLoading = false;
@@ -64,6 +68,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
       MaterialPageRoute(
         builder: (context) => DetailMedicine(
           medicineData: oldMedicine,
+          isEdited: roleId == 4,
         ),
       ),
     );
@@ -93,6 +98,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DetailMedicine(
+          isEdited: roleId == 4,
           medicineData: null,
         ),
       ),
@@ -113,6 +119,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if(roleId == 4)
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
@@ -446,7 +453,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
             },
           ),
           actions: [
-            prescription != null && prescription!['medicationImage'] != 'Manually'
+            prescription != null &&
+                    prescription!['medicationImage'] != 'Manually'
                 ? IconButton(
                     icon: Icon(Icons.image),
                     onPressed: () {
@@ -677,6 +685,7 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                               ],
                                             ),
                                           ),
+                                    if(roleId == 4)
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 16),

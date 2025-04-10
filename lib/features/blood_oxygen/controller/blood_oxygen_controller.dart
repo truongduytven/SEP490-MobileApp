@@ -71,38 +71,6 @@ class BloodOxygenController {
     }
   }
 
-  // Future<bool> updateHeartRate({
-  //   required BuildContext context,
-  //   required int heartRateId,
-  //   required String createdBy,
-  //   required int heartRate,
-  // }) async {
-  //   try {
-  //     final success = await heartRateRepository.updateHeartRate(
-  //       context: context,
-  //       heartRateId: heartRateId,
-  //       createdBy: createdBy,
-  //       heartRate: heartRate,
-  //     );
-
-  //     if (success) {}
-
-  //     return success;
-  //   } catch (e) {
-  //     debugPrint("Error updating heart rate: $e");
-
-  //     CherryToast.error(
-  //       toastDuration: Duration(seconds: 2),
-  //       title: Text(
-  //         "Không thể cập nhật nhịp tim",
-  //         style: TextStyle(color: Colors.black),
-  //       ),
-  //     ).show(context);
-
-  //     return false;
-  //   }
-  // }
-
   Future<bool> deleteHeartRate({
     required BuildContext context,
     required int heartRateId,

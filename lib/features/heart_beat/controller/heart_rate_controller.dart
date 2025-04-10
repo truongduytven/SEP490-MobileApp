@@ -26,14 +26,6 @@ class HeartRateController {
     } catch (e) {
       debugPrint("Error fetching heart rate evaluation: $e");
 
-      // // Thông báo lỗi
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('Không thể lấy đánh giá nhịp tim'),
-      //     backgroundColor: Colors.red,
-      //   ),
-      // );
-
       return "Không thể lấy đánh giá";
     }
   }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/blood_oxygen/controller/blood_oxygen_controller.dart';
 import 'package:sep490/features/heart_beat/controller/heart_rate_controller.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -26,12 +27,10 @@ class BloodOxygenDisplay extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<BloodOxygenDisplay> createState() =>
-      _BloodOxygenDisplayState();
+  ConsumerState<BloodOxygenDisplay> createState() => _BloodOxygenDisplayState();
 }
 
-class _BloodOxygenDisplayState
-    extends ConsumerState<BloodOxygenDisplay> {
+class _BloodOxygenDisplayState extends ConsumerState<BloodOxygenDisplay> {
   String heartRateEvaluation = "Đang đánh giá...";
   bool isLoading = false;
 
@@ -45,7 +44,7 @@ class _BloodOxygenDisplayState
   }
 
   Future<void> fetchBloodOxygenEvaluation() async {
-    final heartRateController = ref.read(heartRateControllerProvider);
+    final heartRateController = ref.read(bloodOxygenControllerProvider);
     final result = await heartRateController.getHeartRateEvaluation(
         context, widget.bloodOxygen.toInt());
     setState(() {
@@ -63,9 +62,9 @@ class _BloodOxygenDisplayState
   }
 
   Color getColorBasedOnEvaluation(String evaluation) {
-    if (evaluation.toLowerCase().contains("nhanh")) {
+    if (evaluation.toLowerCase().contains("thấp")) {
       return Colors.red;
-    } else if (evaluation.toLowerCase().contains("chậm")) {
+    } else if (evaluation.toLowerCase().contains("trung bình")) {
       return Colors.orange;
     } else {
       return Colors.green;
@@ -77,7 +76,7 @@ class _BloodOxygenDisplayState
 
     try {
       final success =
-          await ref.read(heartRateControllerProvider).deleteHeartRate(
+          await ref.read(bloodOxygenControllerProvider).deleteHeartRate(
                 context: context,
                 heartRateId: int.parse(widget.id!),
               );
@@ -223,18 +222,24 @@ class _BloodOxygenDisplayState
                                   ),
                                 ),
                               ),
-                              isToday(widget.dateTime)
-                                  ? IconButton(
-                                      onPressed: widget.onEdit,
-                                      icon: Icon(Icons.edit,
-                                          size: 30,
-                                          color: AppColors.primaryColor),
-                                    )
-                                  : Icon(
+                              widget.typeData == 'Tự động'
+                                  ? Icon(
                                       Icons.lock_outline,
                                       size: 30,
                                       color: AppColors.primaryColor,
                                     )
+                                  : isToday(widget.dateTime)
+                                      ? IconButton(
+                                          onPressed: widget.onEdit,
+                                          icon: Icon(Icons.edit,
+                                              size: 30,
+                                              color: AppColors.primaryColor),
+                                        )
+                                      : Icon(
+                                          Icons.lock_outline,
+                                          size: 30,
+                                          color: AppColors.primaryColor,
+                                        )
                             ],
                           ),
                           // Weight display
@@ -353,7 +358,7 @@ class _BloodOxygenDisplayState
                                   final currentUserFullName =
                                       sharedPrefsHelper.getString("fullName");
                                   final heartRateController =
-                                      ref.read(heartRateControllerProvider);
+                                      ref.read(bloodOxygenControllerProvider);
 
                                   // final success =
                                   //     await heartRateController.addHeartRate(
@@ -366,24 +371,15 @@ class _BloodOxygenDisplayState
 
                                   bool success;
                                   if (widget.id != null) {
-                                    // Gọi hàm update nếu có id
-                                    success = await heartRateController
-                                        .updateHeartRate(
-                                      context: context,
-                                      heartRateId: int.parse(widget.id!),
-                                      createdBy:
-                                          currentUserFullName ?? "Unknown",
-                                      heartRate: widget.bloodOxygen.toInt(),
-                                    );
+                                    success = false;
                                   } else {
-                                    // Gọi hàm add nếu không có id
                                     success =
-                                        await heartRateController.addHeartRate(
+                                        await heartRateController.addBloodOxygen(
                                       context: context,
                                       accountId: currentUserAccountID ?? 0,
                                       elderlyId: currentUserAccountID ?? 0,
-                                      heartRate: widget.bloodOxygen.toInt(),
-                                      heartRateSource: "Thủ công",
+                                      bloodOxygen: widget.bloodOxygen.toInt(),
+                                      heartRateSource: widget.typeData,
                                     );
                                   }
                                   await Future.delayed(Duration(seconds: 2));

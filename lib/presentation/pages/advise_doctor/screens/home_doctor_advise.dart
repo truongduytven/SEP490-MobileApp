@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:gif_view/gif_view.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/main.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/doctor_list.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/package_list.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/report_appointment.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/time_slot_doctor.dart';
 import 'package:sep490/presentation/widgets/appointment/_infoChip.dart';
@@ -20,8 +24,8 @@ class HomeDoctorAdviseScreen extends StatefulWidget {
 }
 
 class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
-    with SingleTickerProviderStateMixin {
-  final List<String> tabs = ['Lịch hẹn', 'Cảnh báo', 'Bác sĩ'];
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver, RouteAware {
+  final List<String> tabs = ['Lịch hẹn', 'Bác sĩ'];
   Map<String, String> statusOptions = {
     "Tất cả": "All",
     "Chưa tham gia": "NotYet",
@@ -32,7 +36,8 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
   late TabController _tabController;
   bool isLoading = false;
   late DoctorData? doctorData = null;
-  late List<AppoimentDoctor>? appoimentDoctor;
+  late PackageData? packageData = null;
+  late List<AppoimentDoctor>? appoimentDoctor = null;
   bool isLoadingAppointment = false;
   bool isPackage = false;
   List<String> endowments = [
@@ -42,27 +47,63 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     'Hỗ trợ những trường hợp khẩn cấp',
     'Chỉ từ 199.000đ/tháng',
   ];
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int accountId = 0;
+  late int selectedElderlyUserId = 0;
+  late String fullName = "";
+  late String selectedElderlyUserName = "";
+  late int roleId = 0;
 
   @override
   void initState() {
-    _tabController = TabController(length: tabs.length, vsync: this);
     super.initState();
+    _tabController = TabController(length: tabs.length, vsync: this);
+    accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
+    selectedElderlyUserId =
+        sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+    selectedElderlyUserName =
+        sharedPrefsHelper.getString('selectedElderlyUserName') ?? "";
+    fullName = sharedPrefsHelper.getString('fullName') ?? "";
+    roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
     getDoctorData();
+    checkIsPackage();
+    WidgetsBinding.instance.addObserver(this);
   }
-
 
   void getDoctorData() async {
     setState(() {
       isLoading = true;
+      isLoadingAppointment = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.getDoctorData(49);
-    await doctorController.getAppointmentByID(49, selectedStatus);
+    await doctorController.getDoctorData(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId);
+    await doctorController.getAppointmentByID(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId,
+        selectedStatus);
     Timer(const Duration(seconds: 2), () {
-      if(!mounted) return;
+      if (!mounted) return;
       setState(() {
         doctorData = doctorController.doctorData;
         appoimentDoctor = doctorController.appoimentDoctor;
+        isLoading = false;
+        isLoadingAppointment = false;
+      });
+    });
+  }
+
+  void checkIsPackage() async {
+    setState(() {
+      isLoading = true;
+    });
+    DoctorController doctorController = DoctorController();
+    await doctorController.getPackageUser(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId);
+    Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      setState(() {
+        packageData = doctorController.packageData;
+        isPackage = packageData != null;
         isLoading = false;
       });
     });
@@ -70,22 +111,87 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
 
   void getAppointmentByStatus(String status) async {
     setState(() {
-      isLoading = true;
+      isLoadingAppointment = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.getAppointmentByID(49, status);
+    await doctorController.getAppointmentByID(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId, status);
     Timer(const Duration(seconds: 1), () {
       setState(() {
         appoimentDoctor = doctorController.appoimentDoctor;
-        isLoading = false;
+        isLoadingAppointment = false;
       });
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
+    routeObserver.unsubscribe(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Đăng ký RouteAware để theo dõi sự kiện navigation
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      // Kiểm tra xem route có phải là PageRoute không
+      routeObserver.subscribe(
+          this,
+          // ignore: unnecessary_cast
+          route as PageRoute<dynamic>); // Ép kiểu thành PageRoute<dynamic>
+    }
+  }
+
+  void cancelAppointment(int appointmentId) async {
+    setState(() {
+      isLoadingAppointment = true;
+    });
+    DoctorController doctorController = DoctorController();
+    await doctorController.cancelAppointment(appointmentId);
+    Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      if (doctorController.isCancelSuccess) {
+        CherryToast.success(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Hủy cuộc hẹn thành công",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+        getDoctorData();
+        checkIsPackage();
+        setState(() {
+          isLoadingAppointment = false;
+        });
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 3),
+          title: Text(
+            "Hủy cuộc hẹn thất bại",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+        setState(() {
+          isLoadingAppointment = false;
+        });
+      }
+    });
+  }
+
+  @override
+  void didPopNext() {
+    getDoctorData();
+    checkIsPackage(); // Gọi lại API
   }
 
   @override
@@ -94,7 +200,10 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
         title: isPackage
-            ? Text('Lịch hẹn với bác sĩ',
+            ? Text(
+                'Lịch hẹn của ${selectedElderlyUserName == "" ? fullName : selectedElderlyUserName}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25))
             : Text('Mua gói dịch vụ',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25)),
@@ -113,150 +222,179 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
             fit: BoxFit.cover,
           ),
         ),
-        child: isPackage
-            ? Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 55,
-                      decoration: BoxDecoration(
-                        color: AppColors.borderColor,
-                        borderRadius: BorderRadius.circular(25.0),
-                      ),
-                      child: TabBar(
-                        dividerHeight: 0,
-                        controller: _tabController,
-                        indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: AppColors.secondaryColor,
-                        ),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        unselectedLabelColor: Colors.black,
-                        labelColor: Colors.white,
-                        labelStyle: const TextStyle(fontSize: 18),
-                        tabs: tabs.map((tab) => Tab(text: tab)).toList(),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _buildTabContent(1),
-                          _buildTabContent(2),
-                          _buildTabContent(3),
-                        ],
-                      ),
-                    ),
-                  ],
+        child: isLoading
+            ? Center(
+                child: GifView.asset(
+                  'assets/gif/sos_loading.gif',
+                  width: 100,
+                  height: 100,
+                  frameRate: 60,
                 ),
               )
-            : SingleChildScrollView(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                      ImageSlideshow(
-                        indicatorColor: AppColors.primaryColor,
-                        autoPlayInterval: 3000,
-                        isLoop: true,
-                        width: double.infinity,
-                        height: 300,
-                        initialPage: 0,
+            : isPackage
+                ? Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 55,
+                          decoration: BoxDecoration(
+                            color: AppColors.borderColor,
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                          child: TabBar(
+                            dividerHeight: 0,
+                            controller: _tabController,
+                            indicator: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: AppColors.secondaryColor,
+                            ),
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            unselectedLabelColor: Colors.black,
+                            labelColor: Colors.white,
+                            labelStyle: const TextStyle(fontSize: 18),
+                            tabs: tabs.map((tab) => Tab(text: tab)).toList(),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Expanded(
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: [
+                              _buildTabContent(1),
+                              _buildTabContent(2),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Image.network(
-                            'https://images2.thanhnien.vn/528068263637045248/2024/6/3/ho-thanh-hai-1-17174077137402075003096.jpg',
-                            fit: BoxFit.cover,
+                          ImageSlideshow(
+                            indicatorColor: AppColors.primaryColor,
+                            autoPlayInterval: 3000,
+                            isLoop: true,
+                            width: double.infinity,
+                            height: 300,
+                            initialPage: 0,
+                            children: [
+                              Image.network(
+                                'https://images2.thanhnien.vn/528068263637045248/2024/6/3/ho-thanh-hai-1-17174077137402075003096.jpg',
+                                fit: BoxFit.cover,
+                              ),
+                              Image.network(
+                                'https://bacsitamly.vn/wp-content/uploads/2022/08/279716900_1891140167753531_2109333273842352027_n-1-640x640.jpg',
+                                fit: BoxFit.cover,
+                              ),
+                              Image.network(
+                                'https://is.vnecdn.net/objects/consultants/63869517ab11cbc24e7ad1eaf5df0ba3.png',
+                                fit: BoxFit.cover,
+                              ),
+                            ],
                           ),
-                          Image.network(
-                            'https://bacsitamly.vn/wp-content/uploads/2022/08/279716900_1891140167753531_2109333273842352027_n-1-640x640.jpg',
-                            fit: BoxFit.cover,
+                          SizedBox(
+                            height: 20,
                           ),
-                          Image.network(
-                            'https://is.vnecdn.net/objects/consultants/63869517ab11cbc24e7ad1eaf5df0ba3.png',
-                            fit: BoxFit.cover,
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                    'Trải nghiệm ngay gói dịch vụ từ đội ngũ bác sĩ của chúng tôi',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primaryColor)),
+                                SizedBox(height: 20),
+                                ...endowments.map((e) => Row(
+                                      children: [
+                                        SizedBox(width: 4),
+                                        Icon(
+                                          Icons.check,
+                                          color: AppColors.primaryColor,
+                                          size: 30,
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          e,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: AppColors.secondaryColor),
+                                        ),
+                                      ],
+                                    )),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                                'Trải nghiệm ngay gói dịch vụ từ đội ngũ bác sĩ của chúng tôi',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.primaryColor)),
-                            SizedBox(height: 20),
-                            ...endowments.map((e) => Row(
-                                  children: [
-                                    SizedBox(width: 4),
-                                    Icon(
-                                      Icons.check,
-                                      color: AppColors.primaryColor,
-                                      size: 30,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      e,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: AppColors.secondaryColor),
-                                    ),
-                                  ],
-                                )),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 15),
-                        width: double.infinity,
-                        color: Colors.transparent,
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => DoctorList()));
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.secondaryColor,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                side: BorderSide(
-                                    color: AppColors.secondaryColor, width: 1),
-                              )),
-                          icon: Icon(Icons.payment,
-                              size: 25, color: AppColors.bgColor),
-                          label: const Text('Mua gói ngay',
-                              style: TextStyle(
-                                fontSize: 25,
-                                color: AppColors.bgColor,
-                                fontWeight: FontWeight.w400,
-                              )),
-                        ),
-                      ),
-                    ]),
-            ),
+                          SizedBox(height: 20),
+                          roleId == 3
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 15),
+                                  width: double.infinity,
+                                  color: Colors.transparent,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PackageList()));
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            AppColors.secondaryColor,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 10),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          side: BorderSide(
+                                              color: AppColors.secondaryColor,
+                                              width: 1),
+                                        )),
+                                    icon: Icon(Icons.payment,
+                                        size: 25, color: AppColors.bgColor),
+                                    label: const Text('Mua gói ngay',
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                          color: AppColors.bgColor,
+                                          fontWeight: FontWeight.w400,
+                                        )),
+                                  ),
+                                )
+                              : Text(
+                                  'Bạn hãy nhờ người thân mua gói dịch vụ cho bạn!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primaryColor)),
+                        ]),
+                  ),
       ),
-      floatingActionButton: isPackage
+      floatingActionButton: (isPackage && roleId == 3)
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.push(context,
+                final result = Navigator.push(context,
                     MaterialPageRoute(builder: (context) => TimeSlotDoctor()));
+                result.then((value) {
+                  if (value != null) {
+                    getDoctorData();
+                    checkIsPackage();
+                  }
+                });
               },
               shape: CircleBorder(),
               backgroundColor: AppColors.primaryColor,
@@ -272,8 +410,6 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
         case 1:
           return _buildSchdule();
         case 2:
-          return _buildWarning();
-        case 3:
           return _buildDoctor();
         default:
           return Container();
@@ -351,54 +487,45 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                 ),
               )
             : (appoimentDoctor != null && appoimentDoctor!.isNotEmpty)
-                ? Column(
-                    children: [
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: appoimentDoctor!
-                              .map((item) => BuildAppointmentCard(
-                                    appoimentDoctor: item,
-                                    onCancel: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReportAppointment(
-                                                  appoimentDoctor: item,
-                                                ))),
-                                    onJoin: () => Future.value(),
-                                    onReport: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReportAppointment(
-                                                  appoimentDoctor: item,
-                                                ))),
-                                    isListCard: true,
-                                  ))
-                              .toList(),
-                        ),
+                ? Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: appoimentDoctor!
+                            .map((item) => BuildAppointmentCard(
+                                  appoimentDoctor: item,
+                                  onCancel: () async => {
+                                    cancelAppointment(
+                                        item.professorAppointmentId)
+                                  },
+                                  onJoin: () => Future.value(),
+                                  onReport: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ReportAppointment(
+                                                appoimentDoctor: item,
+                                                isEdited: false,
+                                              ))),
+                                  isListCard: true,
+                                ))
+                            .toList(),
                       ),
-                    ],
+                    ),
                   )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/img/no-data.png',
-                          width: 100, height: 100),
-                      SizedBox(height: 10),
-                      Text('Không có dữ liệu', style: TextStyle(fontSize: 20)),
-                    ],
+                : Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/img/no-data.png',
+                            width: 70, height: 70),
+                        SizedBox(height: 10),
+                        Text('Không có dữ liệu',
+                            style: TextStyle(fontSize: 20)),
+                      ],
+                    ),
                   ),
-      ],
-    );
-  }
-
-  Widget _buildWarning() {
-    return Column(
-      children: [
-        Text('Cảnh báo'),
       ],
     );
   }
@@ -418,7 +545,50 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
             ),
           )
         : Center(
-            child: Text('Không có dữ liệu'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/img/no-data.png', width: 70, height: 70),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text('Dường như bạn chưa lựa chọn bác sĩ cho gói này!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: AppColors.secondaryColor,
+                      )),
+                ),
+                const SizedBox(height: 10),
+                if (selectedElderlyUserId != 0)
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DoctorList(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: BorderSide(
+                            color: AppColors.secondaryColor, width: 1),
+                      ),
+                    ),
+                    child: Text('Chọn bác sĩ ngay',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.bgColor,
+                          fontWeight: FontWeight.w400,
+                        )),
+                  ),
+              ],
+            ),
           );
   }
 

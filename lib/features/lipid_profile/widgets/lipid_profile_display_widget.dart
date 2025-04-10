@@ -489,6 +489,9 @@ class _LipidProfileDisplayWidgetState
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
+                              final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final lipidProfileController =
                                   ref.read(lipidProfileControllerProvider);
 
@@ -523,7 +526,7 @@ class _LipidProfileDisplayWidgetState
                                     .addLipidProfile(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
                                   totalCholesterol: widget.tcValue.toDouble(),
                                   ldlCholesterol: widget.ldlValue.toDouble(),
                                   hdlCholesterol: widget.hdlValue.toDouble(),

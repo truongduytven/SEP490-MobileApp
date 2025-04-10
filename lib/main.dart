@@ -182,6 +182,7 @@ void main() async {
         final callDuration = startTime != null
             ? callEndTime.difference(startTime!)
             : Duration.zero; // Check if startTime is null
+        startTime = null; // Reset startTime after call ends
         print(
             "cuộc gọi bị hủy ${event.invitationData!.invitationID} ${event.invitationData!.invitees}  ${event.invitationData!.inviter} heeeeehah");
 
@@ -629,13 +630,18 @@ class _MyAppState extends State<MyApp>
   void _onShake() {
     if (!_isShakeTriggered) {
       _isShakeTriggered = true;
+      setState(() {
+        _isInEmergency = true;
+      });
       Navigator.push(
         widget.navigatorKey.currentState!.context,
         MaterialPageRoute(builder: (context) => EmergencyScreen()),
       ).then((_) {
         _isShakeTriggered = false;
+        setState(() {
+          _isInEmergency = false;
+        });
       });
-      print('Lắc nè');
     }
   }
 
@@ -781,12 +787,18 @@ class _MyAppState extends State<MyApp>
         return Stack(
           children: [
             child!,
-            ShakeGesture(
-              onShake: () {
-                _onShake();
-              },
-              child: Container(),
-            ),
+            ValueListenableBuilder<int>(
+                valueListenable: SharedPrefsHelper.roleNotifier,
+                builder: (context, roleId, _) {
+                  if (roleId != 2) return SizedBox();
+                  return ShakeGesture(
+                    onShake: () {
+                      _onShake();
+                    },
+                    child: Container(),
+                  );
+                }),
+
             ValueListenableBuilder<int>(
               valueListenable: SharedPrefsHelper.roleNotifier,
               builder: (context, roleId, _) {

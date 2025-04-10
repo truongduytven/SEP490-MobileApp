@@ -512,6 +512,9 @@ class _KidneyFunctionDisplayWidgetState
                                   sharedPrefsHelper.getInt("accountId");
                               final currentUserFullName =
                                   sharedPrefsHelper.getString("fullName");
+                              final currentUserElderlyID = sharedPrefsHelper
+                                      .getInt("selectedElderlyUserId") ??
+                                  0;
                               final kidneyFunctionController =
                                   ref.read(kidneyFunctionControllerProvider);
 
@@ -544,7 +547,7 @@ class _KidneyFunctionDisplayWidgetState
                                     .addKidneyFunction(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
                                   creatinine: widget.gfrValue.toDouble(),
                                   bun: widget.bunValue.toDouble(),
                                   egfr: widget.egfrValue.toDouble(),

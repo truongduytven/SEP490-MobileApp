@@ -68,7 +68,7 @@ class StepsRepository {
     required String stepsSource,
   }) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/heart-rate');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/foot-step');
 
     try {
       final response = await http.post(
@@ -80,8 +80,7 @@ class StepsRepository {
         body: jsonEncode({
           "accountId": accountId,
           "elderlyId": elderlyId,
-          "heartRate1": steps,
-          "heartRateSource": stepsSource,
+          "footStep1": steps,
         }),
       );
 
@@ -140,87 +139,12 @@ class StepsRepository {
     }
   }
 
-  // Future<bool> updateHeartRate({
-  //   required BuildContext context,
-  //   required int heartRateId,
-  //   required String createdBy,
-  //   required int heartRate,
-  // }) async {
-  //   final url = Uri.parse(
-  //       'https://api.diavan-valuation.asia/api/HealthIndicator/update-heart-rate/$heartRateId?createdBy=$createdBy');
-
-  //   try {
-  //     final response = await http.put(
-  //       url,
-  //       headers: {
-  //         'accept': '*/*',
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: jsonEncode(heartRate),
-  //     );
-
-  //     final data = jsonDecode(response.body);
-
-  //     if (response.statusCode == 200) {
-  //       if (data["status"] == 1) {
-  //         CherryToast.success(
-  //             toastDuration: Duration(seconds: 2),
-  //             title: Text("Nhịp tim đã cập nhật thành công!",
-  //                 style: TextStyle(
-  //                   color: Colors.black,
-  //                   fontSize: 20,
-  //                 ))).show(context);
-  //         return true;
-  //       } else {
-  //         CherryToast.error(
-  //           toastDuration: Duration(seconds: 3),
-  //           title: Text(
-  //             "Lỗi: ${data["message"]}",
-  //             style: TextStyle(
-  //               color: Colors.black,
-  //               fontSize: 20,
-  //             ),
-  //           ),
-  //         ).show(context);
-
-  //         return false;
-  //       }
-  //     } else {
-  //       CherryToast.error(
-  //         toastDuration: Duration(seconds: 3),
-  //         title: Text(
-  //           "Lỗi HTTP ${response.statusCode}",
-  //           style: TextStyle(
-  //             color: Colors.black,
-  //             fontSize: 20,
-  //           ),
-  //         ),
-  //       ).show(context);
-
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     CherryToast.error(
-  //       toastDuration: Duration(seconds: 3),
-  //       title: Text(
-  //         "Lỗi kết nối API: $e",
-  //         style: TextStyle(
-  //           color: Colors.black,
-  //           fontSize: 20,
-  //         ),
-  //       ),
-  //     ).show(context);
-
-  //     return false;
-  //   }
-  // }
-
   Future<bool> deleteSteps({
     required BuildContext context,
     required int stepsId,
   }) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/heart-rate/$stepsId');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/update-status/footStep/$stepsId');
 
     try {
       final response = await http.put(
@@ -293,7 +217,7 @@ class StepsRepository {
     int id,
   ) async {
     final url = Uri.parse(
-        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/heartRate/detail/$id');
+        'https://api.diavan-valuation.asia/api/HealthIndicator/healthIndicator/footStep/detail/$id');
 
     try {
       final response = await http.get(url);

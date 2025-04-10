@@ -33,11 +33,14 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     'medication': <List<Map<String, dynamic>>>[],
     'createdBy': "",
   };
+  late int roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
+  late int selectedElderlyUserId =
+      sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
 
   @override
   void initState() {
     super.initState();
-    listMedicine['accountId'] = sharedPrefsHelper.getInt('accountId');
+    listMedicine['accountId'] = selectedElderlyUserId != 0 ? selectedElderlyUserId : sharedPrefsHelper.getInt('accountId');
     listMedicine['endDate'] = widget.endDate ?? '';
     listMedicine['treatment'] = widget.treatment ?? '';
     listMedicine['createdBy'] = sharedPrefsHelper.getString('fullName');
@@ -94,6 +97,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DetailMedicine(
+          isEdited: roleId == 4,
           medicineData: null,
         ),
       ),
@@ -112,6 +116,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DetailMedicine(
+          isEdited: roleId == 4,
           medicineData: medicine,
         ),
       ),

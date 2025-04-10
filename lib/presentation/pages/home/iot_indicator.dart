@@ -12,6 +12,7 @@ import 'package:sep490/features/steps/screens/add_steps.dart';
 import 'package:sep490/features/weight/screens/add_weight_screen.dart';
 import 'package:sep490/presentation/widgets/loading/loadingImgPath.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class IotIndicator extends StatefulWidget {
   const IotIndicator({super.key});
@@ -33,7 +34,7 @@ class _IotIndicatorState extends State<IotIndicator> {
     HealthDataType.WEIGHT,
     HealthDataType.HEIGHT,
   ];
-  bool requested = false;
+  bool requested = true;
   var today = DateTime.now();
   List<HealthDataPoint> healthData = [];
   var permissions = [
@@ -47,6 +48,8 @@ class _IotIndicatorState extends State<IotIndicator> {
     HealthDataAccess.READ_WRITE,
     HealthDataAccess.READ_WRITE,
   ];
+  bool isHealthConnectAvailable = false;
+  bool? hasPermission;
 
   @override
   void initState() {
@@ -62,8 +65,24 @@ class _IotIndicatorState extends State<IotIndicator> {
       openAppSettings();
     }
     await health.configure();
-    requested = await health.requestAuthorization(types);
-    await health.requestAuthorization(types, permissions: permissions);
+    try {
+      await health.requestAuthorization(types);
+      await health.requestAuthorization(types, permissions: permissions);
+      setState(() {
+        requested = true;
+        isHealthConnectAvailable = true;
+        hasPermission = true;
+      });
+    } catch (e) {
+      if (e.toString().contains("Health Connect is not available")) {
+        setState(() {
+          requested = false;
+          isHealthConnectAvailable = false;
+          hasPermission = false;
+        });
+      } else {
+      }
+    }
   }
 
   void handleClickGetHeartRate() async {
@@ -356,8 +375,7 @@ class _IotIndicatorState extends State<IotIndicator> {
     try {
       data = await health.getHealthDataFromTypes(
         types: typesAuth,
-        startTime: DateTime(today.year, today.month, today.day, 0, 0, 0)
-            .subtract(Duration(days: 1)),
+        startTime: DateTime(today.year, today.month, today.day, 0, 0, 0),
         endTime: today,
       );
       if (data.isNotEmpty) {
@@ -633,61 +651,150 @@ class _IotIndicatorState extends State<IotIndicator> {
                 fontSize: 25,
                 fontWeight: FontWeight.w600)),
         backgroundColor: AppColors.bgColor,
+        centerTitle: true,
       ),
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/img/background_app.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                _buildHealthDataCard(handleClickGetHeartRate,
-                    'assets/img3D/nhiptim.png', 'Nhịp tim', 'Thêm chỉ số đo'),
-                const SizedBox(height: 20),
-                _buildHealthDataCard(handleClickGetBloodPressure,
-                    'assets/img3D/huyetap.png', 'Huyết áp', 'Thêm chỉ số đo'),
-                const SizedBox(height: 20),
-                _buildHealthDataCard(
-                    handleClickGetBloodOxygen,
-                    'assets/img3D/oxy_mau.png',
-                    'Oxy trong máu',
-                    'Thêm chỉ số đo'),
-                const SizedBox(height: 20),
-                _buildHealthDataCard(
-                    handleClickGetSteps,
-                    'assets/img3D/buoc_chan.png',
-                    'Số bước chân',
-                    'Thêm chỉ số đo'),
-                const SizedBox(height: 20),
-                _buildHealthDataCard(
-                    handleClickGetCaloriesBurned,
-                    'assets/img3D/kcal.png',
-                    'Năng lượng tiêu thụ',
-                    'Thêm chỉ số đo'),
-                const SizedBox(height: 20),
-                _buildHealthDataCard(
-                    handleClickGetSleep,
-                    'assets/img3D/giac_ngu.png',
-                    'Thời gian ngủ',
-                    'Thêm chỉ số đo'),
-                const SizedBox(height: 20),
-                _buildHealthDataCard(handleClickGetWeight,
-                    'assets/img3D/cannang.png', 'Cân nặng', 'Thêm chỉ số đo'),
-                const SizedBox(height: 20),
-                _buildHealthDataCard(handleClickGetHeight,
-                    'assets/img3D/chieucao.png', 'Chiều cao', 'Thêm chỉ số đo'),
-              ],
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/img/background_app.png'),
+              fit: BoxFit.cover,
             ),
           ),
-        ),
-      ),
+          child: requested
+              ? SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        _buildHealthDataCard(
+                            handleClickGetHeartRate,
+                            'assets/img3D/nhiptim.png',
+                            'Nhịp tim',
+                            'Thêm chỉ số đo'),
+                        const SizedBox(height: 20),
+                        _buildHealthDataCard(
+                            handleClickGetBloodPressure,
+                            'assets/img3D/huyetap.png',
+                            'Huyết áp',
+                            'Thêm chỉ số đo'),
+                        const SizedBox(height: 20),
+                        _buildHealthDataCard(
+                            handleClickGetBloodOxygen,
+                            'assets/img3D/oxy_mau.png',
+                            'Oxy trong máu',
+                            'Thêm chỉ số đo'),
+                        const SizedBox(height: 20),
+                        _buildHealthDataCard(
+                            handleClickGetSteps,
+                            'assets/img3D/buoc_chan.png',
+                            'Số bước chân',
+                            'Thêm chỉ số đo'),
+                        const SizedBox(height: 20),
+                        _buildHealthDataCard(
+                            handleClickGetCaloriesBurned,
+                            'assets/img3D/kcal.png',
+                            'Năng lượng tiêu thụ',
+                            'Thêm chỉ số đo'),
+                        const SizedBox(height: 20),
+                        _buildHealthDataCard(
+                            handleClickGetSleep,
+                            'assets/img3D/giac_ngu.png',
+                            'Thời gian ngủ',
+                            'Thêm chỉ số đo'),
+                        const SizedBox(height: 20),
+                        _buildHealthDataCard(
+                            handleClickGetWeight,
+                            'assets/img3D/cannang.png',
+                            'Cân nặng',
+                            'Thêm chỉ số đo'),
+                        const SizedBox(height: 20),
+                        _buildHealthDataCard(
+                            handleClickGetHeight,
+                            'assets/img3D/chieucao.png',
+                            'Chiều cao',
+                            'Thêm chỉ số đo'),
+                      ],
+                    ),
+                  ),
+                )
+              : isHealthConnectAvailable
+                  ? Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/img3D/health_connect.png',
+                            width: 200,
+                            height: 200,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            'Vui lòng cấp quyền truy cập dữ liệu sức khỏe',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () async {
+                              openAppSettings();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondaryColor,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: Text('Cấp quyền', style: TextStyle(color: AppColors.bgColor),),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/img3D/health_connect.png',
+                            width: 200,
+                            height: 200,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            'Chức năng cần sự hỗ trợ của ứng dụng Health Connect',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () async {
+                              const url =
+                                  'https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata';
+                              if (await canLaunchUrl(Uri.parse(url))) {
+                                await launchUrl(Uri.parse(url),
+                                    mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondaryColor,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: Text('Cài đặt ngay', style: TextStyle(color: AppColors.bgColor),),
+                          ),
+                        ],
+                      ),
+                    )),
     );
   }
 

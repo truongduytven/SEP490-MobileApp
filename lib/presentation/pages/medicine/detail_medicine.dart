@@ -12,7 +12,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class DetailMedicine extends StatefulWidget {
   final Map<String, dynamic>? medicineData;
-  const DetailMedicine({super.key, this.medicineData});
+  final bool isEdited;
+  const DetailMedicine({super.key, this.medicineData, required this.isEdited});
 
   @override
   State<DetailMedicine> createState() => _DetailMedicineState();
@@ -346,6 +347,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
               //       ),
               //     ),
               //   ),
+              if(widget.isEdited)
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -467,7 +469,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
   }) {
     return GestureDetector(
       onTap: () {
-        _handleClickMedicineData(title);
+        widget.isEdited ? _handleClickMedicineData(title) : null;
       },
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -547,7 +549,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
   }) {
     return GestureDetector(
       onTap: () {
-        _handleClickMedicineData(title);
+        widget.isEdited ? _handleClickMedicineData(title) : null;
       },
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -634,7 +636,7 @@ class _DetailMedicineState extends State<DetailMedicine> {
     }
     return GestureDetector(
       onTap: () {
-        _handleClickMedicineData(title);
+        widget.isEdited ? _handleClickMedicineData(title) : null;
       },
       child: Padding(
         padding: const EdgeInsets.all(10.0),

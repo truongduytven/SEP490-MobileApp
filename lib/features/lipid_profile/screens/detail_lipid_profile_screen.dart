@@ -85,11 +85,14 @@ class _DetailLipidProfileScreenState
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
     final lipidProfileController = ref.read(lipidProfileControllerProvider);
+    final currentSelectedElderlyId = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
       final result = await lipidProfileController.getLipidProfileDetail(
         context: context,
-        accountId: currentUserAccountID,
+        accountId: currentSelectedElderlyId == 0
+            ? currentUserAccountID
+            : currentSelectedElderlyId,
       );
       for (var item in result) {
         switch (item["tabs"]) {

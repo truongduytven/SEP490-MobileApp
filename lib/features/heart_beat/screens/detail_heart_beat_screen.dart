@@ -71,7 +71,7 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
     _tabController.addListener(() {
-      setState(() {}); // This ensures the UI updates when the tab changes
+      setState(() {});
     });
     fetchHeartTRateDetail();
     WidgetsBinding.instance.addObserver(this);
@@ -112,11 +112,14 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
     final heartRateController = ref.read(heartRateControllerProvider);
+    final currentSelectedElderlyId = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
       final result = await heartRateController.getHeartRatetDetail(
         context: context,
-        accountId: currentUserAccountID,
+        accountId: currentSelectedElderlyId != 0 
+            ? currentSelectedElderlyId
+            : currentUserAccountID,
       );
       for (var item in result) {
         switch (item["tabs"]) {

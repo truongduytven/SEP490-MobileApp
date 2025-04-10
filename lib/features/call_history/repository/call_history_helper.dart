@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/common/utils/utils.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/call_history.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/models/history_call_request.dart';
@@ -14,6 +15,22 @@ class CallHistoryHelper {
       BuildContext context, CallHistory callHistory) async {
     try {
       print("list user ${callHistory.calleeIds}");
+      SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+      String? appoinmentId = sharedPrefsHelper.getString('appoinmentId');
+
+      if (appoinmentId != null && callHistory.duration != null) {
+        try {
+          final response = await http.put(Uri.parse(
+              'https://api.diavan-valuation.asia/api/Professor/confirm/$appoinmentId'));
+          if (response.statusCode == 200) {
+            print('Appointment confirmed successfully');
+          } else {
+            print('Failed to confirm appointment: ${response.statusCode}');
+          }
+        } catch (e) {
+          print("Error parsing appoinmentId: $e");
+        }
+      }
 
       List<int> listReceiverId = callHistory.calleeIds
           .map((id) => int.parse(id)) // Convert each String to int
@@ -27,8 +44,9 @@ class CallHistoryHelper {
         status: callHistory.callStatus == CallStatus.success,
         isVideo: callHistory.callType == ZegoCallType.videoCall,
       );
-      if (!request.duration.contains("giây") ||
-          !request.duration.contains("phút") ||
+
+      if (!request.duration.contains("giây") &&
+          !request.duration.contains("phút") &&
           !request.duration.contains("giờ")) {
         print("Request duration does not contain 'giây', skipping API call.");
         return;

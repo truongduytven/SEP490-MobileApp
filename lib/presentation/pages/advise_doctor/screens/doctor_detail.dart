@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
 import 'package:sep490/presentation/widgets/appointment/_infoChip.dart';
@@ -27,22 +29,28 @@ class _DoctorDetailState extends State<DoctorDetail>
   int selectedDay = DateTime.now().day;
   late List<TimeSlots>? listTimeSlot = [];
   final ScrollController _scrollControllerDay = ScrollController();
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int selectedElderlyUserId;
+  List<FeedBackDoctor>? feedbackDoctor = [];
 
   @override
   void initState() {
     super.initState();
+    selectedElderlyUserId =
+        sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDay();
     });
     tabBarController = TabController(length: 3, vsync: this);
     tabBarController.addListener(() {
-      if(tabBarController.index == 1) {
+      if (tabBarController.index == 1) {
         getSchedule();
         _scrollToSelectedDay();
       }
     });
     getDoctorDetails();
     getSchedule();
+    getRating();
   }
 
   void _scrollToSelectedDay() {
@@ -71,12 +79,14 @@ class _DoctorDetailState extends State<DoctorDetail>
         .format(DateTime(selectedYear, selectedMonth, selectedDay));
     await doctorController.getTimeSlot(widget.doctorId, date);
     Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
       setState(() {
         if (doctorController.listAppoimentDoctor != null) {
           listTimeSlot = [];
           doctorController.listAppoimentDoctor!.map((item) {
             listTimeSlot!.add(
               TimeSlots(
+                timeSlotId: item.timeSlotId,
                 startTime: item.startTime,
                 endTime: item.endTime,
               ),
@@ -95,11 +105,104 @@ class _DoctorDetailState extends State<DoctorDetail>
     DoctorController doctorController = DoctorController();
     await doctorController.getDoctorDetails(widget.doctorId);
     Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
       setState(() {
         doctorData = doctorController.doctorData;
         isLoading = false;
       });
     });
+  }
+
+  void getRating() async {
+    setState(() {
+      isLoading = true;
+    });
+    DoctorController doctorController = DoctorController();
+    await doctorController.getFeedbackDoctor(widget.doctorId);
+    Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      setState(() {
+        feedbackDoctor = doctorController.feedbackDoctor;
+        isLoading = false;
+      });
+    });
+  }
+
+  void handleSelectedDoctor() async {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('Thông báo chọn bác'),
+            content: const Text(
+                'Bạn có chắc chắn chọn bác sĩ này để tư vấn và theo dõi sức khỏe cho người già không?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Hủy'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  // Handle the action when the user confirms
+                  Navigator.of(context).pop();
+                  showLoadingDialog(context);
+                  DoctorController doctorController = DoctorController();
+                  await doctorController.selectDoctor(
+                      doctorData!.accountId, selectedElderlyUserId);
+                  Timer(Duration(seconds: 2), () {
+                    Navigator.of(context).pop();
+                    if (doctorController.isSelectDoctorSuccess) {
+                      CherryToast.success(
+                        toastDuration: Duration(seconds: 3),
+                        title: Text(
+                          "Chọn bác sĩ thành công!!",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ).show(context);
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    } else {
+                      CherryToast.error(
+                        toastDuration: Duration(seconds: 3),
+                        title: Text(
+                          "Chọn bác sĩ thất bại!!",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ).show(context);
+                    }
+                  });
+                },
+                child: const Text('Đồng ý'),
+              ),
+            ],
+          );
+        });
+  }
+
+  void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            height: 300,
+            width: 300,
+            child: Center(
+              child: const CircularProgressIndicator(),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -136,132 +239,124 @@ class _DoctorDetailState extends State<DoctorDetail>
                     Text('Không có dữ liệu', style: TextStyle(fontSize: 20)),
                   ],
                 )
-              : Expanded(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Card(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: BorderSide(color: AppColors.grayColor2)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(
-                                    doctorData!.avatar,
-                                    width: 100,
-                                    height: 130,
-                                    fit: BoxFit.cover,
-                                  ),
+              : Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Card(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(color: AppColors.grayColor2)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                  doctorData!.avatar,
+                                  width: 100,
+                                  height: 130,
+                                  fit: BoxFit.cover,
                                 ),
-                                SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "BS. ${doctorData!.fullName}",
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.primaryColor),
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "BS. ${doctorData!.fullName}",
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primaryColor),
+                                    ),
+                                    Text(
+                                      doctorData!.clinicAddress,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.grayColor3,
                                       ),
-                                      Text(
-                                        doctorData!.clinicAddress,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: AppColors.grayColor3,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Wrap(
-                                          spacing: 8,
-                                          runSpacing: 8,
-                                          children: [
-                                            InfoChip(
-                                                text:
-                                                    "⭐ ${doctorData!.rating}"),
-                                            InfoChip(
-                                                text:
-                                                    "Kinh nghiệm: ${doctorData!.experienceYears} năm"),
-                                            InfoChip(
-                                                text:
-                                                    "Lĩnh vực: ${doctorData!.specialization[0]}"),
-                                          ])
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Wrap(spacing: 8, runSpacing: 8, children: [
+                                      InfoChip(text: "⭐ ${doctorData!.rating}"),
+                                      InfoChip(
+                                          text:
+                                              "Kinh nghiệm: ${doctorData!.experienceYears} năm"),
+                                      InfoChip(
+                                          text:
+                                              "Lĩnh vực: ${doctorData!.specialization[0]}"),
+                                    ])
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      TabBar(
-                        controller: tabBarController,
-                        indicatorColor: AppColors.primaryColor,
-                        indicatorWeight: 4,
-                        labelColor: AppColors.primaryColor,
-                        unselectedLabelColor: AppColors.secondaryColor,
-                        labelStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        tabs: [
-                          Tab(text: 'Thông tin'),
-                          Tab(text: 'Giờ tư vấn'),
-                          Tab(text: 'Đánh giá'),
-                        ],
+                    ),
+                    const SizedBox(height: 12),
+                    TabBar(
+                      controller: tabBarController,
+                      indicatorColor: AppColors.primaryColor,
+                      indicatorWeight: 4,
+                      labelColor: AppColors.primaryColor,
+                      unselectedLabelColor: AppColors.secondaryColor,
+                      labelStyle: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 12),
-                      Expanded(
-                        child:
-                            TabBarView(controller: tabBarController, children: [
-                          buildInfoTab(),
-                          buildScheduleTab(),
-                          const Text("Lời mời kết bạn"),
-                        ]),
+                      tabs: [
+                        Tab(text: 'Thông tin'),
+                        Tab(text: 'Giờ tư vấn'),
+                        Tab(text: 'Đánh giá'),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child:
+                          TabBarView(controller: tabBarController, children: [
+                        buildInfoTab(),
+                        buildScheduleTab(),
+                        buildRatingTab(),
+                      ]),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 15),
+                      width: double.infinity,
+                      color: Colors.transparent,
+                      child: ElevatedButton.icon(
+                        onPressed: handleSelectedDoctor,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.secondaryColor,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              side: BorderSide(
+                                  color: AppColors.secondaryColor, width: 1),
+                            )),
+                        icon: Icon(Icons.add_circle_outline,
+                            size: 25, color: AppColors.bgColor),
+                        label: const Text('Chọn bác sĩ',
+                            style: TextStyle(
+                              fontSize: 25,
+                              color: AppColors.bgColor,
+                              fontWeight: FontWeight.w400,
+                            )),
                       ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 15),
-                        width: double.infinity,
-                        color: Colors.transparent,
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.secondaryColor,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                side: BorderSide(
-                                    color: AppColors.secondaryColor, width: 1),
-                              )),
-                          icon: Icon(Icons.add_circle_outline,
-                              size: 25, color: AppColors.bgColor),
-                          label: const Text('Chọn bác sĩ',
-                              style: TextStyle(
-                                fontSize: 25,
-                                color: AppColors.bgColor,
-                                fontWeight: FontWeight.w400,
-                              )),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
     );
   }
@@ -283,7 +378,7 @@ class _DoctorDetailState extends State<DoctorDetail>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Container(
                     decoration: BoxDecoration(
@@ -357,41 +452,6 @@ class _DoctorDetailState extends State<DoctorDetail>
                           });
                         },
                       ),
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(),
-                    width: 100,
-                    child: ElevatedButton(
-                      onPressed: (selectedDay != DateTime.now().day ||
-                              selectedMonth != DateTime.now().month ||
-                              selectedYear != DateTime.now().year)
-                          ? () {
-                              setState(() {
-                                selectedDay = DateTime.now().day;
-                                selectedMonth = DateTime.now().month;
-                                selectedYear = DateTime.now().year;
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  _scrollToSelectedDay();
-                                });
-                                getSchedule();
-                              });
-                            }
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.secondaryColor,
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          )),
-                      child: const Text('Hôm nay',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: AppColors.bgColor,
-                            fontWeight: FontWeight.w400,
-                          )),
                     ),
                   ),
                 ],
@@ -591,6 +651,134 @@ class _DoctorDetailState extends State<DoctorDetail>
             )),
         const SizedBox(height: 12),
       ],
+    );
+  }
+
+  Widget buildRatingTab() {
+    if (feedbackDoctor!.isEmpty) {
+      return const Center(
+        child: Text(
+          'Không có đánh giá',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+    final averageRating = feedbackDoctor!
+            .map((feedback) => feedback.star)
+            .reduce((a, b) => a + b) /
+        feedbackDoctor!.length;
+
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        children: [
+          // Rating summary section
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      averageRating.toStringAsFixed(1),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const Text(
+                      'Điểm trung bình',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      feedbackDoctor!.length.toString(),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const Text(
+                      'Lượt đánh giá',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+      
+          // Star distribution (optional)
+          // You can add a star distribution chart here if needed
+      
+          const SizedBox(height: 16),
+      
+          // Feedback list
+          Expanded(
+            child: ListView.builder(
+              itemCount: feedbackDoctor!.length,
+              itemBuilder: (context, index) {
+                final feedback = feedbackDoctor![index];
+                return buildRatingCard(feedback);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRatingCard(FeedBackDoctor feedback) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  feedback.createdBy == '' ? 'Người dùng' : feedback.createdBy,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.star, color: Colors.amber, size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      feedback.star.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              feedback.content,
+              maxLines: 5,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

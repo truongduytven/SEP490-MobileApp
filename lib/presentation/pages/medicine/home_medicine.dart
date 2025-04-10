@@ -28,6 +28,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
   Prescription? prescription;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId = sharedPrefsHelper.getInt('accountId')!;
+  late int selectedElderlyUserId =
+      sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
   late bool isLoading = true;
   int indexAnimation = 0;
 
@@ -55,8 +57,9 @@ class _HomeMedicineState extends State<HomeMedicine> {
     });
     MedicineController medicineController = MedicineController();
     await medicineController.getMedicines(
-        userId, '$selectedYear-$selectedMonth-$selectedDay');
+        selectedElderlyUserId == 0 ? userId : selectedElderlyUserId, '$selectedYear-$selectedMonth-$selectedDay');
     Timer(Duration(seconds: 2), () {
+      if (!mounted) return;
       setState(() {
         prescription = medicineController.prescription;
         isLoading = false;
