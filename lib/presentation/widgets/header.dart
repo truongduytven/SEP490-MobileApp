@@ -150,7 +150,7 @@ class _HeaderState extends State<Header> {
                     ),
                   ),
                 ),
-                if(roleId != 2)
+                if(roleId == 3)
                 HealthFloatingActionButton(isDialOpen: isDialOpen),
               ],
             ),

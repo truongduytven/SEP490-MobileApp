@@ -32,4 +32,20 @@ class HomeController {
       elderlyUsers = null;
     }
   }
+
+  Future<void> getElderlyUserProfessor(int account) async {
+    final response = await _homeRepository.getElderlyUserProfessor(account);
+    if (response != null && response['isSuccess']) {
+      List<dynamic> data = response['data']['data'];
+      if (data.isNotEmpty) {
+        elderlyUsers = (data)
+          .map((item) => ElderlyUser.fromJson(item as Map<String, dynamic>))
+          .toList();
+      } else {
+        elderlyUsers = null;
+      }
+    } else {
+      elderlyUsers = null;
+    }
+  }
 }

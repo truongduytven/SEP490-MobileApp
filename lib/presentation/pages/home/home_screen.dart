@@ -87,6 +87,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (roleId == 3) {
       getElderlyUser();
     }
+    if (roleId == 4) {
+      getElderlyUserProfessor();
+    }
   }
 
   void _showSelectDialog() {
@@ -303,6 +306,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
     HomeController homeController = HomeController();
     await homeController.getElderlyUser(accountId);
+    if (!mounted) return;
+    setState(() {
+      isLoadingDialog = false;
+      userList = homeController.elderlyUsers;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (userList == null) {
+        return;
+      }
+      if (sharedPrefsHelper.getInt('selectedElderlyUserId') != null) {
+        return;
+      }
+      if (userList!.isNotEmpty && selectedElderlyUserId == 0) {
+        selectedElderlyUserId = userList![0].accountId;
+        selectedElderlyUserName = userList![0].fullName;
+        sharedPrefsHelper.setInt(
+            'selectedElderlyUserId', userList![0].accountId);
+        sharedPrefsHelper.setString(
+            'selectedElderlyUserName', userList![0].fullName);
+        sharedPrefsHelper.setInt('selectedElderlyId', userList![0].elderlyId);
+      }
+      _showSelectDialog();
+    });
+  }
+
+  void getElderlyUserProfessor() async {
+    setState(() {
+      isLoadingDialog = true;
+    });
+    HomeController homeController = HomeController();
+    await homeController.getElderlyUserProfessor(accountId);
     if (!mounted) return;
     setState(() {
       isLoadingDialog = false;
@@ -927,19 +961,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     );
                                   },
                                 ),
-                              if(roleId == 2)
-                              _buildCategoryCard(
-                                icon:
-                                    'assets/img3D/thietbideotay.png', // Replace with your asset path
-                                label: 'Thiết bị đeo tay',
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              IotIndicator()));
-                                },
-                              ),
+                              if (roleId == 2)
+                                _buildCategoryCard(
+                                  icon:
+                                      'assets/img3D/thietbideotay.png', // Replace with your asset path
+                                  label: 'Thiết bị đeo tay',
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                IotIndicator()));
+                                  },
+                                ),
                             ],
                           ),
                         ],
