@@ -203,16 +203,16 @@ class _NavigationMenuState extends State<NavigationMenu> {
           ),
           NavigationDestination(
             icon: HugeIcon(
-              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              icon: HugeIcons.strokeRoundedHealth,
               color: AppColors.iconColor,
               size: 30,
             ),
             selectedIcon: HugeIcon(
-              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              icon: HugeIcons.strokeRoundedHealth,
               color: AppColors.primaryColor,
               size: 30,
             ),
-            label: "Trò chuyện",
+            label: "Sức khỏe",
           ),
           NavigationDestination(
             icon: HugeIcon(
@@ -348,7 +348,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
             accountId: _accountId,
           );
         case 2:
-          return MobileLayoutScreen();
+          return HealthScreen();
         case 3:
           return HomeDoctorAdviseScreen();
         case 4:

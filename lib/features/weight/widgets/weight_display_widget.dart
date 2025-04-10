@@ -47,10 +47,14 @@ class _WeightDisplayWidgetState extends ConsumerState<WeightDisplayWidget> {
   Future<void> fetchWeightEvaluation() async {
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
+    final currentSelectedElderlyUserId =
+        sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
     final weightController = ref.read(weightControllerProvider);
     final result = await weightController.getWeightEvaluation(
       context,
-      currentUserAccountID,
+      currentSelectedElderlyUserId != 0
+          ? currentSelectedElderlyUserId
+          : currentUserAccountID,
       widget.weight.toDouble(),
     );
     setState(() {

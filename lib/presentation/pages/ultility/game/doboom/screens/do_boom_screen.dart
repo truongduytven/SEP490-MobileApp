@@ -269,7 +269,6 @@ class _DoBoomScreenState extends State<DoBoomScreen> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 20.0),
         ],
       ),
     );

@@ -46,13 +46,6 @@ class _UltilityScreenState extends State<UltilityScreen> {
         "subtitle": "Giữ gìn sức khỏe với các bài tập luyện hiệu quả.",
       },
       {
-        "title": "Tra cứu bệnh",
-        "color1": Colors.green,
-        "color2": Colors.teal,
-        "image": "assets/img/tra_cuu.webp",
-        "subtitle": "Tìm hiểu thông tin về các bệnh và cách phòng tránh.",
-      },
-      {
         "title": "Âm nhạc",
         "color1": Colors.pink,
         "color2": Colors.pinkAccent,
