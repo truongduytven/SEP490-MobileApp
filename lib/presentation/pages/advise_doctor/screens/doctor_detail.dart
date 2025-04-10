@@ -31,6 +31,7 @@ class _DoctorDetailState extends State<DoctorDetail>
   final ScrollController _scrollControllerDay = ScrollController();
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int selectedElderlyUserId;
+  List<FeedBackDoctor>? feedbackDoctor = [];
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _DoctorDetailState extends State<DoctorDetail>
     });
     getDoctorDetails();
     getSchedule();
+    getRating();
   }
 
   void _scrollToSelectedDay() {
@@ -77,6 +79,7 @@ class _DoctorDetailState extends State<DoctorDetail>
         .format(DateTime(selectedYear, selectedMonth, selectedDay));
     await doctorController.getTimeSlot(widget.doctorId, date);
     Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
       setState(() {
         if (doctorController.listAppoimentDoctor != null) {
           listTimeSlot = [];
@@ -102,9 +105,24 @@ class _DoctorDetailState extends State<DoctorDetail>
     DoctorController doctorController = DoctorController();
     await doctorController.getDoctorDetails(widget.doctorId);
     Timer(const Duration(seconds: 1), () {
-      if(!mounted) return;
+      if (!mounted) return;
       setState(() {
         doctorData = doctorController.doctorData;
+        isLoading = false;
+      });
+    });
+  }
+
+  void getRating() async {
+    setState(() {
+      isLoading = true;
+    });
+    DoctorController doctorController = DoctorController();
+    await doctorController.getFeedbackDoctor(widget.doctorId);
+    Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      setState(() {
+        feedbackDoctor = doctorController.feedbackDoctor;
         isLoading = false;
       });
     });
@@ -308,7 +326,7 @@ class _DoctorDetailState extends State<DoctorDetail>
                           TabBarView(controller: tabBarController, children: [
                         buildInfoTab(),
                         buildScheduleTab(),
-                        const Text("Lời mời kết bạn"),
+                        buildRatingTab(),
                       ]),
                     ),
                     const SizedBox(height: 12),
@@ -633,6 +651,134 @@ class _DoctorDetailState extends State<DoctorDetail>
             )),
         const SizedBox(height: 12),
       ],
+    );
+  }
+
+  Widget buildRatingTab() {
+    if (feedbackDoctor!.isEmpty) {
+      return const Center(
+        child: Text(
+          'Không có đánh giá',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+    final averageRating = feedbackDoctor!
+            .map((feedback) => feedback.star)
+            .reduce((a, b) => a + b) /
+        feedbackDoctor!.length;
+
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        children: [
+          // Rating summary section
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      averageRating.toStringAsFixed(1),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const Text(
+                      'Điểm trung bình',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      feedbackDoctor!.length.toString(),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const Text(
+                      'Lượt đánh giá',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+      
+          // Star distribution (optional)
+          // You can add a star distribution chart here if needed
+      
+          const SizedBox(height: 16),
+      
+          // Feedback list
+          Expanded(
+            child: ListView.builder(
+              itemCount: feedbackDoctor!.length,
+              itemBuilder: (context, index) {
+                final feedback = feedbackDoctor![index];
+                return buildRatingCard(feedback);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRatingCard(FeedBackDoctor feedback) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  feedback.createdBy == '' ? 'Người dùng' : feedback.createdBy,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.star, color: Colors.amber, size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      feedback.star.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              feedback.content,
+              maxLines: 5,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

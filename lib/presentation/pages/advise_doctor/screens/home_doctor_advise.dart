@@ -506,6 +506,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                                           builder: (context) =>
                                               ReportAppointment(
                                                 appoimentDoctor: item,
+                                                isEdited: false,
                                               ))),
                                   isListCard: true,
                                 ))

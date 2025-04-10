@@ -328,3 +328,23 @@ class CheckoutResponse {
   }
 }
 
+class FeedBackDoctor {
+  final String createdBy;
+  final String content;
+  final int star;
+
+  FeedBackDoctor({
+    required this.createdBy,
+    required this.content,
+    required this.star,
+  });
+
+  factory FeedBackDoctor.fromJson(Map<String, dynamic> json) {
+    return FeedBackDoctor(
+      createdBy: json['createdBy'],
+      content: json['content'],
+      star: json['star'],
+    );
+  }
+}
+

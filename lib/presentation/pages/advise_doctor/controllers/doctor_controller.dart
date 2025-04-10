@@ -11,11 +11,14 @@ class DoctorController {
   List<FilteredDoctor>? listFilterDoctor;
   List<ComboData>? comboData;
   CheckoutResponse? checkoutResponse;
+  List<FeedBackDoctor>? feedbackDoctor;
   bool isOrderSuccess = false;
   bool isConfirmedSuccess = false;
   bool isSelectDoctorSuccess = false;
   bool isBookingAppointmentSuccess = false;
   bool isCancelSuccess = false;
+  bool isRatingSuccess = false;
+  bool isSendReportSuccess = false;
 
   Future<void> getDoctorData(int accountId) async {
     final response = await _doctorRepository.getDoctorDataById(accountId);
@@ -166,6 +169,39 @@ class DoctorController {
       isCancelSuccess = response['data']['status'] == 1;
     } else {
       isCancelSuccess = false;
+    }
+  }
+
+  Future<void> ratingDoctor(
+      int appointmentId, String content, int star, String createdBy) async {
+    final response = await _doctorRepository.ratingDoctor(
+        appointmentId, content, star, createdBy);
+    if (response != null && response['isSuccess']) {
+      isRatingSuccess = response['data']['status'] == 1;
+    } else {
+      isRatingSuccess = false;
+    }
+  }
+
+  Future<void> reportDoctor(
+      int appointmentId, String content, String solution) async {
+    final response =
+        await _doctorRepository.reportDoctor(appointmentId, content, solution);
+    if (response != null && response['isSuccess']) {
+      isSendReportSuccess = response['data']['status'] == 1;
+    } else {
+      isSendReportSuccess = false;
+    }
+  }
+
+  Future<void> getFeedbackDoctor(int professorId) async {
+    final response = await _doctorRepository.getFeedbackDoctor(professorId);
+    if (response != null && response['isSuccess']) {
+      List<dynamic> data = response['data']['data'];
+      feedbackDoctor =
+          data.map((item) => FeedBackDoctor.fromJson(item)).toList();
+    } else {
+      feedbackDoctor = [];
     }
   }
 }

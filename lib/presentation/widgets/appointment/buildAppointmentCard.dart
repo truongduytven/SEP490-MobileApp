@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/rating_doctor.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/report_appointment.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
@@ -28,6 +30,7 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
   late String date;
   late bool isAllowed;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  late int roleId;
 
   @override
   void initState() {
@@ -35,8 +38,10 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
     time = widget.appoimentDoctor!.dateTime.split(' ')[1];
     date = widget.appoimentDoctor!.dateTime.split(' ')[0];
     isAllowed = isJoinAllowed;
-    if(isJoinAllowed) {
-      sharedPrefsHelper.setString('appoinmentId', widget.appoimentDoctor!.professorAppointmentId.toString());
+    roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
+    if (isJoinAllowed) {
+      sharedPrefsHelper.setString('appoinmentId',
+          widget.appoimentDoctor!.professorAppointmentId.toString());
     }
   }
 
@@ -220,9 +225,7 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                     const SizedBox(width: 8),
                   if (widget.appoimentDoctor!.status == 'NotYet' && isAllowed)
                     ElevatedButton(
-                      onPressed: () {
-
-                      },
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.bgColor,
                         side: BorderSide(color: AppColors.primaryColor),
@@ -245,7 +248,15 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                   if (widget.appoimentDoctor!.status == 'Joined' &&
                       !widget.appoimentDoctor!.isFeedback)
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RatingDoctor(
+                                appoimentDoctor: widget.appoimentDoctor,
+                              ),
+                            ));
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.bgColor,
                         shape: RoundedRectangleBorder(
@@ -263,9 +274,7 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                         ],
                       ),
                     ),
-                  
                   SizedBox(width: 8),
-
                   if (widget.appoimentDoctor!.status == 'Joined' &&
                       widget.appoimentDoctor!.isReport)
                     ElevatedButton(
@@ -294,6 +303,33 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('Xem báo cáo',
+                              style: TextStyle(color: Colors.white)),
+                          const SizedBox(width: 8),
+                          Icon(Icons.assignment, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                  if (widget.appoimentDoctor!.status == 'Joined' &&
+                      widget.appoimentDoctor!.isReport && roleId == 4)
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReportAppointment(
+                              appoimentDoctor: widget.appoimentDoctor,
+                              isEdited: true
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Tạo báo cáo',
                               style: TextStyle(color: Colors.white)),
                           const SizedBox(width: 8),
                           Icon(Icons.assignment, color: Colors.white),
