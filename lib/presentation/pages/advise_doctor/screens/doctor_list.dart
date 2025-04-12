@@ -36,7 +36,7 @@ class _DoctorListState extends State<DoctorList> {
     DoctorController doctorController = DoctorController();
     await doctorController.getFilterDoctor(filterEnter);
     Timer(Duration(seconds: 1), () {
-      if(!mounted) return;
+      if (!mounted) return;
       setState(() {
         listFilterDoctor = doctorController.listFilterDoctor;
         isLoading = false;
@@ -209,45 +209,17 @@ class _DoctorListState extends State<DoctorList> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          if (doctor.dateTime!.isNotEmpty)
-                            SizedBox(
-                              width: 300,
-                              child: Row(
-                                children: [
-                                  Text('Slot: ${doctor.dateTime}',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: AppColors.grayColor3,
-                                          fontWeight: FontWeight.w600)),
-                                ],
-                              ),
-                            ),
-                          if (doctor.date!.isNotEmpty)
-                            Row(
-                              children: [
-                                Text('Ngày: ${doctor.date}',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: AppColors.grayColor3,
-                                        fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                          if (doctor.date!.isEmpty && doctor.dateTime!.isEmpty)
-                            Row(
-                              children: [
-                                Text('Chưa có slot trong tuần này',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: AppColors.grayColor3,
-                                        fontWeight: FontWeight.w600)),
-                              ],
-                            ),
+                          Row(
+                            children: [
+                              Text('T2-T6: 07:00 - 21:00',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.grayColor3,
+                                      fontWeight: FontWeight.w600)),
+                            ],
+                          ),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [

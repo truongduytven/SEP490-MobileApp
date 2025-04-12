@@ -123,37 +123,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     height: 300,
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: userList!.length + 1,
+                      itemCount: userList!.length,
                       itemBuilder: (context, index) {
-                        if (index == userList!.length) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.borderColor,
-                                width: 1.5,
-                              ),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 4.0),
-                            padding: EdgeInsets.symmetric(vertical: 5),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                radius: 22,
-                                backgroundColor: Colors.transparent,
-                                child: const Icon(
-                                    Icons.person_add_alt_1_outlined,
-                                    color: AppColors.primaryColor),
-                              ),
-                              title: const Text(
-                                "Thêm người mới",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          );
-                        }
+                        // if (index == userList!.length) {
+                        //   return Container(
+                        //     decoration: BoxDecoration(
+                        //       border: Border.all(
+                        //         color: AppColors.borderColor,
+                        //         width: 1.5,
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(8.0),
+                        //     ),
+                        //     margin: const EdgeInsets.symmetric(vertical: 4.0),
+                        //     padding: EdgeInsets.symmetric(vertical: 5),
+                        //     child: ListTile(
+                        //       leading: CircleAvatar(
+                        //         radius: 22,
+                        //         backgroundColor: Colors.transparent,
+                        //         child: const Icon(
+                        //             Icons.person_add_alt_1_outlined,
+                        //             color: AppColors.primaryColor),
+                        //       ),
+                        //       title: const Text(
+                        //         "Thêm người mới",
+                        //         style: TextStyle(fontSize: 20),
+                        //       ),
+                        //       onTap: () {
+                        //         Navigator.of(context).pop();
+                        //       },
+                        //     ),
+                        //   );
+                        // }
 
                         final user = userList![index];
                         return GestureDetector(

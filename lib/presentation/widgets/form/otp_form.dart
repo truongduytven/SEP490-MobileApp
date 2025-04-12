@@ -1,3 +1,4 @@
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -50,15 +51,13 @@ class _OtpFormState extends State<OtpForm> {
     });
     Navigator.of(context).pop();
     if (response['success'] && response['data']['isSuccess']) {
-      Fluttertoast.showToast(
-        msg: "Xác minh OTP thành công",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      CherryToast.success(
+        toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+        title: Text(
+          "Xác thực OTP thành công!",
+          style: TextStyle(color: Colors.black),
+        ),
+      ).show(context);
       Navigator.push(
         context,
         MaterialPageRoute(

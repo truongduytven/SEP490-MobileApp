@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -102,15 +103,13 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
       Navigator.of(context).pop();
 
       if (response['success'] && response['data']['isSuccess']) {
-        Fluttertoast.showToast(
-          msg: "Xác nhận thông tin thành công!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        CherryToast.success(
+          toastDuration: Duration(seconds: 2),
+          title: Text(
+            "Cập nhật thông tin thành công!",
+            style: TextStyle(color: Colors.black),
+          ),
+        ).show(context);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -160,7 +159,7 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
                   ? () {
                       handleSubmit();
                     }
-                  : null,
+                  : null,         
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 backgroundColor: AppColors.secondaryColor,

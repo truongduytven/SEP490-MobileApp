@@ -36,7 +36,7 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   void initState() {
     super.initState();
-    _focusedDay = DateTime.now();
+    _focusedDay = DateTime.now().subtract(Duration(days: 18 * 365));
     fullNameController.addListener(_onTextChanged);
     emailController.addListener(_onTextChanged);
     phoneController.addListener(_onTextChanged);
@@ -91,7 +91,7 @@ class _SignUpFormState extends State<SignUpForm> {
   void handleSubmit() async {
     if (_formKey.currentState!.validate()) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      if (widget.typeIn == 'Phone') {
+      if (widget.typeIn == 'Phone number') {
         prefs.setString('emailOrPhoneSignUpLater', emailController.text);
       } else if (widget.typeIn == 'Email') {
         prefs.setString('emailOrPhoneSignUpLater', phoneController.text);
@@ -114,10 +114,6 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _formKey,
       child: Column(
         children: [
-          // Image.asset(
-          //   'assets/img3D/businessman.png',
-          //   height: 150,
-          // ),
           Text('Ảnh đại diện', style: TextStyle(fontSize: 20)),
           const SizedBox(height: 12),
           GestureDetector(
@@ -180,7 +176,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       width: 300,
                       child: TableCalendar(
                         firstDay: DateTime(1900),
-                        lastDay: DateTime.now(),
+                        lastDay: DateTime.now().subtract(Duration(days: 18 * 365)),
                         focusedDay: _focusedDay,
                         availableCalendarFormats: const {
                           CalendarFormat.month: 'Month',

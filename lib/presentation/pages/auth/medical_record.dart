@@ -14,16 +14,17 @@ class MedicalRecordScreen extends StatefulWidget {
 class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   List<Map<String, String>> selectedTreatments = [];
   Future<void> submitForm() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (selectedTreatments.isEmpty) {
-      prefs.setStringList('medicalRecord', ['Không có']);
-    } else {
-      prefs.setStringList(
-          'medicalRecord', selectedTreatments.map((e) => e['name']!).toList());
-    }
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => CompleteInfoScreen()));
+    // if (selectedTreatments.isEmpty) {
+    //   prefs.setStringList('medicalRecord', ['Không có']);
+    // } else {
+    //   prefs.setStringList(
+    //       'medicalRecord', selectedTreatments.map((e) => e['name']!).toList());
+    // }
+    // Navigator.push(
+    //     context, MaterialPageRoute(builder: (context) => CompleteInfoScreen()));
+    print(selectedTreatments);
   }
 
   void handleSkip() async {

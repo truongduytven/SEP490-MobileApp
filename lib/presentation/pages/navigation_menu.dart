@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
-import 'package:sep490/features/doctor_work_schedule/screens/schedule.dart';
 import 'package:sep490/features/doctor_work_schedule/screens/work_schedule.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
