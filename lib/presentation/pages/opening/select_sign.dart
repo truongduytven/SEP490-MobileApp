@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/presentation/pages/auth/signin_screen.dart';
-import 'package:sep490/presentation/pages/auth/signup_screen.dart';
 import 'package:sep490/presentation/pages/opening/select_role.dart';
 import 'package:sep490/theme/color.dart';
 

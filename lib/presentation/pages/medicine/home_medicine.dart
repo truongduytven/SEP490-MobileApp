@@ -256,7 +256,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                   DropdownButton<int>(
                     value: selectedYear,
                     items: List.generate(
-                      2050 - 2025 + 1,
+                      2030 - 2025 + 1,
                       (index) => 2025 + index,
                     ).map((year) {
                       return DropdownMenuItem<int>(
@@ -465,7 +465,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Không có thuốc đặt lịch',
+            'Không có lịch uống thuốc nào trong ngày này',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w500,
