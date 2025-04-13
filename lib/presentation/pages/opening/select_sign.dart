@@ -12,8 +12,7 @@ class SelectSignScreen extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          // builder: (_) => SelectRoleScreen(sign: sign),
-          builder: (_) => SignUpScreen(typeIn: 'Phone number'),
+          builder: (_) => SelectRoleScreen(sign: sign),
         ),
       );
     } else {

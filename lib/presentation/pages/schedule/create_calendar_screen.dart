@@ -282,7 +282,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
           });
         } else {
           Fluttertoast.showToast(
-            msg: scheduleController.message,
+            msg: scheduleController.message != '' ? scheduleController.message : "Có lỗi trong quá trình xử lý!",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
