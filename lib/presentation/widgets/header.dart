@@ -82,7 +82,7 @@ class _HeaderState extends State<Header> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Xin chào",
+                        roleId == 2 ? "Người cao tuổi" : roleId == 3 ? "Người thân" : "Bác sĩ",
                         style:
                             TextStyle(color: AppColors.textColor, fontSize: 18),
                       ),
