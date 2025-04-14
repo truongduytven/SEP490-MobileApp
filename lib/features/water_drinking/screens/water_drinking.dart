@@ -431,7 +431,7 @@ class Enhanced3DBottlePainter extends CustomPainter {
 
     // Draw bottle body (translucent layer)
     final Paint bottlePaint = Paint()
-      ..color = Colors.cyan.withOpacity(0.15)
+      ..color = Colors.white70.withOpacity(0.15)
       ..style = PaintingStyle.fill;
     canvas.drawPath(bottlePath, bottlePaint);
 
