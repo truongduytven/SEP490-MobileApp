@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:sep490/models/drinking_schedule.dart';
 
 class WaterDrinking extends StatefulWidget {
   const WaterDrinking({super.key});
@@ -13,12 +14,50 @@ class WaterDrinking extends StatefulWidget {
 class _WaterDrinkingState extends State<WaterDrinking>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  double _waterLevel = 0.4; // Initial water level (40%)
+  double _waterLevel = 0; // Initial water level (40%)
   int _waterAmount = 0; // Water consumed in ml
-  final int _dailyGoal = 2000; // Daily goal in ml
+  final int _dailyGoal = 1700; // Daily goal in ml
   List<Bubble> _bubbles = [];
   final int _maxBubbles = 12;
   final Random _random = Random();
+  final List<DrinkingSchedule> _schedule = [
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 6, minute: 30),
+        amount: 250,
+        description: "Sau khi thức dậy, làm sạch cơ thể"),
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 8, minute: 0),
+        amount: 200,
+        description: "Trước ăn sáng, hỗ trợ tiêu hóa"),
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 10, minute: 0),
+        amount: 200,
+        description: "Giữa buổi sáng, giữ tính táo"),
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 11, minute: 30),
+        amount: 200,
+        description: "Trước ăn trưa khoảng 30 phút"),
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 14, minute: 0),
+        amount: 200,
+        description: "Sau ăn trưa, bổ sung nước nhẹ"),
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 16, minute: 0),
+        amount: 200,
+        description: "Giữ nước cho cơ thể, chống mệt mỏi"),
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 18, minute: 0),
+        amount: 200,
+        description: "Trước ăn tối 30 phút"),
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 20, minute: 0),
+        amount: 150,
+        description: "Sau ăn tối nhẹ"),
+    DrinkingSchedule(
+        time: TimeOfDay(hour: 21, minute: 30),
+        amount: 100,
+        description: "Trước khi ngủ, tránh tiểu đêm"),
+  ];
 
   @override
   void initState() {
@@ -34,12 +73,64 @@ class _WaterDrinkingState extends State<WaterDrinking>
 
     // Initialize bubbles
     _generateBubbles();
-
+    _calculateInitialWaterIntake();
     super.initState();
+  }
+
+  String getCurrentScheduleDescription() {
+    final now = TimeOfDay.now();
+
+    for (int i = 0; i < _schedule.length; i++) {
+      final current = _schedule[i];
+      final next = i < _schedule.length - 1 ? _schedule[i + 1] : null;
+
+      if (next != null) {
+        if (_isAfterOrEqual(now, current.time) && _isBefore(now, next.time)) {
+          return current.description;
+        }
+      } else {
+        // Nếu là khung giờ cuối cùng
+        if (_isAfterOrEqual(now, current.time)) {
+          return current.description;
+        }
+      }
+    }
+    return "Không có mô tả phù hợp";
+  }
+
+  bool _isAfterOrEqual(TimeOfDay a, TimeOfDay b) {
+    return a.hour > b.hour || (a.hour == b.hour && a.minute >= b.minute);
+  }
+
+  bool _isBefore(TimeOfDay a, TimeOfDay b) {
+    return a.hour < b.hour || (a.hour == b.hour && a.minute < b.minute);
   }
 
   void _generateBubbles() {
     _bubbles = List.generate(_maxBubbles, (_) => _createBubble());
+  }
+
+  void _calculateInitialWaterIntake() {
+    final now = TimeOfDay.now();
+
+    int totalAmount = 0;
+
+    for (final schedule in _schedule) {
+      if (_isBeforeOrEqual(schedule.time, now)) {
+        totalAmount += schedule.amount;
+      } else {
+        break;
+      }
+    }
+
+    setState(() {
+      _waterAmount = totalAmount;
+      _waterLevel = totalAmount / _dailyGoal; // ví dụ: 1000ml / 2000ml = 0.5
+    });
+  }
+
+  bool _isBeforeOrEqual(TimeOfDay a, TimeOfDay b) {
+    return a.hour < b.hour || (a.hour == b.hour && a.minute <= b.minute);
   }
 
   Bubble _createBubble() {
@@ -64,16 +155,16 @@ class _WaterDrinkingState extends State<WaterDrinking>
     }
   }
 
-  void _addWater(int amount) {
-    setState(() {
-      _waterAmount += amount;
-      // Cap at daily goal
-      if (_waterAmount > _dailyGoal) _waterAmount = _dailyGoal;
+  // void _addWater(int amount) {
+  //   setState(() {
+  //     _waterAmount += amount;
+  //     // Cap at daily goal
+  //     if (_waterAmount > _dailyGoal) _waterAmount = _dailyGoal;
 
-      // Update water level animation (40% to 85% of bottle)
-      _waterLevel = 0.85 - (0.45 * (1 - (_waterAmount / _dailyGoal)));
-    });
-  }
+  //     // Update water level animation (40% to 85% of bottle)
+  //     _waterLevel = 0.85 - (0.45 * (1 - (_waterAmount / _dailyGoal)));
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -84,14 +175,21 @@ class _WaterDrinkingState extends State<WaterDrinking>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Nhắc nhở uống nước",
+        ),
+        backgroundColor: Color.fromARGB(255, 247, 249, 251),
+        centerTitle: true,
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
+              const ui.Color.fromARGB(255, 247, 249, 251),
               Colors.blue[50]!,
-              Colors.blue[100]!,
             ],
           ),
         ),
@@ -121,7 +219,7 @@ class _WaterDrinkingState extends State<WaterDrinking>
                   child: Column(
                     children: [
                       Text(
-                        "Stay Hydrated, Stay Healthy!",
+                        "Uống đủ nước và khỏe mạnh",
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -146,9 +244,9 @@ class _WaterDrinkingState extends State<WaterDrinking>
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            "$_waterAmount / $_dailyGoal ml",
+                            "Nên uống: $_waterAmount ml / Mục tiêu: $_dailyGoal ml",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: Colors.blue[700],
                             ),
@@ -173,17 +271,17 @@ class _WaterDrinkingState extends State<WaterDrinking>
               ),
 
               // Water intake buttons
-              Positioned(
-                bottom: 120,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildWaterButton(100, Icons.local_drink),
-                    _buildWaterButton(250, Icons.water_drop),
-                    _buildWaterButton(500, Icons.water),
-                  ],
-                ),
-              ),
+              // Positioned(
+              //   bottom: 120,
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       _buildWaterButton(100, Icons.local_drink),
+              //       _buildWaterButton(250, Icons.water_drop),
+              //       _buildWaterButton(500, Icons.water),
+              //     ],
+              //   ),
+              // ),
 
               // Motivational text at bottom
               Positioned(
@@ -207,13 +305,17 @@ class _WaterDrinkingState extends State<WaterDrinking>
                       ),
                     ],
                   ),
-                  child: const Text(
-                    "💧 Hydration is Key to Wellness! 💧",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 0.5,
+                  child: SizedBox(
+                    width: 250,
+                    child: Text(
+                      "💧  ${getCurrentScheduleDescription()} 💧",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
@@ -227,7 +329,7 @@ class _WaterDrinkingState extends State<WaterDrinking>
 
   Widget _buildWaterButton(int amount, IconData icon) {
     return GestureDetector(
-      onTap: () => _addWater(amount),
+      // onTap: () => _addWater(amount),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10),
         padding: const EdgeInsets.all(15),
@@ -704,7 +806,7 @@ class Enhanced3DBottlePainter extends CustomPainter {
 
     // Add a small bright highlight at the top right
     final Paint topHighlightPaint = Paint()
-      ..color = Colors.white.withOpacity(0.8)
+      ..color = Colors.cyanAccent.withOpacity(0.1)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
 
     canvas.drawCircle(
@@ -722,13 +824,19 @@ class Enhanced3DBottlePainter extends CustomPainter {
       ..strokeWidth = 1.0;
 
     final textStyle = TextStyle(
-      color: Colors.white.withOpacity(0.8),
-      fontSize: 12,
+      color: Colors.cyan.withOpacity(0.8),
+      fontSize: 10,
     );
 
-    // Draw marks at 25%, 50%, 75% of the bottle height
-    for (int i = 1; i <= 3; i++) {
-      double y = h * (0.85 - (i * 0.2)); // From bottom to top
+    const int maxMl = 1700;
+    final List<int> marks = [250, 500, 750, 1000, 1250, 1500];
+
+    final double topY = h * 0.1;
+    final double bottomY = h * 0.9;
+
+    for (final ml in marks) {
+      double percentage = ml / maxMl;
+      double y = bottomY - (bottomY - topY) * percentage;
 
       // Left mark
       final leftMarkPath = Path()
@@ -756,9 +864,9 @@ class Enhanced3DBottlePainter extends CustomPainter {
       canvas.drawPath(clippedLeftMark, markPaint);
       canvas.drawPath(clippedRightMark, markPaint);
 
-      // Add measurement text
+      // Text
       final textSpan = TextSpan(
-        text: "${i * 500} ml",
+        text: "$ml ml",
         style: textStyle,
       );
 
