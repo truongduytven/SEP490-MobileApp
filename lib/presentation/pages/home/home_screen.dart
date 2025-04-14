@@ -8,6 +8,7 @@ import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/blood_pressure/screens/detail_blood_pressure_screen.dart';
 import 'package:sep490/features/heart_beat/screens/detail_heart_beat_screen.dart';
 import 'package:sep490/features/height/screens/detail_height_screen.dart';
+import 'package:sep490/features/water_drinking/screens/water_drinking.dart';
 import 'package:sep490/models/home_model.dart';
 import 'package:sep490/models/schedule.dart';
 import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
@@ -956,7 +957,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen(),
+                                        builder: (context) => WaterDrinking(),
                                       ),
                                     );
                                   },
