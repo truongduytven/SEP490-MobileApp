@@ -182,10 +182,10 @@ class _GroupFamilyState extends State<GroupFamily>
           controller: _tabController,
           isScrollable: true,
           tabs: const [
-            Tab(text: 'Thành viên nhóm'),
+            Tab(text: 'Nhóm gia đình của bạn'),
             Tab(text: 'Yêu cầu đã gửi'),
             Tab(text: 'Yêu cầu đang chờ bạn phản hồi'),
-            Tab(text: 'Gia đình không thuộc nhóm'),
+            Tab(text: 'Người thân không thuộc nhóm'),
           ],
         ),
       ),
