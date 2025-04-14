@@ -12,11 +12,14 @@ class ResultCheckout extends StatefulWidget {
   final int accountId;
   final int elderlyId;
   final int comboId;
+  final Map<String, dynamic>? bookingData;
+
   const ResultCheckout({
     super.key,
     required this.accountId,
     required this.elderlyId,
     required this.comboId,
+    this.bookingData,
   });
 
   @override
@@ -84,10 +87,26 @@ class _ResultCheckoutState extends State<ResultCheckout>
   void checkPaymentStatus() async {
     DoctorController doctorController = DoctorController();
     await doctorController.checkOrderStatus(trans_id);
-    print('Check order status: ');
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 2), () async {
       if (doctorController.isOrderSuccess) {
-        confirmCheckout();
+        if (widget.bookingData != null) {
+          await doctorController.bookingAppointment(
+              widget.bookingData!['elderlyId'],
+              widget.bookingData!['startTime'],
+              widget.bookingData!['endTime'],
+              widget.bookingData!['day'],
+              widget.bookingData!['description']);
+          if (doctorController.isBookingAppointmentSuccess) {
+            confirmCheckout();
+          } else {
+            setState(() {
+              isLoading = false;
+              isCheckoutSuccess = false;
+            });
+          }
+        } else {
+          confirmCheckout();
+        }
       } else {
         setState(() {
           isLoading = false;

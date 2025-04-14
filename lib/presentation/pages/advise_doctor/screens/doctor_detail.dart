@@ -7,12 +7,20 @@ import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/checkout.dart';
 import 'package:sep490/presentation/widgets/appointment/_infoChip.dart';
+import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
 
 class DoctorDetail extends StatefulWidget {
   final int doctorId;
-  const DoctorDetail({super.key, required this.doctorId});
+  final bool isChoosePackage;
+  final ComboData? comboData;
+  const DoctorDetail(
+      {super.key,
+      required this.doctorId,
+      required this.isChoosePackage,
+      this.comboData});
 
   @override
   State<DoctorDetail> createState() => _DoctorDetailState();
@@ -32,6 +40,13 @@ class _DoctorDetailState extends State<DoctorDetail>
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int selectedElderlyUserId;
   List<FeedBackDoctor>? feedbackDoctor = [];
+  Map<String, dynamic> selectedTimeSlot = {
+    'startTime': '',
+    'endTime': '',
+    'day': '',
+  };
+  final TextEditingController moreInformationController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -45,6 +60,13 @@ class _DoctorDetailState extends State<DoctorDetail>
     tabBarController.addListener(() {
       if (tabBarController.index == 1) {
         getSchedule();
+        setState(() {
+          selectedTimeSlot = {
+            'startTime': '',
+            'endTime': '',
+            'day': '',
+          };
+        });
         _scrollToSelectedDay();
       }
     });
@@ -66,6 +88,7 @@ class _DoctorDetailState extends State<DoctorDetail>
 
   @override
   void dispose() {
+    moreInformationController.dispose();
     _scrollControllerDay.dispose();
     super.dispose();
   }
@@ -86,7 +109,6 @@ class _DoctorDetailState extends State<DoctorDetail>
           doctorController.listAppoimentDoctor!.map((item) {
             listTimeSlot!.add(
               TimeSlots(
-                timeSlotId: item.timeSlotId,
                 startTime: item.startTime,
                 endTime: item.endTime,
               ),
@@ -125,6 +147,35 @@ class _DoctorDetailState extends State<DoctorDetail>
         feedbackDoctor = doctorController.feedbackDoctor;
         isLoading = false;
       });
+    });
+  }
+
+  void handleBookingDoctor() async {
+    if (moreInformationController.text.isEmpty) {
+      CherryToast.error(
+        toastDuration: Duration(seconds: 2),
+        title: Text(
+          "Vui lòng nhập thông tin thêm!!",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+        ),
+      ).show(context);
+      return;
+    }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Checkout(
+                  comboData: widget.comboData!,
+                  doctorData: doctorData,
+                  timeSlots: selectedTimeSlot,
+                  description: moreInformationController.text.trim(),
+                ))).then((value) {
+      if (value != null && value) {
+        Navigator.of(context).pop();
+      }
     });
   }
 
@@ -330,32 +381,60 @@ class _DoctorDetailState extends State<DoctorDetail>
                       ]),
                     ),
                     const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 15),
-                      width: double.infinity,
-                      color: Colors.transparent,
-                      child: ElevatedButton.icon(
-                        onPressed: handleSelectedDoctor,
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.secondaryColor,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              side: BorderSide(
-                                  color: AppColors.secondaryColor, width: 1),
-                            )),
-                        icon: Icon(Icons.add_circle_outline,
-                            size: 25, color: AppColors.bgColor),
-                        label: const Text('Chọn bác sĩ',
-                            style: TextStyle(
-                              fontSize: 25,
-                              color: AppColors.bgColor,
-                              fontWeight: FontWeight.w400,
-                            )),
+                    if (!widget.isChoosePackage)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 15),
+                        width: double.infinity,
+                        color: Colors.transparent,
+                        child: ElevatedButton.icon(
+                          onPressed: handleSelectedDoctor,
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondaryColor,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                side: BorderSide(
+                                    color: AppColors.secondaryColor, width: 1),
+                              )),
+                          icon: Icon(Icons.add_circle_outline,
+                              size: 25, color: AppColors.bgColor),
+                          label: const Text('Chọn bác sĩ',
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: AppColors.bgColor,
+                                fontWeight: FontWeight.w400,
+                              )),
+                        ),
                       ),
-                    ),
+                    if (widget.isChoosePackage)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 15),
+                        width: double.infinity,
+                        color: Colors.transparent,
+                        child: ElevatedButton.icon(
+                          onPressed: handleBookingDoctor,
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondaryColor,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                side: BorderSide(
+                                    color: AppColors.secondaryColor, width: 1),
+                              )),
+                          icon: Icon(Icons.add_circle_outline,
+                              size: 25, color: AppColors.bgColor),
+                          label: const Text('Đặt lịch tư vấn',
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: AppColors.bgColor,
+                                fontWeight: FontWeight.w400,
+                              )),
+                        ),
+                      ),
                   ],
                 ),
     );
@@ -392,6 +471,10 @@ class _DoctorDetailState extends State<DoctorDetail>
                       child: DropdownButton<int>(
                         value: selectedMonth,
                         items: List.generate(12, (index) => index + 1)
+                            .where((month) =>
+                                selectedYear > DateTime.now().year ||
+                                (selectedYear == DateTime.now().year &&
+                                    month >= DateTime.now().month))
                             .map((month) {
                           return DropdownMenuItem<int>(
                             value: month,
@@ -404,9 +487,11 @@ class _DoctorDetailState extends State<DoctorDetail>
                           );
                         }).toList(),
                         onChanged: (value) {
+                          if (selectedMonth == value) return;
+                          var now = DateTime.now();
                           setState(() {
                             selectedMonth = value!;
-                            selectedDay = 1;
+                            selectedDay = value == now.month ? now.day : 1;
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               _scrollToSelectedDay();
                             });
@@ -428,7 +513,7 @@ class _DoctorDetailState extends State<DoctorDetail>
                       child: DropdownButton<int>(
                         value: selectedYear,
                         items: List.generate(
-                          2050 - 2025 + 1,
+                          2030 - 2025 + 1,
                           (index) => 2025 + index,
                         ).map((year) {
                           return DropdownMenuItem<int>(
@@ -442,9 +527,16 @@ class _DoctorDetailState extends State<DoctorDetail>
                           );
                         }).toList(),
                         onChanged: (value) {
+                          if (selectedYear == value) return;
+                          var now = DateTime.now();
                           setState(() {
                             selectedYear = value!;
-                            selectedDay = 1;
+                            selectedMonth = value == now.year ? now.month : 1;
+                            selectedDay = value == now.year
+                                ? now.month == selectedMonth
+                                    ? now.day
+                                    : 1
+                                : 1;
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               _scrollToSelectedDay(); // Scroll to day 1
                             });
@@ -465,13 +557,20 @@ class _DoctorDetailState extends State<DoctorDetail>
                 children: List.generate(daysInMonth, (index) {
                   int day = index + 1;
                   bool isSelected = day == selectedDay;
-
+                  DateTime currentDate =
+                      DateTime(selectedYear, selectedMonth, day);
+                  bool isPast = currentDate.isBefore(
+                    DateTime(DateTime.now().year, DateTime.now().month,
+                        DateTime.now().day),
+                  );
                   return GestureDetector(
                     onTap: () {
-                      setState(() {
-                        selectedDay = day;
-                        getSchedule();
-                      });
+                      isPast
+                          ? null
+                          : setState(() {
+                              selectedDay = day;
+                              getSchedule();
+                            });
                     },
                     child: Container(
                       width: 60,
@@ -481,12 +580,16 @@ class _DoctorDetailState extends State<DoctorDetail>
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.secondaryColor
-                            : AppColors.bgColor,
+                            : isPast
+                                ? AppColors.grayColor1
+                                : AppColors.bgColor,
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(
                           color: isSelected
                               ? AppColors.secondaryColor
-                              : AppColors.secondaryColor.withOpacity(0.3),
+                              : isPast
+                                  ? AppColors.grayColor1
+                                  : AppColors.secondaryColor.withOpacity(0.3),
                           width: 1,
                         ),
                       ),
@@ -543,21 +646,46 @@ class _DoctorDetailState extends State<DoctorDetail>
                               SizedBox(height: 10),
                               Wrap(
                                 runSpacing: 15,
+                                spacing: 5,
                                 children: List.generate(listTimeSlot!.length,
                                     (index) {
                                   TimeSlots timeSlot = listTimeSlot![index];
+                                  bool isSelected = selectedTimeSlot[
+                                              'startTime'] ==
+                                          timeSlot.startTime &&
+                                      selectedTimeSlot['endTime'] ==
+                                          timeSlot.endTime &&
+                                      selectedTimeSlot['day'] ==
+                                          '${selectedYear.toString()}-${selectedMonth.toString().padLeft(2, '0')}-${selectedDay.toString().padLeft(2, '0')}';
+
                                   return GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      if (widget.isChoosePackage) {
+                                        setState(() {
+                                          selectedTimeSlot = {
+                                            'startTime': timeSlot.startTime,
+                                            'endTime': timeSlot.endTime,
+                                            'day':
+                                                '${selectedYear.toString()}-${selectedMonth.toString().padLeft(2, '0')}-${selectedDay.toString().padLeft(2, '0')}',
+                                          };
+                                        });
+                                      }
+                                    },
                                     child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 8),
-                                      padding: const EdgeInsets.all(12),
+                                      width: MediaQuery.of(context).size.width *
+                                          0.28,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5, vertical: 10),
                                       decoration: BoxDecoration(
-                                        color: AppColors.bgColor,
+                                        color: isSelected
+                                            ? AppColors.primaryColor
+                                            : AppColors.bgColor,
                                         borderRadius: BorderRadius.circular(15),
                                         border: Border.all(
-                                          color: AppColors.secondaryColor
-                                              .withOpacity(0.3),
+                                          color: isSelected
+                                              ? AppColors.primaryColor
+                                              : AppColors.secondaryColor
+                                                  .withOpacity(0.3),
                                           width: 1,
                                         ),
                                       ),
@@ -568,7 +696,9 @@ class _DoctorDetailState extends State<DoctorDetail>
                                             style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500,
-                                              color: Colors.black,
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : Colors.black,
                                             ),
                                           ),
                                         ],
@@ -577,6 +707,26 @@ class _DoctorDetailState extends State<DoctorDetail>
                                   );
                                 }),
                               ),
+                              const SizedBox(height: 20),
+                              if (widget.isChoosePackage)
+                                Text(
+                                  'Thông tin thêm',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.secondaryColor),
+                                ),
+                              if (widget.isChoosePackage)
+                                const SizedBox(height: 10),
+                              if (widget.isChoosePackage)
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 25),
+                                    child: AuthField(
+                                        hintText: 'Nhập thông tin thêm',
+                                        labelText: "",
+                                        maxLines: 3,
+                                        controller: moreInformationController)),
                             ],
                           )
                         : Column(
@@ -718,12 +868,12 @@ class _DoctorDetailState extends State<DoctorDetail>
             ),
           ),
           const SizedBox(height: 16),
-      
+
           // Star distribution (optional)
           // You can add a star distribution chart here if needed
-      
+
           const SizedBox(height: 16),
-      
+
           // Feedback list
           Expanded(
             child: ListView.builder(

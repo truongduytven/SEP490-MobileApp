@@ -145,19 +145,17 @@ class Report {
 }
 
 class TimeSlots {
-  final int timeSlotId;
+
   final String startTime;
   final String endTime;
 
   TimeSlots({
-    required this.timeSlotId,
     required this.startTime,
     required this.endTime,
   });
 
   factory TimeSlots.fromJson(Map<String, dynamic> json) {
     return TimeSlots(
-      timeSlotId: json['timeSlotId'],
       startTime: json['startTime'],
       endTime: json['endTime'],
     );

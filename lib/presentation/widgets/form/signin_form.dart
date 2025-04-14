@@ -109,12 +109,13 @@ class _SignInFormState extends State<SignInForm> {
       });
       if (response['success'] && response['data']['isSuccess']) {
         final String accessToken = response['data']['data']['accessToken'];
+        print(accessToken);
         var responseToken = await ApiService.getRequest("auth-management",
             headers: {
               "Content-Type": "application/json",
               "Authorization": 'Bearer $accessToken'
             });
-
+        print(responseToken);
         if (responseToken['success']) {
           SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
           final userData = responseToken['data']['user'];
@@ -153,8 +154,7 @@ class _SignInFormState extends State<SignInForm> {
           Navigator.of(context).pop();
           CherryToast.error(
             toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
-            title: Text(
-              response['data'],
+            title: Text(responseToken['data'],
               style: TextStyle(color: Colors.black),
             ),
           ).show(context);

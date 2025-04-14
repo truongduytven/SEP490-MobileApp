@@ -12,6 +12,7 @@ class DoctorController {
   List<ComboData>? comboData;
   CheckoutResponse? checkoutResponse;
   List<FeedBackDoctor>? feedbackDoctor;
+  int numberMeeting = 0;
   bool isOrderSuccess = false;
   bool isConfirmedSuccess = false;
   bool isSelectDoctorSuccess = false;
@@ -152,10 +153,10 @@ class DoctorController {
     }
   }
 
-  Future<void> bookingAppointment(
-      int elderlyId, int timeSlotId, String day, String description) async {
+  Future<void> bookingAppointment(int elderlyId, String startTime,
+      String endTime, String day, String description) async {
     final response = await _doctorRepository.bookingAppointment(
-        elderlyId, timeSlotId, day, description);
+        elderlyId, startTime, endTime, day, description);
     if (response != null && response['isSuccess']) {
       isBookingAppointmentSuccess = response['data']['status'] == 1;
     } else {
@@ -169,6 +170,15 @@ class DoctorController {
       isCancelSuccess = response['data']['status'] == 1;
     } else {
       isCancelSuccess = false;
+    }
+  }
+
+  Future<void> getNumberMeeting(int elderlyId) async {
+    final response = await _doctorRepository.getNumberMeeting(elderlyId);
+    if (response != null && response['isSuccess']) {
+      numberMeeting = response['data']['data'] ?? 0;
+    } else {
+      numberMeeting = 0;
     }
   }
 

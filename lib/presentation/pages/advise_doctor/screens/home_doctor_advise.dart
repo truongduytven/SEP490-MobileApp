@@ -4,6 +4,7 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:gif_view/gif_view.dart';
+import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/models/doctor.dart';
@@ -86,6 +87,13 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
       setState(() {
         doctorData = doctorController.doctorData;
         appoimentDoctor = doctorController.appoimentDoctor;
+        if (appoimentDoctor != null) {
+          appoimentDoctor!.sort((a, b) {
+            final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
+            final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
+            return dateA.compareTo(dateB); // ascending
+          });
+        }
         isLoading = false;
         isLoadingAppointment = false;
       });
@@ -119,6 +127,13 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     Timer(const Duration(seconds: 1), () {
       setState(() {
         appoimentDoctor = doctorController.appoimentDoctor;
+        if (appoimentDoctor != null) {
+          appoimentDoctor!.sort((a, b) {
+            final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
+            final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
+            return dateA.compareTo(dateB); // ascending
+          });
+        }
         isLoadingAppointment = false;
       });
     });
@@ -350,7 +365,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  PackageList()));
+                                                  PackageList(isShowFull: true,)));
                                     },
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor:
@@ -566,7 +581,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DoctorList(),
+                          builder: (context) => DoctorList(isChoosePackage: false,),
                         ),
                       );
                     },

@@ -12,16 +12,6 @@ class FilterDoctor extends StatefulWidget {
 class _FilterDoctorState extends State<FilterDoctor> {
   List<String> listFilter = [];
   List<String> listFilterName = ['A-Z', 'Z-A'];
-  List<String> listFilterDay = [
-    'Thứ hai',
-    'Thứ ba',
-    'Thứ tư',
-    'Thứ năm',
-    'Thứ sáu',
-    'Thứ bảy',
-    'Chủ nhật'
-  ];
-  List<String> listFilterTime = ['Sáng', 'Chiều', 'Tối'];
   List<String> listFilterStar = ['Tăng dần', 'Giảm dần'];
 
   @override
@@ -65,8 +55,6 @@ class _FilterDoctorState extends State<FilterDoctor> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildFilterSection('Sắp xếp tên', listFilterName),
-            buildFilterSection('Lọc theo ngày trong tuần', listFilterDay),
-            buildFilterSection('Lọc theo giờ trong ngày', listFilterTime),
             buildFilterSection('Sắp xếp theo số sao', listFilterStar),
             Spacer(),
             Container(

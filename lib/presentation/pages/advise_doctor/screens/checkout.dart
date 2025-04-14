@@ -7,7 +7,15 @@ import 'package:sep490/theme/color.dart';
 
 class Checkout extends StatefulWidget {
   final ComboData comboData;
-  const Checkout({super.key, required this.comboData});
+  final Map<String, dynamic>? timeSlots;
+  final DoctorData? doctorData;
+  final String? description;
+  const Checkout(
+      {super.key,
+      required this.comboData,
+      this.timeSlots,
+      this.doctorData,
+      this.description});
 
   @override
   State<Checkout> createState() => _CheckoutState();
@@ -139,29 +147,87 @@ class _CheckoutState extends State<Checkout> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: list
-                              .map((e) => Row(
-                                    children: [
-                                      Icon(Icons.check_circle, size: 15),
-                                      SizedBox(width: 5),
-                                      Text(e,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              color: AppColors.secondaryColor)),
-                                    ],
-                                  ))
-                              .toList(),
-                        )
-                      ],
-                    ),
+                    if (widget.timeSlots == null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: list
+                                .map((e) => Row(
+                                      children: [
+                                        Icon(Icons.check_circle, size: 15),
+                                        SizedBox(width: 5),
+                                        Text(e,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                color:
+                                                    AppColors.secondaryColor)),
+                                      ],
+                                    ))
+                                .toList(),
+                          )
+                        ],
+                      ),
+                    if (widget.timeSlots != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Thời gian tư vấn:',
+                              style: TextStyle(
+                                fontSize: 14,
+                              )),
+                          const SizedBox(height: 10),
+                          Text(
+                            '${widget.timeSlots!['startTime']} - ${widget.timeSlots!['endTime']}',
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.secondaryColor),
+                          ),
+                        ],
+                      ),
+                    const SizedBox(height: 20),
+                    if (widget.timeSlots != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Ngày tư vấn:',
+                              style: TextStyle(
+                                fontSize: 14,
+                              )),
+                          const SizedBox(height: 10),
+                          Text(
+                            '${widget.timeSlots!['day']}',
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.secondaryColor),
+                          ),
+                        ],
+                      ),
+                    const SizedBox(height: 20),
+                    if (widget.timeSlots != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Bác sĩ tư vấn:',
+                              style: TextStyle(
+                                fontSize: 14,
+                              )),
+                          const SizedBox(height: 10),
+                          Text(
+                            widget.doctorData!.fullName,
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.secondaryColor),
+                          ),
+                        ],
+                      ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -269,16 +335,37 @@ class _CheckoutState extends State<Checkout> {
                           ),
                           onPressed: () {
                             Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ResultCheckout(
-                                  accountId: accountId,
-                                  elderlyId: selectedElderlyId,
-                                  comboId: widget.comboData.subscriptionId,
+                            if (widget.doctorData != null) {
+                              final Map<String, dynamic> dataBooking = {
+                                "elderlyId": selectedElderlyId,
+                                "day": widget.timeSlots!['day'],
+                                "startTime": widget.timeSlots!['startTime'],
+                                "endTime": widget.timeSlots!['endTime'],
+                                "description": widget.description,
+                              };
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ResultCheckout(
+                                    accountId: accountId,
+                                    elderlyId: selectedElderlyId,
+                                    comboId: widget.comboData.subscriptionId,
+                                    bookingData: dataBooking,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ResultCheckout(
+                                    accountId: accountId,
+                                    elderlyId: selectedElderlyId,
+                                    comboId: widget.comboData.subscriptionId,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           child: const Text('Xác nhận',
                               style: TextStyle(

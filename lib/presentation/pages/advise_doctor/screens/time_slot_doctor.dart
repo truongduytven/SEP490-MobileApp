@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/package_list.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -27,14 +28,13 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
   final ScrollController _scrollControllerDay = ScrollController();
   bool isLoadingTimeSlot = false;
   Map<String, dynamic> selectedTimeSlot = {
-    'timeSlotId': 0,
     'startTime': '',
     'endTime': '',
   };
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId = 0;
   late int selectedElderlyUserId = 0;
-
+  late int numberMeeting = 0;
   final TextEditingController moreInformationController =
       TextEditingController();
   late List<TimeSlots>? listTimeSlot = [];
@@ -59,7 +59,7 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
     await doctorController.getDoctorData(
         selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId);
     Timer(const Duration(seconds: 2), () {
-      if(!mounted) return;
+      if (!mounted) return;
       setState(() {
         doctorData = doctorController.doctorData;
         isLoading = false;
@@ -68,6 +68,26 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
         });
       });
       if (doctorController.doctorData != null) {
+        getNumberMeeting();
+      }
+    });
+  }
+
+  void getNumberMeeting() async {
+    setState(() {
+      isLoading = true;
+    });
+    DoctorController doctorController = DoctorController();
+    await doctorController.getNumberMeeting(
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId);
+    Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      setState(() {
+        // numberMeeting = doctorController.numberMeeting;
+        numberMeeting = 0;
+        isLoading = false;
+      });
+      if (doctorController.numberMeeting != 0) {
         getSchedule();
       }
     });
@@ -93,7 +113,8 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
     DoctorController doctorController = DoctorController();
     await doctorController.bookingAppointment(
         selectedElderlyUserId,
-        selectedTimeSlot['timeSlotId'],
+        selectedTimeSlot['startTime'],
+        selectedTimeSlot['endTime'],
         DateFormat('yyyy-MM-dd')
             .format(DateTime(selectedYear, selectedMonth, selectedDay)),
         moreInformationController.text);
@@ -184,7 +205,6 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
                     startDateTime.isAfter(oneHourLater))) {
               listTimeSlot!.add(
                 TimeSlots(
-                  timeSlotId: item.timeSlotId,
                   startTime: item.startTime,
                   endTime: item.endTime,
                 ),
@@ -299,427 +319,420 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            border: Border.all(
-                                              color: AppColors.grayColor1,
-                                              width: 1,
-                                            )),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: DropdownButtonHideUnderline(
-                                          child: DropdownButton<int>(
-                                            value: selectedMonth,
-                                            items: List.generate(
-                                              12,
-                                              (index) => index + 1,
-                                            )
-                                                .where((month) =>
-                                                    selectedYear >
-                                                        DateTime.now().year ||
-                                                    (selectedYear ==
-                                                            DateTime.now()
-                                                                .year &&
-                                                        month >=
-                                                            DateTime.now()
-                                                                .month))
-                                                .map((month) {
-                                              return DropdownMenuItem<int>(
-                                                value: month,
-                                                child: Text('Tháng $month',
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: selectedMonth ==
-                                                                month
-                                                            ? AppColors
-                                                                .primaryColor
-                                                            : AppColors
-                                                                .textColor)),
-                                              );
-                                            }).toList(),
-                                            onChanged: (value) {
-                                              if (selectedMonth == value)
-                                                return;
-                                              setState(() {
-                                                selectedMonth = value!;
-                                                selectedDay = 1;
-                                                WidgetsBinding.instance
-                                                    .addPostFrameCallback((_) {
-                                                  _scrollToSelectedDay();
-                                                });
-                                                getSchedule();
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            border: Border.all(
-                                              color: AppColors.grayColor1,
-                                              width: 1,
-                                            )),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: DropdownButtonHideUnderline(
-                                          child: DropdownButton<int>(
-                                            value: selectedYear,
-                                            items: List.generate(
-                                              2030 - DateTime.now().year + 1,
-                                              (index) =>
-                                                  DateTime.now().year + index,
-                                            ).map((year) {
-                                              return DropdownMenuItem<int>(
-                                                value: year,
-                                                child: Text('Năm $year',
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: selectedYear ==
-                                                                year
-                                                            ? AppColors
-                                                                .primaryColor
-                                                            : AppColors
-                                                                .textColor)),
-                                              );
-                                            }).toList(),
-                                            onChanged: (value) {
-                                              if (selectedYear == value) return;
-                                              setState(() {
-                                                selectedYear = value!;
-                                                selectedDay = 1;
-                                                WidgetsBinding.instance
-                                                    .addPostFrameCallback((_) {
-                                                  _scrollToSelectedDay(); // Scroll to day 1
-                                                });
-                                                getSchedule();
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      // Container(
-                                      //   decoration: BoxDecoration(),
-                                      //   width: 100,
-                                      //   child: ElevatedButton(
-                                      //     onPressed: (selectedDay !=
-                                      //                 DateTime.now().day ||
-                                      //             selectedMonth !=
-                                      //                 DateTime.now().month ||
-                                      //             selectedYear !=
-                                      //                 DateTime.now().year)
-                                      //         ? () {
-                                      //             setState(() {
-                                      //               selectedDay =
-                                      //                   DateTime.now().day;
-                                      //               selectedMonth =
-                                      //                   DateTime.now().month;
-                                      //               selectedYear =
-                                      //                   DateTime.now().year;
-                                      //               WidgetsBinding.instance
-                                      //                   .addPostFrameCallback(
-                                      //                       (_) {
-                                      //                 _scrollToSelectedDay();
-                                      //               });
-                                      //               getSchedule();
-                                      //             });
-                                      //           }
-                                      //         : null,
-                                      //     style: ElevatedButton.styleFrom(
-                                      //         backgroundColor:
-                                      //             AppColors.secondaryColor,
-                                      //         padding: EdgeInsets.symmetric(
-                                      //             horizontal: 10, vertical: 5),
-                                      //         shape: RoundedRectangleBorder(
-                                      //           borderRadius:
-                                      //               BorderRadius.circular(15),
-                                      //         )),
-                                      //     child: const Text('Hôm nay',
-                                      //         style: TextStyle(
-                                      //           fontSize: 20,
-                                      //           color: AppColors.bgColor,
-                                      //           fontWeight: FontWeight.w400,
-                                      //         )),
-                                      //   ),
-                                      // ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  controller: _scrollControllerDay,
-                                  child: Row(
-                                    children:
-                                        List.generate(daysInMonth, (index) {
-                                      int day = index + 1;
-                                      DateTime today = DateTime.now();
-                                      bool isSelected = day == selectedDay;
-                                      DateTime currentDate = DateTime(
-                                          selectedYear, selectedMonth, day);
-                                      bool isPast = currentDate.isBefore(
-                                        DateTime(
-                                            DateTime.now().year,
-                                            DateTime.now().month,
-                                            DateTime.now().day),
-                                      );
-
-                                      return GestureDetector(
-                                        onTap: isPast
-                                            ? null
-                                            : () {
+                                if (numberMeeting != 0)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              border: Border.all(
+                                                color: AppColors.grayColor1,
+                                                width: 1,
+                                              )),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<int>(
+                                              value: selectedMonth,
+                                              items: List.generate(
+                                                12,
+                                                (index) => index + 1,
+                                              )
+                                                  .where((month) =>
+                                                      selectedYear >
+                                                          DateTime.now().year ||
+                                                      (selectedYear ==
+                                                              DateTime.now()
+                                                                  .year &&
+                                                          month >=
+                                                              DateTime.now()
+                                                                  .month))
+                                                  .map((month) {
+                                                return DropdownMenuItem<int>(
+                                                  value: month,
+                                                  child: Text('Tháng $month',
+                                                      style: TextStyle(
+                                                          fontSize: 20,
+                                                          color:
+                                                              selectedMonth ==
+                                                                      month
+                                                                  ? AppColors
+                                                                      .primaryColor
+                                                                  : AppColors
+                                                                      .textColor)),
+                                                );
+                                              }).toList(),
+                                              onChanged: (value) {
+                                                if (selectedMonth == value)
+                                                  return;
                                                 setState(() {
-                                                  selectedDay = day;
+                                                  selectedMonth = value!;
+                                                  selectedDay = 1;
+                                                  WidgetsBinding.instance
+                                                      .addPostFrameCallback(
+                                                          (_) {
+                                                    _scrollToSelectedDay();
+                                                  });
                                                   getSchedule();
                                                 });
                                               },
-                                        child: Container(
-                                          width: 60,
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 8),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
                                           decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? AppColors.secondaryColor
-                                                : isPast
-                                                    ? AppColors.grayColor1
-                                                    : AppColors.bgColor,
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            border: Border.all(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              border: Border.all(
+                                                color: AppColors.grayColor1,
+                                                width: 1,
+                                              )),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<int>(
+                                              value: selectedYear,
+                                              items: List.generate(
+                                                2030 - DateTime.now().year + 1,
+                                                (index) =>
+                                                    DateTime.now().year + index,
+                                              ).map((year) {
+                                                return DropdownMenuItem<int>(
+                                                  value: year,
+                                                  child: Text('Năm $year',
+                                                      style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: selectedYear ==
+                                                                  year
+                                                              ? AppColors
+                                                                  .primaryColor
+                                                              : AppColors
+                                                                  .textColor)),
+                                                );
+                                              }).toList(),
+                                              onChanged: (value) {
+                                                if (selectedYear == value)
+                                                  return;
+                                                setState(() {
+                                                  selectedYear = value!;
+                                                  selectedDay = 1;
+                                                  WidgetsBinding.instance
+                                                      .addPostFrameCallback(
+                                                          (_) {
+                                                    _scrollToSelectedDay(); // Scroll to day 1
+                                                  });
+                                                  getSchedule();
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                if (numberMeeting != 0)
+                                  const SizedBox(height: 16),
+                                if (numberMeeting != 0)
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    controller: _scrollControllerDay,
+                                    child: Row(
+                                      children:
+                                          List.generate(daysInMonth, (index) {
+                                        int day = index + 1;
+                                        DateTime today = DateTime.now();
+                                        bool isSelected = day == selectedDay;
+                                        DateTime currentDate = DateTime(
+                                            selectedYear, selectedMonth, day);
+                                        bool isPast = currentDate.isBefore(
+                                          DateTime(
+                                              DateTime.now().year,
+                                              DateTime.now().month,
+                                              DateTime.now().day),
+                                        );
+
+                                        return GestureDetector(
+                                          onTap: isPast
+                                              ? null
+                                              : () {
+                                                  setState(() {
+                                                    selectedDay = day;
+                                                    getSchedule();
+                                                  });
+                                                },
+                                          child: Container(
+                                            width: 60,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            decoration: BoxDecoration(
                                               color: isSelected
                                                   ? AppColors.secondaryColor
                                                   : isPast
                                                       ? AppColors.grayColor1
-                                                      : AppColors.secondaryColor
-                                                          .withOpacity(0.3),
-                                              width: 1,
-                                            ),
-                                          ),
-                                          child: Stack(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 10,
-                                                        horizontal: 15),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Text(
-                                                          '$day',
-                                                          style: TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: isSelected
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          DateFormat(
-                                                                  'EEE', 'vi')
-                                                              .format(DateTime(
-                                                                  selectedYear,
-                                                                  selectedMonth,
-                                                                  day)),
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            color: isSelected
-                                                                ? Colors.white
-                                                                : AppColors
-                                                                    .secondaryColor,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
+                                                      : AppColors.bgColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              border: Border.all(
+                                                color: isSelected
+                                                    ? AppColors.secondaryColor
+                                                    : isPast
+                                                        ? AppColors.grayColor1
+                                                        : AppColors
+                                                            .secondaryColor
+                                                            .withOpacity(0.3),
+                                                width: 1,
                                               ),
-                                              if (selectedMonth ==
-                                                      today.month &&
-                                                  selectedYear == today.year &&
-                                                  day == today.day)
-                                                Positioned(
-                                                  top: 0,
-                                                  right: 0,
-                                                  child: Container(
-                                                    width: 10,
-                                                    height: 10,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      color: Colors.blue,
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Text('Giờ khả dụng',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.secondaryColor)),
-                                isLoadingTimeSlot
-                                    ? SizedBox(
-                                        height: 100,
-                                        child: Center(
-                                          child: GifView.asset(
-                                            'assets/gif/sos_loading.gif',
-                                            width: 70,
-                                            height: 70,
-                                            frameRate: 60,
-                                          ),
-                                        ),
-                                      )
-                                    : listTimeSlot!.isNotEmpty
-                                        ? Column(
-                                            children: [
-                                              SizedBox(height: 10),
-                                              Wrap(
-                                                runSpacing: 15,
-                                                children: List.generate(
-                                                    listTimeSlot!.length,
-                                                    (index) {
-                                                  TimeSlots timeSlot =
-                                                      listTimeSlot![index];
-                                                  return GestureDetector(
-                                                    onTap: () {
-                                                      if (selectedTimeSlot[
-                                                              'timeSlotId'] ==
-                                                          timeSlot.timeSlotId) {
-                                                        setState(() {
-                                                          selectedTimeSlot = {
-                                                            'timeSlotId': 0,
-                                                            'startTime': '',
-                                                            'endTime': '',
-                                                          };
-                                                        });
-                                                      } else {
-                                                        setState(() {
-                                                          selectedTimeSlot[
-                                                                  'timeSlotId'] =
-                                                              timeSlot
-                                                                  .timeSlotId;
-                                                          selectedTimeSlot[
-                                                                  'startTime'] =
-                                                              timeSlot
-                                                                  .startTime;
-                                                          selectedTimeSlot[
-                                                                  'endTime'] =
-                                                              timeSlot.endTime;
-                                                        });
-                                                      }
-                                                    },
-                                                    child: Container(
-                                                      margin: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 8),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              12),
-                                                      decoration: BoxDecoration(
-                                                        color: selectedTimeSlot[
-                                                                    'timeSlotId'] ==
-                                                                timeSlot
-                                                                    .timeSlotId
-                                                            ? AppColors
-                                                                .primaryColor
-                                                            : AppColors.bgColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                        border: Border.all(
-                                                          color: selectedTimeSlot[
-                                                                      'timeSlotId'] ==
-                                                                  timeSlot
-                                                                      .timeSlotId
-                                                              ? AppColors
-                                                                  .primaryColor
-                                                              : AppColors
-                                                                  .secondaryColor
-                                                                  .withOpacity(
-                                                                      0.3),
-                                                          width: 1,
-                                                        ),
-                                                      ),
-                                                      child: Column(
+                                            ),
+                                            child: Stack(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      vertical: 10,
+                                                      horizontal: 15),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Column(
                                                         children: [
                                                           Text(
-                                                            '${timeSlot.startTime} - ${timeSlot.endTime}',
+                                                            '$day',
                                                             style: TextStyle(
-                                                              fontSize: 15,
+                                                              fontSize: 18,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .w500,
-                                                              color: selectedTimeSlot[
-                                                                          'timeSlotId'] ==
-                                                                      timeSlot
-                                                                          .timeSlotId
+                                                                      .bold,
+                                                              color: isSelected
                                                                   ? Colors.white
                                                                   : Colors
                                                                       .black,
                                                             ),
                                                           ),
+                                                          Text(
+                                                            DateFormat(
+                                                                    'EEE', 'vi')
+                                                                .format(DateTime(
+                                                                    selectedYear,
+                                                                    selectedMonth,
+                                                                    day)),
+                                                            style: TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color: isSelected
+                                                                  ? Colors.white
+                                                                  : AppColors
+                                                                      .secondaryColor,
+                                                            ),
+                                                          ),
                                                         ],
                                                       ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                if (selectedMonth ==
+                                                        today.month &&
+                                                    selectedYear ==
+                                                        today.year &&
+                                                    day == today.day)
+                                                  Positioned(
+                                                    top: 0,
+                                                    right: 0,
+                                                    child: Container(
+                                                      width: 10,
+                                                      height: 10,
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                        color: Colors.blue,
+                                                        shape: BoxShape.circle,
+                                                      ),
                                                     ),
-                                                  );
-                                                }),
-                                              ),
-                                            ],
-                                          )
-                                        : Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              SizedBox(height: 20),
-                                              Image.asset(
-                                                  'assets/img/no-data.png',
-                                                  width: 60,
-                                                  height: 60),
-                                              SizedBox(height: 10),
-                                              Text('Không có giờ khả dụng',
-                                                  style:
-                                                      TextStyle(fontSize: 18)),
-                                            ],
+                                                  ),
+                                              ],
+                                            ),
                                           ),
-                                SizedBox(height: 10),
-                                Text('Thông tin thêm',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.secondaryColor)),
-                                SizedBox(height: 10),
-                                Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 25),
-                                    child: AuthField(
-                                        hintText: 'Nhập thông tin thêm',
-                                        labelText: "",
-                                        maxLines: 3,
-                                        controller: moreInformationController)),
+                                        );
+                                      }),
+                                    ),
+                                  ),
+                                if (numberMeeting != 0)
+                                  const SizedBox(height: 20),
+                                if (numberMeeting != 0)
+                                  Text('Giờ khả dụng',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.secondaryColor)),
+                                if (numberMeeting != 0)
+                                  isLoadingTimeSlot
+                                      ? SizedBox(
+                                          height: 100,
+                                          child: Center(
+                                            child: GifView.asset(
+                                              'assets/gif/sos_loading.gif',
+                                              width: 70,
+                                              height: 70,
+                                              frameRate: 60,
+                                            ),
+                                          ),
+                                        )
+                                      : listTimeSlot!.isNotEmpty
+                                          ? Column(
+                                              children: [
+                                                SizedBox(height: 10),
+                                                Wrap(
+                                                  runSpacing: 10,
+                                                  spacing: 10,
+                                                  children: List.generate(
+                                                      listTimeSlot!.length,
+                                                      (index) {
+                                                    TimeSlots timeSlot =
+                                                        listTimeSlot![index];
+                                                    return GestureDetector(
+                                                      onTap: () {
+                                                        if (selectedTimeSlot[
+                                                                'startTime'] ==
+                                                            timeSlot
+                                                                .startTime) {
+                                                          setState(() {
+                                                            selectedTimeSlot = {
+                                                              'startTime': '',
+                                                              'endTime': '',
+                                                            };
+                                                          });
+                                                        } else {
+                                                          setState(() {
+                                                            selectedTimeSlot[
+                                                                    'startTime'] =
+                                                                timeSlot
+                                                                    .startTime;
+                                                            selectedTimeSlot[
+                                                                    'endTime'] =
+                                                                timeSlot
+                                                                    .endTime;
+                                                          });
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.28,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 4,
+                                                                vertical: 10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: selectedTimeSlot[
+                                                                      'startTime'] ==
+                                                                  timeSlot
+                                                                      .startTime
+                                                              ? AppColors
+                                                                  .primaryColor
+                                                              : AppColors
+                                                                  .bgColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          border: Border.all(
+                                                            color: selectedTimeSlot[
+                                                                        'startTime'] ==
+                                                                    timeSlot
+                                                                        .startTime
+                                                                ? AppColors
+                                                                    .primaryColor
+                                                                : AppColors
+                                                                    .secondaryColor
+                                                                    .withOpacity(
+                                                                        0.3),
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            Text(
+                                                              '${timeSlot.startTime} - ${timeSlot.endTime}',
+                                                              style: TextStyle(
+                                                                fontSize: 15,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: selectedTimeSlot[
+                                                                            'startTime'] ==
+                                                                        timeSlot
+                                                                            .startTime
+                                                                    ? Colors
+                                                                        .white
+                                                                    : Colors
+                                                                        .black,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }),
+                                                ),
+                                              ],
+                                            )
+                                          : Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                SizedBox(height: 20),
+                                                Image.asset(
+                                                    'assets/img/no-data.png',
+                                                    width: 60,
+                                                    height: 60),
+                                                SizedBox(height: 10),
+                                                Text('Không có giờ khả dụng',
+                                                    style: TextStyle(
+                                                        fontSize: 18)),
+                                              ],
+                                            ),
+                                if (numberMeeting != 0) SizedBox(height: 10),
+                                if (numberMeeting != 0)
+                                  Text('Thông tin thêm',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.secondaryColor)),
+                                if (numberMeeting != 0) SizedBox(height: 10),
+                                if (numberMeeting != 0)
+                                  Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 25),
+                                      child: AuthField(
+                                          hintText: 'Nhập thông tin thêm',
+                                          labelText: "",
+                                          maxLines: 3,
+                                          controller:
+                                              moreInformationController)),
+                                if (numberMeeting == 0) SizedBox(height: 40),
+                                if (numberMeeting == 0)
+                                  Image.asset('assets/img/no-data.png',
+                                      width: 60, height: 60),
+                                if (numberMeeting == 0) SizedBox(height: 10),
+                                if (numberMeeting == 0)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    child: Text(
+                                        'Bạn đã hết lượt đặt lịch, bạn có thể chọn gói đặt lịch lẻ để tiếp tục đặt lịch',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: 20)),
+                                  ),
                               ],
                             )
                           : SizedBox(
@@ -771,6 +784,36 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
                       icon: Icon(Icons.add_circle_outline,
                           size: 25, color: AppColors.bgColor),
                       label: const Text('Đặt lịch',
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: AppColors.bgColor,
+                            fontWeight: FontWeight.w400,
+                          )),
+                    ),
+                  ),
+                if (numberMeeting == 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
+                    width: double.infinity,
+                    color: Colors.transparent,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => const PackageList(isShowFull: false,)));
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondaryColor,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            side: BorderSide(
+                                color: AppColors.secondaryColor, width: 1),
+                          )),
+                      icon: Icon(Icons.add_circle_outline,
+                          size: 25, color: AppColors.bgColor),
+                      label: const Text('Mua gói đặt lịch lẻ',
                           style: TextStyle(
                             fontSize: 25,
                             color: AppColors.bgColor,

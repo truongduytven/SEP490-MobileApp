@@ -131,8 +131,8 @@ class _ReportAppointmentState extends State<ReportAppointment> {
                                     child: Text(
                                   'Báo cáo tổng kết',
                                   style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w600),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500),
                                 )),
                                 _buildContentBox(summaryController,
                                     !widget.isEdited ? _report!.content : ''),
@@ -141,8 +141,8 @@ class _ReportAppointmentState extends State<ReportAppointment> {
                                     child: Text(
                                   'Đề xuất giải pháp',
                                   style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w600),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500),
                                 )),
                                 _buildContentBox(
                                     solutionController, _report!.solution),
@@ -194,6 +194,10 @@ class _ReportAppointmentState extends State<ReportAppointment> {
         maxLines: null,
         decoration: InputDecoration(
           hintText: content,
+          hintStyle: TextStyle(
+            color: AppColors.secondaryColor,
+            fontSize: 22,
+          ),
           enabled: widget.isEdited,
           border: InputBorder.none,
         ),

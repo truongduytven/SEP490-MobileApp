@@ -159,7 +159,6 @@ class DoctorRepository {
     Map<String, dynamic> data = {
       "nameSortOrder": null,
       "dayOfWeekFilter": [],
-      "timeOfDateFilter": [],
       "ratingSortOrder": null
     };
     for (var element in filterEnter) {
@@ -190,15 +189,6 @@ class DoctorRepository {
           break;
         case "Chủ nhật":
           data["dayOfWeekFilter"].add('Sunday');
-          break;
-        case "Sáng":
-          data["timeOfDateFilter"].add('07:00-13:00');
-          break;
-        case "Chiều":
-          data["timeOfDateFilter"].add('13:00-17:00');
-          break;
-        case "Tối":
-          data["timeOfDateFilter"].add('17:00-20:00');
           break;
         case "Tăng dần":
           data["ratingSortOrder"] = "asc";
@@ -299,7 +289,7 @@ class DoctorRepository {
   }
 
   Future<dynamic> bookingAppointment(
-      int elderlyId, int timeSlotId, String day, String description) async {
+      int elderlyId, String startTime, String endTime, String day, String description) async {
     try {
       final response = await http.post(
           Uri.parse("$baseUrl/api/Professor/professor-appointment"),
@@ -308,7 +298,8 @@ class DoctorRepository {
           },
           body: jsonEncode({
             "elderlyId": elderlyId,
-            "timeSlotId": timeSlotId,
+            "startTime": startTime,
+            "endTime": endTime,
             "day": day,
             "description": description
           }));
@@ -405,6 +396,24 @@ class DoctorRepository {
     try {
       final response = await http
           .get(Uri.parse("$baseUrl/api/Professor/feedback/$professorId"));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> getNumberMeeting(int elderlyId) async {
+    try {
+      final response = await http
+          .get(Uri.parse("$baseUrl/api/Professor/number-of-meeting/elderly/$elderlyId"));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
