@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/group_family/tabs/group_tab.dart';
 import 'package:sep490/features/group_family/widgets/pending_request_user_card.dart';
@@ -90,13 +90,23 @@ class _GroupFamilyState extends State<GroupFamily>
   }
 
   Future<void> _handleAcceptRequest(int accountId) async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
     try {
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/accept-request'),
-        body: {
-          'senderId': accountId.toString(),
-          'receiverId': currentUserAccountID.toString(),
+      final response = await http.put(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/user-link-management/response-add-friend'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
         },
+        body: json.encode({
+          "requestUserId": currentUserAccountID,
+          "responseUserId": accountId,
+          "responseStatus": "Accepted"
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -104,9 +114,6 @@ class _GroupFamilyState extends State<GroupFamily>
           toastDuration: const Duration(seconds: 3),
           title: const Text(
             'Đã chấp nhận yêu cầu',
-          ),
-          action: Text(
-            "Tải lại dữ liệu...",
           ),
           actionHandler: () => fetchGroupData(),
         ).show(context);
@@ -121,27 +128,41 @@ class _GroupFamilyState extends State<GroupFamily>
           'Lỗi khi chấp nhận yêu cầu: ${e.toString()}',
         ),
       ).show(context);
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   Future<void> _handleRejectRequest(int accountId) async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
     try {
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/reject-request'),
-        body: {
-          'senderId': accountId.toString(),
-          'receiverId': currentUserAccountID.toString(),
+      final response = await http.put(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/user-link-management/response-add-friend'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
         },
+        body: json.encode({
+          "requestUserId": currentUserAccountID,
+          "responseUserId": accountId,
+          "responseStatus": "Rejected"
+        }),
       );
-
       if (response.statusCode == 200) {
         CherryToast.success(
           toastDuration: const Duration(seconds: 3),
           title: const Text(
             'Đã từ chối yêu cầu',
-          ),
-          action: Text(
-            "Tải lại dữ liệu...",
           ),
           actionHandler: () => fetchGroupData(),
         ).show(context);
@@ -156,6 +177,14 @@ class _GroupFamilyState extends State<GroupFamily>
           'Lỗi khi từ chối yêu cầu: ${e.toString()}',
         ),
       ).show(context);
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -189,13 +218,16 @@ class _GroupFamilyState extends State<GroupFamily>
   }
 
   Future<void> _handleLeaveGroup() async {
+    final groupId = groupData?['groupInfor']['groupId'];
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
     try {
       // Gọi API để rời nhóm
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/leave-group'),
-        body: {
-          'accountId': currentUserAccountID.toString(),
-        },
+      final response = await http.delete(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/groups/$groupId/members/$currentUserAccountID/$currentUserAccountID'),
       );
 
       if (response.statusCode == 200) {
@@ -209,9 +241,21 @@ class _GroupFamilyState extends State<GroupFamily>
           ).show(context);
           fetchGroupData(); // Làm mới dữ liệu
         } else {
+          CherryToast.error(
+            toastDuration: const Duration(seconds: 3),
+            title: Text(
+              'Lỗi khi rời nhóm: ${data['message']}',
+            ),
+          ).show(context);
           throw Exception(data['message'] ?? 'Failed to leave group');
         }
       } else {
+        CherryToast.error(
+          toastDuration: const Duration(seconds: 3),
+          title: Text(
+            'Lỗi khi rời nhóm: ${response.statusCode}',
+          ),
+        ).show(context);
         throw Exception('Failed to leave group: ${response.statusCode}');
       }
     } catch (e) {
@@ -221,17 +265,35 @@ class _GroupFamilyState extends State<GroupFamily>
           'Lỗi khi rời nhóm: ${e.toString()}',
         ),
       ).show(context);
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   Future<void> _handleCancelRequest(int accountId) async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
     try {
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/cancel-request'),
-        body: {
-          'senderId': currentUserAccountID.toString(),
-          'receiverId': accountId.toString(),
+      final response = await http.put(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/user-link-management/response-add-friend'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
         },
+        body: json.encode({
+          "requestUserId": currentUserAccountID,
+          "responseUserId": accountId,
+          "responseStatus": "Cancelled"
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -240,9 +302,6 @@ class _GroupFamilyState extends State<GroupFamily>
           title: const Text(
             'Đã hủy lời mời',
           ),
-          action: Text(
-            "Tải lại dữ liệu...",
-          ),
           actionHandler: () => fetchGroupData(),
         ).show(context);
         fetchGroupData();
@@ -250,12 +309,20 @@ class _GroupFamilyState extends State<GroupFamily>
         throw Exception('Failed to cancel request');
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
       CherryToast.error(
         toastDuration: const Duration(seconds: 3),
         title: Text(
           'Lỗi khi hủy lời mời: ${e.toString()}',
         ),
       ).show(context);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -268,7 +335,7 @@ class _GroupFamilyState extends State<GroupFamily>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/empty_requests.png',
+                  'assets/images/nodata.webp',
                   width: 150,
                   height: 150,
                 ),
@@ -348,13 +415,13 @@ class _GroupFamilyState extends State<GroupFamily>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/empty_sent.png',
+                  'assets/images/nodata.webp',
                   width: 150,
                   height: 150,
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Không có yêu cầu nào đã gửi',
+                  'Tất cả các yêu cầu đã được chấp nhận',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -363,7 +430,7 @@ class _GroupFamilyState extends State<GroupFamily>
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Hãy gửi lời mời để thêm người thân vào nhóm',
+                  'Hãy gửi lời mời để được người thân thêm vào nhóm',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
@@ -505,13 +572,15 @@ class _GroupFamilyState extends State<GroupFamily>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(),
+              const CircularProgressIndicator(
+                color: AppColors.primaryColor,
+              ),
               const SizedBox(height: 20),
               Text(
                 'Đang tải dữ liệu nhóm...',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Theme.of(context).primaryColor,
+                  color: AppColors.primaryColor,
                 ),
               ),
             ],
@@ -575,6 +644,7 @@ class _GroupFamilyState extends State<GroupFamily>
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.bgColor,
         title: const Text(
           'Nhóm gia đình',
           style: TextStyle(fontWeight: FontWeight.bold),

@@ -1,5 +1,8 @@
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:sep490/features/group_family/screens/user_detail_page.dart';
+import 'package:sep490/theme/color.dart';
 
 class UserCard extends StatelessWidget {
   final Map<String, dynamic> user;
@@ -17,6 +20,7 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isCurrentUser = user['accountId'] == currentUserAccountID;
     return Card(
       color: Colors.white,
       elevation: 2,
@@ -26,18 +30,32 @@ class UserCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserDetailPage(
-              user: user,
-              relationshipStatus: 'group',
-              currentUserAccountID: currentUserAccountID,
-              currentRoleID: currentRoleID,
-              refreshCallback: fetchGroupData,
+        onTap: () {
+          if (isCurrentUser) {
+            CherryToast.info(
+              title: const Text('Đây là bạn', style: TextStyle(fontSize: 16)),
+              width: MediaQuery.of(context).size.width,
+              animationDuration: const Duration(milliseconds: 200),
+              toastDuration: const Duration(seconds: 1),
+              toastPosition: Position.bottom,
+              displayCloseButton: false,
+            ).show(context);
+            return;
+          }
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserDetailPage(
+                user: user,
+                relationshipStatus: 'group',
+                currentUserAccountID: currentUserAccountID,
+                currentRoleID: currentRoleID,
+                refreshCallback: fetchGroupData,
+              ),
             ),
-          ),
-        ),
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -48,7 +66,7 @@ class UserCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Theme.of(context).primaryColor,
+                    color: AppColors.primaryColor,
                     width: 2,
                   ),
                   image: DecorationImage(
@@ -63,7 +81,7 @@ class UserCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user['fullName'] ?? 'Không có tên',
+                      '${user['fullName'] ?? 'Không có tên'} ${isCurrentUser ? "(Bạn)" : ""}',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -96,7 +114,7 @@ class UserCard extends StatelessWidget {
                 user['phoneNumber'] ?? '',
                 style: const TextStyle(
                   fontSize: 14,
-                  color: Colors.blue,
+                  color: Colors.pink,
                 ),
               ),
             ],

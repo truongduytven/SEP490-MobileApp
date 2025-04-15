@@ -107,7 +107,45 @@ class PendingRequestUserCard extends StatelessWidget {
                       ),
                       child: const Icon(Icons.check, color: Colors.green),
                     ),
-                    onPressed: () => onAccept(user['accountId']),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Xác nhận'),
+                            content: RichText(
+                              text: TextSpan(
+                                style: DefaultTextStyle.of(context).style,
+                                children: [
+                                  const TextSpan(
+                                      text:
+                                          'Bạn có chắc chắn muốn chấp nhận yêu cầu từ '),
+                                  TextSpan(
+                                    text: user['fullName'],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const TextSpan(text: ' không?'),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Không'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  onAccept(user['accountId']);
+                                },
+                                child: const Text('Có'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   ),
                   IconButton(
                     icon: Container(
@@ -118,7 +156,45 @@ class PendingRequestUserCard extends StatelessWidget {
                       ),
                       child: const Icon(Icons.close, color: Colors.red),
                     ),
-                    onPressed: () => onReject(user['accountId']),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Xác nhận'),
+                            content: RichText(
+                              text: TextSpan(
+                                style: DefaultTextStyle.of(context).style,
+                                children: [
+                                  const TextSpan(
+                                      text:
+                                          'Bạn có chắc chắn muốn từ chối yêu cầu từ '),
+                                  TextSpan(
+                                    text: user['fullName'],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const TextSpan(text: ' không?'),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Không'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  onReject(user['accountId']);
+                                },
+                                child: const Text('Có'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),

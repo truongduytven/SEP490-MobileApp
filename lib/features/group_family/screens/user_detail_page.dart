@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cherry_toast/cherry_toast.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:sep490/theme/color.dart';
 
 class UserDetailPage extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -29,7 +31,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       appBar: AppBar(
+        backgroundColor: AppColors.bgColor,
         title: Text(widget.user['fullName'] ?? 'Thông tin người dùng'),
       ),
       body: _buildBody(),
@@ -63,6 +67,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
       child: Column(
         children: [
           CircleAvatar(
+            backgroundColor: Colors.transparent,
             radius: 50,
             backgroundImage: NetworkImage(widget.user['avatar'] ?? ''),
           ),
@@ -119,27 +124,30 @@ class _UserDetailPageState extends State<UserDetailPage> {
         color = Colors.grey;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(iconData, color: color),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(iconData, color: color, size: 24),
+            const SizedBox(width: 12),
+            Text(
               statusText,
               style: TextStyle(
                 fontSize: 16,
+                height: 1.2,
                 color: color,
                 fontWeight: FontWeight.w500,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -165,46 +173,77 @@ class _UserDetailPageState extends State<UserDetailPage> {
         _buildInfoItem(Icons.cake, 'Ngày sinh',
             widget.user['dateOfBirth'] ?? 'Chưa cập nhật'),
         const SizedBox(height: 8),
-        _buildInfoItem(
-            Icons.home, 'Địa chỉ', widget.user['address'] ?? 'Chưa cập nhật'),
+        _buildInfoItem(Icons.person_4_sharp, 'Giới tính',
+            widget.user['gender'] ?? 'Chưa cập nhật'),
+        const SizedBox(height: 8),
+        _buildInfoItem(Icons.join_inner, 'Tham gia ngày',
+            widget.user['createdDate'] ?? 'Chưa cập nhật'),
       ],
     );
   }
 
   Widget _buildInfoItem(IconData icon, String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: Colors.grey[600]),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+    String _formatValue(String label, String value) {
+      if (value.isEmpty) return 'Chưa cập nhật';
+
+      switch (label) {
+        case 'Ngày sinh':
+        case 'Tham gia ngày':
+          try {
+            DateTime dateTime = DateTime.parse(value);
+            return DateFormat('dd/MM/yyyy').format(dateTime);
+          } catch (_) {
+            return 'Chưa cập nhật';
+          }
+        case 'Giới tính':
+          return (value.toLowerCase() == 'male') ? 'Nam' : 'Nữ';
+        default:
+          return value;
+      }
+    }
+
+    final formattedValue = _formatValue(label, value);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 22, color: Colors.grey[700]),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  formattedValue,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 2),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildActionButtons() {
     switch (widget.relationshipStatus) {
-      case 'group':
-        return _buildGroupActions();
+      // case 'group':
+      //   return _buildGroupActions();
       case 'pending':
         return _buildPendingActions();
       case 'sent':
@@ -219,15 +258,6 @@ class _UserDetailPageState extends State<UserDetailPage> {
   Widget _buildGroupActions() {
     return Column(
       children: [
-        OutlinedButton(
-          onPressed: () => _showRemoveFromGroupDialog(),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.red,
-            side: const BorderSide(color: Colors.red),
-            minimumSize: const Size(double.infinity, 48),
-          ),
-          child: const Text('Xóa khỏi nhóm'),
-        ),
         const SizedBox(height: 12),
         OutlinedButton(
           onPressed: () => Navigator.pop(context),
@@ -244,16 +274,69 @@ class _UserDetailPageState extends State<UserDetailPage> {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: () => _handleAcceptRequest(),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Xác nhận'),
+                  content: const Text(
+                      'Bạn có chắc chắn muốn chấp nhận yêu cầu này không?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Không'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _handleAcceptRequest();
+                      },
+                      child: const Text('Có'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
             minimumSize: const Size(double.infinity, 48),
           ),
-          child: const Text('Chấp nhận yêu cầu'),
+          child: const Text(
+            'Chấp nhận yêu cầu',
+            style: TextStyle(
+              color: AppColors.bgColor,
+            ),
+          ),
         ),
         const SizedBox(height: 12),
         OutlinedButton(
-          onPressed: () => _handleRejectRequest(),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Xác nhận'),
+                  content: const Text(
+                      'Bạn có chắc chắn muốn từ chối yêu cầu này không?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Không'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _handleRejectRequest();
+                      },
+                      child: const Text('Có'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.red,
             side: const BorderSide(color: Colors.red),
@@ -269,21 +352,36 @@ class _UserDetailPageState extends State<UserDetailPage> {
     return Column(
       children: [
         OutlinedButton(
-          onPressed: () => _handleCancelRequest(),
+          onPressed: () async {
+            final shouldCancel = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Xác nhận'),
+                content: const Text('Bạn có chắc muốn hủy lời mời này không?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Không'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Có'),
+                  ),
+                ],
+              ),
+            );
+
+            if (shouldCancel == true) {
+              _handleCancelRequest();
+            }
+          },
+          // onPressed: () => _handleCancelRequest(),
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.red,
             side: const BorderSide(color: Colors.red),
             minimumSize: const Size(double.infinity, 48),
           ),
           child: const Text('Hủy lời mời'),
-        ),
-        const SizedBox(height: 12),
-        OutlinedButton(
-          onPressed: () => Navigator.pop(context),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 48),
-          ),
-          child: const Text('Trở về'),
         ),
       ],
     );
@@ -312,73 +410,21 @@ class _UserDetailPageState extends State<UserDetailPage> {
     );
   }
 
-  void _showRemoveFromGroupDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xác nhận'),
-        content: const Text('Bạn có chắc chắn muốn xóa người này khỏi nhóm?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _removeFromGroup();
-            },
-            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _removeFromGroup() async {
-    setState(() => _isLoading = true);
-    try {
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/remove-member'),
-        body: {
-          'removerId': widget.currentUserAccountID.toString(),
-          'memberId': widget.user['accountId'].toString(),
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['status'] == 1) {
-          CherryToast.success(
-            title: const Text('Đã xóa thành công'),
-            action: const Text('Đóng'),
-            actionHandler: () => Navigator.pop(context),
-          ).show(context);
-          widget.refreshCallback();
-        } else {
-          throw Exception(data['message'] ?? 'Failed to remove member');
-        }
-      } else {
-        throw Exception('Failed to remove member: ${response.statusCode}');
-      }
-    } catch (e) {
-      CherryToast.error(
-        title: Text('Lỗi: ${e.toString()}'),
-      ).show(context);
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
   Future<void> _handleAcceptRequest() async {
     setState(() => _isLoading = true);
     try {
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/accept-request'),
-        body: {
-          'senderId': widget.user['accountId'].toString(),
-          'receiverId': widget.currentUserAccountID.toString(),
+      final response = await http.put(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/user-link-management/response-add-friend'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
         },
+        body: json.encode({
+          "requestUserId": widget.currentUserAccountID,
+          "responseUserId": widget.user['accountId'],
+          "responseStatus": "Accepted"
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -386,9 +432,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
         if (data['status'] == 1) {
           CherryToast.success(
             title: const Text('Đã chấp nhận yêu cầu'),
-            action: const Text('Đóng'),
             actionHandler: () => Navigator.pop(context),
           ).show(context);
+          Navigator.pop(context);
           widget.refreshCallback();
         } else {
           throw Exception(data['message'] ?? 'Failed to accept request');
@@ -408,12 +454,18 @@ class _UserDetailPageState extends State<UserDetailPage> {
   Future<void> _handleRejectRequest() async {
     setState(() => _isLoading = true);
     try {
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/reject-request'),
-        body: {
-          'senderId': widget.user['accountId'].toString(),
-          'receiverId': widget.currentUserAccountID.toString(),
+      final response = await http.put(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/user-link-management/response-add-friend'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
         },
+        body: json.encode({
+          "requestUserId": widget.currentUserAccountID,
+          "responseUserId": widget.user['accountId'],
+          "responseStatus": "Rejected"
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -421,9 +473,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
         if (data['status'] == 1) {
           CherryToast.success(
             title: const Text('Đã từ chối yêu cầu'),
-            action: const Text('Đóng'),
             actionHandler: () => Navigator.pop(context),
           ).show(context);
+          Navigator.pop(context);
           widget.refreshCallback();
         } else {
           throw Exception(data['message'] ?? 'Failed to reject request');
@@ -442,13 +494,20 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   Future<void> _handleCancelRequest() async {
     setState(() => _isLoading = true);
+
     try {
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/cancel-request'),
-        body: {
-          'senderId': widget.currentUserAccountID.toString(),
-          'receiverId': widget.user['accountId'].toString(),
+      final response = await http.put(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/user-link-management/response-add-friend'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
         },
+        body: json.encode({
+          "requestUserId": widget.currentUserAccountID,
+          "responseUserId": widget.user['accountId'],
+          "responseStatus": "Cancelled"
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -456,9 +515,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
         if (data['status'] == 1) {
           CherryToast.success(
             title: const Text('Đã hủy lời mời'),
-            action: const Text('Đóng'),
             actionHandler: () => Navigator.pop(context),
           ).show(context);
+          Navigator.pop(context);
           widget.refreshCallback();
         } else {
           throw Exception(data['message'] ?? 'Failed to cancel request');

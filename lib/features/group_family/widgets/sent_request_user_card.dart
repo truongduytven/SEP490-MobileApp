@@ -100,7 +100,34 @@ class SentRequestUserCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                onPressed: () => onCancelRequest(user['accountId']),
+                // onPressed: () => onCancelRequest(user['accountId']),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Xác nhận'),
+                        content:
+                            const Text('Bạn có chắc muốn hủy lời mời không?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.of(context).pop(), // Đóng dialog
+                            child: const Text('Không'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); 
+                              onCancelRequest(user['accountId']); 
+                            },
+                            child: const Text('Có'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+
                 child: const Text(
                   'Hủy lời mời',
                   style: TextStyle(color: Colors.red),

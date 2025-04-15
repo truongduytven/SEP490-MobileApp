@@ -48,7 +48,7 @@ class UserOutOfGroupCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Theme.of(context).primaryColor,
+                    color: Colors.green,
                     width: 2,
                   ),
                   image: DecorationImage(
@@ -96,7 +96,7 @@ class UserOutOfGroupCard extends StatelessWidget {
                 user['phoneNumber'] ?? '',
                 style: const TextStyle(
                   fontSize: 14,
-                  color: Colors.blue,
+                  color: Colors.pink,
                 ),
               ),
             ],
