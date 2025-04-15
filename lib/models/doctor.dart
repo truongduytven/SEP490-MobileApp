@@ -346,3 +346,49 @@ class FeedBackDoctor {
   }
 }
 
+class AppoimentElderly {
+  final int elderlyId;
+  final String elderlyName;
+  final String avatar;
+  final String phoneNumber;
+  final String dateTime;
+  final String description;
+  final String status;
+  final bool isOnline;
+  final bool isReport;
+  final bool isFeedback;
+  final List<Account> people;
+
+  AppoimentElderly({
+    required this.elderlyId,
+    required this.elderlyName,
+    required this.avatar,
+    required this.phoneNumber,
+    required this.dateTime,
+    required this.description,
+    required this.status,
+    required this.isOnline,
+    required this.isReport,
+    required this.isFeedback,
+    required this.people,
+  });
+
+  factory AppoimentElderly.fromJson(Map<String, dynamic> json) {
+    return AppoimentElderly(
+      elderlyId: json['elderlyId'],
+      elderlyName: json['elderlyName'],
+      avatar: json['avatar'],
+      phoneNumber: json['phoneNumber'],
+      dateTime: json['dateTime'],
+      description: json['description'],
+      status: json['status'],
+      isOnline: json['isOnline'],
+      isReport: json['isReport'],
+      isFeedback: json['isFeedback'],
+      people: (json['people'] as List)
+          .map((item) => Account.fromJson(item))
+          .toList(),
+    );
+  }
+}
+

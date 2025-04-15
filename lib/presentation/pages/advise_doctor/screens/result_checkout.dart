@@ -92,6 +92,7 @@ class _ResultCheckoutState extends State<ResultCheckout>
         if (widget.bookingData != null) {
           await doctorController.bookingAppointment(
               widget.bookingData!['elderlyId'],
+              widget.bookingData!['professorId'],
               widget.bookingData!['startTime'],
               widget.bookingData!['endTime'],
               widget.bookingData!['day'],

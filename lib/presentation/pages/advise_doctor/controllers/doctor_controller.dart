@@ -6,6 +6,7 @@ class DoctorController {
   DoctorData? doctorData;
   PackageData? packageData;
   List<AppoimentDoctor>? appoimentDoctor;
+  List<AppoimentElderly>? appoimentElderly;
   List<TimeSlots>? listAppoimentDoctor;
   Report? report;
   List<FilteredDoctor>? listFilterDoctor;
@@ -72,6 +73,18 @@ class DoctorController {
           data.map((item) => AppoimentDoctor.fromJson(item)).toList();
     } else {
       appoimentDoctor = null;
+    }
+  }
+
+  Future<void> getAppointmentElderly(int accountId) async {
+    final response =
+        await _doctorRepository.getAppointmentElderly(accountId);
+    if (response != null && response['isSuccess']) {
+      List<dynamic> data = response['data']['data'];
+      appoimentElderly =
+          data.map((item) => AppoimentElderly.fromJson(item)).toList();
+    } else {
+      appoimentElderly = null;
     }
   }
 
@@ -153,10 +166,10 @@ class DoctorController {
     }
   }
 
-  Future<void> bookingAppointment(int elderlyId, String startTime,
+  Future<void> bookingAppointment(int elderlyId, int professorId, String startTime,
       String endTime, String day, String description) async {
     final response = await _doctorRepository.bookingAppointment(
-        elderlyId, startTime, endTime, day, description);
+        elderlyId, professorId, startTime, endTime, day, description);
     if (response != null && response['isSuccess']) {
       isBookingAppointmentSuccess = response['data']['status'] == 1;
     } else {

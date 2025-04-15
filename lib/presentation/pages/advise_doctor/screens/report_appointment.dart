@@ -9,9 +9,10 @@ import 'package:sep490/theme/color.dart';
 
 class ReportAppointment extends StatefulWidget {
   final AppoimentDoctor? appoimentDoctor;
+  final AppoimentElderly? appoimentElderly;
   final bool isEdited;
   const ReportAppointment(
-      {super.key, required this.appoimentDoctor, required this.isEdited});
+      {super.key, this.appoimentDoctor, required this.isEdited, this.appoimentElderly});
 
   @override
   State<ReportAppointment> createState() => _ReportAppointmentState();

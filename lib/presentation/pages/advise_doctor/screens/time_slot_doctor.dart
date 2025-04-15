@@ -113,6 +113,7 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
     DoctorController doctorController = DoctorController();
     await doctorController.bookingAppointment(
         selectedElderlyUserId,
+        0,
         selectedTimeSlot['startTime'],
         selectedTimeSlot['endTime'],
         DateFormat('yyyy-MM-dd')

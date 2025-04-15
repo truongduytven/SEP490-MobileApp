@@ -338,6 +338,7 @@ class _CheckoutState extends State<Checkout> {
                             if (widget.doctorData != null) {
                               final Map<String, dynamic> dataBooking = {
                                 "elderlyId": selectedElderlyId,
+                                "professorId": widget.doctorData!.accountId,
                                 "day": widget.timeSlots!['day'],
                                 "startTime": widget.timeSlots!['startTime'],
                                 "endTime": widget.timeSlots!['endTime'],

@@ -192,7 +192,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       appBar: AppBar(
         backgroundColor: AppColors.bgColor,
         title: Text(
-          'Thuốc của tôi',
+          'Lịch uống thuốc',
           style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w600,

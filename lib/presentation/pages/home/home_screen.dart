@@ -14,6 +14,7 @@ import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/home/controller/home_controller.dart';
 import 'package:sep490/presentation/pages/home/iot_indicator.dart';
+import 'package:sep490/presentation/pages/home/view_detail_elderly.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
 import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
@@ -350,15 +351,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         return;
       }
       if (userList!.isNotEmpty && selectedElderlyUserId == 0) {
-        selectedElderlyUserId = userList![0].accountId;
-        selectedElderlyUserName = userList![0].fullName;
-        sharedPrefsHelper.setInt(
-            'selectedElderlyUserId', userList![0].accountId);
-        sharedPrefsHelper.setString(
-            'selectedElderlyUserName', userList![0].fullName);
-        sharedPrefsHelper.setInt('selectedElderlyId', userList![0].elderlyId);
+        // selectedElderlyUserId = userList![0].accountId;
+        // selectedElderlyUserName = userList![0].fullName;
+        // sharedPrefsHelper.setInt(
+        //     'selectedElderlyUserId', userList![0].accountId);
+        // sharedPrefsHelper.setString(
+        //     'selectedElderlyUserName', userList![0].fullName);
+        // sharedPrefsHelper.setInt('selectedElderlyId', userList![0].elderlyId);
       }
-      _showSelectDialog();
     });
   }
 
@@ -976,6 +976,62 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                             ],
                           ),
+                          if (roleId == 4)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Danh sách người già đang hỗ trợ',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textColor),
+                                ),
+                              ],
+                            ),
+                          if (roleId == 4) const SizedBox(height: 20),
+                          if (roleId == 4)
+                            SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  if (userList != null)
+                                    for (var user in userList!)
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedElderlyUserId =
+                                                user.accountId;
+                                            selectedElderlyUserName =
+                                                user.fullName;
+                                          });
+                                          sharedPrefsHelper.setInt(
+                                              'selectedElderlyUserId',
+                                              user.accountId);
+                                          sharedPrefsHelper.setString(
+                                              'selectedElderlyUserName',
+                                              user.fullName);
+                                          sharedPrefsHelper.setInt(
+                                              'selectedElderlyId',
+                                              user.elderlyId);
+                                        },
+                                        child: _buildElderlyUserCard(
+                                          user: user,
+                                        ),
+                                      ),
+                                  if (userList == null)
+                                    const Center(
+                                      child: Text(
+                                        'Không có người già nào được hỗ trợ',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.textColor,
+                                        ),
+                                      ),
+                                    )
+                                ],
+                              ),
+                            )
                         ],
                       ),
                     ],
@@ -1025,6 +1081,83 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 color: Colors.black,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildElderlyUserCard({required ElderlyUser user}) {
+    return GestureDetector(
+      onTap: () {
+        selectedElderlyUserId = user.accountId;
+        selectedElderlyUserName = user.fullName;
+        sharedPrefsHelper.setInt('selectedElderlyUserId', user.accountId);
+        sharedPrefsHelper.setString('selectedElderlyUserName', user.fullName);
+        sharedPrefsHelper.setInt('selectedElderlyId', user.elderlyId);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ViewDetailElderly(
+              elderlyUser: user,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.bgColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.secondaryColor.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Image.network(
+                user.avatar,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.fullName,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    user.phoneNumber,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.grayColor3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 20,
+            )
           ],
         ),
       ),

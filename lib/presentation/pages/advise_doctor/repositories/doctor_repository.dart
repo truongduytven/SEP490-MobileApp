@@ -94,6 +94,24 @@ class DoctorRepository {
       return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
     }
   }
+  
+  Future<dynamic> getAppointmentElderly(int account) async {
+    try {
+      final response = await http.get(Uri.parse(
+          "$baseUrl/api/Professor/appointment/$account"));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
 
   Future<dynamic> getReportById(int appointmentId) async {
     try {
@@ -289,7 +307,7 @@ class DoctorRepository {
   }
 
   Future<dynamic> bookingAppointment(
-      int elderlyId, String startTime, String endTime, String day, String description) async {
+      int elderlyId, int professorId, String startTime, String endTime, String day, String description) async {
     try {
       final response = await http.post(
           Uri.parse("$baseUrl/api/Professor/professor-appointment"),
@@ -298,6 +316,7 @@ class DoctorRepository {
           },
           body: jsonEncode({
             "elderlyId": elderlyId,
+            "professorId": professorId == 0 ? null : professorId,
             "startTime": startTime,
             "endTime": endTime,
             "day": day,
