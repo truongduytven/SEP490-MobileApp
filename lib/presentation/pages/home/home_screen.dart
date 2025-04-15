@@ -951,8 +951,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               if (roleId == 2)
                                 _buildCategoryCard(
                                   icon:
-                                      'assets/img3D/uong_nuoc.png', // Replace with your asset path
-                                  label: 'Uống nước',
+                                      'assets/img3D/water.webp', // Replace with your asset path
+                                  label: 'Nhắc nhở uống nước',
                                   onTap: () {
                                     Navigator.push(
                                       context,

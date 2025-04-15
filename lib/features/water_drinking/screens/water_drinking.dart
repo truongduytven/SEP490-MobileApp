@@ -125,7 +125,9 @@ class _WaterDrinkingState extends State<WaterDrinking>
 
     setState(() {
       _waterAmount = totalAmount;
-      _waterLevel = totalAmount / _dailyGoal; // ví dụ: 1000ml / 2000ml = 0.5
+
+      _waterLevel =
+          1 - (totalAmount / _dailyGoal); // ví dụ: 1000ml / 2000ml = 0.5
     });
   }
 
@@ -831,8 +833,8 @@ class Enhanced3DBottlePainter extends CustomPainter {
     const int maxMl = 1700;
     final List<int> marks = [250, 500, 750, 1000, 1250, 1500];
 
-    final double topY = h * 0.1;
-    final double bottomY = h * 0.9;
+    final double topY = h * 0.03;
+    final double bottomY = h * 0.92;
 
     for (final ml in marks) {
       double percentage = ml / maxMl;
@@ -878,7 +880,7 @@ class Enhanced3DBottlePainter extends CustomPainter {
       textPainter.layout();
       textPainter.paint(
         canvas,
-        Offset(w * 0.22, y - textPainter.height / 2),
+        Offset(w * 0, y - textPainter.height / 2),
       );
     }
   }
