@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/features/select_contacts_friend/controller/select_contact_controller.dart';
-import 'package:sep490/models/user_contact.dart';
-import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/features/select_contact_family/controller/select_contact_family_controller.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // FutureProvider to get accountId from SharedPreferences
 // final accountIdProvider = FutureProvider<int?>((ref) async {
@@ -43,7 +40,8 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectContactController = ref.read(selectContactControllerProvider);
+    final selectContactController =
+        ref.read(selectContactFamilyControllerProvider);
     final accountIdAsync = ref.watch(accountIdProvider);
     final isRequestSent = ref.watch(friendRequestSentProvider);
     final isCancelRequest = ref.watch(cancleFriendRequestSentProvider);

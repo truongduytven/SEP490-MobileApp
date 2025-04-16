@@ -95,7 +95,7 @@ class _WaterDrinkingState extends State<WaterDrinking>
         }
       }
     }
-    return "Không có mô tả phù hợp";
+    return "Bổ sung nước cho ngày dài năng động";
   }
 
   bool _isAfterOrEqual(TimeOfDay a, TimeOfDay b) {
@@ -201,7 +201,7 @@ class _WaterDrinkingState extends State<WaterDrinking>
             children: [
               // Inspiring message at top
               Positioned(
-                top: 40,
+                top: 10,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,

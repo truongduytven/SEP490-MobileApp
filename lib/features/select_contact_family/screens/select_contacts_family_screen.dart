@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/widgets/error.dart';
 import 'package:sep490/common/widgets/loader.dart';
-import 'package:sep490/features/select_contacts_friend/controller/select_contact_controller.dart';
+import 'package:sep490/features/select_contact_family/controller/select_contact_family_controller.dart';
 
 // Provider to store the search query
 final searchQueryProvider = StateProvider<String>((ref) => "");
@@ -39,7 +39,7 @@ class _SelectContactsFamilyScreenState
       appBar: AppBar(
         title: const Text("Chọn liên hệ"),
       ),
-      body: ref.watch(getContactsProvider).when(
+      body: ref.watch(getContactsFamilyProvider).when(
             data: (contactList) {
               // Filter contacts based on search query
               final filteredContacts = contactList
@@ -107,7 +107,7 @@ class _SelectContactsFamilyScreenState
                               final contact = filteredContacts[index];
                               return InkWell(
                                 onTap: () => ref
-                                    .read(selectContactControllerProvider)
+                                    .read(selectContactFamilyControllerProvider)
                                     .selectContact(contact, context),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
