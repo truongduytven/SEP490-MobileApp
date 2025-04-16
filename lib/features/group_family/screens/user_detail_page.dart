@@ -42,7 +42,10 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+          child: CircularProgressIndicator(
+        color: AppColors.primaryColor,
+      ));
     }
 
     return SingleChildScrollView(
@@ -255,21 +258,6 @@ class _UserDetailPageState extends State<UserDetailPage> {
     }
   }
 
-  Widget _buildGroupActions() {
-    return Column(
-      children: [
-        const SizedBox(height: 12),
-        OutlinedButton(
-          onPressed: () => Navigator.pop(context),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 48),
-          ),
-          child: const Text('Trở về'),
-        ),
-      ],
-    );
-  }
-
   Widget _buildPendingActions() {
     return Column(
       children: [
@@ -391,20 +379,37 @@ class _UserDetailPageState extends State<UserDetailPage> {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: () => _sendJoinRequest(),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).primaryColor,
-            minimumSize: const Size(double.infinity, 48),
-          ),
-          child: const Text('Gửi lời mời tham gia nhóm'),
-        ),
-        const SizedBox(height: 12),
-        OutlinedButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Xác nhận'),
+                  content: const Text(
+                      'Bạn có chắc chắn muốn hủy quan hệ người thân không?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Không'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _deleteRelationShip();
+                      },
+                      child: const Text('Có'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
           style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.red,
+            side: const BorderSide(color: Colors.red),
             minimumSize: const Size(double.infinity, 48),
           ),
-          child: const Text('Trở về'),
+          child: const Text('Hủy quan hệ người thân'),
         ),
       ],
     );
@@ -534,31 +539,37 @@ class _UserDetailPageState extends State<UserDetailPage> {
     }
   }
 
-  Future<void> _sendJoinRequest() async {
+  Future<void> _deleteRelationShip() async {
     setState(() => _isLoading = true);
     try {
-      final response = await http.post(
-        Uri.parse('https://api.diavan-valuation.asia/groups/send-request'),
-        body: {
-          'senderId': widget.currentUserAccountID.toString(),
-          'receiverId': widget.user['accountId'].toString(),
+      final response = await http.delete(
+        Uri.parse(
+            'https://api.diavan-valuation.asia/user-link-management/remove-friend'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
         },
+        body: json.encode({
+          'requestUserId': widget.currentUserAccountID.toString(),
+          'responseUserId': widget.user['accountId'].toString(),
+        }),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['status'] == 1) {
           CherryToast.success(
-            title: const Text('Đã gửi lời mời tham gia nhóm'),
-            action: const Text('Đóng'),
+            title: const Text('Đã hủy quan hệ người thân hỗ trợ'),
             actionHandler: () => Navigator.pop(context),
           ).show(context);
+          Navigator.pop(context);
           widget.refreshCallback();
         } else {
-          throw Exception(data['message'] ?? 'Failed to send request');
+          throw Exception(data['message'] ?? 'Failed to delete relationship');
         }
       } else {
-        throw Exception('Failed to send request: ${response.statusCode}');
+        throw Exception(
+            'Failed to delete relationship: ${response.statusCode}');
       }
     } catch (e) {
       CherryToast.error(

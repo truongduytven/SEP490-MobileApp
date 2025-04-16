@@ -494,7 +494,7 @@ class _GroupFamilyState extends State<GroupFamily>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/empty_family.png',
+                  'assets/images/nodata.webp',
                   width: 150,
                   height: 150,
                 ),

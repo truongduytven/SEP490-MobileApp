@@ -119,7 +119,7 @@ class PendingRequestUserCard extends StatelessWidget {
                                 children: [
                                   const TextSpan(
                                       text:
-                                          'Bạn có chắc chắn muốn chấp nhận yêu cầu từ '),
+                                          'Bạn có chắc chắn muốn chấp nhận yêu cầu hỗ trợ người thân từ '),
                                   TextSpan(
                                     text: user['fullName'],
                                     style: const TextStyle(
@@ -168,7 +168,7 @@ class PendingRequestUserCard extends StatelessWidget {
                                 children: [
                                   const TextSpan(
                                       text:
-                                          'Bạn có chắc chắn muốn từ chối yêu cầu từ '),
+                                          'Bạn có chắc chắn muốn từ chối yêu cầu hỗ trợ người thân từ '),
                                   TextSpan(
                                     text: user['fullName'],
                                     style: const TextStyle(
