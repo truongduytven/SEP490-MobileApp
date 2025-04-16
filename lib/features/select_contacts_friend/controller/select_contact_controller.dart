@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sep490/features/select_contacts/repository/select_contact_repository.dart';
+import 'package:sep490/features/select_contacts_friend/repository/select_contact_repository.dart';
 
 final getContactsProvider = FutureProvider((ref) {
   final selectContactRepository = ref.watch(selectContactRepositoryProvider);

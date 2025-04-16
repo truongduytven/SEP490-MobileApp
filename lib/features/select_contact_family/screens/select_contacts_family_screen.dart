@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/widgets/error.dart';
 import 'package:sep490/common/widgets/loader.dart';
-import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
+import 'package:sep490/features/select_contacts_friend/controller/select_contact_controller.dart';
 
 // Provider to store the search query
 final searchQueryProvider = StateProvider<String>((ref) => "");
 
-class SelectContactsScreen extends ConsumerStatefulWidget {
-  static const String routeName = '/select-contact';
-  const SelectContactsScreen({super.key});
+class SelectContactsFamilyScreen extends ConsumerStatefulWidget {
+  const SelectContactsFamilyScreen({super.key});
 
   @override
-  ConsumerState<SelectContactsScreen> createState() =>
-      _SelectContactsScreenState();
+  ConsumerState<SelectContactsFamilyScreen> createState() =>
+      _SelectContactsFamilyScreenState();
 }
 
-class _SelectContactsScreenState extends ConsumerState<SelectContactsScreen> {
+class _SelectContactsFamilyScreenState
+    extends ConsumerState<SelectContactsFamilyScreen> {
   late TextEditingController searchController;
 
   @override

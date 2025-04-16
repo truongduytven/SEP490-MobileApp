@@ -7,6 +7,7 @@ import 'package:sep490/features/group_family/tabs/group_tab.dart';
 import 'package:sep490/features/group_family/widgets/pending_request_user_card.dart';
 import 'package:sep490/features/group_family/widgets/sent_request_user_card.dart';
 import 'package:sep490/features/group_family/widgets/user_out_of_group_card.dart';
+import 'package:sep490/features/select_contact_family/screens/select_contacts_family_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class GroupFamily extends StatefulWidget {
@@ -35,6 +36,9 @@ class _GroupFamilyState extends State<GroupFamily>
     currentRoleID = sharedPrefsHelper.getInt("roleId") ?? 0;
     _tabController = TabController(length: 4, vsync: this);
     fetchGroupData();
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -707,6 +711,34 @@ class _GroupFamilyState extends State<GroupFamily>
           ],
         ),
       ),
+      floatingActionButton: _tabController.index == 0 && currentRoleID == 3
+          ? FloatingActionButton(
+              onPressed: () {
+                // Navigator.pushNamed(context, SelectContactsScreen.routeName);
+              },
+              backgroundColor: AppColors.primaryColor,
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+            )
+          : _tabController.index == 1
+              ? FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SelectContactsFamilyScreen(),
+                      ),
+                    );
+                  },
+                  backgroundColor: AppColors.primaryColor,
+                  child: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                )
+              : null,
     );
   }
 }

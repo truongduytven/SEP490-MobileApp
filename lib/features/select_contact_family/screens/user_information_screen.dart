@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
+import 'package:sep490/features/select_contacts_friend/controller/select_contact_controller.dart';
 import 'package:sep490/models/user_contact.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
