@@ -198,7 +198,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
           scrolledUnderElevation: 0,
           elevation: 0,
           backgroundColor: AppColors.bgColor,
-          title: const Text('Tiện ích'),
+          title: const Text('Tiện ích', style: TextStyle(fontSize: 30, color: AppColors.secondaryColor, fontWeight: FontWeight.w600)),
           centerTitle: true,
           automaticallyImplyLeading: false,
         ),
@@ -213,7 +213,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
                     frameRate: 60,
                   ),
                 )
-              : isPackage
+              : !isPackage
                   ? SingleChildScrollView(
                       child: Column(
                         children: [

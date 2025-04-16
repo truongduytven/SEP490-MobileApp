@@ -21,6 +21,7 @@ class _HeaderState extends State<Header> {
   late String avatar = SharedPrefsHelper().getString('avatar') ??
       'https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg';
   late int roleId = SharedPrefsHelper().getInt('roleId') ?? 0;
+  late int selectedElderlyId = SharedPrefsHelper().getInt('selectedElderlyId') ?? 0;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +83,11 @@ class _HeaderState extends State<Header> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        roleId == 2 ? "Người cao tuổi" : roleId == 3 ? "Người thân" : "Bác sĩ",
+                        roleId == 2
+                            ? "Người cao tuổi"
+                            : roleId == 3
+                                ? "Người thân"
+                                : "Bác sĩ",
                         style:
                             TextStyle(color: AppColors.textColor, fontSize: 18),
                       ),
@@ -105,25 +110,25 @@ class _HeaderState extends State<Header> {
             ),
             Row(
               children: [
-                if(widget.isChooseElderly)
-                Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.grayColor2,
-                      shape: BoxShape.circle,
+                if (widget.isChooseElderly)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.grayColor2,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                          onPressed: widget.onPressed,
+                          icon: Icon(
+                            Icons.autorenew_rounded,
+                            color: AppColors.textColor,
+                            size: 20,
+                          )),
                     ),
-                    child: IconButton(
-                        onPressed: widget.onPressed,
-                        icon: Icon(
-                          Icons.autorenew_rounded,
-                          color: AppColors.textColor,
-                          size: 20,
-                        )),
                   ),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: Container(
@@ -150,8 +155,8 @@ class _HeaderState extends State<Header> {
                     ),
                   ),
                 ),
-                if(roleId == 3)
-                HealthFloatingActionButton(isDialOpen: isDialOpen),
+                if ((roleId == 2) || (roleId == 3 && selectedElderlyId != 0))
+                  HealthFloatingActionButton(isDialOpen: isDialOpen),
               ],
             ),
           ],

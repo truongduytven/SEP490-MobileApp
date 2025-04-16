@@ -270,23 +270,23 @@ class _HomeMusicScreenState extends ConsumerState<HomeMusicScreen> {
                     scrollDirection: Axis.horizontal,
                     children: [
                       _buildBenefitCard(
-                          'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                          'https://media.suckhoecong.vn/thumb_x800x450/Images/Uploaded/Share/2015/04/12/bi-quyet-giam-stress-cho-nguoi-nghi-huu11428815986.jpg',
                           'Giảm căng thẳng',
                           'Nhạc nhẹ giúp thư giãn tinh thần'),
                       _buildBenefitCard(
-                          'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                          'https://cdn.benhvienthucuc.vn/wp-content/uploads/2022/09/bieu-hien-cua-alzheimer-la-gi.jpg',
                           'Tăng tập trung',
                           'Nhạc không lời giúp làm việc hiệu quả'),
                       _buildBenefitCard(
-                          'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                          'https://lmgworld.com/wp-content/uploads/2020/08/cach-ngu-ngon-cho-nguoi-gia.jpg',
                           'Cải thiện giấc ngủ',
                           'Nhạc êm dịu giúp ngủ ngon hơn'),
                       _buildBenefitCard(
-                          'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                          'https://static.tuoitre.vn/tto/i/s626/2017/02/24/hinh-3-1487924858.jpg',
                           'Tăng hiệu suất tập luyện',
                           'Nhạc sôi động giúp tập trung hơn'),
                       _buildBenefitCard(
-                          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                          'https://cdn2.tuoitre.vn/thumb_w/480/2021/2/3/photo-1-1612317386495307179820.jpg',
                           'Cải thiện tâm trạng',
                           'Kích thích sản xuất dopamine'),
                     ],
@@ -539,7 +539,7 @@ class _HomeMusicScreenState extends ConsumerState<HomeMusicScreen> {
 
   Widget _buildBenefitCard(String imageUrl, String title, String subtitle) {
     return Container(
-      width: 200,
+      width: 230,
       margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),

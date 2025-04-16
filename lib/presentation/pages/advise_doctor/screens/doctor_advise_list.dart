@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
+import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
@@ -22,24 +23,37 @@ class _DoctorAdviseListState extends State<DoctorAdviseList> {
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId = 0;
   late bool isLoading = false;
-
+  Map<String, String> statusOptions = {
+    "Tất cả": "All",
+    "Chưa tham gia": "NotYet",
+    "Đã tham gia": "Joined",
+    "Đã hủy": "Cancelled",
+  };
+  String selectedStatus = "All";
   @override
   void initState() {
     super.initState();
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
-    getAppointmentElderly();
+    getAppointmentElderly(selectedStatus);
   }
 
-  Future<void> getAppointmentElderly() async {
+  Future<void> getAppointmentElderly(String status) async {
     setState(() {
       isLoading = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.getAppointmentElderly(accountId);
+    await doctorController.getAppointmentElderly(accountId, status);
     Timer(Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {
         listAppoimentElderly = doctorController.appoimentElderly;
+        if (listAppoimentElderly != null) {
+          listAppoimentElderly!.sort((a, b) {
+            final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
+            final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
+            return dateA.compareTo(dateB); // ascending
+          });
+        }
         isLoading = false;
       });
     });
@@ -64,7 +78,7 @@ class _DoctorAdviseListState extends State<DoctorAdviseList> {
             ),
           ),
         ).show(context);
-        getAppointmentElderly();
+        getAppointmentElderly(selectedStatus);
         setState(() {
           isLoading = false;
         });
@@ -125,27 +139,86 @@ class _DoctorAdviseListState extends State<DoctorAdviseList> {
                       listAppoimentElderly!.isNotEmpty)
                   ? Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 12),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: listAppoimentElderly!
-                              .map((item) => BuildAppointmentDoctor(
-                                    appoimentDoctor: item,
-                                    onCancel: () async =>
-                                        {cancelAppointment(11)},
-                                    onJoin: () => Future.value(),
-                                    onReport: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReportAppointment(
-                                                  appoimentElderly: item,
-                                                  isEdited: false,
-                                                ))),
-                                    isListCard: true,
-                                  ))
-                              .toList(),
-                        ),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  border: Border.all(
+                                      color: AppColors.grayColor1, width: 1),
+                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: selectedStatus,
+                                    onChanged: (String? newValue) {
+                                      if (selectedStatus == newValue) return;
+                                      setState(() {
+                                        selectedStatus = newValue!;
+                                        getAppointmentElderly(newValue);
+                                      });
+                                    },
+                                    items: statusOptions.entries
+                                        .map<DropdownMenuItem<String>>((entry) {
+                                      return DropdownMenuItem<String>(
+                                        value: entry.value,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              entry.key,
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                            if (selectedStatus == entry.value)
+                                              Icon(
+                                                Icons.check,
+                                                color: AppColors.primaryColor,
+                                                size: 30,
+                                              ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                    selectedItemBuilder: (context) {
+                                      return statusOptions.entries
+                                          .map<Widget>((entry) => Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(entry.key,
+                                                      style: TextStyle(
+                                                          fontSize: 18)),
+                                                ],
+                                              ))
+                                          .toList();
+                                    },
+                                  ),
+                                ),
+                              ),
+                              ...listAppoimentElderly!
+                                  .map((item) => BuildAppointmentDoctor(
+                                        appoimentDoctor: item,
+                                        onCancel: () async => {
+                                          cancelAppointment(
+                                              item.professorAppointmentId)
+                                        },
+                                        onJoin: () => Future.value(),
+                                        onReport: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ReportAppointment(
+                                                      appoimentElderly: item,
+                                                      isEdited: false,
+                                                    ))),
+                                        isListCard: true,
+                                      ))
+                            ]),
                       ),
                     )
                   : Expanded(

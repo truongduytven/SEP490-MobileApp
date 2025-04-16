@@ -76,9 +76,9 @@ class DoctorController {
     }
   }
 
-  Future<void> getAppointmentElderly(int accountId) async {
+  Future<void> getAppointmentElderly(int accountId ,String status) async {
     final response =
-        await _doctorRepository.getAppointmentElderly(accountId);
+        await _doctorRepository.getAppointmentElderly(accountId, status);
     if (response != null && response['isSuccess']) {
       List<dynamic> data = response['data']['data'];
       appoimentElderly =

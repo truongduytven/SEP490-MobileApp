@@ -215,14 +215,11 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
-        title: isPackage
-            ? Text(
-                'Lịch hẹn của ${selectedElderlyUserName == "" ? fullName : selectedElderlyUserName}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25))
-            : Text('Mua gói dịch vụ',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25)),
+        title: Text(
+            'Lịch hẹn của ${selectedElderlyUserName == "" ? fullName : selectedElderlyUserName}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25)),
         automaticallyImplyLeading: false,
         backgroundColor: AppColors.bgColor,
         elevation: 0,
@@ -616,9 +613,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Bạn đã mua gói dịch vụ')
-              ],
+              children: [Text('Bạn đã mua gói dịch vụ')],
             ),
           )
         : SingleChildScrollView(

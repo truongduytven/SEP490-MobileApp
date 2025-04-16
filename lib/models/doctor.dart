@@ -347,6 +347,7 @@ class FeedBackDoctor {
 }
 
 class AppoimentElderly {
+  final int professorAppointmentId;
   final int elderlyId;
   final String elderlyName;
   final String avatar;
@@ -360,6 +361,7 @@ class AppoimentElderly {
   final List<Account> people;
 
   AppoimentElderly({
+    required this.professorAppointmentId,
     required this.elderlyId,
     required this.elderlyName,
     required this.avatar,
@@ -375,6 +377,7 @@ class AppoimentElderly {
 
   factory AppoimentElderly.fromJson(Map<String, dynamic> json) {
     return AppoimentElderly(
+      professorAppointmentId: json['professorAppointmentId'],
       elderlyId: json['elderlyId'],
       elderlyName: json['elderlyName'],
       avatar: json['avatar'],

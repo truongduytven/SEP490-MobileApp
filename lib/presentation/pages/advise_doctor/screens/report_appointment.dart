@@ -12,7 +12,10 @@ class ReportAppointment extends StatefulWidget {
   final AppoimentElderly? appoimentElderly;
   final bool isEdited;
   const ReportAppointment(
-      {super.key, this.appoimentDoctor, required this.isEdited, this.appoimentElderly});
+      {super.key,
+      this.appoimentDoctor,
+      required this.isEdited,
+      this.appoimentElderly});
 
   @override
   State<ReportAppointment> createState() => _ReportAppointmentState();
@@ -65,7 +68,10 @@ class _ReportAppointmentState extends State<ReportAppointment> {
     });
     DoctorController doctorController = DoctorController();
 
-    await doctorController.reportDoctor(widget.appoimentDoctor!.professorAppointmentId, summaryController.text, solutionController.text);
+    await doctorController.reportDoctor(
+        widget.appoimentElderly!.professorAppointmentId,
+        summaryController.text,
+        solutionController.text);
 
     Timer(const Duration(seconds: 1), () {
       if (doctorController.isRatingSuccess) {
@@ -123,8 +129,10 @@ class _ReportAppointmentState extends State<ReportAppointment> {
                 ),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : _report == null
-                        ? const Center(child: Text('Không có báo cáo'))
+                    : _report == null ||
+                            (_report!.content.isEmpty &&
+                                _report!.solution.isEmpty)
+                        ? Expanded(child: Center(child: Text('Hiện tại không có báo cáo', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),)))
                         : Expanded(
                             child: ListView(
                               children: [
