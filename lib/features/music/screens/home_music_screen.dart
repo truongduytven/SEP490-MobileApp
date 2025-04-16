@@ -2,10 +2,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:sep490/features/music/screens/benefit_detail_screen.dart';
 import 'package:sep490/features/music/screens/playlist_page.dart';
 import 'dart:convert';
 
 import 'package:sep490/features/music/widgets/neu_box.dart';
+import 'package:sep490/theme/color.dart';
 
 // 1. Define your themes in a separate file (theme_provider.dart)
 final ThemeData darkMode = ThemeData(
@@ -167,6 +169,7 @@ class _HomeMusicScreenState extends ConsumerState<HomeMusicScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 45),
             Image.network(
               'https://cdn.pixabay.com/animation/2023/08/22/07/30/07-30-19-708_512.gif',
               height: 150,
@@ -174,7 +177,9 @@ class _HomeMusicScreenState extends ConsumerState<HomeMusicScreen> {
               fit: BoxFit.cover,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
-                return const CircularProgressIndicator();
+                return const CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                );
               },
               errorBuilder: (context, error, stackTrace) =>
                   const Icon(Icons.music_note, size: 100),
@@ -361,7 +366,6 @@ class _HomeMusicScreenState extends ConsumerState<HomeMusicScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(height: 4),
               Text(
                 'Danh sách bài hát',
                 style: TextStyle(
@@ -538,59 +542,96 @@ class _HomeMusicScreenState extends ConsumerState<HomeMusicScreen> {
   }
 
   Widget _buildBenefitCard(String imageUrl, String title, String subtitle) {
-    return Container(
-      width: 200,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            Image.network(
-              imageUrl,
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover,
+    final Map<String, String> detailedContents = {
+      'Giảm căng thẳng':
+          'Âm nhạc có khả năng làm dịu hệ thần kinh, giảm nhịp tim và huyết áp. '
+              'Các bản nhạc chậm, đặc biệt là nhạc cổ điển hoặc nhạc thiền, có thể '
+              'kích hoạt phản ứng thư giãn của cơ thể, giúp giảm các triệu chứng căng thẳng và lo âu.',
+      'Tăng tập trung':
+          'Nhạc không lời với tiết tấu ổn định tạo môi trường âm thanh lý tưởng cho công việc. '
+              'Nó giúp che lấp các tiếng ồn gây xao nhãng đồng thời kích thích não bộ ở mức độ phù hợp '
+              'để duy trì sự tập trung trong thời gian dài.',
+      'Cải thiện giấc ngủ':
+          'Nhạc êm dịu giúp làm chậm sóng não từ trạng thái beta (tỉnh táo) sang alpha (thư giãn) '
+              'và cuối cùng là theta (ngủ nhẹ) và delta (ngủ sâu). Đặc biệt hiệu quả khi nghe trong '
+              'khoảng 30-45 phút trước khi đi ngủ.',
+      'Tăng hiệu suất tập luyện':
+          'Nhạc sôi động với nhịp điệu phù hợp có thể tăng sức bền, giảm cảm giác mệt mỏi '
+              'và tăng hiệu suất tập luyện lên đến 20%. Nó giúp đồng bộ hóa chuyển động cơ thể '
+              'và tạo nguồn động lực tinh thần.',
+      'Cải thiện tâm trạng':
+          'Âm nhạc kích thích trung tâm khoái cảm của não bộ, giải phóng dopamine - chất dẫn truyền '
+              'thần kinh tạo cảm giác vui vẻ. Nghe nhạc yêu thích trong 15 phút đã có thể cải thiện '
+              'đáng kể tâm trạng.',
+    };
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BenefitDetailScreen(
+              imageUrl: imageUrl,
+              title: title,
+              description: subtitle,
+              detailedContent: detailedContents[title] ?? '',
             ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
+          ),
+        );
+      },
+      child: Container(
+        width: 200,
+        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            children: [
+              Image.network(
+                imageUrl,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

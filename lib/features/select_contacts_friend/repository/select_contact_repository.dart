@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/features/select_contacts_friend/screens/user_information_screen.dart';
-import 'package:sep490/models/friend_request.dart';
 import 'package:sep490/models/user_contact.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';

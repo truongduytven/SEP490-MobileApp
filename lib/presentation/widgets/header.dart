@@ -87,7 +87,7 @@ class _HeaderState extends State<Header> {
                             TextStyle(color: AppColors.textColor, fontSize: 18),
                       ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.4,
+                        width: MediaQuery.of(context).size.width * 0.5,
                         child: Text(
                           fullName,
                           style: TextStyle(
@@ -105,25 +105,25 @@ class _HeaderState extends State<Header> {
             ),
             Row(
               children: [
-                if(widget.isChooseElderly)
-                Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.grayColor2,
-                      shape: BoxShape.circle,
+                if (widget.isChooseElderly)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.grayColor2,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                          onPressed: widget.onPressed,
+                          icon: Icon(
+                            Icons.autorenew_rounded,
+                            color: AppColors.textColor,
+                            size: 20,
+                          )),
                     ),
-                    child: IconButton(
-                        onPressed: widget.onPressed,
-                        icon: Icon(
-                          Icons.autorenew_rounded,
-                          color: AppColors.textColor,
-                          size: 20,
-                        )),
                   ),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: Container(
@@ -150,8 +150,8 @@ class _HeaderState extends State<Header> {
                     ),
                   ),
                 ),
-                if(roleId == 3)
-                HealthFloatingActionButton(isDialOpen: isDialOpen),
+                if (roleId == 3)
+                  HealthFloatingActionButton(isDialOpen: isDialOpen),
               ],
             ),
           ],

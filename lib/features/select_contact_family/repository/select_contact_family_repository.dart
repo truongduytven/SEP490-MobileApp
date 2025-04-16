@@ -88,17 +88,7 @@ class SelectContactFamilyRepository {
             return;
           }
           final user = UserContact.fromJson(responseData["data"]);
-          // Navigator.pushNamed(
-          //   context,
-          //   MobileChatScreen.routeName,
-          //   arguments: {
-          //     "name": userData["fullName"],
-          //     "uid": userData["accountId"].toString(),
-          //     "avatar": userData["avatar"],
-          //     "email": userData["email"],
-          //   },
-          // );
-          // builder: (context) => UserProfileScreen(),
+         
           Navigator.push(
             context,
             MaterialPageRoute(
