@@ -87,7 +87,7 @@ class _HeaderState extends State<Header> {
                             TextStyle(color: AppColors.textColor, fontSize: 18),
                       ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.4,
                         child: Text(
                           fullName,
                           style: TextStyle(
