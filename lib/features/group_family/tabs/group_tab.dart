@@ -8,6 +8,8 @@ class GroupTab extends StatelessWidget {
   final int currentRoleID;
   final VoidCallback fetchGroupData;
   final VoidCallback _showLeaveGroupDialog;
+  final Function(int groupId)? _showDeleteGroupDialog;
+  final Function(int groupId)? _showAddMemberDialog;
 
   const GroupTab({
     Key? key,
@@ -16,7 +18,11 @@ class GroupTab extends StatelessWidget {
     required this.currentRoleID,
     required this.fetchGroupData,
     required VoidCallback showLeaveGroupDialog,
+    Function(int)? showDeleteGroupDialog,
+    Function(int)? showAddMemberDialog,
   })  : _showLeaveGroupDialog = showLeaveGroupDialog,
+        _showDeleteGroupDialog = showDeleteGroupDialog,
+        _showAddMemberDialog = showAddMemberDialog,
         super(key: key);
 
   @override
@@ -71,6 +77,7 @@ class GroupTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final group = groups[index];
         final usersInGroup = group['usersInGroup'] as List<dynamic>? ?? [];
+        final groupId = group['groupId'] as int? ?? 0;
 
         return Column(
           children: [
@@ -105,31 +112,64 @@ class GroupTab extends StatelessWidget {
                           ),
                         ],
                       ),
-                      IconButton(
-                        icon: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                      if (currentRoleID == 2)
+                        IconButton(
+                          icon: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.exit_to_app,
+                                    size: 20, color: Colors.red),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Rời nhóm',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.exit_to_app,
-                                  size: 20, color: Colors.red),
-                              SizedBox(width: 4),
-                              Text(
-                                'Rời nhóm',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.red,
+                          onPressed: _showLeaveGroupDialog,
+                        )
+                      else if (currentRoleID == 3)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.delete,
+                                        size: 20, color: Colors.red),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'Xóa nhóm',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                              onPressed: () =>
+                                  _showDeleteGroupDialog?.call(groupId),
+                            ),
+                          ],
                         ),
-                        onPressed: _showLeaveGroupDialog,
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -168,22 +208,51 @@ class GroupTab extends StatelessWidget {
                           'Chưa có thành viên nào',
                           style: TextStyle(color: Colors.grey),
                         ),
+                        if (currentRoleID == 3)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.person_add, size: 18),
+                              label: const Text('Thêm thành viên'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: AppColors.primaryColor,
+                              ),
+                              onPressed: () =>
+                                  _showAddMemberDialog?.call(groupId),
+                            ),
+                          ),
                       ],
                     ),
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Text(
-                          'Thành viên trong nhóm',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Thành viên trong nhóm',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            if (currentRoleID == 3)
+                              TextButton.icon(
+                                icon: const Icon(Icons.person_add, size: 18),
+                                label: const Text('Thêm'),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: AppColors.primaryColor,
+                                ),
+                                onPressed: () =>
+                                    _showAddMemberDialog?.call(groupId),
+                              ),
+                          ],
                         ),
                       ),
                       ...usersInGroup
@@ -193,15 +262,28 @@ class GroupTab extends StatelessWidget {
                               currentUserAccountID: currentUserAccountID,
                               currentRoleID: currentRoleID,
                               fetchGroupData: fetchGroupData,
+                              groupId: groupId,
+                              onRemoveMember: currentRoleID == 3 &&
+                                      user['accountId'] != currentUserAccountID
+                                  ? (kickerId, memberId) =>
+                                      _showRemoveMemberDialog(
+                                          kickerId, memberId, groupId)
+                                  : null,
                             ),
                           )
                           .toList(),
                     ],
                   ),
             const Divider(height: 32),
+            const SizedBox(height: 45),
           ],
         );
       },
     );
+  }
+
+  void _showRemoveMemberDialog(int kickerId, int memberId, int groupId) {
+    // Implement your remove member dialog here
+    // You can show a dialog or call a callback function
   }
 }
