@@ -21,7 +21,17 @@ class GroupTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (groupData?['groupInfor'] == null) {
+    List<dynamic> groups = [];
+
+    if (currentRoleID == 2) {
+      final groupInfo = groupData?['groupInfor'];
+      if (groupInfo != null) groups.add(groupInfo);
+    } else if (currentRoleID == 3) {
+      final groupInfors = groupData?['groupInfors'];
+      if (groupInfors != null) groups.addAll(groupInfors);
+    }
+
+    if (groups.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -41,9 +51,12 @@ class GroupTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Hãy tạo hoặc tham gia một nhóm để bắt đầu',
-              style: TextStyle(
+            Text(
+              textAlign: TextAlign.center,
+              currentRoleID == 2
+                  ? 'Hãy gửi lời mời cho người thân hỗ trợ để được thêm vào nhóm gia đình'
+                  : "Hãy tạo nhóm gia đình với những người thân mà bạn hỗ trợ",
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
               ),
@@ -53,139 +66,142 @@ class GroupTab extends StatelessWidget {
       );
     }
 
-    final groupInfo = groupData!['groupInfor'];
-    final usersInGroup = groupInfo['usersInGroup'] as List<dynamic>? ?? [];
+    return ListView.builder(
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        final group = groups[index];
+        final usersInGroup = group['usersInGroup'] as List<dynamic>? ?? [];
 
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Group header with name and member count
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(
-                        Icons.group,
-                        color: AppColors.primaryColor,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Nhóm của bạn',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    icon: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
+                      Row(
                         children: [
-                          Icon(Icons.exit_to_app, size: 20, color: Colors.red),
-                          SizedBox(width: 4),
+                          Icon(
+                            Icons.group,
+                            color: AppColors.primaryColor,
+                          ),
+                          const SizedBox(width: 8),
                           Text(
-                            'Rời nhóm',
+                            'Nhóm ${index + 1}',
                             style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.red,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primaryColor,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    onPressed: _showLeaveGroupDialog,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                groupInfo['groupName'] ?? 'Không có tên',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(Icons.people, size: 16, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${usersInGroup.length} thành viên',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: usersInGroup.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/nodata.webp',
-                        width: 120,
-                        height: 120,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Chưa có thành viên nào',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
+                      IconButton(
+                        icon: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.exit_to_app,
+                                  size: 20, color: Colors.red),
+                              SizedBox(width: 4),
+                              Text(
+                                'Rời nhóm',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        onPressed: _showLeaveGroupDialog,
                       ),
                     ],
                   ),
-                )
-              : ListView(
-                  children: [
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Text(
-                        'Thành viên trong nhóm',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
+                  const SizedBox(height: 8),
+                  Text(
+                    group['groupName'] ?? 'Không có tên',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.people, size: 16, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${usersInGroup.length} thành viên',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            usersInGroup.isEmpty
+                ? Center(
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/images/nodata.webp',
+                          width: 120,
+                          height: 120,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Chưa có thành viên nào',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Text(
+                          'Thành viên trong nhóm',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    ),
-                    ...usersInGroup
-                        .map(
-                          (user) => UserCard(
-                            user: user,
-                            currentUserAccountID: currentUserAccountID,
-                            currentRoleID: currentRoleID,
-                            fetchGroupData: fetchGroupData,
-                          ),
-                        )
-                        .toList(),
-                  ],
-                ),
-        ),
-      ],
+                      ...usersInGroup
+                          .map(
+                            (user) => UserCard(
+                              user: user,
+                              currentUserAccountID: currentUserAccountID,
+                              currentRoleID: currentRoleID,
+                              fetchGroupData: fetchGroupData,
+                            ),
+                          )
+                          .toList(),
+                    ],
+                  ),
+            const Divider(height: 32),
+          ],
+        );
+      },
     );
   }
 }

@@ -433,8 +433,11 @@ class _GroupFamilyState extends State<GroupFamily>
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Hãy gửi lời mời để được người thân thêm vào nhóm',
+                Text(
+                  textAlign: TextAlign.center,
+                  currentRoleID == 2
+                      ? 'Hãy gửi lời mời để được người thân thêm vào nhóm.'
+                      : "Hãy gửi lời mời cho người thân để trở thành người hỗ trợ.",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
