@@ -26,7 +26,7 @@ class _GroupFamilyState extends State<GroupFamily>
   Map<String, dynamic>? groupData;
   bool isLoading = true;
   String errorMessage = '';
-
+  bool _isDeletingGroup = false;
   late TabController _tabController;
 
   @override
@@ -707,6 +707,7 @@ class _GroupFamilyState extends State<GroupFamily>
               currentUserAccountID: currentUserAccountID,
               currentRoleID: currentRoleID,
               fetchGroupData: fetchGroupData,
+              showDeleteGroupDialog: _showDeleteGroupDialog,
               showLeaveGroupDialog: _showLeaveGroupDialog,
             ),
             _buildSentRequestsTab(),
@@ -744,5 +745,60 @@ class _GroupFamilyState extends State<GroupFamily>
                 )
               : null,
     );
+  }
+
+  void _showDeleteGroupDialog(int groupId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xác nhận xóa nhóm'),
+        content: const Text(
+            'Bạn có chắc chắn muốn xóa nhóm này? Tất cả thành viên sẽ bị xóa khỏi nhóm kể cả bạn.'),
+        actions: [
+          TextButton(
+            child: const Text('Hủy'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          TextButton(
+            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      setState(() => _isDeletingGroup = true);
+
+      try {
+        final url = 'https://api.diavan-valuation.asia/groups/$groupId';
+        final response = await http.delete(Uri.parse(url));
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          if (data['status'] == 1) {
+            CherryToast.success(
+              title: const Text('Đã xóa nhóm thành công'),
+              toastDuration: const Duration(seconds: 2),
+            ).show(context);
+            fetchGroupData(); // Refresh danh sách nhóm
+          } else {
+            CherryToast.error(
+              title: Text(data['message'] ?? 'Lỗi khi xóa nhóm'),
+            ).show(context);
+          }
+        } else {
+          throw Exception('Failed with status ${response.statusCode}');
+        }
+      } catch (e) {
+        CherryToast.error(
+          title: Text('Lỗi: ${e.toString()}'),
+        ).show(context);
+      } finally {
+        if (mounted) {
+          setState(() => _isDeletingGroup = false);
+        }
+      }
+    }
   }
 }
