@@ -82,3 +82,44 @@ class ElderlyUser {
     );
   }
 }
+
+class ElderlyProfile {
+  final int accountId;
+  final int roleId;
+  final String email;
+  final String fullName;
+  final String avatar;
+  final String gender;
+  final String phoneNumber;
+  final String dateOfBirth;
+  final String createdDate;
+  final String status;
+
+  ElderlyProfile({
+    required this.accountId,
+    required this.roleId,
+    required this.email,
+    required this.fullName,
+    required this.avatar,
+    required this.gender,
+    required this.phoneNumber,
+    required this.dateOfBirth,
+    required this.createdDate,
+    required this.status,
+  });
+
+  factory ElderlyProfile.fromJson(Map<String, dynamic> json) {
+    return ElderlyProfile(
+      accountId: json['accountId'] ?? 0,
+      roleId: json['roleId'] ?? 0,
+      email: json['email'] ?? '',
+      fullName: json['fullName'] ?? '',
+      gender: json['gender'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? '',
+      dateOfBirth: json['dateOfBirth'] ?? '',
+      createdDate: json['createdDate'] ?? '',
+      status: json['status'] ?? '',
+      avatar: json['avatar'] ?? '', 
+    );
+  }
+}

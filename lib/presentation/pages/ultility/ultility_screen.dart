@@ -213,7 +213,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
                     frameRate: 60,
                   ),
                 )
-              : !isPackage
+              : isPackage
                   ? SingleChildScrollView(
                       child: Column(
                         children: [

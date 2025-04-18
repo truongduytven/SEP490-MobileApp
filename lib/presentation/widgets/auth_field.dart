@@ -14,6 +14,8 @@ class AuthField extends StatelessWidget {
   final int? maxLength;
   final FocusNode? focusNode;
   final int? maxLines;
+  final bool? isEnable;
+  final Function(String)? onChanged;
 
   const AuthField({
     super.key,
@@ -29,6 +31,8 @@ class AuthField extends StatelessWidget {
     this.maxLength,
     this.focusNode,
     this.maxLines,
+    this.isEnable,
+    this.onChanged,
   });
 
   @override
@@ -58,12 +62,13 @@ class AuthField extends StatelessWidget {
         ),
       ),
       child: TextFormField(
+        enabled: isEnable ?? true,
         focusNode: focusNode,
         controller: controller,
         maxLines: maxLines ?? 1,
         decoration: InputDecoration(
           labelText: labelText + (isRequired ? '*' : ''),
-          labelStyle: TextStyle(color: AppColors.textColor, fontSize: 22),
+          labelStyle: TextStyle(color: (isEnable ?? true) ? AppColors.textColor : AppColors.grayColor3, fontSize: 22),
           hintText: hintText,
           suffix: suffixIcon,
           suffixText: suffixText,
@@ -74,12 +79,13 @@ class AuthField extends StatelessWidget {
           }
           return null;
         },
+        onChanged: onChanged ?? (value) {},
         obscureText: isObscureText,
         obscuringCharacter: "*",
         keyboardType: keyboardType,
         textInputAction: textInputAction,
         maxLength: maxLength,
-        style: TextStyle(color: AppColors.textColor, fontSize: 20),
+        style: TextStyle(color: (isEnable ?? true) ? AppColors.textColor : AppColors.grayColor3, fontSize: 20),
       ),
     );
   }
