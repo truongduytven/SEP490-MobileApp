@@ -32,39 +32,30 @@ class SelectContactFamilyController {
     await selectContactFamilyRepository.selectContact(selectedContact, context);
   }
 
-  Future<bool> sendFriendRequest(
+  Future<bool> sendFamilyRequest(
     BuildContext context,
     int requestUserId,
     int responseUserId,
   ) {
-    return selectContactFamilyRepository.sendFriendRequest(
+    return selectContactFamilyRepository.sendFamilyRequest(
         context, requestUserId, responseUserId);
   }
 
-  Future<bool> cancelSendFriendRequest(
+  Future<bool> cancelSendFamilyRequest(
     BuildContext context,
     int requestUserId,
     int responseUserId,
   ) {
-    return selectContactFamilyRepository.cancelSendFriendRequest(
+    return selectContactFamilyRepository.cancelSendFamilyRequest(
         context, requestUserId, responseUserId);
   }
 
-  Future<bool> acceptedFriendRequest(
+  Future<bool> acceptedFamilyRequest(
     BuildContext context,
     int requestUserId,
     int responseUserId,
   ) {
-    return selectContactFamilyRepository.acceptedFriendRequest(
-        context, requestUserId, responseUserId);
-  }
-
-  Future<bool> removeFriend(
-    BuildContext context,
-    int requestUserId,
-    int responseUserId,
-  ) {
-    return selectContactFamilyRepository.removeFriend(
+    return selectContactFamilyRepository.acceptedFamilyRequest(
         context, requestUserId, responseUserId);
   }
 }

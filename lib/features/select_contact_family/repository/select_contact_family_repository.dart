@@ -57,7 +57,7 @@ class SelectContactFamilyRepository {
     print("Processed Phone Number: $selectedPhoneNum");
 
     final String apiUrl =
-        "https://api.diavan-valuation.asia/account-management/phoneNumber/$selectedPhoneNum/$accountId";
+        "https://api.diavan-valuation.asia/account-management/phoneNumber/family/$selectedPhoneNum/$accountId";
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -88,7 +88,7 @@ class SelectContactFamilyRepository {
             return;
           }
           final user = UserContact.fromJson(responseData["data"]);
-         
+
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -110,7 +110,7 @@ class SelectContactFamilyRepository {
     }
   }
 
-  Future<bool> sendFriendRequest(
+  Future<bool> sendFamilyRequest(
     BuildContext context,
     int requestUserId,
     int responseUserId,
@@ -121,7 +121,7 @@ class SelectContactFamilyRepository {
     final Map<String, dynamic> payload = {
       "requestUserId": requestUserId,
       "responseUserId": responseUserId,
-      "relationshipType": "Friend"
+      "relationshipType": "Family"
     };
 
     try {
@@ -138,23 +138,24 @@ class SelectContactFamilyRepository {
         if (responseData["status"] == 1) {
           showSnackBar(
               context: context,
-              content: "Gửi lời mời thành công ",
+              content: "Gửi lời mời hỗ trợ thành công ",
               type: "green");
 
           return true;
         }
       }
-      showSnackBar(context: context, content: "Gửi lời mời thất bại ");
+      showSnackBar(context: context, content: "Gửi lời mời hỗ trợ thất bại ");
       return false;
     } catch (e) {
       showSnackBar(
-          context: context, content: "Gửi lời mời thất bại ${e.toString()}");
-      print("Error sending friend request: \$e");
+          context: context,
+          content: "Gửi lời mời hỗ trợ thất bại ${e.toString()}");
+      print("Error sending family request: \$e");
       return false;
     }
   }
 
-  Future<bool> cancelSendFriendRequest(
+  Future<bool> cancelSendFamilyRequest(
     BuildContext context,
     int requestUserId,
     int responseUserId,
@@ -183,7 +184,7 @@ class SelectContactFamilyRepository {
         if (responseData["status"] == 1) {
           showSnackBar(
               context: context,
-              content: "Hủy lời mời kết bạn thành công ",
+              content: "Hủy lời mời hỗ trợ thành công ",
               type: "green");
           return true;
         }
@@ -191,18 +192,18 @@ class SelectContactFamilyRepository {
       showSnackBar(
           context: context,
           content:
-              "Hủy lời mời kết bạn thất bại ${json.decode(response.body)["data"]} ${json.decode(response.body)["message"]}");
+              "Hủy lời mời hỗ trợ thất bại ${json.decode(response.body)["data"]} ${json.decode(response.body)["message"]}");
       return false;
     } catch (e) {
       showSnackBar(
           context: context,
-          content: "Lỗi khi hủy lời mời kết bạn: ${e.toString()}");
-      print("Error canceling friend request: $e");
+          content: "Lỗi khi hủy lời mời hỗ trợ: ${e.toString()}");
+      print("Error canceling family request: $e");
       return false;
     }
   }
 
-  Future<bool> acceptedFriendRequest(
+  Future<bool> acceptedFamilyRequest(
     BuildContext context,
     int requestUserId,
     int responseUserId,
@@ -231,7 +232,7 @@ class SelectContactFamilyRepository {
         if (responseData["status"] == 1) {
           showSnackBar(
               context: context,
-              content: "Chấp nhận lời mời kết bạn thành công ",
+              content: "Chấp nhận lời mời hỗ trợ thành công ",
               type: "green");
           return true;
         }
@@ -239,61 +240,14 @@ class SelectContactFamilyRepository {
       showSnackBar(
           context: context,
           content:
-              "Chấp nhận lời mời kết bạn thất bại ${json.decode(response.body)["data"]} ${json.decode(response.body)["message"]}");
+              "Chấp nhận lời mời hỗ trợ thất bại ${json.decode(response.body)["data"]} ${json.decode(response.body)["message"]}");
       return false;
     } catch (e) {
       showSnackBar(
           context: context,
-          content: "Lỗi khi chập nhận lời mời kết bạn: ${e.toString()}");
-      print("Error accepting friend request: $e");
+          content: "Lỗi khi chập nhận lời mời hỗ trợ: ${e.toString()}");
+      print("Error accepting family request: $e");
       return false;
     }
   }
-
-  Future<bool> removeFriend(
-    BuildContext context,
-    int requestUserId,
-    int responseUserId,
-  ) async {
-    const String apiUrl =
-        "https://api.diavan-valuation.asia/user-link-management/remove-friend";
-
-    final Map<String, dynamic> payload = {
-      "requestUserId": requestUserId,
-      "responseUserId": responseUserId,
-    };
-
-    try {
-      final response = await http.delete(
-        Uri.parse(apiUrl),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode(payload),
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        if (responseData["status"] == 1) {
-          showSnackBar(
-              context: context,
-              content: "Xóa liên hệ bạn bè thành công ",
-              type: "green");
-          return true;
-        }
-      }
-      showSnackBar(
-          context: context,
-          content:
-              "Xóa liên hệ bạn bè thất bại ${json.decode(response.body)["data"]} ${json.decode(response.body)["message"]}");
-      return false;
-    } catch (e) {
-      showSnackBar(
-          context: context, content: "Lỗi xóa liên hệ bạn bè: ${e.toString()}");
-      print("Error remove friend relationship: $e");
-      return false;
-    }
-  }
-
- 
 }

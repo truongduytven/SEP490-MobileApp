@@ -516,7 +516,8 @@ class _GroupFamilyState extends State<GroupFamily>
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Tất cả người thân đã trong nhóm của bạn',
+                  textAlign: TextAlign.center,
+                  'Tất cả người thân đã trong nhóm của bạn hoặc bạn chưa có người thân hỗ trợ.',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
@@ -733,7 +734,7 @@ class _GroupFamilyState extends State<GroupFamily>
                       MaterialPageRoute(
                         builder: (context) => SelectContactsFamilyScreen(),
                       ),
-                    );
+                    ).then((_) => fetchGroupData());
                   },
                   backgroundColor: AppColors.primaryColor,
                   child: const Icon(

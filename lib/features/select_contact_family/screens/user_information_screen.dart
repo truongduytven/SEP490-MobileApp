@@ -100,14 +100,14 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                 ),
                 Text(
                   isRequestSent
-                      ? "Đang đợi tài khoản đồng ý kết bạn"
+                      ? "Đang đợi tài khoản đồng ý hỗ trợ"
                       : isCancelRequest
                           ? ""
                           : widget.user.requestUserId != null
                               ? (widget.user.accountId ==
                                       widget.user.requestUserId
-                                  ? "Tài khoản này đã gửi lời mời kết bạn tới bạn"
-                                  : "Đang đợi tài khoản đồng ý kết bạn")
+                                  ? "Tài khoản này đã gửi lời mời hỗ trợ tới bạn"
+                                  : "Đang đợi tài khoản đồng ý hỗ trợ")
                               : "",
                   style: TextStyle(color: AppColors.grayColor5, fontSize: 16),
                 ),
@@ -120,45 +120,45 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                       onPressed: () async {
                         if (isRequestSent) {
                           bool success = await selectContactController
-                              .cancelSendFriendRequest(
+                              .cancelSendFamilyRequest(
                             context,
                             currentUserId ?? 0,
                             widget.user.accountId ?? 0,
                           );
 
                           if (success) {
-                            print("Cancel Friend request sent successfully!");
+                            print("Cancel family request sent successfully!");
                             ref.read(friendRequestSentProvider.notifier).state =
                                 false;
                             ref
                                 .read(cancleFriendRequestSentProvider.notifier)
                                 .state = true;
                           } else {
-                            print("Failed to cancel friend request.");
+                            print("Failed to cancel family request.");
                           }
                           // Cancel friend request logic (if needed)
                           print(
-                              "Canceled friend request to ${widget.user.fullName}");
+                              "Canceled family request to ${widget.user.fullName}");
                         } else if (isCancelRequest) {
                           bool success =
-                              await selectContactController.sendFriendRequest(
+                              await selectContactController.sendFamilyRequest(
                             context,
                             currentUserId ?? 0,
                             widget.user.accountId ?? 0,
                           );
 
                           if (success) {
-                            print("Friend request sent successfully!");
+                            print("Family request sent successfully!");
                             ref.read(friendRequestSentProvider.notifier).state =
                                 true;
                           } else {
-                            print("Failed to send friend request.");
+                            print("Failed to send family request.");
                           }
                         } else if (widget.user.requestUserId != null) {
                           if (widget.user.accountId ==
                               widget.user.requestUserId) {
                             bool success = await selectContactController
-                                .acceptedFriendRequest(
+                                .acceptedFamilyRequest(
                               context,
                               currentUserId ?? 0,
                               widget.user.accountId ?? 0,
@@ -171,47 +171,47 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                                           keyIndex: 2,
                                         )),
                               );
-                              print("Cancel Friend request sent successfully!");
+                              print("Cancel Family request sent successfully!");
                             } else {
-                              print("Failed to cancel friend request.");
+                              print("Failed to cancel family request.");
                             }
                             // Accept friend request
                             print(
-                                "Accepted friend request from ${widget.user.fullName}");
+                                "Accepted family request from ${widget.user.fullName}");
                           } else {
                             bool success = await selectContactController
-                                .cancelSendFriendRequest(
+                                .cancelSendFamilyRequest(
                               context,
                               currentUserId ?? 0,
                               widget.user.accountId ?? 0,
                             );
 
                             if (success) {
-                              print("Cancel Friend request sent successfully!");
+                              print("Cancel family request sent successfully!");
                               ref
                                   .read(
                                       cancleFriendRequestSentProvider.notifier)
                                   .state = true;
                             } else {
-                              print("Failed to cancel friend request.");
+                              print("Failed to cancel family request.");
                             }
                             print(
-                                "Canceled friend request to ${widget.user.fullName}");
+                                "Canceled family request to ${widget.user.fullName}");
                           }
                         } else {
                           bool success =
-                              await selectContactController.sendFriendRequest(
+                              await selectContactController.sendFamilyRequest(
                             context,
                             currentUserId ?? 0,
                             widget.user.accountId ?? 0,
                           );
 
                           if (success) {
-                            print("Friend request sent successfully!");
+                            print("Family request sent successfully!");
                             ref.read(friendRequestSentProvider.notifier).state =
                                 true;
                           } else {
-                            print("Failed to send friend request.");
+                            print("Failed to send family request.");
                           }
                         }
                       },
@@ -231,15 +231,15 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                       ),
                       label: Text(
                         isRequestSent
-                            ? "Hủy gửi lời mời"
+                            ? "Hủy gửi lời mời hỗ trợ"
                             : isCancelRequest
-                                ? "Thêm bạn"
+                                ? "Thêm người thân hỗ trợ"
                                 : widget.user.requestUserId != null
                                     ? widget.user.accountId ==
                                             widget.user.requestUserId
                                         ? "Chấp nhận"
-                                        : "Hủy gửi lời mời"
-                                    : "Thêm bạn",
+                                        : "Hủy gửi lời mời hỗ trợ"
+                                    : "Thêm người thân hỗ trợ",
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
