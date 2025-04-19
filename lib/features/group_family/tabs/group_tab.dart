@@ -1,290 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:sep490/features/group_family/widgets/user_card.dart';
-// import 'package:sep490/theme/color.dart';
-
-// class GroupTab extends StatelessWidget {
-//   final Map<String, dynamic>? groupData;
-//   final int currentUserAccountID;
-//   final int currentRoleID;
-//   final VoidCallback fetchGroupData;
-//   final VoidCallback _showLeaveGroupDialog;
-//   final Function(int groupId)? _showDeleteGroupDialog;
-
-//   const GroupTab({
-//     Key? key,
-//     required this.groupData,
-//     required this.currentUserAccountID,
-//     required this.currentRoleID,
-//     required this.fetchGroupData,
-//     required VoidCallback showLeaveGroupDialog,
-//     Function(int)? showDeleteGroupDialog,
-//     Function(int)? showAddMemberDialog,
-//   })  : _showLeaveGroupDialog = showLeaveGroupDialog,
-//         _showDeleteGroupDialog = showDeleteGroupDialog,
-//         super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     List<dynamic> groups = [];
-
-//     if (currentRoleID == 2) {
-//       final groupInfo = groupData?['groupInfor'];
-//       if (groupInfo != null) groups.add(groupInfo);
-//     } else if (currentRoleID == 3) {
-//       final groupInfors = groupData?['groupInfors'];
-//       if (groupInfors != null) groups.addAll(groupInfors);
-//     }
-
-//     if (groups.isEmpty) {
-//       return Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Image.asset(
-//               'assets/images/nodata.webp',
-//               width: 150,
-//               height: 150,
-//             ),
-//             const SizedBox(height: 16),
-//             const Text(
-//               'Chưa có nhóm gia đình',
-//               style: TextStyle(
-//                 fontSize: 18,
-//                 fontWeight: FontWeight.bold,
-//                 color: Colors.grey,
-//               ),
-//             ),
-//             const SizedBox(height: 8),
-//             Text(
-//               textAlign: TextAlign.center,
-//               currentRoleID == 2
-//                   ? 'Hãy gửi lời mời cho người thân hỗ trợ để được thêm vào nhóm gia đình'
-//                   : "Hãy tạo nhóm gia đình với những người thân mà bạn hỗ trợ",
-//               style: const TextStyle(
-//                 fontSize: 14,
-//                 color: Colors.grey,
-//               ),
-//             ),
-//           ],
-//         ),
-//       );
-//     }
-
-//     return ListView.builder(
-//       itemCount: groups.length,
-//       itemBuilder: (context, index) {
-//         final group = groups[index];
-//         final usersInGroup = group['usersInGroup'] as List<dynamic>? ?? [];
-//         final groupId = group['groupId'] as int? ?? 0;
-
-//         return Column(
-//           children: [
-//             Container(
-//               padding: const EdgeInsets.all(16),
-//               margin: const EdgeInsets.all(16),
-//               decoration: BoxDecoration(
-//                 color: AppColors.primaryColor.withOpacity(0.1),
-//                 borderRadius: BorderRadius.circular(12),
-//               ),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   // Group header with name and member count
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       Row(
-//                         children: [
-//                           Icon(
-//                             Icons.group,
-//                             color: AppColors.primaryColor,
-//                           ),
-//                           const SizedBox(width: 8),
-//                           Text(
-//                             'Nhóm ${index + 1}',
-//                             style: TextStyle(
-//                               fontSize: 18,
-//                               fontWeight: FontWeight.bold,
-//                               color: AppColors.primaryColor,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                       if (currentRoleID == 2)
-//                         IconButton(
-//                           icon: Container(
-//                             padding: const EdgeInsets.all(6),
-//                             decoration: BoxDecoration(
-//                               color: Colors.red.withOpacity(0.1),
-//                               borderRadius: BorderRadius.circular(8),
-//                             ),
-//                             child: const Row(
-//                               mainAxisSize: MainAxisSize.min,
-//                               children: [
-//                                 Icon(Icons.exit_to_app,
-//                                     size: 20, color: Colors.red),
-//                                 SizedBox(width: 4),
-//                                 Text(
-//                                   'Rời nhóm',
-//                                   style: TextStyle(
-//                                     fontSize: 14,
-//                                     color: Colors.red,
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           onPressed: _showLeaveGroupDialog,
-//                         )
-//                       else if (currentRoleID == 3)
-//                         Row(
-//                           mainAxisSize: MainAxisSize.min,
-//                           children: [
-//                             IconButton(
-//                               icon: Container(
-//                                 padding: const EdgeInsets.all(6),
-//                                 decoration: BoxDecoration(
-//                                   color: Colors.red.withOpacity(0.1),
-//                                   borderRadius: BorderRadius.circular(8),
-//                                 ),
-//                                 child: const Row(
-//                                   mainAxisSize: MainAxisSize.min,
-//                                   children: [
-//                                     Icon(Icons.delete,
-//                                         size: 20, color: Colors.red),
-//                                     SizedBox(width: 4),
-//                                     Text(
-//                                       'Xóa nhóm',
-//                                       style: TextStyle(
-//                                         fontSize: 14,
-//                                         color: Colors.red,
-//                                       ),
-//                                     ),
-//                                   ],
-//                                 ),
-//                               ),
-//                               onPressed: () =>
-//                                   _showDeleteGroupDialog?.call(groupId),
-//                             ),
-//                           ],
-//                         ),
-//                     ],
-//                   ),
-//                   const SizedBox(height: 8),
-//                   Text(
-//                     group['groupName'] ?? 'Không có tên',
-//                     style: const TextStyle(
-//                       fontSize: 24,
-//                       fontWeight: FontWeight.bold,
-//                     ),
-//                   ),
-//                   const SizedBox(height: 8),
-//                   Row(
-//                     children: [
-//                       const Icon(Icons.people, size: 16, color: Colors.grey),
-//                       const SizedBox(width: 4),
-//                       Text(
-//                         '${usersInGroup.length} thành viên',
-//                         style: const TextStyle(color: Colors.grey),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             usersInGroup.isEmpty
-//                 ? Center(
-//                     child: Column(
-//                       children: [
-//                         Image.asset(
-//                           'assets/images/nodata.webp',
-//                           width: 120,
-//                           height: 120,
-//                         ),
-//                         const SizedBox(height: 8),
-//                         const Text(
-//                           'Chưa có thành viên nào',
-//                           style: TextStyle(color: Colors.grey),
-//                         ),
-//                         if (currentRoleID == 3)
-//                           Padding(
-//                             padding: const EdgeInsets.only(top: 16),
-//                             child: ElevatedButton.icon(
-//                               icon: const Icon(Icons.person_add, size: 18),
-//                               label: const Text('Thêm thành viên'),
-//                               style: ElevatedButton.styleFrom(
-//                                 foregroundColor: Colors.white,
-//                                 backgroundColor: AppColors.primaryColor,
-//                               ),
-//                               onPressed: () =>
-//                                   _showAddMemberDialog?.call(groupId),
-//                             ),
-//                           ),
-//                       ],
-//                     ),
-//                   )
-//                 : Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Padding(
-//                         padding: const EdgeInsets.symmetric(
-//                             horizontal: 16, vertical: 8),
-//                         child: Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             const Text(
-//                               'Thành viên trong nhóm',
-//                               style: TextStyle(
-//                                 fontSize: 16,
-//                                 fontWeight: FontWeight.bold,
-//                                 color: Colors.grey,
-//                               ),
-//                             ),
-//                             if (currentRoleID == 3)
-//                               TextButton.icon(
-//                                 icon: const Icon(Icons.person_add,  size: 18),
-//                                 label: const Text('Thêm'),
-//                                 style: TextButton.styleFrom(
-//                                   foregroundColor: AppColors.primaryColor,
-//                                 ),
-//                                 onPressed: () =>
-//                                     _showAddMemberDialog?.call(groupId),
-//                               ),
-//                           ],
-//                         ),
-//                       ),
-//                       ...usersInGroup
-//                           .map(
-//                             (user) => UserCard(
-//                               user: user,
-//                               currentUserAccountID: currentUserAccountID,
-//                               currentRoleID: currentRoleID,
-//                               fetchGroupData: fetchGroupData,
-//                               groupId: groupId,
-//                               onRemoveMember: currentRoleID == 3 &&
-//                                       user['accountId'] != currentUserAccountID
-//                                   ? (kickerId, memberId) =>
-//                                       _showRemoveMemberDialog(
-//                                           kickerId, memberId, groupId)
-//                                   : null,
-//                             ),
-//                           )
-//                           .toList(),
-//                     ],
-//                   ),
-//             const Divider(height: 32),
-//             const SizedBox(height: 45),
-//           ],
-//         );
-//       },
-//     );
-//   }
-
-//   void _showRemoveMemberDialog(int kickerId, int memberId, int groupId) {
-//     // Implement your remove member dialog here
-//     // You can show a dialog or call a callback function
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -460,12 +173,24 @@ class GroupTab extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    groupName,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          groupName,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      if (currentRoleID == 3) // Chỉ hiển thị nếu là quản lý
+                        IconButton(
+                          icon: const Icon(Icons.edit, size: 20),
+                          onPressed: () => _showEditGroupNameDialog(
+                              context, groupId, groupName),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -567,6 +292,171 @@ class GroupTab extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _showEditGroupNameDialog(
+      BuildContext context, int groupId, String currentName) {
+    final textController = TextEditingController(text: currentName);
+    final navigator = Navigator.of(context, rootNavigator: true);
+
+    showDialog(
+        context: context,
+        builder: (dialogContext) => Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.bgColor,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Đổi tên nhóm',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: textController,
+                      decoration: InputDecoration(
+                        labelText: 'Tên nhóm mới',
+                        labelStyle: TextStyle(
+                            color: AppColors.primaryColor.withOpacity(0.6)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: AppColors.primaryColor),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                              color: AppColors.primaryColor, width: 2),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                      ),
+                      maxLength: 50,
+                      autofocus: true,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => navigator.pop(),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                          ),
+                          child: Text(
+                            'HỦY',
+                            style: TextStyle(
+                              color: AppColors.primaryColor.withOpacity(0.6),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final newName = textController.text.trim();
+                            if (newName.isNotEmpty && newName != currentName) {
+                              navigator.pop(); // Đóng dialog nhập
+                              await _updateGroupName(context, groupId, newName);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
+                          ),
+                          child: Text(
+                            'LƯU THAY ĐỔI',
+                            style: TextStyle(
+                              color: AppColors.bgColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ));
+  }
+
+  Future<void> _updateGroupName(
+      BuildContext context, int groupId, String newName) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final messenger = ScaffoldMessenger.of(context);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              color: AppColors.primaryColor,
+            ),
+            SizedBox(height: 16),
+            Text('Đang cập nhật tên nhóm...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      final response = await http.put(
+        Uri.parse('https://api.diavan-valuation.asia/groups/group/name'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'groupId': groupId,
+          'groupName': newName,
+        }),
+      );
+
+      if (!context.mounted) return;
+      navigator.pop(); // Đóng dialog loading
+
+      final data = json.decode(response.body);
+      if (data['status'] == 1) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Đã cập nhật tên nhóm thành công')),
+        );
+        fetchGroupData();
+      } else {
+        messenger.showSnackBar(
+          SnackBar(content: Text(data['message'] ?? 'Cập nhật thất bại')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        navigator.pop();
+        messenger.showSnackBar(
+          SnackBar(content: Text('Lỗi: ${e.toString()}')),
+        );
+      }
+    }
   }
 
   Future<void> _showAddMemberDialog(
