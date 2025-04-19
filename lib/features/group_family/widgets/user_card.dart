@@ -232,7 +232,7 @@ class _UserCardState extends State<UserCard> {
           widget.fetchGroupData();
         } else {
           CherryToast.error(
-            title: Text(data['message'] ?? 'Lỗi khi xóa thành viên'),
+            title: Text(data['data'] ?? 'Lỗi khi xóa thành viên'),
           ).show(context);
         }
       } else {

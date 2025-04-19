@@ -357,6 +357,7 @@ class _WaterDrinkingState extends State<WaterDrinking>
             Text(
               "$amount ml",
               style: TextStyle(
+                fontSize: 40,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue[800],
               ),
@@ -826,8 +827,9 @@ class Enhanced3DBottlePainter extends CustomPainter {
       ..strokeWidth = 1.0;
 
     final textStyle = TextStyle(
+      fontWeight: FontWeight.bold,
       color: Colors.cyan.withOpacity(0.8),
-      fontSize: 10,
+      fontSize: 15,
     );
 
     const int maxMl = 1700;
@@ -880,7 +882,7 @@ class Enhanced3DBottlePainter extends CustomPainter {
       textPainter.layout();
       textPainter.paint(
         canvas,
-        Offset(w * 0, y - textPainter.height / 2),
+        Offset(-20, y - textPainter.height / 2),
       );
     }
   }

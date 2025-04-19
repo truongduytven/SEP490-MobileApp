@@ -248,7 +248,7 @@ class _GroupFamilyState extends State<GroupFamily>
           CherryToast.error(
             toastDuration: const Duration(seconds: 3),
             title: Text(
-              'Lỗi khi rời nhóm: ${data['message']}',
+              'Lỗi khi rời nhóm: ${data['data']}',
             ),
           ).show(context);
           throw Exception(data['message'] ?? 'Failed to leave group');
