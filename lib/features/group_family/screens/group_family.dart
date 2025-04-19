@@ -3,6 +3,7 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/group_family/screens/create_group_family.dart';
 import 'package:sep490/features/group_family/tabs/group_tab.dart';
 import 'package:sep490/features/group_family/widgets/pending_request_user_card.dart';
 import 'package:sep490/features/group_family/widgets/sent_request_user_card.dart';
@@ -719,7 +720,14 @@ class _GroupFamilyState extends State<GroupFamily>
       floatingActionButton: _tabController.index == 0 && currentRoleID == 3
           ? FloatingActionButton(
               onPressed: () {
-                // Navigator.pushNamed(context, SelectContactsScreen.routeName);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateGroupFamily(
+                      currentUserAccountID: currentUserAccountID,
+                    ),
+                  ),
+                ).then((_) => fetchGroupData());
               },
               backgroundColor: AppColors.primaryColor,
               child: const Icon(
