@@ -110,25 +110,25 @@ class _HeaderState extends State<Header> {
             ),
             Row(
               children: [
-                if (widget.isChooseElderly)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.grayColor2,
-                        shape: BoxShape.circle,
+                if  (widget.isChooseElderly)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: AppColors.grayColor2,
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                            onPressed: widget.onPressed,
+                            icon: Icon(
+                              Icons.autorenew_rounded,
+                              color: AppColors.textColor,
+                              size: 20,
+                            )),
                       ),
-                      child: IconButton(
-                          onPressed: widget.onPressed,
-                          icon: Icon(
-                            Icons.autorenew_rounded,
-                            color: AppColors.textColor,
-                            size: 20,
-                          )),
                     ),
-                  ),
                 Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: Container(

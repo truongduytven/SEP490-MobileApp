@@ -6,8 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/blood_pressure/screens/detail_blood_pressure_screen.dart';
+import 'package:sep490/features/health/widgets/health_card_skeleton.dart';
+import 'package:sep490/features/health/widgets/schedule_carousel_skeleton.dart';
 import 'package:sep490/features/heart_beat/screens/detail_heart_beat_screen.dart';
 import 'package:sep490/features/height/screens/detail_height_screen.dart';
+import 'package:sep490/features/water_drinking/screens/water_drinking.dart';
 import 'package:sep490/models/home_model.dart';
 import 'package:sep490/models/schedule.dart';
 import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
@@ -542,10 +545,14 @@ class _HomeScreenState extends State<HomeScreen>
                             isLoading
                                 ? SizedBox(
                                     height: 120,
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.primaryColor,
-                                      ),
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      itemCount: isLoading ? 5 : 5,
+                                      itemBuilder: (context, index) {
+                                        return const HealthCardSkeleton();
+                                      },
                                     ),
                                   )
                                 : SingleChildScrollView(
@@ -735,12 +742,9 @@ class _HomeScreenState extends State<HomeScreen>
                           if (roleId == 2)
                             isLoadingSchedule
                                 ? SizedBox(
-                                    height: 170,
+                                    height: 180,
                                     child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
+                                        child: ScheduleCarouselSkeleton()),
                                   )
                                 : schedule != null
                                     ? schedule!.isNotEmpty
@@ -974,14 +978,14 @@ class _HomeScreenState extends State<HomeScreen>
                                 if (roleId == 2)
                                   _buildCategoryCard(
                                     icon:
-                                        'assets/img3D/uong_nuoc.png', // Replace with your asset path
-                                    label: 'Uống nước',
+                                        'assets/img3D/water.webp', // Replace with your asset path
+                                    label: 'Nhắc nhở uống nước',
                                     onTap: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              ScheduleScreen(),
+                                              WaterDrinking(),
                                         ),
                                       );
                                     },

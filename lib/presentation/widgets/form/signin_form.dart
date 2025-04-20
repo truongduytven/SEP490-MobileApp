@@ -1,11 +1,13 @@
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/common/constants/common.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/data/services/api_services.dart';
+import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/auth/forgot_password_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
@@ -13,14 +15,14 @@ import 'package:sep490/theme/color.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
-class SignInForm extends StatefulWidget {
+class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({super.key});
 
   @override
-  State<SignInForm> createState() => _SignInFormState();
+  ConsumerState<SignInForm> createState() => _SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class _SignInFormState extends ConsumerState<SignInForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();

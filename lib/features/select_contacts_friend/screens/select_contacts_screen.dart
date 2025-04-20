@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/common/widgets/error.dart';
 import 'package:sep490/common/widgets/loader.dart';
-import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
+import 'package:sep490/features/select_contacts_friend/controller/select_contact_controller.dart';
 
 // Provider to store the search query
 final searchQueryProvider = StateProvider<String>((ref) => "");

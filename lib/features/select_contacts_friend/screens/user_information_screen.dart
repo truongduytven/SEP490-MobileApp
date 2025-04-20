@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
-import 'package:sep490/models/user_contact.dart';
-import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/features/select_contacts_friend/controller/select_contact_controller.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-// FutureProvider to get accountId from SharedPreferences
-// final accountIdProvider = FutureProvider<int?>((ref) async {
-//   SharedPreferences prefs = await SharedPreferences.getInstance();
-//   return prefs.getInt('accountId');
-// });
 
 // StateProvider to track friend request status
 final friendRequestSentProvider = StateProvider<bool>((ref) => false);

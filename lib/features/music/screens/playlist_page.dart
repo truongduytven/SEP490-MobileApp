@@ -99,7 +99,9 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
-                      return const CircularProgressIndicator();
+                      return const CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      );
                     },
                     errorBuilder: (context, error, stackTrace) =>
                         const Icon(Icons.music_note, size: 100),
