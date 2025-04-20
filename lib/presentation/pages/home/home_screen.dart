@@ -13,6 +13,7 @@ import 'package:sep490/models/schedule.dart';
 import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/home/controller/home_controller.dart';
+import 'package:sep490/main.dart';
 import 'package:sep490/presentation/pages/home/iot_indicator.dart';
 import 'package:sep490/presentation/pages/home/view_detail_elderly.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
@@ -30,7 +31,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver, RouteAware {
   String today = '';
   final Map<String, dynamic> activity = {
     "ActivityName": "Uống thuốc",
@@ -91,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (roleId == 4) {
       getElderlyUserProfessor();
     }
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void _showSelectDialog() {
@@ -439,6 +442,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Đăng ký RouteAware để theo dõi sự kiện navigation
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      // Kiểm tra xem route có phải là PageRoute không
+      routeObserver.subscribe(
+          this,
+          // ignore: unnecessary_cast
+          route as PageRoute<dynamic>); // Ép kiểu thành PageRoute<dynamic>
+    }
+  }
+
+  @override
+  void didPopNext() {
+    getSchedule();
+    getHealthIndicator(); // Gọi lại API
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -556,62 +586,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         ),
                                         HealthCard(
                                           icon:
-                                              'assets/img3D/treatment_medical/momau.webp',
-                                          label: 'Mỡ máu',
-                                          value:
-                                              '${healthIndicators['LipidProfile']}',
-                                          index: 'mmol/l',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
-                                              'assets/img3D/treatment_medical/gan.png',
-                                          label: 'Men gan',
-                                          value:
-                                              '${healthIndicators['LiverEnzyme']}',
-                                          index: 'UI/L',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
                                               'assets/img3D/treatment_medical/tieuduong.png',
                                           label: 'Đường huyết',
                                           value:
                                               '${healthIndicators['BloodGlucose']}',
                                           index: 'mmol/l',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
-                                              'assets/img3D/treatment_medical/than.png',
-                                          label: 'Chức năng thận',
-                                          value:
-                                              '${healthIndicators['KidneyFunction']}',
-                                          index: 'mL/phút/1.73m2',
                                           onTap: () {
                                             Navigator.push(
                                               context,
@@ -650,6 +629,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     DetailHeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/momau.webp',
+                                          label: 'Mỡ máu',
+                                          value:
+                                              '${healthIndicators['LipidProfile']}',
+                                          index: 'mmol/l',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/gan.png',
+                                          label: 'Men gan',
+                                          value:
+                                              '${healthIndicators['LiverEnzyme']}',
+                                          index: 'UI/L',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/than.png',
+                                          label: 'Chức năng thận',
+                                          value:
+                                              '${healthIndicators['KidneyFunction']}',
+                                          index: 'mL/phút/1.73m2',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
                                               ),
                                             );
                                           },
@@ -813,14 +843,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                                 const SizedBox(
                                                                     height: 8),
                                                                 Text(
-                                                                  "Còn ${item.duration} ngày nữa",
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          14),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 8),
-                                                                Text(
                                                                   '${item.startTime} ${item.endTime != '' ? '-' : ''} ${item.endTime}',
                                                                   style: TextStyle(
                                                                       fontSize:
@@ -915,69 +937,70 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                               ],
                             ),
+                          if (roleId != 4) SizedBox(height: 20),
                           if (roleId != 4)
-                          SizedBox(height: 20),
-                          if (roleId != 4)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildCategoryCard(
-                                icon:
-                                    'assets/img3D/thuoc.png', // Replace with your asset path
-                                label: 'Lịch uống thuốc',
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeMedicine(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              if (roleId == 3)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 _buildCategoryCard(
                                   icon:
-                                      'assets/img3D/calendar_create.webp', // Replace with your asset path
-                                  label: 'Lịch trình hằng ngày',
+                                      'assets/img3D/thuoc.png', // Replace with your asset path
+                                  label: 'Lịch uống thuốc',
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen(),
+                                        builder: (context) => HomeMedicine(),
                                       ),
                                     );
                                   },
                                 ),
-                              if (roleId == 2)
-                                _buildCategoryCard(
-                                  icon:
-                                      'assets/img3D/uong_nuoc.png', // Replace with your asset path
-                                  label: 'Uống nước',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              if (roleId == 2)
-                                _buildCategoryCard(
-                                  icon:
-                                      'assets/img3D/thietbideotay.png', // Replace with your asset path
-                                  label: 'Thiết bị đeo tay',
-                                  onTap: () {
-                                    Navigator.push(
+                                if (roleId == 3)
+                                  _buildCategoryCard(
+                                    icon:
+                                        'assets/img3D/calendar_create.webp', // Replace with your asset path
+                                    label: 'Lịch trình hằng ngày',
+                                    onTap: () {
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                IotIndicator()));
-                                  },
-                                ),
-                            ],
-                          ),
+                                          builder: (context) =>
+                                              ScheduleScreen(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                if (roleId == 2)
+                                  _buildCategoryCard(
+                                    icon:
+                                        'assets/img3D/uong_nuoc.png', // Replace with your asset path
+                                    label: 'Uống nước',
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ScheduleScreen(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                if (roleId == 2)
+                                  _buildCategoryCard(
+                                    icon:
+                                        'assets/img3D/thietbideotay.png', // Replace with your asset path
+                                    label: 'Thiết bị đeo tay',
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  IotIndicator()));
+                                    },
+                                  ),
+                              ],
+                            ),
                           if (roleId == 4)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

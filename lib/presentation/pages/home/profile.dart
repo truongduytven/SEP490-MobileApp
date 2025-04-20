@@ -85,7 +85,6 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void checkChanges() {
-    print(gender);
     bool changed = fullNameController.text != elderlyProfile!.fullName ||
         gender != elderlyProfile!.gender ||
         !isSameDate(DateFormat('dd/MM/yyyy').parse(_selectedDate),

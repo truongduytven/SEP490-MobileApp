@@ -76,6 +76,52 @@ class HomeRepository {
     }
   }
 
+  Future<dynamic> getMedicalRecord(int account) async {
+    try {
+      final response = await http
+          .get(Uri.parse("$baseUrl/profile-management/elderly/$account"));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> updateMedicalRecord(
+      int account, List<String> medicalRecord) async {
+    try {
+      final response =
+          await http.put(Uri.parse("$baseUrl/profile-management/elderly"),
+              body: jsonEncode({
+                'elderlyId': account,
+                'allergy': "string",
+                'livingSituation': "string",
+                'medicalRecord': medicalRecord,
+              }),
+              headers: {
+            'Content-Type': 'application/json',
+          });
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
   Future<dynamic> updateElderlyProfile(int account, String fullName,
       String imagePath, String gender, String dateOfBirth) async {
     try {
@@ -92,8 +138,6 @@ class HomeRepository {
       final response = await request.send();
       final respStr = await response.stream.bytesToString();
       final result = jsonDecode(respStr);
-      print('kết quả nè');
-      print(result);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (result['status'] == 1) {
           return {'isSuccess': true, 'data': result};
@@ -102,6 +146,24 @@ class HomeRepository {
         }
       } else {
         return {'isSuccess': false, 'data': result};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> getHistoryTransaction(int account) async {
+    try {
+      final response = await http.get(Uri.parse(
+          "$baseUrl/booking-management/bookings/family-member/$account"));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
       }
     } catch (e) {
       return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};

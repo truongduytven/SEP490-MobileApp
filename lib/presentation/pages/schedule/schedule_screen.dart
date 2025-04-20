@@ -626,12 +626,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                   ),
                                                   const SizedBox(height: 8),
                                                   Text(
-                                                    "Còn ${activity.duration} ngày nữa",
-                                                    style: const TextStyle(
-                                                        fontSize: 14),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Text(
                                                     '${activity.startTime} ${activity.endTime != '' ? '-' : ''} ${activity.endTime}',
                                                     style: TextStyle(
                                                         fontSize: 14,
@@ -651,6 +645,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 SizedBox(height: 20),
                               ],
                             ),
+                            if(_isSelectedDayToday())
                             _buildCurrentTimeIndicator(
                                 percentHeight, isCurrentHour, hourBlockHeight)
                           ],
@@ -680,6 +675,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         child: Icon(Icons.add, color: Colors.white),
       ),
     );
+  }
+
+  bool _isSelectedDayToday() {
+    final now = DateTime.now();
+    return selectedDay == now.day &&
+        selectedMonth == now.month &&
+        selectedYear == now.year;
   }
 
   Widget _buildCurrentTimeIndicator(

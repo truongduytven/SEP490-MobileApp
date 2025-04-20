@@ -36,6 +36,7 @@ class MedicineController {
     if (response != null && response['isSuccess']) {
       isCreateSuccess = true;
     } else {
+      message = response['data']['message'];
       isCreateSuccess = false;
     }
   }

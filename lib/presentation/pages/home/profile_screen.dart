@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/group_family/screens/group_family.dart';
 import 'package:sep490/features/report/screens/report_screen.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/auth/signin_screen.dart';
+import 'package:sep490/presentation/pages/home/history_transaction.dart';
+import 'package:sep490/presentation/pages/home/medical_record.dart';
 import 'package:sep490/presentation/pages/home/profile.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({super.key});
+  final int roleId;
+  const ProfileScreen({super.key, required this.roleId});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -48,6 +50,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 );
               },
             ),
+            if(widget.roleId == 2)
+            ProfileMenu(
+              text: "Hồ sơ bệnh án",
+              icon: Icons.assignment_outlined,
+              press: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MedicalRecord()),
+                );
+              },
+            ),
             ProfileMenu(
               text: "Nhóm gia đình",
               icon: Icons.group,
@@ -63,10 +76,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               icon: Icons.redeem,
               press: () {},
             ),
+            if(widget.roleId == 3)
             ProfileMenu(
               text: "Lịch sử giao dịch",
               icon: Icons.history,
-              press: () {},
+              press: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HistoryTransaction()),
+                );
+              },
             ),
             ProfileMenu(
               text: "Báo cáo hệ thống",

@@ -462,7 +462,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                       )),
                 ),
                 const SizedBox(height: 10),
-                if (selectedElderlyUserId != 0)
+                if (selectedElderlyUserId != 0 && isPackage)
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(

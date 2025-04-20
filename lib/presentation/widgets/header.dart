@@ -42,7 +42,7 @@ class _HeaderState extends State<Header> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  MaterialPageRoute(builder: (context) => ProfileScreen(roleId: roleId,)),
                 );
               },
               child: Row(

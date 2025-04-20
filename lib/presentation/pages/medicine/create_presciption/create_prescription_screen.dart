@@ -324,6 +324,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                               )
                             : SizedBox(height: 20),
                         const SizedBox(height: 10),
+                        if(roleId == 4)
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           width: double.infinity,
