@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/group/screens/create_group_screen.dart';
-import 'package:sep490/features/select_contacts/screens/select_contacts_screen.dart';
+import 'package:sep490/features/select_contacts_friend/screens/select_contacts_screen.dart';
 import 'package:sep490/theme/color.dart';
 
 class ExpandableFab extends StatefulWidget {

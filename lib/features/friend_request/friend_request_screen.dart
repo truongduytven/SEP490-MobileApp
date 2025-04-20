@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:sep490/common/utils/utils.dart';
-import 'package:sep490/features/select_contacts/controller/select_contact_controller.dart';
-import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
+import 'package:sep490/features/select_contacts_friend/controller/select_contact_controller.dart';
+import 'package:sep490/features/select_contacts_friend/screens/user_information_screen.dart';
 import 'package:sep490/models/friend_request.dart';
 import 'package:sep490/theme/color.dart';
 
