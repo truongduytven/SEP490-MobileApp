@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/features/exercies/provider/playlist_provider.dart';
+import 'package:sep490/theme/color.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 
@@ -148,10 +149,11 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.playlistName),
+        title: Text(widget.playlistName, style: const TextStyle(color: AppColors.secondaryColor, fontSize: 25, fontWeight: FontWeight.w600)),
         // backgroundColor: Colors.pink,
         // foregroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
       ),
       body: playlistAsync.when(
         loading: () => const Center(

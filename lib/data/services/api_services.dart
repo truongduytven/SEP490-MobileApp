@@ -12,13 +12,13 @@ class ApiService {
 
     try {
       final response = await http.get(url, headers: headers ?? {"Content-Type": "application/json"});
-
-      if (response.statusCode == 200) {
+      if ((response.statusCode == 200 || response.statusCode == 201)) {
         return { 'success': true, 'data': jsonDecode(response.body) };
       } else {
-        return { 'success': false, 'data': jsonDecode(response.body) };
+        return { 'success': false, 'data': jsonDecode(response.body)['data'] };
       }
     } catch (e) {
+      print(e);
       return { 'success': false, 'data': 'Có lỗi trong quá trình xử lý!' }; 
     }
   }
@@ -33,12 +33,13 @@ class ApiService {
         body: jsonEncode(data),
       );
       final decodedResponse = jsonDecode(response.body);
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if ((response.statusCode == 200 || response.statusCode == 201) && decodedResponse['isSuccess']) {
         return {'success': true, 'data': decodedResponse};
       } else {
-        return {'success': false, 'data': decodedResponse};
+        return {'success': false, 'data': decodedResponse['data']};
       }
     } catch (e) {
+      print(e);
       return {'success': false, 'data': 'Có lỗi trong quá trình xử lý!'};
     }
   }

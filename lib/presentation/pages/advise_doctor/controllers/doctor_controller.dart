@@ -6,12 +6,14 @@ class DoctorController {
   DoctorData? doctorData;
   PackageData? packageData;
   List<AppoimentDoctor>? appoimentDoctor;
+  List<AppoimentElderly>? appoimentElderly;
   List<TimeSlots>? listAppoimentDoctor;
   Report? report;
   List<FilteredDoctor>? listFilterDoctor;
   List<ComboData>? comboData;
   CheckoutResponse? checkoutResponse;
   List<FeedBackDoctor>? feedbackDoctor;
+  int numberMeeting = 0;
   bool isOrderSuccess = false;
   bool isConfirmedSuccess = false;
   bool isSelectDoctorSuccess = false;
@@ -71,6 +73,18 @@ class DoctorController {
           data.map((item) => AppoimentDoctor.fromJson(item)).toList();
     } else {
       appoimentDoctor = null;
+    }
+  }
+
+  Future<void> getAppointmentElderly(int accountId ,String status) async {
+    final response =
+        await _doctorRepository.getAppointmentElderly(accountId, status);
+    if (response != null && response['isSuccess']) {
+      List<dynamic> data = response['data']['data'];
+      appoimentElderly =
+          data.map((item) => AppoimentElderly.fromJson(item)).toList();
+    } else {
+      appoimentElderly = null;
     }
   }
 
@@ -152,10 +166,10 @@ class DoctorController {
     }
   }
 
-  Future<void> bookingAppointment(
-      int elderlyId, int timeSlotId, String day, String description) async {
+  Future<void> bookingAppointment(int elderlyId, int professorId, String startTime,
+      String endTime, String day, String description) async {
     final response = await _doctorRepository.bookingAppointment(
-        elderlyId, timeSlotId, day, description);
+        elderlyId, professorId, startTime, endTime, day, description);
     if (response != null && response['isSuccess']) {
       isBookingAppointmentSuccess = response['data']['status'] == 1;
     } else {
@@ -169,6 +183,15 @@ class DoctorController {
       isCancelSuccess = response['data']['status'] == 1;
     } else {
       isCancelSuccess = false;
+    }
+  }
+
+  Future<void> getNumberMeeting(int elderlyId) async {
+    final response = await _doctorRepository.getNumberMeeting(elderlyId);
+    if (response != null && response['isSuccess']) {
+      numberMeeting = response['data']['data'] ?? 0;
+    } else {
+      numberMeeting = 0;
     }
   }
 

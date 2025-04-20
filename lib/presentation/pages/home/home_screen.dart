@@ -16,7 +16,9 @@ import 'package:sep490/models/schedule.dart';
 import 'package:sep490/features/weight/screens/detail_weight_screen.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/home/controller/home_controller.dart';
+import 'package:sep490/main.dart';
 import 'package:sep490/presentation/pages/home/iot_indicator.dart';
+import 'package:sep490/presentation/pages/home/view_detail_elderly.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
 import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
@@ -32,7 +34,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver, RouteAware {
   String today = '';
   final Map<String, dynamic> activity = {
     "ActivityName": "Uống thuốc",
@@ -93,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (roleId == 4) {
       getElderlyUserProfessor();
     }
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void _showSelectDialog() {
@@ -126,37 +130,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     height: 300,
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: userList!.length + 1,
+                      itemCount: userList!.length,
                       itemBuilder: (context, index) {
-                        if (index == userList!.length) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.borderColor,
-                                width: 1.5,
-                              ),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 4.0),
-                            padding: EdgeInsets.symmetric(vertical: 5),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                radius: 22,
-                                backgroundColor: Colors.transparent,
-                                child: const Icon(
-                                    Icons.person_add_alt_1_outlined,
-                                    color: AppColors.primaryColor),
-                              ),
-                              title: const Text(
-                                "Thêm người mới",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          );
-                        }
+                        // if (index == userList!.length) {
+                        //   return Container(
+                        //     decoration: BoxDecoration(
+                        //       border: Border.all(
+                        //         color: AppColors.borderColor,
+                        //         width: 1.5,
+                        //       ),
+                        //       borderRadius: BorderRadius.circular(8.0),
+                        //     ),
+                        //     margin: const EdgeInsets.symmetric(vertical: 4.0),
+                        //     padding: EdgeInsets.symmetric(vertical: 5),
+                        //     child: ListTile(
+                        //       leading: CircleAvatar(
+                        //         radius: 22,
+                        //         backgroundColor: Colors.transparent,
+                        //         child: const Icon(
+                        //             Icons.person_add_alt_1_outlined,
+                        //             color: AppColors.primaryColor),
+                        //       ),
+                        //       title: const Text(
+                        //         "Thêm người mới",
+                        //         style: TextStyle(fontSize: 20),
+                        //       ),
+                        //       onTap: () {
+                        //         Navigator.of(context).pop();
+                        //       },
+                        //     ),
+                        //   );
+                        // }
 
                         final user = userList![index];
                         return GestureDetector(
@@ -353,15 +357,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         return;
       }
       if (userList!.isNotEmpty && selectedElderlyUserId == 0) {
-        selectedElderlyUserId = userList![0].accountId;
-        selectedElderlyUserName = userList![0].fullName;
-        sharedPrefsHelper.setInt(
-            'selectedElderlyUserId', userList![0].accountId);
-        sharedPrefsHelper.setString(
-            'selectedElderlyUserName', userList![0].fullName);
-        sharedPrefsHelper.setInt('selectedElderlyId', userList![0].elderlyId);
+        // selectedElderlyUserId = userList![0].accountId;
+        // selectedElderlyUserName = userList![0].fullName;
+        // sharedPrefsHelper.setInt(
+        //     'selectedElderlyUserId', userList![0].accountId);
+        // sharedPrefsHelper.setString(
+        //     'selectedElderlyUserName', userList![0].fullName);
+        // sharedPrefsHelper.setInt('selectedElderlyId', userList![0].elderlyId);
       }
-      _showSelectDialog();
     });
   }
 
@@ -439,6 +442,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     Timer(Duration(seconds: 20), () {
       Navigator.pop(context);
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Đăng ký RouteAware để theo dõi sự kiện navigation
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      // Kiểm tra xem route có phải là PageRoute không
+      routeObserver.subscribe(
+          this,
+          // ignore: unnecessary_cast
+          route as PageRoute<dynamic>); // Ép kiểu thành PageRoute<dynamic>
+    }
+  }
+
+  @override
+  void didPopNext() {
+    getSchedule();
+    getHealthIndicator(); // Gọi lại API
   }
 
   @override
@@ -563,62 +593,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         ),
                                         HealthCard(
                                           icon:
-                                              'assets/img3D/treatment_medical/momau.webp',
-                                          label: 'Mỡ máu',
-                                          value:
-                                              '${healthIndicators['LipidProfile']}',
-                                          index: 'mmol/l',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
-                                              'assets/img3D/treatment_medical/gan.png',
-                                          label: 'Men gan',
-                                          value:
-                                              '${healthIndicators['LiverEnzyme']}',
-                                          index: 'UI/L',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
                                               'assets/img3D/treatment_medical/tieuduong.png',
                                           label: 'Đường huyết',
                                           value:
                                               '${healthIndicators['BloodGlucose']}',
                                           index: 'mmol/l',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
-                                              'assets/img3D/treatment_medical/than.png',
-                                          label: 'Chức năng thận',
-                                          value:
-                                              '${healthIndicators['KidneyFunction']}',
-                                          index: 'mL/phút/1.73m2',
                                           onTap: () {
                                             Navigator.push(
                                               context,
@@ -657,6 +636,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     DetailHeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/momau.webp',
+                                          label: 'Mỡ máu',
+                                          value:
+                                              '${healthIndicators['LipidProfile']}',
+                                          index: 'mmol/l',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/gan.png',
+                                          label: 'Men gan',
+                                          value:
+                                              '${healthIndicators['LiverEnzyme']}',
+                                          index: 'UI/L',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        HealthCard(
+                                          icon:
+                                              'assets/img3D/treatment_medical/than.png',
+                                          label: 'Chức năng thận',
+                                          value:
+                                              '${healthIndicators['KidneyFunction']}',
+                                          index: 'mL/phút/1.73m2',
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailWeightScreen(), // Replace with the correct screen
                                               ),
                                             );
                                           },
@@ -817,14 +847,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                                 const SizedBox(
                                                                     height: 8),
                                                                 Text(
-                                                                  "Còn ${item.duration} ngày nữa",
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          14),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 8),
-                                                                Text(
                                                                   '${item.startTime} ${item.endTime != '' ? '-' : ''} ${item.endTime}',
                                                                   style: TextStyle(
                                                                       fontSize:
@@ -919,67 +941,126 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                               ],
                             ),
-                          SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildCategoryCard(
-                                icon:
-                                    'assets/img3D/thuoc.png', // Replace with your asset path
-                                label: 'Lịch uống thuốc',
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeMedicine(),
-                                    ),
-                                  );
-                                },
-                              ),
-                              if (roleId == 3)
+                          if (roleId != 4) SizedBox(height: 20),
+                          if (roleId != 4)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 _buildCategoryCard(
                                   icon:
-                                      'assets/img3D/calendar_create.webp', // Replace with your asset path
-                                  label: 'Lịch trình hằng ngày',
+                                      'assets/img3D/thuoc.png', // Replace with your asset path
+                                  label: 'Lịch uống thuốc',
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ScheduleScreen(),
+                                        builder: (context) => HomeMedicine(),
                                       ),
                                     );
                                   },
                                 ),
-                              if (roleId == 2)
-                                _buildCategoryCard(
-                                  icon:
-                                      'assets/img3D/water.webp', // Replace with your asset path
-                                  label: 'Nhắc nhở uống nước',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => WaterDrinking(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              if (roleId == 2)
-                                _buildCategoryCard(
-                                  icon:
-                                      'assets/img3D/thietbideotay.png', // Replace with your asset path
-                                  label: 'Thiết bị đeo tay',
-                                  onTap: () {
-                                    Navigator.push(
+                                if (roleId == 3)
+                                  _buildCategoryCard(
+                                    icon:
+                                        'assets/img3D/calendar_create.webp', // Replace with your asset path
+                                    label: 'Lịch trình hằng ngày',
+                                    onTap: () {
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                IotIndicator()));
-                                  },
+                                          builder: (context) =>
+                                              ScheduleScreen(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                if (roleId == 2)
+                                  _buildCategoryCard(
+                                    icon:
+                                        'assets/img3D/water.webp', // Replace with your asset path
+                                    label: 'Nhắc nhở uống nước',
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              WaterDrinking(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                if (roleId == 2)
+                                  _buildCategoryCard(
+                                    icon:
+                                        'assets/img3D/thietbideotay.png', // Replace with your asset path
+                                    label: 'Thiết bị đeo tay',
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  IotIndicator()));
+                                    },
+                                  ),
+                              ],
+                            ),
+                          if (roleId == 4)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Danh sách người già đang hỗ trợ',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textColor),
                                 ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          if (roleId == 4) const SizedBox(height: 20),
+                          if (roleId == 4)
+                            SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  if (userList != null)
+                                    for (var user in userList!)
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedElderlyUserId =
+                                                user.accountId;
+                                            selectedElderlyUserName =
+                                                user.fullName;
+                                          });
+                                          sharedPrefsHelper.setInt(
+                                              'selectedElderlyUserId',
+                                              user.accountId);
+                                          sharedPrefsHelper.setString(
+                                              'selectedElderlyUserName',
+                                              user.fullName);
+                                          sharedPrefsHelper.setInt(
+                                              'selectedElderlyId',
+                                              user.elderlyId);
+                                        },
+                                        child: _buildElderlyUserCard(
+                                          user: user,
+                                        ),
+                                      ),
+                                  if (userList == null)
+                                    const Center(
+                                      child: Text(
+                                        'Không có người già nào được hỗ trợ',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.textColor,
+                                        ),
+                                      ),
+                                    )
+                                ],
+                              ),
+                            )
                         ],
                       ),
                     ],
@@ -1029,6 +1110,83 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 color: Colors.black,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildElderlyUserCard({required ElderlyUser user}) {
+    return GestureDetector(
+      onTap: () {
+        selectedElderlyUserId = user.accountId;
+        selectedElderlyUserName = user.fullName;
+        sharedPrefsHelper.setInt('selectedElderlyUserId', user.accountId);
+        sharedPrefsHelper.setString('selectedElderlyUserName', user.fullName);
+        sharedPrefsHelper.setInt('selectedElderlyId', user.elderlyId);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ViewDetailElderly(
+              elderlyUser: user,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.bgColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.secondaryColor.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Image.network(
+                user.avatar,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.fullName,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    user.phoneNumber,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.grayColor3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 20,
+            )
           ],
         ),
       ),

@@ -145,19 +145,17 @@ class Report {
 }
 
 class TimeSlots {
-  final int timeSlotId;
+
   final String startTime;
   final String endTime;
 
   TimeSlots({
-    required this.timeSlotId,
     required this.startTime,
     required this.endTime,
   });
 
   factory TimeSlots.fromJson(Map<String, dynamic> json) {
     return TimeSlots(
-      timeSlotId: json['timeSlotId'],
       startTime: json['startTime'],
       endTime: json['endTime'],
     );
@@ -344,6 +342,55 @@ class FeedBackDoctor {
       createdBy: json['createdBy'],
       content: json['content'],
       star: json['star'],
+    );
+  }
+}
+
+class AppoimentElderly {
+  final int professorAppointmentId;
+  final int elderlyId;
+  final String elderlyName;
+  final String avatar;
+  final String phoneNumber;
+  final String dateTime;
+  final String description;
+  final String status;
+  final bool isOnline;
+  final bool isReport;
+  final bool isFeedback;
+  final List<Account> people;
+
+  AppoimentElderly({
+    required this.professorAppointmentId,
+    required this.elderlyId,
+    required this.elderlyName,
+    required this.avatar,
+    required this.phoneNumber,
+    required this.dateTime,
+    required this.description,
+    required this.status,
+    required this.isOnline,
+    required this.isReport,
+    required this.isFeedback,
+    required this.people,
+  });
+
+  factory AppoimentElderly.fromJson(Map<String, dynamic> json) {
+    return AppoimentElderly(
+      professorAppointmentId: json['professorAppointmentId'],
+      elderlyId: json['elderlyId'],
+      elderlyName: json['elderlyName'],
+      avatar: json['avatar'],
+      phoneNumber: json['phoneNumber'],
+      dateTime: json['dateTime'],
+      description: json['description'],
+      status: json['status'],
+      isOnline: json['isOnline'],
+      isReport: json['isReport'],
+      isFeedback: json['isFeedback'],
+      people: (json['people'] as List)
+          .map((item) => Account.fromJson(item))
+          .toList(),
     );
   }
 }

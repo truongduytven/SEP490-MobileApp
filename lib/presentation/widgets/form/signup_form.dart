@@ -1,8 +1,16 @@
 import 'dart:io';
 
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sep490/presentation/pages/auth/medical_record.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sep490/data/services/api_services.dart';
+import 'package:sep490/presentation/pages/auth/complete_info.dart';
+import 'package:sep490/presentation/pages/auth/signin_screen.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -36,7 +44,7 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   void initState() {
     super.initState();
-    _focusedDay = DateTime.now();
+    _focusedDay = DateTime.now().subtract(Duration(days: 18 * 365));
     fullNameController.addListener(_onTextChanged);
     emailController.addListener(_onTextChanged);
     phoneController.addListener(_onTextChanged);
@@ -91,21 +99,108 @@ class _SignUpFormState extends State<SignUpForm> {
   void handleSubmit() async {
     if (_formKey.currentState!.validate()) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      if (widget.typeIn == 'Phone') {
-        prefs.setString('emailOrPhoneSignUpLater', emailController.text);
-      } else if (widget.typeIn == 'Email') {
-        prefs.setString('emailOrPhoneSignUpLater', phoneController.text);
+      String role = prefs.getString('role') ?? '';
+
+      if (role == 'Elderly') {
+        if (widget.typeIn == 'Phone number') {
+          prefs.setString('emailOrPhoneSignUpLater', emailController.text);
+        } else if (widget.typeIn == 'Email') {
+          prefs.setString('emailOrPhoneSignUpLater', phoneController.text);
+        }
+        prefs.setString('fullName', fullNameController.text);
+        prefs.setString('dateOfBirth', _selectedDate);
+        prefs.setString('gender', _selectedGender);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            // builder: (context) => MedicalRecordScreen(),
+            builder: (context) => CompleteInfoScreen(),
+          ),
+        );
+      } else if (role == 'Member') {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return Center(
+                  child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
+              ));
+            });
+        final accountId = prefs.getInt('accountId');
+        final fullName = fullNameController.text;
+        final type = prefs.getString('typeSignUp');
+        final email = type == 'Email'
+            ? prefs.getString('emailOrPhoneSignUp')
+            : emailController.text;
+        final numberPhone = type == 'Phone number'
+            ? prefs.getString('emailOrPhoneSignUp')
+            : phoneController.text;
+        final roleId = prefs.getString('role') == 'Elderly' ? 2 : 3;
+        final gender = _selectedGender;
+        final dob = _selectedDate;
+        String formatDOB = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            .format(DateFormat("d/M/yyyy").parse(dob));
+        String medicalApi = "MedicalRecord=Không có";
+        String? storedAvatar = prefs.getString('avatar');
+        String heightIndex = prefs.getString('height') ?? '0';
+        String weightIndex = prefs.getString('weight') ?? '0';
+        String image = (storedAvatar != null && storedAvatar.isNotEmpty)
+            ? storedAvatar
+            : await getDefaultAvatarPath();
+        try {
+          var response = await ApiService.postRequestSignUp(
+              "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$roleId&$medicalApi&Height=$heightIndex&Weight=$weightIndex",
+              image);
+
+          Navigator.of(context).pop();
+
+          if (response['success'] && response['data']['isSuccess']) {
+            CherryToast.success(
+              toastDuration: Duration(seconds: 2),
+              title: Text(
+                "Cập nhật thông tin thành công!",
+                style: TextStyle(color: Colors.black),
+              ),
+            ).show(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SignInScreen(),
+              ),
+            );
+          } else {
+            Fluttertoast.showToast(
+              msg: "Cõ lỗi trong quá trình xử lí",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          }
+        } catch (e) {
+          Navigator.of(context).pop();
+          Fluttertoast.showToast(
+            msg: "Có lỗi trong quá trình xử lí",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        }
       }
-      prefs.setString('fullName', fullNameController.text);
-      prefs.setString('dateOfBirth', _selectedDate);
-      prefs.setString('gender', _selectedGender);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MedicalRecordScreen(),
-        ),
-      );
     }
+  }
+
+  Future<String> getDefaultAvatarPath() async {
+    final byteData = await rootBundle.load('assets/img/default_avatar.png');
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/default_avatar.png');
+    await file.writeAsBytes(byteData.buffer.asUint8List());
+    return file.path;
   }
 
   @override
@@ -114,10 +209,6 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _formKey,
       child: Column(
         children: [
-          // Image.asset(
-          //   'assets/img3D/businessman.png',
-          //   height: 150,
-          // ),
           Text('Ảnh đại diện', style: TextStyle(fontSize: 20)),
           const SizedBox(height: 12),
           GestureDetector(
@@ -176,61 +267,80 @@ class _SignUpFormState extends State<SignUpForm> {
                   return AlertDialog(
                     contentPadding: EdgeInsets.zero,
                     content: SizedBox(
-                      height: 400,
-                      width: 300,
-                      child: TableCalendar(
-                        firstDay: DateTime(1900),
-                        lastDay: DateTime.now(),
-                        focusedDay: _focusedDay,
-                        availableCalendarFormats: const {
-                          CalendarFormat.month: 'Month',
-                          CalendarFormat.twoWeeks: 'Year',
-                        },
-                        selectedDayPredicate: (day) {
-                          if (_selectedDate.isNotEmpty) {
-                            final parsedDate = DateTime.parse(
-                              "${_selectedDate.split('/')[2]}-${_selectedDate.split('/')[1].padLeft(2, '0')}-${_selectedDate.split('/')[0].padLeft(2, '0')}",
-                            );
-                            // Compare only the year, month, and day
-                            final isSameDate = day.year == parsedDate.year &&
-                                day.month == parsedDate.month &&
-                                day.day == parsedDate.day;
-                            return isSameDate;
-                          }
-                          return false;
-                        },
-                        calendarFormat: CalendarFormat.month,
-                        headerStyle: HeaderStyle(
-                          formatButtonVisible: false,
-                          titleCentered: true,
-                          leftChevronVisible: true,
-                          rightChevronVisible: true,
-                        ),
-                        availableGestures: AvailableGestures.all,
-                        calendarStyle: CalendarStyle(
-                          selectedDecoration: BoxDecoration(
-                            color: AppColors.primaryColor,
-                            shape: BoxShape.circle,
+                        height: 400,
+                        width: 300,
+                        child:
+                            // TableCalendar(
+                            //   firstDay: DateTime(1900),
+                            //   lastDay:
+                            //       DateTime.now().subtract(Duration(days: 18 * 365)),
+                            //   focusedDay: _focusedDay,
+                            //   availableCalendarFormats: const {
+                            //     CalendarFormat.month: 'Month',
+                            //     CalendarFormat.twoWeeks: 'Year',
+                            //   },
+                            //   selectedDayPredicate: (day) {
+                            //     if (_selectedDate.isNotEmpty) {
+                            //       final parsedDate = DateTime.parse(
+                            //         "${_selectedDate.split('/')[2]}-${_selectedDate.split('/')[1].padLeft(2, '0')}-${_selectedDate.split('/')[0].padLeft(2, '0')}",
+                            //       );
+                            //       // Compare only the year, month, and day
+                            //       final isSameDate = day.year == parsedDate.year &&
+                            //           day.month == parsedDate.month &&
+                            //           day.day == parsedDate.day;
+                            //       return isSameDate;
+                            //     }
+                            //     return false;
+                            //   },
+                            //   calendarFormat: CalendarFormat.month,
+                            //   headerStyle: HeaderStyle(
+                            //     formatButtonVisible: false,
+                            //     titleCentered: true,
+                            //     leftChevronVisible: true,
+                            //     rightChevronVisible: true,
+                            //   ),
+                            //   availableGestures: AvailableGestures.all,
+                            //   calendarStyle: CalendarStyle(
+                            //     selectedDecoration: BoxDecoration(
+                            //       color: AppColors.primaryColor,
+                            //       shape: BoxShape.circle,
+                            //     ),
+                            //   ),
+                            //   onDaySelected: (selectedDay, focusedDay) {
+                            //     Navigator.pop(context);
+                            //     // Update the selected date when a day is selected
+                            //     setState(() {
+                            //       _selectedDate =
+                            //           "${selectedDay.day}/${selectedDay.month}/${selectedDay.year}";
+                            //       _focusedDay = focusedDay;
+                            //       print(
+                            //           'heheh ${selectedDay.day}/${selectedDay.month}/${selectedDay.year} hehe $focusedDay');
+                            //     });
+                            //   },
+                            //   onFormatChanged: (format) {
+                            //     setState(() {
+                            //       _calendarFormat = format;
+                            //     });
+                            //   },
+                            // ),
+                            CalendarDatePicker2(
+                          config: CalendarDatePicker2Config(
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime.now()
+                                .subtract(Duration(days: 18 * 365)),
                           ),
-                        ),
-                        onDaySelected: (selectedDay, focusedDay) {
-                          Navigator.pop(context);
-                          // Update the selected date when a day is selected
-                          setState(() {
-                            _selectedDate =
-                                "${selectedDay.day}/${selectedDay.month}/${selectedDay.year}";
-                            _focusedDay = focusedDay;
-                            print(
-                                'heheh ${selectedDay.day}/${selectedDay.month}/${selectedDay.year} hehe $focusedDay');
-                          });
-                        },
-                        onFormatChanged: (format) {
-                          setState(() {
-                            _calendarFormat = format;
-                          });
-                        },
-                      ),
-                    ),
+                          value: _selectedDate.isNotEmpty
+                              ? [DateFormat('dd/MM/yyyy').parse(_selectedDate)]
+                              : [],
+                          onValueChanged: (dates) {
+                            if (dates.isNotEmpty) {
+                              setState(() {
+                                _selectedDate = DateFormat('dd/MM/yyyy')
+                                    .format(dates.first);
+                              });
+                            }
+                          },
+                        )),
                   );
                 },
               );

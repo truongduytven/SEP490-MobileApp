@@ -47,7 +47,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
         turn++;
         gameOver = game.winnerCheck(lastValue, bestMove, scoreboard, 3);
         if (gameOver) {
-          result = "$lastValue là người chiến thắng";
+          result = "${lastValue == 'X' ? 'Bạn' : 'Máy'} là người chiến thắng";
         } else if (!gameOver && turn == 9) {
           result = "Hòa nhau";
           gameOver = true;
@@ -68,7 +68,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
         gameOver = game.winnerCheck(lastValue, index, scoreboard, 3);
         print(scoreboard);
         if (gameOver) {
-          result = "$lastValue là người chiến thắng";
+          result = "${lastValue == 'X' ? 'Bạn' : 'Máy'} là người chiến thắng";
           celebrateWin();
         } else if (!gameOver && turn == 9) {
           result = "Hòa nhau";
@@ -196,6 +196,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
         backgroundColor: AppColor.primaryColor,
         elevation: 0.0,
         centerTitle: true,
+        scrolledUnderElevation: 0.0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -219,7 +220,7 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
               onPressed: () {
                 showGameSettingsDialog();
               },
-              icon: Icon(Icons.settings))
+              icon: Icon(Icons.settings, color: Colors.white)),
         ],
       ),
       backgroundColor: AppColor.primaryColor,
@@ -230,7 +231,14 @@ class _CoCaroScreenState extends State<CoCaroScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Đến lượt $lastValue".toUpperCase(),
+                "Đến lượt ${lastValue == 'X' ? 'Bạn' : 'Máy'}".toUpperCase(),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 55,
+                ),
+              ),
+              Text(
+                lastValue.toUpperCase(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 58,

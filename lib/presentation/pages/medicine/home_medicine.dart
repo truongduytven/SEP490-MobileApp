@@ -192,7 +192,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       appBar: AppBar(
         backgroundColor: AppColors.bgColor,
         title: Text(
-          'Thuốc của tôi',
+          'Lịch uống thuốc',
           style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w600,
@@ -232,50 +232,54 @@ class _HomeMedicineState extends State<HomeMedicine> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  DropdownButton<int>(
-                    value: selectedMonth,
-                    items: List.generate(12, (index) => index + 1).map((month) {
-                      return DropdownMenuItem<int>(
-                        value: month,
-                        child: Text('Tháng $month',
-                            style: const TextStyle(fontSize: 20)),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedMonth = value!;
-                        selectedDay = 1;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scrollToSelectedDay(); // Scroll to day 1
-                          getDataPrescription();
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      value: selectedMonth,
+                      items: List.generate(12, (index) => index + 1).map((month) {
+                        return DropdownMenuItem<int>(
+                          value: month,
+                          child: Text('Tháng $month',
+                              style: const TextStyle(fontSize: 20)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedMonth = value!;
+                          selectedDay = 1;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _scrollToSelectedDay(); // Scroll to day 1
+                            getDataPrescription();
+                          });
+                          indexAnimation = 0;
                         });
-                        indexAnimation = 0;
-                      });
-                    },
+                      },
+                    ),
                   ),
-                  DropdownButton<int>(
-                    value: selectedYear,
-                    items: List.generate(
-                      2050 - 2025 + 1,
-                      (index) => 2025 + index,
-                    ).map((year) {
-                      return DropdownMenuItem<int>(
-                        value: year,
-                        child: Text('Năm $year',
-                            style: const TextStyle(fontSize: 20)),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedYear = value!;
-                        selectedDay = 1;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scrollToSelectedDay(); // Scroll to day 1
-                          getDataPrescription();
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      value: selectedYear,
+                      items: List.generate(
+                        2030 - 2025 + 1,
+                        (index) => 2025 + index,
+                      ).map((year) {
+                        return DropdownMenuItem<int>(
+                          value: year,
+                          child: Text('Năm $year',
+                              style: const TextStyle(fontSize: 20)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedYear = value!;
+                          selectedDay = 1;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _scrollToSelectedDay(); // Scroll to day 1
+                            getDataPrescription();
+                          });
+                          indexAnimation = 0;
                         });
-                        indexAnimation = 0;
-                      });
-                    },
+                      },
+                    ),
                   ),
                   Container(
                     decoration: BoxDecoration(),
@@ -465,7 +469,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Không có thuốc đặt lịch',
+            'Không có lịch uống thuốc nào trong ngày này',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w500,

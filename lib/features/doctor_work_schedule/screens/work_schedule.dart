@@ -169,42 +169,45 @@ class _WorkScheduleState extends State<WorkSchedule> {
 
       if (hasSchedule) {
         slots.add(
-          Row(
-            children: [
-              // Cột giờ
-              SizedBox(
-                width: 80,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    _controller.timeLabels[hour],
-                    style: theme.textTheme.bodySmall,
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Row(
+              children: [
+                // Cột giờ
+                SizedBox(
+                  width: 70,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      _controller.timeLabels[hour],
+                      style: theme.textTheme.bodySmall,
+                    ),
                   ),
                 ),
-              ),
-              // Các ô lịch
-              ...List.generate(
-                  7,
-                  (day) => Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.all(2),
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: _controller.timeSlots[day][hour]
-                                ? AppColors.primaryColor.withOpacity(0.2)
-                                : AppColors.primaryLowColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: colors.outline.withOpacity(0.1),
+                // Các ô lịch
+                ...List.generate(
+                    7,
+                    (day) => Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.all(2),
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: _controller.timeSlots[day][hour]
+                                  ? AppColors.primaryColor.withOpacity(0.2)
+                                  : AppColors.primaryLowColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: colors.outline.withOpacity(0.1),
+                              ),
                             ),
+                            child: _controller.timeSlots[day][hour]
+                                ? Icon(Icons.check_circle,
+                                    color: AppColors.primaryColor, size: 20)
+                                : null,
                           ),
-                          child: _controller.timeSlots[day][hour]
-                              ? Icon(Icons.check_circle,
-                                  color: AppColors.primaryColor, size: 20)
-                              : null,
-                        ),
-                      )),
-            ],
+                        )),
+              ],
+            ),
           ),
         );
       }

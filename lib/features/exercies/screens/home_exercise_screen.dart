@@ -248,15 +248,15 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
                                         scrollDirection: Axis.horizontal,
                                         children: [
                                           _buildBenefitCard(
-                                              'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                                              'https://mevacon.giaoduc.edu.vn/wp-content/uploads/2023/04/suc-khoe-tim-mach.jpeg',
                                               'Sức khỏe tim mạch',
                                               'Cải thiện tuần hoàn máu'),
                                           _buildBenefitCard(
-                                              'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                                              'https://vtcpay.vn/blog/wp-content/uploads/2021/06/top-6-bai-tap-the-duc-tot-nhat-cho-suc-khoe-nguoi-cao-tuoi.jpg',
                                               'Tăng cường năng lượng',
                                               'Giúp bạn tràn đầy sinh lực'),
                                           _buildBenefitCard(
-                                              'https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                                              'https://media.suckhoecong.vn/thumb_x800x450/Images/Uploaded/Share/2023/11/23/6-bai-tap-the-duc-nhe-nhang-an-toan-cho-nguoi-cao-tuoi11700731270.jpg',
                                               'Giảm căng thẳng',
                                               'Thư giãn tinh thần'),
                                         ],

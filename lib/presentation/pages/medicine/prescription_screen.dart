@@ -11,6 +11,7 @@ import 'package:sep490/presentation/pages/medicine/controller/medicine_controlle
 import 'package:sep490/presentation/pages/medicine/create_presciption/create_prescription_screen.dart';
 import 'package:sep490/presentation/pages/medicine/create_presciption/create_title_prescription.dart';
 import 'package:sep490/presentation/pages/medicine/detail_medicine.dart';
+import 'package:sep490/presentation/pages/medicine/history_prescription.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/widgets/loading/loadingImgPath.dart';
 import 'package:sep490/presentation/widgets/medicine/medicine_card.dart';
@@ -463,6 +464,17 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                     },
                   )
                 : Container(),
+            IconButton(
+              icon: Icon(Icons.history),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HistoryPrescription(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
         body: Container(

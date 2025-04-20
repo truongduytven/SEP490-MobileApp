@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -98,10 +99,25 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
     });
   }
 
+  bool _isSelectedDayToday() {
+    DateTime selectedDate = DateFormat("dd/MM/yyyy").parse(_startDate);
+    DateTime today = DateTime.now();
+    return selectedDate.year == today.year &&
+        selectedDate.month == today.month &&
+        selectedDate.day == today.day;
+  }
+
   void _showTimePicker(int index, String key) async {
     List<String> timeSplit = schedules[index][key]!.split(":");
     int hour = int.parse(timeSplit[0]);
     int minute = int.parse(timeSplit[1]);
+
+    final now = DateTime.now();
+    final currentHour = now.hour;
+    final currentMinute = now.minute;
+
+    bool isToday = _isSelectedDayToday();
+
     FixedExtentScrollController hourController =
         FixedExtentScrollController(initialItem: hour);
     FixedExtentScrollController minuteController =
@@ -223,6 +239,44 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                           AppColors.secondaryColor),
                     ),
                     onPressed: () {
+                      if (key == "startTime" && isToday) {
+                        if (hour < currentHour ||
+                            (hour == currentHour && minute < currentMinute)) {
+                          CherryToast.error(
+                            toastDuration: Duration(seconds: 2),
+                            title: Text(
+                              "Không thể chọn giờ trong quá khứ",
+                              style: TextStyle(color: Colors.black, fontSize: 22),
+                            ),
+                          ).show(context);
+                          Navigator.pop(context);
+                          FocusScope.of(context).unfocus();
+                          return;
+                        }
+                      }
+
+                      if (key == "endTime") {                  
+                        String? startTimeStr = schedules[index]["startTime"];
+                        if (startTimeStr != null) {
+                          List<String> startSplit = startTimeStr.split(":");
+                          int startHour = int.parse(startSplit[0]);
+                          int startMinute = int.parse(startSplit[1]);
+                          if (hour < startHour ||
+                              (hour == startHour && minute <= startMinute)) {
+                            CherryToast.error(
+                              toastDuration: Duration(seconds: 2),
+                              title: Text(
+                                "Thời gian kết thúc phải sau thời gian bắt đầu",
+                                style: TextStyle(color: Colors.black, fontSize: 22),
+                              ),
+                            ).show(context);
+                            Navigator.pop(context);
+                            FocusScope.of(context).unfocus();
+                            return;
+                          }
+                        }
+                      }
+
                       String time =
                           "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}:00.000";
                       Navigator.pop(context, time);
@@ -282,7 +336,9 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
           });
         } else {
           Fluttertoast.showToast(
-            msg: "Có lỗi trong quá trình xử lý!",
+            msg: scheduleController.message != ''
+                ? scheduleController.message
+                : "Có lỗi trong quá trình xử lý!",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
@@ -492,7 +548,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                                   );
                                 },
                                 decoration: InputDecoration(
-                                  hintText: "Chọn ngày kết thúc thuốc",
+                                  hintText: "Chọn ngày bắt đầu sự kiện",
                                   labelText: "Ngày bắt đầu",
                                   labelStyle: TextStyle(
                                       color: AppColors.textColor, fontSize: 20),
@@ -611,7 +667,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                                   );
                                 },
                                 decoration: InputDecoration(
-                                  hintText: "Chọn ngày kết thúc thuốc",
+                                  hintText: "Chọn ngày kết thúc",
                                   labelText: "Ngày kết thúc",
                                   labelStyle: TextStyle(
                                       color: AppColors.textColor, fontSize: 20),

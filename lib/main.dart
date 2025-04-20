@@ -529,6 +529,8 @@ class _MyAppState extends State<MyApp>
     WidgetsBinding.instance.addObserver(this);
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
     SharedPrefsHelper.roleNotifier.addListener(_onRoleChanged);
+    SharedPrefsHelper.avatarNotifier.addListener(_onRoleChanged);
+    SharedPrefsHelper.fullNameNotifier.addListener(_onRoleChanged);
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 100));
     // _initSpeech();

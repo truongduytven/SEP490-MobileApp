@@ -2,14 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sep490/data/services/api_services.dart';
-import 'package:sep490/presentation/pages/auth/signin_screen.dart';
+import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/presentation/pages/auth/medical_record.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CompleteInfoForm extends StatefulWidget {
   const CompleteInfoForm({super.key});
@@ -60,74 +57,15 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
 
   void handleSubmit() async {
     if (_formKey.currentState!.validate()) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return Center(
-                child: CircularProgressIndicator(
-              color: AppColors.primaryColor,
-            ));
-          });
-      // Lấy data
-      final weightIndex = weightController.text.trim();
-      final heightIndex = heightController.text.trim();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final accountId = prefs.getInt('accountId');
-      final fullName = prefs.getString('fullName');
-      final type = prefs.getString('typeSignUp');
-      final email = type == 'Email'
-          ? prefs.getString('emailOrPhoneSignUp')
-          : prefs.getString('emailOrPhoneSignUpLater');
-      final numberPhone = type == 'Phone number'
-          ? prefs.getString('emailOrPhoneSignUp')
-          : prefs.getString('emailOrPhoneSignUpLater');
-      final roleId = prefs.getString('role') == 'Elderly' ? 2 : 3;
-      final gender = prefs.getString('gender');
-      final dob = prefs.getString('dateOfBirth') ?? '';
-      String formatDOB = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-          .format(DateFormat("d/M/yyyy").parse(dob));
-      final medicalRecord = prefs.getStringList('medicalRecord') ?? [];
-      String medicalApi =
-          medicalRecord.map((e) => "MedicalRecord=$e").join("&");
-
-      String? storedAvatar = prefs.getString('avatar');
-      String image = (storedAvatar != null && storedAvatar.isNotEmpty)
-          ? storedAvatar
-          : await getDefaultAvatarPath();
-
-      var response = await ApiService.postRequestSignUp(
-          "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$roleId&$medicalApi&Height=$heightIndex&Weight=$weightIndex",
-          image);
-
-      Navigator.of(context).pop();
-
-      if (response['success'] && response['data']['isSuccess']) {
-        Fluttertoast.showToast(
-          msg: "Xác nhận thông tin thành công!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SignInScreen(),
-          ),
-        );
-      } else {
-        Fluttertoast.showToast(
-          msg: "Cõ lỗi trong quá trình xử lí",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      }
+      SharedPrefsHelper prefsHelper = SharedPrefsHelper();
+      prefsHelper.setString('height', heightController.text.trim());
+      prefsHelper.setString('weight', weightController.text.trim());
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MedicalRecordScreen(),
+        ),
+      );
     }
   }
 
@@ -160,7 +98,7 @@ class _CompleteInfoFormState extends State<CompleteInfoForm> {
                   ? () {
                       handleSubmit();
                     }
-                  : null,
+                  : null,         
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 backgroundColor: AppColors.secondaryColor,
