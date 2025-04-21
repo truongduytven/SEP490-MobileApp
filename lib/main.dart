@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -174,6 +173,69 @@ void main() async {
           );
         });
       },
+      // onCallEnd: (
+      //   ZegoCallEndEvent event,
+      //   VoidCallback defaultAction,
+      // ) async {
+      //   final callEndTime = DateTime.now();
+      //   final callDuration = startTime != null
+      //       ? callEndTime.difference(startTime!)
+      //       : Duration.zero; // Check if startTime is null
+      //   startTime = null; // Reset startTime after call ends
+      //   print(
+      //       "cuộc gọi bị hủy ${event.invitationData!.invitationID} ${event.invitationData!.invitees}  ${event.invitationData!.inviter} heeeeehah");
+
+      //   final invitationData = event.invitationData;
+      //   final callerId = invitationData?.inviter?.id ?? 'Unknown';
+      //   final callType = invitationData != null && invitationData.type != null
+      //       ? (invitationData.type == ZegoCallType.videoCall
+      //           ? ZegoCallType.videoCall
+      //           : ZegoCallType.voiceCall)
+      //       : ZegoCallType.voiceCall;
+      //   List<String> inviteeIds = [];
+      //   // Check if invitationData and invitees are not null
+      //   if (invitationData != null && invitationData.invitees != null) {
+      //     // Extract user IDs from invitees
+      //     inviteeIds = invitationData.invitees.map((user) => user.id).toList();
+
+      //     // Print or use the list of invitee IDs
+      //     print("Invitee IDs: $inviteeIds");
+      //   } else {
+      //     print("No invitees found.");
+      //   }
+
+      //   final formattedDuration = formatDuration(callDuration);
+      //   final callHistory = CallHistory(
+      //     callId: 'N/A', // You can generate a unique ID or use a placeholder
+      //     callerId: callerId,
+      //     calleeIds: inviteeIds,
+      //     callType: callType,
+      //     startTime: startTime ?? callEndTime,
+      //     endTime: callEndTime,
+      //     duration: formattedDuration,
+      //     callStatus: !formatDuration(callDuration).contains('0 giây')
+      //         ? CallStatus.success
+      //         : CallStatus.missed, // Mark as successful call
+      //   );
+
+      //   await CallHistoryHelper.saveCallHistory(
+      //       navigatorKey.currentContext!, callHistory);
+      //   scaffoldMessengerKey.currentState?.showSnackBar(
+      //     SnackBar(
+      //       content: Text(
+      //         'Call History:\n'
+      //         'Caller: ${event.invitationData!.callID}\n'
+      //         'Callee: ${event.invitationData}\n'
+      //         'Duration: ${event.invitationData?.invitationID ?? 0} seconds',
+      //       ),
+      //       duration: const Duration(seconds: 3),
+      //     ),
+      //   );
+      //   // Call the default action to ensure the call ends properly
+      //   // defaultAction();
+      //   defaultAction.call();
+      // },
+
       onCallEnd: (
         ZegoCallEndEvent event,
         VoidCallback defaultAction,
@@ -181,60 +243,55 @@ void main() async {
         final callEndTime = DateTime.now();
         final callDuration = startTime != null
             ? callEndTime.difference(startTime!)
-            : Duration.zero; // Check if startTime is null
-        startTime = null; // Reset startTime after call ends
-        print(
-            "cuộc gọi bị hủy ${event.invitationData!.invitationID} ${event.invitationData!.invitees}  ${event.invitationData!.inviter} heeeeehah");
+            : Duration.zero;
 
-        final invitationData = event.invitationData;
-        final callerId = invitationData?.inviter?.id ?? 'Unknown';
-        final callType = invitationData != null && invitationData.type != null
-            ? (invitationData.type == ZegoCallType.videoCall
-                ? ZegoCallType.videoCall
-                : ZegoCallType.voiceCall)
-            : ZegoCallType.voiceCall;
-        List<String> inviteeIds = [];
-        // Check if invitationData and invitees are not null
-        if (invitationData != null && invitationData.invitees != null) {
-          // Extract user IDs from invitees
-          inviteeIds = invitationData.invitees.map((user) => user.id).toList();
+        // Chỉ lưu lịch sử nếu cuộc gọi kéo dài hơn 1 giây
+        if (callDuration.inSeconds > 0) {
+          final invitationData = event.invitationData;
+          final callerId = invitationData?.inviter?.id ?? 'Unknown';
+          final callType = invitationData?.type ?? ZegoCallType.voiceCall;
+          List<String> inviteeIds =
+              invitationData?.invitees?.map((user) => user.id).toList() ?? [];
 
-          // Print or use the list of invitee IDs
-          print("Invitee IDs: $inviteeIds");
+          final formattedDuration = formatDuration(callDuration);
+          final callHistory = CallHistory(
+            callId: event.invitationData?.callID ?? 'N/A',
+            callerId: callerId,
+            calleeIds: inviteeIds,
+            callType: callType,
+            startTime: startTime ?? callEndTime,
+            endTime: callEndTime,
+            duration: formattedDuration,
+            callStatus: CallStatus.success,
+          );
+
+          await CallHistoryHelper.saveCallHistory(
+              navigatorKey.currentContext!, callHistory);
         } else {
-          print("No invitees found.");
+          final invitationData = event.invitationData;
+          final callerId = invitationData?.inviter?.id ?? 'Unknown';
+          final callType = invitationData?.type ?? ZegoCallType.voiceCall;
+          List<String> inviteeIds =
+              invitationData?.invitees?.map((user) => user.id).toList() ?? [];
+
+          final formattedDuration = formatDuration(callDuration);
+          final callHistory = CallHistory(
+            callId: event.invitationData?.callID ?? 'N/A',
+            callerId: callerId,
+            calleeIds: inviteeIds,
+            callType: callType,
+            startTime: startTime ?? callEndTime,
+            endTime: callEndTime,
+            duration: formattedDuration,
+            callStatus: CallStatus.missed,
+          );
+
+          await CallHistoryHelper.saveCallHistory(
+              navigatorKey.currentContext!, callHistory);
         }
 
-        final formattedDuration = formatDuration(callDuration);
-        final callHistory = CallHistory(
-          callId: 'N/A', // You can generate a unique ID or use a placeholder
-          callerId: callerId,
-          calleeIds: inviteeIds,
-          callType: callType,
-          startTime: startTime ?? callEndTime,
-          endTime: callEndTime,
-          duration: formattedDuration,
-          callStatus: startTime != null
-              ? CallStatus.success
-              : CallStatus.missed, // Mark as successful call
-        );
-
-        await CallHistoryHelper.saveCallHistory(
-            navigatorKey.currentContext!, callHistory);
-        scaffoldMessengerKey.currentState?.showSnackBar(
-          SnackBar(
-            content: Text(
-              'Call History:\n'
-              'Caller: ${event.invitationData!.callID}\n'
-              'Callee: ${event.invitationData}\n'
-              'Duration: ${event.invitationData?.invitationID ?? 0} seconds',
-            ),
-            duration: const Duration(seconds: 3),
-          ),
-        );
-        // Call the default action to ensure the call ends properly
-        // defaultAction();
-        defaultAction.call();
+        startTime = null;
+        defaultAction();
       },
     ),
     plugins: [

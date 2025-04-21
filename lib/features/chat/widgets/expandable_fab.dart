@@ -37,31 +37,32 @@ class _ExpandableFabState extends State<ExpandableFab> {
           ),
 
         // Floating buttons
-        AnimatedPositioned(
-          duration: Duration(milliseconds: 200),
-          bottom: _isExpanded ? 90 : 20,
-          right: 20,
-          child: Visibility(
-            visible: _isExpanded,
-            child: FloatingActionButton.extended(
-              heroTag: "btn1",
-              onPressed: () {
-                // Handle Add People action
-                print("Add People Clicked");
+        if (currentUserRoleId == 3 || currentUserRoleId == 2)
+          AnimatedPositioned(
+            duration: Duration(milliseconds: 200),
+            bottom: _isExpanded ? 90 : 20,
+            right: 20,
+            child: Visibility(
+              visible: _isExpanded,
+              child: FloatingActionButton.extended(
+                heroTag: "btn1",
+                onPressed: () {
+                  // Handle Add People action
+                  print("Add People Clicked");
 
-                Navigator.pushNamed(context, SelectContactsScreen.routeName);
+                  Navigator.pushNamed(context, SelectContactsScreen.routeName);
 
-                _toggleFab();
-              },
-              backgroundColor: AppColors.primaryColor,
-              icon: Icon(Icons.person_add, color: Colors.white),
-              label: Text(
-                "Thêm bạn",
-                style: TextStyle(color: AppColors.bgColor),
+                  _toggleFab();
+                },
+                backgroundColor: AppColors.primaryColor,
+                icon: Icon(Icons.person_add, color: Colors.white),
+                label: Text(
+                  "Thêm bạn",
+                  style: TextStyle(color: AppColors.bgColor),
+                ),
               ),
             ),
           ),
-        ),
         if (currentUserRoleId == 3)
           AnimatedPositioned(
             duration: Duration(milliseconds: 200),
