@@ -17,7 +17,8 @@ import 'package:sep490/theme/color.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class EditProfile extends StatefulWidget {
-  const EditProfile({super.key});
+  final int? elderlyId;
+  const EditProfile({super.key, this.elderlyId});
 
   @override
   State<EditProfile> createState() => _EditProfileState();
@@ -55,7 +56,8 @@ class _EditProfileState extends State<EditProfile> {
       isLoading = true;
     });
     HomeController homeController = HomeController();
-    await homeController.getElderlyProfile(accountId);
+    print(widget.elderlyId);
+    await homeController.getElderlyProfile(widget.elderlyId ?? accountId);
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {
@@ -208,6 +210,7 @@ class _EditProfileState extends State<EditProfile> {
         elevation: 0,
         scrolledUnderElevation: 0,
         actions: [
+          if(widget.elderlyId == null)
           IconButton(
             icon: Icon(isEditing ? Icons.close : Icons.edit),
             onPressed: () {

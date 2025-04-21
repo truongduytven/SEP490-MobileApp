@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
 import 'package:sep490/presentation/widgets/appointment/buildAppointmentCard.dart';
+import 'package:sep490/presentation/widgets/appointment/buildAppointmentDoctor.dart';
 import 'package:sep490/theme/color.dart';
 
 class ReportAppointment extends StatefulWidget {
@@ -120,19 +121,34 @@ class _ReportAppointmentState extends State<ReportAppointment> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                BuildAppointmentCard(
-                  appoimentDoctor: widget.appoimentDoctor,
-                  onCancel: () => Future.value(),
-                  onJoin: () => Future.value(),
-                  onReport: () => Future.value(),
-                  isListCard: false,
-                ),
+                if (widget.appoimentDoctor != null)
+                  BuildAppointmentCard(
+                    appoimentDoctor: widget.appoimentDoctor,
+                    onCancel: () => Future.value(),
+                    onJoin: () => Future.value(),
+                    onReport: () => Future.value(),
+                    isListCard: false,
+                  ),
+                if (widget.appoimentElderly != null)
+                  BuildAppointmentDoctor(
+                    appoimentDoctor: widget.appoimentElderly,
+                    onCancel: () => Future.value(),
+                    onJoin: () => Future.value(),
+                    onReport: () => Future.value(),
+                    isListCard: false,
+                  ),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : _report == null ||
+                    : (_report == null ||
                             (_report!.content.isEmpty &&
-                                _report!.solution.isEmpty)
-                        ? Expanded(child: Center(child: Text('Hiện tại không có báo cáo', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),)))
+                                _report!.solution.isEmpty) ) && !widget.isEdited
+                        ? Expanded(
+                            child: Center(
+                                child: Text(
+                            'Hiện tại không có báo cáo',
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.w600),
+                          )))
                         : Expanded(
                             child: ListView(
                               children: [
@@ -154,7 +170,7 @@ class _ReportAppointmentState extends State<ReportAppointment> {
                                       fontWeight: FontWeight.w500),
                                 )),
                                 _buildContentBox(
-                                    solutionController, _report!.solution),
+                                    solutionController,!widget.isEdited ? _report!.content : ''),
                                 const SizedBox(height: 20),
                                 if (widget.isEdited)
                                   Row(
@@ -193,7 +209,7 @@ class _ReportAppointmentState extends State<ReportAppointment> {
 
   Widget _buildContentBox(TextEditingController controller, String content) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.grayColor1, width: 1),

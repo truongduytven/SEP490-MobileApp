@@ -241,6 +241,38 @@ class PackageData {
   }
 }
 
+class UserSubscription {
+  final String subscriptionName;
+  final String description;
+  final double price;
+  final int validityPeriod;
+  final String startDate;
+  final String endDate;
+  final int numberOfMeetingLeft;
+
+  UserSubscription({
+    required this.subscriptionName,
+    required this.description,
+    required this.price,
+    required this.validityPeriod,
+    required this.startDate,
+    required this.endDate,
+    required this.numberOfMeetingLeft,
+  });
+
+  factory UserSubscription.fromJson(Map<String, dynamic> json) {
+    return UserSubscription(
+      subscriptionName: json['subscriptionName'] ?? '',
+      description: json['description'] ?? '',
+      price: json['price'].toDouble() ?? 0.0,
+      validityPeriod: json['validityPeriod'] ?? 0,
+      startDate: json['startDate'] ?? '',
+      endDate: json['endDate'] ?? '',
+      numberOfMeetingLeft: json['numberOfMeetingLeft'] ?? 0,
+    );
+  }
+}
+
 class ComboData {
   final int subscriptionId;
   final String name;
