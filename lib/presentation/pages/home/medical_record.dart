@@ -7,7 +7,8 @@ import 'package:sep490/presentation/pages/home/controller/home_controller.dart';
 import 'package:sep490/theme/color.dart';
 
 class MedicalRecord extends StatefulWidget {
-  const MedicalRecord({super.key});
+  final int? elderlyId;
+  const MedicalRecord({super.key, this.elderlyId});
 
   @override
   State<MedicalRecord> createState() => _MedicalRecordState();
@@ -88,7 +89,7 @@ class _MedicalRecordState extends State<MedicalRecord> {
       isLoading = true;
     });
     HomeController homeController = HomeController();
-    await homeController.getMedicalRecord(accountId);
+    await homeController.getMedicalRecord(widget.elderlyId ?? accountId);
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {
@@ -266,7 +267,7 @@ class _MedicalRecordState extends State<MedicalRecord> {
         centerTitle: true,
         backgroundColor: AppColors.bgColor,
         actions: [
-          if (!isEditMode)
+          if (!isEditMode && widget.elderlyId == null)
             IconButton(
               icon: const Icon(Icons.edit, color: AppColors.secondaryColor),
               onPressed: () {

@@ -214,6 +214,32 @@ class _NavigationMenuState extends State<NavigationMenu> {
             ),
             label: "Tư vấn",
           ),
+          NavigationDestination(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Trò chuyện",
+          ),
+          NavigationDestination(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedAmbulance,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedAmbulance,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Khẩn cấp",
+          ),
         ];
     }
   }
@@ -323,6 +349,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
           );
         case 2:
           return DoctorAdviseList();
+        case 3:
+          return MobileLayoutScreen();
+        case 4:
+          return EmergencyList();
         default:
           return HomeScreen();
       }

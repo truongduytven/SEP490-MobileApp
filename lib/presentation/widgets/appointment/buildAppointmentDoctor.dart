@@ -34,6 +34,7 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
   @override
   void initState() {
     super.initState();
+    print(widget.appoimentDoctor);
     time = widget.appoimentDoctor!.dateTime.split(' ')[1];
     date = widget.appoimentDoctor!.dateTime.split(' ')[0];
     isAllowed = isJoinAllowed;

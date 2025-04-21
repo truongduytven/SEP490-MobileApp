@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/models/doctor.dart';
@@ -12,6 +13,7 @@ import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_contr
 import 'package:sep490/presentation/pages/advise_doctor/screens/doctor_list.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/package_list.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/report_appointment.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/term_to_use.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/time_slot_doctor.dart';
 import 'package:sep490/presentation/widgets/appointment/_infoChip.dart';
 import 'package:sep490/presentation/widgets/appointment/buildAppointmentCard.dart';
@@ -37,7 +39,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
   late TabController _tabController;
   bool isLoading = false;
   late DoctorData? doctorData = null;
-  late PackageData? packageData = null;
+  late UserSubscription? packageData = null;
   late List<AppoimentDoctor>? appoimentDoctor = null;
   bool isLoadingAppointment = false;
   bool isPackage = false;
@@ -613,7 +615,86 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text('Bạn đã mua gói dịch vụ')],
+              children: [
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title with background
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor.withOpacity(0.9),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                          ),
+                        ),
+                        child: Text(
+                          packageData!.subscriptionName,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildInfoRow("Mô tả:", packageData!.description),
+                            _buildInfoRow("Giá:",
+                                "${convertMoney(packageData!.price)} VNĐ"),
+                            _buildInfoRow(
+                                "Thời gian bắt đầu:", convertDateTimeToDateNoTime(packageData!.startDate)),
+                            _buildInfoRow(
+                                "Thời gian kết thúc:", convertDateTimeToDateNoTime(packageData!.endDate)),
+                            _buildInfoRow("Số buổi còn lại:",
+                                "${packageData!.numberOfMeetingLeft} buổi"),
+                            SizedBox(height: 10),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TermToUse(),
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Điều khoản sử dụng",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      decoration: TextDecoration.underline,
+                                      decorationStyle: TextDecorationStyle.solid,
+                                      decorationThickness: 2,
+                                      color: AppColors.secondaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
             ),
           )
         : SingleChildScrollView(
@@ -725,5 +806,35 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                               color: AppColors.primaryColor)),
                 ]),
           );
+  }
+
+  Widget _buildInfoRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 18,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -18,6 +18,8 @@ import 'package:sep490/features/health/screens/health_monitoring_book.dart';
 import 'package:sep490/presentation/pages/home/controller/home_controller.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/presentation/pages/home/iot_indicator.dart';
+import 'package:sep490/presentation/pages/home/medical_record.dart';
+import 'package:sep490/presentation/pages/home/profile.dart';
 import 'package:sep490/presentation/pages/home/view_detail_elderly.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/schedule/Controller/schedule_controller.dart';
@@ -928,6 +930,145 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                               ],
                             ),
+                          if (roleId == 3 && selectedElderlyUserId != 0)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Đang hỗ trợ: ',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.textColor),
+                                ),
+                                Text(
+                                  '$selectedElderlyUserName',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textColor),
+                                ),
+                              ],
+                            ),
+                          if (roleId == 3 && selectedElderlyUserId != 0)
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditProfile(elderlyId: selectedElderlyUserId,),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.bgColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.secondaryColor
+                                          .withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.person,
+                                      size: 50,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Xem hồ sơ người già",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.textColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 20,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          if (roleId == 3 && selectedElderlyUserId != 0)
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MedicalRecord(elderlyId: selectedElderlyUserId,),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.bgColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.secondaryColor
+                                          .withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.assignment_outlined,
+                                      size: 50,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Xem hồ sơ bệnh án",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.textColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 20,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          if (roleId == 3) SizedBox(height: 20),
                           if (roleId == 3)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -984,8 +1125,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              WaterDrinking(),
+                                          builder: (context) => WaterDrinking(),
                                         ),
                                       );
                                     },

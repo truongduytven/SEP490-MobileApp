@@ -4,7 +4,7 @@ import 'package:sep490/presentation/pages/advise_doctor/repositories/doctor_repo
 class DoctorController {
   final DoctorRepository _doctorRepository = DoctorRepository();
   DoctorData? doctorData;
-  PackageData? packageData;
+  UserSubscription? packageData;
   List<AppoimentDoctor>? appoimentDoctor;
   List<AppoimentElderly>? appoimentElderly;
   List<TimeSlots>? listAppoimentDoctor;
@@ -40,10 +40,19 @@ class DoctorController {
     }
   }
 
+  Future<void> getDoctorDetailsByAccountId(int accountId) async {
+    final response = await _doctorRepository.getDoctorDetailsByAccountId(accountId);
+    if (response != null && response['isSuccess']) {
+      doctorData = DoctorData.fromJson(response['data']['data']);
+    } else {
+      doctorData = null;
+    }
+  }
+
   Future<void> getPackageUser(int accountId) async {
     final response = await _doctorRepository.getPackageUser(accountId);
     if (response != null && response['isSuccess']) {
-      packageData = PackageData.fromJson(response['data']['data']);
+      packageData = UserSubscription.fromJson(response['data']['data']);
     } else {
       packageData = null;
     }
@@ -76,7 +85,7 @@ class DoctorController {
     }
   }
 
-  Future<void> getAppointmentElderly(int accountId ,String status) async {
+  Future<void> getAppointmentElderly(int accountId, String status) async {
     final response =
         await _doctorRepository.getAppointmentElderly(accountId, status);
     if (response != null && response['isSuccess']) {
@@ -166,8 +175,8 @@ class DoctorController {
     }
   }
 
-  Future<void> bookingAppointment(int elderlyId, int professorId, String startTime,
-      String endTime, String day, String description) async {
+  Future<void> bookingAppointment(int elderlyId, int professorId,
+      String startTime, String endTime, String day, String description) async {
     final response = await _doctorRepository.bookingAppointment(
         elderlyId, professorId, startTime, endTime, day, description);
     if (response != null && response['isSuccess']) {
@@ -200,7 +209,7 @@ class DoctorController {
     final response = await _doctorRepository.ratingDoctor(
         appointmentId, content, star, createdBy);
     if (response != null && response['isSuccess']) {
-      isRatingSuccess = response['data']['status'] == 1;
+      isRatingSuccess = true;
     } else {
       isRatingSuccess = false;
     }
@@ -211,7 +220,7 @@ class DoctorController {
     final response =
         await _doctorRepository.reportDoctor(appointmentId, content, solution);
     if (response != null && response['isSuccess']) {
-      isSendReportSuccess = response['data']['status'] == 1;
+      isSendReportSuccess = true;
     } else {
       isSendReportSuccess = false;
     }

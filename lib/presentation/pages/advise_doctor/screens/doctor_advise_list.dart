@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/main.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/report_appointment.dart';
@@ -18,7 +19,8 @@ class DoctorAdviseList extends StatefulWidget {
   State<DoctorAdviseList> createState() => _DoctorAdviseListState();
 }
 
-class _DoctorAdviseListState extends State<DoctorAdviseList> {
+class _DoctorAdviseListState extends State<DoctorAdviseList>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver, RouteAware {
   List<AppoimentElderly>? listAppoimentElderly;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId = 0;
@@ -35,6 +37,7 @@ class _DoctorAdviseListState extends State<DoctorAdviseList> {
     super.initState();
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
     getAppointmentElderly(selectedStatus);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   Future<void> getAppointmentElderly(String status) async {
@@ -101,6 +104,32 @@ class _DoctorAdviseListState extends State<DoctorAdviseList> {
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Đăng ký RouteAware để theo dõi sự kiện navigation
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      // Kiểm tra xem route có phải là PageRoute không
+      routeObserver.subscribe(
+          this,
+          // ignore: unnecessary_cast
+          route as PageRoute<dynamic>); // Ép kiểu thành PageRoute<dynamic>
+    }
+  }
+
+  @override
+  void didPopNext() {
+    getAppointmentElderly(selectedStatus); // Gọi lại API
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColors.bgColor,
@@ -137,89 +166,94 @@ class _DoctorAdviseListState extends State<DoctorAdviseList> {
                 )
               : (listAppoimentElderly != null &&
                       listAppoimentElderly!.isNotEmpty)
-                  ? Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 12),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  border: Border.all(
-                                      color: AppColors.grayColor1, width: 1),
-                                ),
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value: selectedStatus,
-                                    onChanged: (String? newValue) {
-                                      if (selectedStatus == newValue) return;
-                                      setState(() {
-                                        selectedStatus = newValue!;
-                                        getAppointmentElderly(newValue);
-                                      });
-                                    },
-                                    items: statusOptions.entries
-                                        .map<DropdownMenuItem<String>>((entry) {
-                                      return DropdownMenuItem<String>(
-                                        value: entry.value,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              entry.key,
-                                              style: TextStyle(fontSize: 18),
-                                            ),
-                                            if (selectedStatus == entry.value)
-                                              Icon(
-                                                Icons.check,
-                                                color: AppColors.primaryColor,
-                                                size: 30,
-                                              ),
-                                          ],
+                  ? Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25.0),
+                            border: Border.all(
+                                color: AppColors.grayColor1, width: 1),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: selectedStatus,
+                              onChanged: (String? newValue) {
+                                if (selectedStatus == newValue) return;
+                                setState(() {
+                                  selectedStatus = newValue!;
+                                  getAppointmentElderly(newValue);
+                                });
+                              },
+                              items: statusOptions.entries
+                                  .map<DropdownMenuItem<String>>((entry) {
+                                return DropdownMenuItem<String>(
+                                  value: entry.value,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        entry.key,
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                      if (selectedStatus == entry.value)
+                                        Icon(
+                                          Icons.check,
+                                          color: AppColors.primaryColor,
+                                          size: 30,
                                         ),
-                                      );
-                                    }).toList(),
-                                    selectedItemBuilder: (context) {
-                                      return statusOptions.entries
-                                          .map<Widget>((entry) => Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(entry.key,
-                                                      style: TextStyle(
-                                                          fontSize: 18)),
-                                                ],
-                                              ))
-                                          .toList();
-                                    },
+                                    ],
                                   ),
-                                ),
-                              ),
-                              ...listAppoimentElderly!
-                                  .map((item) => BuildAppointmentDoctor(
-                                        appoimentDoctor: item,
-                                        onCancel: () async => {
-                                          cancelAppointment(
-                                              item.professorAppointmentId)
-                                        },
-                                        onJoin: () => Future.value(),
-                                        onReport: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ReportAppointment(
-                                                      appoimentElderly: item,
-                                                      isEdited: false,
-                                                    ))),
-                                        isListCard: true,
-                                      ))
-                            ]),
-                      ),
+                                );
+                              }).toList(),
+                              selectedItemBuilder: (context) {
+                                return statusOptions.entries
+                                    .map<Widget>((entry) => Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(entry.key,
+                                                style: TextStyle(fontSize: 18)),
+                                          ],
+                                        ))
+                                    .toList();
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 12),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  ...listAppoimentElderly!
+                                      .map((item) => BuildAppointmentDoctor(
+                                            appoimentDoctor: item,
+                                            onCancel: () async => {
+                                              cancelAppointment(
+                                                  item.professorAppointmentId)
+                                            },
+                                            onJoin: () => Future.value(),
+                                            onReport: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ReportAppointment(
+                                                          appoimentElderly:
+                                                              item,
+                                                          isEdited: false,
+                                                        ))),
+                                            isListCard: true,
+                                          ))
+                                ]),
+                          ),
+                        ),
+                      ],
                     )
                   : Expanded(
                       child: Column(
