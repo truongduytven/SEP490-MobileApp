@@ -210,6 +210,106 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final createdDate = DateTime.parse(notification['createdDate']);
     final timeFormat = DateFormat('HH:mm');
     final dateFormat = DateFormat('dd/MM');
+    Icon getNotificationIcon(String notificationType, bool isUnread) {
+      // Màu sắc mặc định
+      final Color activeColor = isUnread
+          ? AppColors.primaryColor
+          : Colors.grey[400] ?? AppColors.primaryColor;
+      final Color emergencyColor =
+          isUnread ? Colors.red : Colors.grey[400] ?? AppColors.primaryColor;
+
+      switch (notificationType) {
+        // Thuốc/Medication
+        case 'Medication':
+          return Icon(
+            isUnread ? Icons.medication : Icons.medication_outlined,
+            color: activeColor,
+            size: 24,
+          );
+
+        // Cảnh báo sức khỏe
+        case 'Cảnh báo sức khỏe':
+          return Icon(
+            isUnread
+                ? Icons.health_and_safety
+                : Icons.health_and_safety_outlined,
+            color: emergencyColor,
+            size: 24,
+          );
+
+        // Kết bạn mới
+        case 'Kết Bạn Mới':
+          return Icon(
+            isUnread ? Icons.person_add : Icons.person_add_outlined,
+            color: activeColor,
+            size: 24,
+          );
+
+        // Chấp nhận kết bạn
+        case 'Chấp nhận kết bạn':
+          return Icon(
+            isUnread ? Icons.person_2 : Icons.person_2_outlined,
+            color: Colors.green,
+            size: 24,
+          );
+
+        // SOS/Khẩn cấp
+        case 'SOS':
+          return Icon(
+            isUnread ? Icons.emergency : Icons.emergency_outlined,
+            color: emergencyColor,
+            size: 24,
+          );
+
+        // Mua gói dịch vụ
+        case 'Mua Gói Dịch Vụ':
+          return Icon(
+            isUnread ? Icons.card_membership : Icons.card_membership_outlined,
+            color: Colors.blue,
+            size: 24,
+          );
+
+        // Gửi yêu cầu hỗ trợ
+        case 'Gửi Yêu Cầu Hỗ Trợ':
+          return Icon(
+            isUnread ? Icons.help : Icons.help_outline,
+            color: activeColor,
+            size: 24,
+          );
+
+        // Xác nhận hỗ trợ
+        case 'Xác Nhận Hỗ Trợ':
+          return Icon(
+            isUnread ? Icons.thumb_up : Icons.thumb_up_outlined,
+            color: Colors.green,
+            size: 24,
+          );
+
+        // Thêm vào gia đình
+        case 'Thêm Vào Gia Đình':
+          return Icon(
+            isUnread ? Icons.family_restroom : Icons.group_add,
+            color: activeColor,
+            size: 24,
+          );
+
+        // Nhắc nhở uống nước
+        case 'Nhắc nhở uống nước':
+          return Icon(
+            isUnread ? Icons.local_drink : Icons.local_drink_outlined,
+            color: Colors.blue[300],
+            size: 24,
+          );
+
+        // Mặc định
+        default:
+          return Icon(
+            isUnread ? Icons.notifications_active : Icons.notifications_none,
+            color: activeColor,
+            size: 24,
+          );
+      }
+    }
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -222,11 +322,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
               : Colors.transparent,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          isUnread ? Icons.notifications_active : Icons.notifications_none,
-          color: isUnread ? AppColors.primaryColor : Colors.grey[400],
-          size: 24,
-        ),
+        // child: Icon(
+        //   isUnread ? Icons.notifications_active : Icons.notifications_none,
+        //   color: isUnread ? AppColors.primaryColor : Colors.grey[400],
+        //   size: 24,
+        // ),
+        child: getNotificationIcon(notification['notificationType'], isUnread),
       ),
       title: Text(
         notification['title'],
