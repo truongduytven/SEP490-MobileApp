@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:sep490/theme/color.dart';
 
@@ -11,6 +13,7 @@ class MedicalRecordForm extends StatefulWidget {
 }
 
 class _MedicalRecordFormState extends State<MedicalRecordForm> {
+  bool isInputAdd = false;
   final List<Map<String, String>> treatmentOptions = [
     {
       "name": "Gan",
@@ -44,10 +47,10 @@ class _MedicalRecordFormState extends State<MedicalRecordForm> {
       "name": "Xương khớp",
       "image": "assets/img3D/treatment_medical/xuong.png",
     },
-    {
-      "name": "Khác",
-      "image": "assets/img3D/form_medical/khac.png",
-    },
+    // {
+    //   "name": "Khác",
+    //   "image": "assets/img3D/form_medical/khac.png",
+    // },
   ];
   final List<Map<String, String>> selectedTreatments = [];
   String additionalTreatment = '';
@@ -64,28 +67,84 @@ class _MedicalRecordFormState extends State<MedicalRecordForm> {
         ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: treatmentOptions.length,
+          itemCount: treatmentOptions.length + 1,
           itemBuilder: (context, index) {
-            return Column(
-              children: [
-                _buildButtonForm(treatmentOptions[index]),
-                if (index != treatmentOptions.length - 1)
-                  const Divider(color: AppColors.borderColor),
-              ],
-            );
+            return index == treatmentOptions.length
+                ? Container(
+                    margin: EdgeInsets.only(top: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 100),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (isInputAdd == false) {
+                          setState(() {
+                            isInputAdd = !isInputAdd;
+                          });
+                        } else {
+                          if (additionalTreatment.isNotEmpty) {
+                            setState(() {
+                              treatmentOptions.add({
+                                'name': additionalTreatment,
+                                'image':
+                                    'assets/img3D/form_medical/khac.png',
+                              });
+                              additionalTreatment = '';
+                              isInputAdd = false;
+                            });
+                            widget.onSelectionChanged(selectedTreatments);
+                          } else {
+                            setState(() {
+                              isInputAdd = !isInputAdd;
+                            });
+                          }
+                        }
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            AppColors.secondaryColor),
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                          const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 5),
+                        ),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                      child: Text('Thêm',
+                          style: TextStyle(
+                            color: AppColors.bgColor,
+                            fontSize: 25,
+                          )),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      _buildButtonForm(treatmentOptions[index]),
+                      if (index != treatmentOptions.length - 1)
+                        const Divider(color: AppColors.borderColor),
+                    ],
+                  );
           },
         ),
-        // if (selectedTreatments.any((treatmean) =>
-        //     treatmean['name'] == 'Khác')) // If "Khác" is selected
-        //   TextField(
-        //     decoration: InputDecoration(
-        //       labelText: 'Nhập thêm điều trị',
-        //       border: OutlineInputBorder(),
-        //     ),
-        //     onChanged: (value) {
-        //       additionalTreatment = value;
-        //     },
-        //   ),
+        const SizedBox(height: 20),
+        if (isInputAdd)
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'Nhập thêm bệnh án khác',
+              labelStyle:
+                  TextStyle(color: AppColors.secondaryColor, fontSize: 25),
+              border: OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.secondaryColor),
+              ),
+              counterStyle: TextStyle(color: AppColors.secondaryColor),
+            ),
+            onChanged: (value) {
+              additionalTreatment = value;
+            },
+          ),
       ],
     );
   }

@@ -31,6 +31,7 @@ class HistoryEmergency {
   final String emergencyTime;
   final String confirmationDate;
   final bool isConfirmed;
+  final String status;
 
   HistoryEmergency({
     required this.emergencyConfirmationId,
@@ -40,6 +41,7 @@ class HistoryEmergency {
     required this.emergencyTime,
     required this.confirmationDate,
     required this.isConfirmed,
+    required this.status,
   });
 
   factory HistoryEmergency.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class HistoryEmergency {
       emergencyTime: json['emergencyTime'],
       confirmationDate: json['confirmationDate'] ?? '',
       isConfirmed: json['isConfirmed'],
+      status: json['status'] ?? '',
     );
   }
   Map<String, dynamic> toJson() {
@@ -62,6 +65,7 @@ class HistoryEmergency {
       'emergencyTime': emergencyTime,
       'confirmationDate': confirmationDate,
       'isConfirmed': isConfirmed,
+      'status': status,
     };
   }
 }

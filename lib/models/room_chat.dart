@@ -7,6 +7,7 @@ class RoomChat {
   final String createdAt;
   final bool isOnline;
   final bool isGroupChat;
+  final bool isProfessorChat;
   final int numberOfMems;
   final int senderId;
   final String lastMessage;
@@ -22,6 +23,7 @@ class RoomChat {
     required this.createdAt,
     required this.isOnline,
     required this.isGroupChat,
+    required this.isProfessorChat,
     required this.numberOfMems,
     required this.senderId,
     required this.lastMessage,
@@ -39,6 +41,7 @@ class RoomChat {
       createdAt: json['createdAt'],
       isOnline: json['isOnline'],
       isGroupChat: json['isGroupChat'],
+      isProfessorChat: json['isProfessorChat'],
       numberOfMems: json['numberOfMems'],
       senderId: json['senderId'],
       lastMessage: json['lastMessage'] ?? '',
@@ -59,6 +62,7 @@ class RoomChat {
       'createdAt': createdAt,
       'isOnline': isOnline,
       'isGroupChat': isGroupChat,
+      'isProfessorChat': isProfessorChat,
       'numberOfMems': numberOfMems,
       'senderId': senderId,
       'lastMessage': lastMessage,

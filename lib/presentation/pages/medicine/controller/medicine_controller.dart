@@ -6,6 +6,7 @@ class MedicineController {
   PrescriptionUpdate? prescriptionUpdate;
   Map<String, dynamic>? medicines;
   final MedicineRepository _medicineRepository = MedicineRepository();
+  List<PrescriptionUpdate>? prescriptions = [];
   bool isCreateSuccess = false;
   bool isUpdateSuccess = false;
   bool isCancelSuccess = false;
@@ -35,6 +36,7 @@ class MedicineController {
     if (response != null && response['isSuccess']) {
       isCreateSuccess = true;
     } else {
+      message = response['data']['message'];
       isCreateSuccess = false;
     }
   }
@@ -83,6 +85,19 @@ class MedicineController {
       } 
     } else {
       medicines = null;
+    }
+  }
+
+  Future<void> getHistoryPrescription (int userId) async {
+    final response = await _medicineRepository.getHistoryPrescription(userId);
+    if (response != null && response['isSuccess']) {
+      prescriptions = [];
+      for (var item in response['data']['data']) {
+        prescriptions!.add(PrescriptionUpdate.fromJson(item));
+      }
+    } else {
+      prescriptions = null;
+      message = response['data']['message'];
     }
   }
 }

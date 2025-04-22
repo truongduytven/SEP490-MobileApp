@@ -4,14 +4,16 @@ import 'package:sep490/presentation/pages/advise_doctor/repositories/doctor_repo
 class DoctorController {
   final DoctorRepository _doctorRepository = DoctorRepository();
   DoctorData? doctorData;
-  PackageData? packageData;
+  UserSubscription? packageData;
   List<AppoimentDoctor>? appoimentDoctor;
+  List<AppoimentElderly>? appoimentElderly;
   List<TimeSlots>? listAppoimentDoctor;
   Report? report;
   List<FilteredDoctor>? listFilterDoctor;
   List<ComboData>? comboData;
   CheckoutResponse? checkoutResponse;
   List<FeedBackDoctor>? feedbackDoctor;
+  int numberMeeting = 0;
   bool isOrderSuccess = false;
   bool isConfirmedSuccess = false;
   bool isSelectDoctorSuccess = false;
@@ -38,10 +40,19 @@ class DoctorController {
     }
   }
 
+  Future<void> getDoctorDetailsByAccountId(int accountId) async {
+    final response = await _doctorRepository.getDoctorDetailsByAccountId(accountId);
+    if (response != null && response['isSuccess']) {
+      doctorData = DoctorData.fromJson(response['data']['data']);
+    } else {
+      doctorData = null;
+    }
+  }
+
   Future<void> getPackageUser(int accountId) async {
     final response = await _doctorRepository.getPackageUser(accountId);
     if (response != null && response['isSuccess']) {
-      packageData = PackageData.fromJson(response['data']['data']);
+      packageData = UserSubscription.fromJson(response['data']['data']);
     } else {
       packageData = null;
     }
@@ -71,6 +82,18 @@ class DoctorController {
           data.map((item) => AppoimentDoctor.fromJson(item)).toList();
     } else {
       appoimentDoctor = null;
+    }
+  }
+
+  Future<void> getAppointmentElderly(int accountId, String status) async {
+    final response =
+        await _doctorRepository.getAppointmentElderly(accountId, status);
+    if (response != null && response['isSuccess']) {
+      List<dynamic> data = response['data']['data'];
+      appoimentElderly =
+          data.map((item) => AppoimentElderly.fromJson(item)).toList();
+    } else {
+      appoimentElderly = null;
     }
   }
 
@@ -136,7 +159,7 @@ class DoctorController {
   Future<void> confirmCheckout(String transId) async {
     final response = await _doctorRepository.confirmCheckout(transId);
     if (response != null && response['isSuccess']) {
-      isConfirmedSuccess = response['data']['status'] == 1;
+      isConfirmedSuccess = true;
     } else {
       isConfirmedSuccess = false;
     }
@@ -152,10 +175,10 @@ class DoctorController {
     }
   }
 
-  Future<void> bookingAppointment(
-      int elderlyId, int timeSlotId, String day, String description) async {
+  Future<void> bookingAppointment(int elderlyId, int professorId,
+      String startTime, String endTime, String day, String description) async {
     final response = await _doctorRepository.bookingAppointment(
-        elderlyId, timeSlotId, day, description);
+        elderlyId, professorId, startTime, endTime, day, description);
     if (response != null && response['isSuccess']) {
       isBookingAppointmentSuccess = response['data']['status'] == 1;
     } else {
@@ -172,12 +195,21 @@ class DoctorController {
     }
   }
 
+  Future<void> getNumberMeeting(int elderlyId) async {
+    final response = await _doctorRepository.getNumberMeeting(elderlyId);
+    if (response != null && response['isSuccess']) {
+      numberMeeting = response['data']['data'] ?? 0;
+    } else {
+      numberMeeting = 0;
+    }
+  }
+
   Future<void> ratingDoctor(
       int appointmentId, String content, int star, String createdBy) async {
     final response = await _doctorRepository.ratingDoctor(
         appointmentId, content, star, createdBy);
     if (response != null && response['isSuccess']) {
-      isRatingSuccess = response['data']['status'] == 1;
+      isRatingSuccess = true;
     } else {
       isRatingSuccess = false;
     }
@@ -188,7 +220,7 @@ class DoctorController {
     final response =
         await _doctorRepository.reportDoctor(appointmentId, content, solution);
     if (response != null && response['isSuccess']) {
-      isSendReportSuccess = response['data']['status'] == 1;
+      isSendReportSuccess = true;
     } else {
       isSendReportSuccess = false;
     }

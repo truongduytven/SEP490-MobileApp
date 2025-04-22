@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/features/exercies/screens/playlist_page.dart';
+import 'package:sep490/features/exercies/screens/workout_benefit_detail_screen.dart';
 import 'dart:convert';
 
 import 'package:sep490/theme/color.dart';
@@ -200,7 +201,7 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
                                             color: Colors.black87)),
                                     const SizedBox(height: 8),
                                     Text(
-                                        'Chọn playlist yêu thích và bắt đầu hành trình tập luyện của bạn',
+                                        'Chọn danh sách yêu thích và bắt đầu hành trình tập luyện của bạn',
                                         style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.grey[600])),
@@ -247,15 +248,15 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
                                         scrollDirection: Axis.horizontal,
                                         children: [
                                           _buildBenefitCard(
-                                              'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                                              'https://mevacon.giaoduc.edu.vn/wp-content/uploads/2023/04/suc-khoe-tim-mach.jpeg',
                                               'Sức khỏe tim mạch',
                                               'Cải thiện tuần hoàn máu'),
                                           _buildBenefitCard(
-                                              'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                                              'https://vtcpay.vn/blog/wp-content/uploads/2021/06/top-6-bai-tap-the-duc-tot-nhat-cho-suc-khoe-nguoi-cao-tuoi.jpg',
                                               'Tăng cường năng lượng',
                                               'Giúp bạn tràn đầy sinh lực'),
                                           _buildBenefitCard(
-                                              'https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                                              'https://media.suckhoecong.vn/thumb_x800x450/Images/Uploaded/Share/2023/11/23/6-bai-tap-the-duc-nhe-nhang-an-toan-cho-nguoi-cao-tuoi11700731270.jpg',
                                               'Giảm căng thẳng',
                                               'Thư giãn tinh thần'),
                                         ],
@@ -269,21 +270,6 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStatItem(IconData icon, String value, String label) {
-    return Column(
-      children: [
-        Icon(icon, size: 28, color: AppColors.primaryColor),
-        const SizedBox(height: 8),
-        Text(value,
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryColor)),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-      ],
     );
   }
 
@@ -412,59 +398,71 @@ class _HomeExerciseScreenState extends State<HomeExerciseScreen> {
   }
 
   Widget _buildBenefitCard(String imageUrl, String title, String subtitle) {
-    return Container(
-      width: 200,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WorkoutBenefitDetailScreen(
+            imageUrl: imageUrl,
+            title: title,
+            subtitle: subtitle,
+          ),
+        ),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            Image.network(
-              imageUrl,
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
+      child: Container(
+        width: 200,
+        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            children: [
+              Image.network(
+                imageUrl,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -7,10 +7,12 @@ import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/checkout.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/doctor_list.dart';
 import 'package:sep490/theme/color.dart';
 
 class PackageList extends StatefulWidget {
-  const PackageList({super.key});
+  final bool isShowFull;
+  const PackageList({super.key, required this.isShowFull});
 
   @override
   State<PackageList> createState() => _PackageListState();
@@ -18,6 +20,7 @@ class PackageList extends StatefulWidget {
 
 class _PackageListState extends State<PackageList> {
   late List<ComboData>? comboData = null;
+  late List<ComboData>? comboOdd = null;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   bool isLoading = false;
   List<List<Color>> gradientColors = [
@@ -55,7 +58,10 @@ class _PackageListState extends State<PackageList> {
         } else {
           setState(() {
             comboData = doctorController.comboData!
-                .where((element) => element.status == 'Active')
+                .where((element) => (element.status == 'Active' && element.validityPeriod > 0))
+                .toList();
+            comboOdd = doctorController.comboData!
+                .where((element) => (element.status == 'Active' && element.validityPeriod == 0))
                 .toList();
             isLoading = false;
           });
@@ -122,13 +128,24 @@ class _PackageListState extends State<PackageList> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Checkout(
-                            comboData: package,
-                          ),
-                        ));
+                    if (comboData!.contains(package)) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Checkout(
+                              comboData: package,
+                            ),
+                          ));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DoctorList(
+                              comboData: package,
+                              isChoosePackage: true,
+                            ),
+                          ));
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondaryColor,
@@ -155,6 +172,7 @@ class _PackageListState extends State<PackageList> {
                 fontWeight: FontWeight.w600,
                 color: AppColors.secondaryColor)),
         centerTitle: true,
+        scrolledUnderElevation: 0,
         backgroundColor: AppColors.bgColor,
       ),
       body: Container(
@@ -182,103 +200,150 @@ class _PackageListState extends State<PackageList> {
                       style: TextStyle(fontSize: 18, color: Colors.grey),
                     ),
                   )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: comboData!.length,
-                    itemBuilder: (context, index) {
-                      final colors =
-                          gradientColors[index % gradientColors.length];
-                      final package = comboData![index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        elevation: 3,
-                        color: AppColors.bgColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () => _showPackageDetails(context, package),
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        if(widget.isShowFull)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.only(
-                                  left: 16,
-                                  right: 16,
-                                  top: 12,
-                                  bottom: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: colors,
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(12),
-                                    topRight: Radius.circular(12),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(package.name,
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.bgColor)),
-                                    Text('${convertMoney(package.fee)} VND',
-                                        style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.bgColor)),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.only(
-                                  left: 16,
-                                  right: 16,
-                                  top: 16,
-                                  bottom: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.bgColor,
-                                  borderRadius: const BorderRadius.only(
-                                    bottomLeft: Radius.circular(12),
-                                    bottomRight: Radius.circular(12),
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(package.description,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.calendar_today,
-                                            size: 16),
-                                        const SizedBox(width: 4),
-                                        Text('${package.validityPeriod} ngày'),
-                                        const Spacer(),
-                                        const Icon(Icons.people, size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                            '${package.numberOfMeeting} lần gặp mặt/tháng'),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
+                              const SizedBox(height: 16),
+                              if (comboData!.isNotEmpty)
+                                ...comboData!
+                                    .map((package) =>
+                                        _buildPackageCard(package)),
                             ],
                           ),
                         ),
-                      );
-                    },
+                        if (comboOdd != null && comboOdd!.isNotEmpty) ...[
+                          const SizedBox(height: 24),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              'Gói dịch vụ lẻ',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              children: comboOdd!
+                                  .map((package) => _buildPackageCard(package))
+                                  .toList(),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
+      ),
+    );
+  }
+
+  Widget _buildPackageCard(ComboData package) {
+    final colors =
+        gradientColors[comboData!.indexOf(package) % gradientColors.length];
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 3,
+      color: AppColors.bgColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _showPackageDetails(context, package),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 12,
+                bottom: 4,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: colors,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    package.name,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.bgColor,
+                    ),
+                  ),
+                  Text(
+                    '${convertMoney(package.fee)} VND',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.bgColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: 16,
+              ),
+              decoration: const BoxDecoration(
+                color: AppColors.bgColor,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    package.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.calendar_today, size: 16),
+                      const SizedBox(width: 4),
+                      Text('${package.validityPeriod} ngày'),
+                      const Spacer(),
+                      const Icon(Icons.people, size: 16),
+                      const SizedBox(width: 4),
+                      Text('${package.numberOfMeeting} lần gặp mặt/tháng'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

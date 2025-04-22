@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/presentation/pages/emergency_alert/controller/emergency_controller.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class EmergencyScreen extends StatefulWidget {
   const EmergencyScreen({super.key});
@@ -19,7 +20,8 @@ class EmergencyScreen extends StatefulWidget {
   _EmergencyScreenState createState() => _EmergencyScreenState();
 }
 
-class _EmergencyScreenState extends State<EmergencyScreen> {
+class _EmergencyScreenState extends State<EmergencyScreen>
+    with WidgetsBindingObserver {
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
   String? frontImagePath;
@@ -46,6 +48,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     userId = sharedPrefsHelper.getInt('accountId') ?? 0;
     _requestPermissions().then((granted) {
       if (granted) {
@@ -153,23 +156,28 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         title = "Cuộc gọi khẩn cấp không được xác nhận!";
         description =
             "Chúng tôi đã gửi thông tin khẩn cấp đến người thân của bạn nhưng họ vẫn chưa xác nhận!";
+        isCompleteCreateConfirmation = true;
       });
       player.stop();
+      _callNumber();
       return;
-    };
+    }
 
     await Future.delayed(Duration(seconds: 30));
 
     bool isConfirmed = await _checkIsConfirmed();
 
     if (isConfirmed) {
+      if (!mounted) return;
       setState(() {
         title = "Đã xác nhận cuộc gọi khẩn cấp!";
         description =
             "Người thân của bạn đã xác nhận cuộc gọi khẩn cấp và đang trên đường đến!";
+        isCompleteCreateConfirmation = true;
       });
       return;
     } else {
+      if (!mounted) return;
       setState(() {
         title = "Chưa xác nhận cuộc gọi khẩn cấp!";
         description =
@@ -183,6 +191,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       _checkConfirmationStatus(attempt + 1);
       return;
     }
+  }
+
+  void _callNumber() async {
+    const number = '0964160769'; //set the number here
+    await FlutterPhoneDirectCaller.callNumber(number);
   }
 
   Future<bool> _checkIsConfirmed() async {
@@ -203,8 +216,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       if (response.statusCode == 200) {
         setState(() {
           title = "Đang gọi bác sĩ...";
-          description =
-              "Chúng tôi đang cố gắng liên hệ đến bác sĩ của bạn!";
+          description = "Chúng tôi đang cố gắng liên hệ đến bác sĩ của bạn!";
         });
       } else {
         print("Lỗi gọi bác sĩ: ${response.statusCode}");
@@ -362,7 +374,15 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     _cameraController?.dispose();
     record.dispose();
     _locationTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      await player.play(AssetSource('music/sos.mp3'));
+    }
   }
 
   @override
@@ -383,9 +403,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
-      
+
                 SizedBox(height: 10),
-      
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
@@ -394,9 +414,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-      
+
                 SizedBox(height: 20),
-      
+
                 if (!isCompleteCreateConfirmation)
                   Center(
                     child: Text(
@@ -404,7 +424,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       style: TextStyle(fontSize: 50, color: Colors.red),
                     ),
                   ),
-      
+
                 // 🔹 Nút đếm ngược
                 Expanded(
                   child: Stack(
@@ -437,22 +457,43 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     ],
                   ),
                 ),
-      
+
                 SizedBox(height: 50),
-      
+
                 // 🔹 Nút "Hủy"
                 if (!isCompleteCreateConfirmation)
                   ElevatedButton(
-                    onPressed: _countdown == 0 ? showDialogCancel : _cancelEmergency ,
+                    onPressed:
+                        _countdown == 0 ? showDialogCancel : _cancelEmergency,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                     child: Text(
                       "Hủy",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                if (isCompleteCreateConfirmation)
+                  ElevatedButton(
+                    onPressed: () {
+                      player.stop();
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text(
+                      "Trở về",
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),

@@ -5,7 +5,7 @@ import 'package:sep490/common/widgets/error.dart';
 import 'package:sep490/features/chat/screens/confirm_avatar_group_screen.dart';
 import 'package:sep490/features/chat/screens/mobile_chat_screen.dart';
 import 'package:sep490/features/group/screens/create_group_screen.dart';
-import 'package:sep490/features/select_contacts/screens/select_contacts_screen.dart';
+import 'package:sep490/features/select_contacts_friend/screens/select_contacts_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -33,6 +33,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       final name = arguments["name"];
       final uid = arguments["uid"];
       final isGroupChat = arguments["isGroupChat"];
+      final isProfessorChat = arguments["isProfessorChat"];
       final profilePic = arguments["profilePic"];
       final users = arguments["users"];
 
@@ -41,6 +42,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             name: name,
             uid: uid,
             isGroupChat: isGroupChat,
+            isProfessorChat: isProfessorChat,
             profilePic: profilePic,
             users: users),
       );

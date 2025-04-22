@@ -1,11 +1,13 @@
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/common/constants/common.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/data/services/api_services.dart';
+import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/auth/forgot_password_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
@@ -13,14 +15,14 @@ import 'package:sep490/theme/color.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
-class SignInForm extends StatefulWidget {
+class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({super.key});
 
   @override
-  State<SignInForm> createState() => _SignInFormState();
+  ConsumerState<SignInForm> createState() => _SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class _SignInFormState extends ConsumerState<SignInForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -109,12 +111,13 @@ class _SignInFormState extends State<SignInForm> {
       });
       if (response['success'] && response['data']['isSuccess']) {
         final String accessToken = response['data']['data']['accessToken'];
+        print(accessToken);
         var responseToken = await ApiService.getRequest("auth-management",
             headers: {
               "Content-Type": "application/json",
               "Authorization": 'Bearer $accessToken'
             });
-
+        print(responseToken);
         if (responseToken['success']) {
           SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
           final userData = responseToken['data']['user'];
@@ -123,7 +126,8 @@ class _SignInFormState extends State<SignInForm> {
           final String avatar = userData['avatar'] ?? '';
           sharedPrefsHelper.setInt(
               'accountId', responseToken['data']['user']['accountId'] ?? 0);
-          sharedPrefsHelper.setInt('roleId', responseToken['data']['user']['roleId'] ?? 0);
+          sharedPrefsHelper.setInt(
+              'roleId', responseToken['data']['user']['roleId'] ?? 0);
           sharedPrefsHelper.setString('email', emailController.text);
           sharedPrefsHelper.setString('password', passwordController.text);
           sharedPrefsHelper.setString('accessToken', accessToken);
@@ -134,15 +138,13 @@ class _SignInFormState extends State<SignInForm> {
           sharedPrefsHelper.setString(
               'gender', responseToken['data']['user']['gender'] ?? "");
           Navigator.of(context).pop();
-          Fluttertoast.showToast(
-            msg: "Đăng nhập thành công!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+          CherryToast.success(
+            toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+            title: Text(
+              "Đăng nhập thành công!",
+              style: TextStyle(color: Colors.black),
+            ),
+          ).show(context);
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
             return NavigationMenu(
@@ -152,28 +154,22 @@ class _SignInFormState extends State<SignInForm> {
           onUserLogin(userID, userName, avatar);
         } else {
           Navigator.of(context).pop();
-          Fluttertoast.showToast(
-            msg: responseToken['data']['data'] ??
-                "Có lỗi trong quá trình xử lý!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+          CherryToast.error(
+            toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+            title: Text(responseToken['data'],
+              style: TextStyle(color: Colors.black),
+            ),
+          ).show(context);
         }
       } else {
         Navigator.of(context).pop();
-        Fluttertoast.showToast(
-          msg: response['data']['data'] ?? "Có lỗi trong quá trình xử lý!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        CherryToast.error(
+          toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+          title: Text(
+            response['data'],
+            style: TextStyle(color: Colors.black),
+          ),
+        ).show(context);
       }
     }
   }

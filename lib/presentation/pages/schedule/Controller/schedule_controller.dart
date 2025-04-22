@@ -7,6 +7,7 @@ class ScheduleController {
   bool isCreateSuccess = false;
   bool isUpdateSuccess = false;
   bool isChangeStatusSuccess = false;
+  String message = "";
 
   Future<void> getSchedule(int userId, String day) async {
     final response = await scheduleRepository.getSchedule(userId, day);
@@ -24,6 +25,7 @@ class ScheduleController {
       isCreateSuccess = true;
     } else {
       isCreateSuccess = false;
+      message = response != null ? response['message'] : "Có lỗi trong quá trình xử lý!";
     }
   }
 

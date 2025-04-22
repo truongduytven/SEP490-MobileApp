@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefsHelper {
   static final ValueNotifier<int> roleNotifier = ValueNotifier<int>(0);
+  static final ValueNotifier<String> avatarNotifier = ValueNotifier<String>("");
+  static final ValueNotifier<String> fullNameNotifier = ValueNotifier<String>("");
   static final SharedPrefsHelper _instance = SharedPrefsHelper._internal();
   SharedPreferences? _prefs;
 
@@ -29,13 +31,19 @@ class SharedPrefsHelper {
   }
 
   Future<void> setInt(String key, int value) async {
-    if(key == 'roleId') {
+    if (key == 'roleId') {
       roleNotifier.value = value;
     }
     await _prefs?.setInt(key, value);
   }
 
   Future<void> setString(String key, String value) async {
+    if (key == 'avatar') {
+      avatarNotifier.value = value;
+    }
+    if (key == 'fullName') {
+      fullNameNotifier.value = value;
+    }
     await _prefs?.setString(key, value);
   }
 
@@ -44,7 +52,7 @@ class SharedPrefsHelper {
     roleNotifier.value = 0;
     await _prefs?.clear();
 
-    if(isFirstTimeKey != null) {
+    if (isFirstTimeKey != null) {
       await _prefs?.setBool('is_first_time', isFirstTimeKey);
     }
   }

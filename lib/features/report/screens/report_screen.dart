@@ -5,7 +5,7 @@ import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'dart:convert';
 
 import 'package:sep490/features/report/screens/create_report.dart';
-import 'package:sep490/features/select_contacts/screens/user_information_screen.dart';
+import 'package:sep490/features/select_contacts_friend/screens/user_information_screen.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/theme/color.dart';
 

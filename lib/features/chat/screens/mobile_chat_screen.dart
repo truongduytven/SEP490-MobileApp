@@ -17,6 +17,7 @@ class MobileChatScreen extends ConsumerWidget {
   final String name;
   final String uid;
   final bool isGroupChat;
+  final bool isProfessorChat;
   final String profilePic;
   final List<User> users;
 
@@ -25,6 +26,7 @@ class MobileChatScreen extends ConsumerWidget {
     required this.name,
     required this.uid,
     required this.isGroupChat,
+    required this.isProfessorChat,
     required this.profilePic,
     required this.users,
   }) : super(key: key);
@@ -110,16 +112,18 @@ class MobileChatScreen extends ConsumerWidget {
               ),
         centerTitle: false,
         actions: [
-          sendCallButton(
-            isVideoCall: false,
-            inviteeUsers: users,
-            onCallFinished: onSendCallInvitationFinished,
-          ),
-          sendCallButton(
-            isVideoCall: true,
-            inviteeUsers: users,
-            onCallFinished: onSendCallInvitationFinished,
-          ),
+          if (!isProfessorChat)
+            sendCallButton(
+              isVideoCall: false,
+              inviteeUsers: users,
+              onCallFinished: onSendCallInvitationFinished,
+            ),
+          if (!isProfessorChat)
+            sendCallButton(
+              isVideoCall: true,
+              inviteeUsers: users,
+              onCallFinished: onSendCallInvitationFinished,
+            ),
 
           // SendCallButton(
           //   ref: ref,

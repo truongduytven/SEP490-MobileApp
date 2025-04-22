@@ -184,3 +184,53 @@ String convertMoney(double money) {
   String formattedMoney = formatter.format(money);
   return formattedMoney;
 }
+
+String convertDateTimeToDate(String dateTime) {
+  // 2025-04-08T23:40:52.263 -> 23:40:52 ngày 08/04/2025
+  var dateParts = dateTime.toString().split('T');
+  var date = dateParts[0];
+  var time = dateParts[1];
+  var timeParts = time.split(':');
+  var hour = timeParts[0];
+  var minute = timeParts[1];
+  var second = timeParts[2];
+  var secondParts = second.split('.');
+  var secondsecond = secondParts[0];
+  var dateParts2 = date.split('-');
+  var day = dateParts2[2];
+  var month = dateParts2[1];
+  var year = dateParts2[0];
+  if (month.length == 1) {
+    month = '0$month';
+  }
+  if (day.length == 1) {
+    day = '0$day';
+  }
+  var formattedDateTime = '$hour:$minute:$secondsecond $day/$month/$year';
+  return formattedDateTime;
+}
+
+String convertDateTimeToDateNoTime(String dateTime) {
+  // 2025-04-08T23:40:52.263 -> 23:40:52 ngày 08/04/2025
+  var dateParts = dateTime.toString().split('T');
+  var date = dateParts[0];
+  var time = dateParts[1];
+  var timeParts = time.split(':');
+  var hour = timeParts[0];
+  var minute = timeParts[1];
+  var second = timeParts[2];
+  var secondParts = second.split('.');
+  var secondsecond = secondParts[0];
+  var dateParts2 = date.split('-');
+  var day = dateParts2[2];
+  var month = dateParts2[1];
+  var year = dateParts2[0];
+  if (month.length == 1) {
+    month = '0$month';
+  }
+  if (day.length == 1) {
+    day = '0$day';
+  }
+  var formattedDateTime = '$day/$month/$year';
+  return formattedDateTime;
+}

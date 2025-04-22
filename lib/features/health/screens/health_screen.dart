@@ -1,9 +1,12 @@
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/health/controller/health_controller.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
+import 'package:sep490/models/home_model.dart';
+import 'package:sep490/presentation/pages/home/controller/home_controller.dart';
 import 'package:sep490/presentation/widgets/header.dart';
 import 'package:sep490/features/health/widgets/card.dart';
 import 'package:sep490/features/health/widgets/skeleton_card.dart';
@@ -17,7 +20,7 @@ class HealthScreen extends ConsumerStatefulWidget {
 }
 
 class _HealthScreenState extends ConsumerState<HealthScreen>
-    with RouteAware, WidgetsBindingObserver {
+    with RouteAware, WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> dataFromApi = [];
@@ -25,8 +28,13 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   late int accountId = 0;
   late int roleId = 0;
   late int selectedElderlyUserId = 0;
+  late String selectedElderlyUserName = "";
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
-
+  bool isLoadingDialog = false;
+  bool isShowSelectUser = false;
+  late List<ElderlyUser>? userList = null;
+  @override
+  bool get wantKeepAlive => true;
   @override
   void initState() {
     super.initState();
@@ -34,16 +42,43 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     roleId = sharedPrefsHelper.getInt("roleId") ?? 0;
     selectedElderlyUserId =
         sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
+    selectedElderlyUserName =
+        sharedPrefsHelper.getString("selectedElderlyUserName") ?? "";
     fetchHealthIndicator();
+    if (roleId == 3) {
+      getElderlyUser();
+    }
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     WidgetsBinding.instance
         .removeObserver(this); // Xóa observer khi widget bị hủy
     routeObserver.unsubscribe(this); // Hủy đăng ký RouteAware khi widget bị hủy
     super.dispose();
+  }
+
+  // Thêm biến để lưu vị trí scroll
+  double _savedScrollPosition = 0.0;
+
+  // Sửa hàm navigate để lưu vị trí scroll
+  void _navigateToHealthBook() {
+    _savedScrollPosition = _scrollController.position.pixels;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HealthMonitoringBook(initialTopic: "all"),
+      ),
+    ).then((_) {
+      // Khi quay lại, khôi phục vị trí scroll
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(_savedScrollPosition);
+        }
+      });
+    });
   }
 
   @override
@@ -188,12 +223,185 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         "imageUrl": info["imageUrl"] ?? "assets/img/default_avatar.png",
         "unit": info["unit"]!,
         "average": info["average"]!,
-        "result": item["evaluation"].toString() == "N/A" ? "Bình thường" : item["evaluation"].toString(),
+        "result": item["evaluation"].toString() == "N/A"
+            ? "Bình thường"
+            : item["evaluation"].toString(),
         "dateTime": item["dateTime"].toString(),
         "data": item["indicator"].toString(),
         "dataAverage": item["averageIndicator"].toString(),
       };
     }).toList();
+  }
+
+  void getElderlyUser() async {
+    setState(() {
+      isLoadingDialog = true;
+    });
+    HomeController homeController = HomeController();
+    await homeController.getElderlyUser(accountId);
+    if (!mounted) return;
+    setState(() {
+      isLoadingDialog = false;
+      userList = homeController.elderlyUsers;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (userList == null) {
+        return;
+      }
+      if (sharedPrefsHelper.getInt('selectedElderlyUserId') != null) {
+        return;
+      }
+      if (userList!.isNotEmpty && selectedElderlyUserId == 0) {
+        selectedElderlyUserId = userList![0].accountId;
+        selectedElderlyUserName = userList![0].fullName;
+        sharedPrefsHelper.setInt(
+            'selectedElderlyUserId', userList![0].accountId);
+        sharedPrefsHelper.setString(
+            'selectedElderlyUserName', userList![0].fullName);
+        sharedPrefsHelper.setInt('selectedElderlyId', userList![0].elderlyId);
+      }
+    });
+  }
+
+  void _showSelectDialog() {
+    showDialog(
+      barrierColor: AppColors.secondaryColor.withOpacity(0.95),
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.all(20),
+          backgroundColor: AppColors.bgColor,
+          title: const Text(
+            "Hỗ trợ từ người thân",
+            style: TextStyle(
+                fontSize: 30, fontWeight: FontWeight.w600, height: 1.2),
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Chọn một người để xem hoặc thêm mới",
+                  style: TextStyle(
+                      color: AppColors.grayColor5, fontSize: 16, height: 1.2),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Flexible(
+                  child: SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: userList!.length,
+                      itemBuilder: (context, index) {
+                        final user = userList![index];
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedElderlyUserId =
+                                  userList![index].accountId;
+                              selectedElderlyUserName =
+                                  userList![index].fullName;
+                            });
+                            sharedPrefsHelper.setInt('selectedElderlyUserId',
+                                userList![index].accountId);
+                            sharedPrefsHelper.setString(
+                                'selectedElderlyUserName',
+                                userList![index].fullName);
+                            sharedPrefsHelper.setInt('selectedElderlyId',
+                                userList![index].elderlyId);
+                            CherryToast.success(
+                              toastDuration: Duration(seconds: 3),
+                              title: Text(
+                                'Bạn đang hỗ trợ ${userList![index].fullName}',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ).show(context);
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: user.accountId == selectedElderlyUserId
+                                    ? AppColors.primaryColor
+                                    : AppColors.borderColor,
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 5),
+                            margin: const EdgeInsets.symmetric(vertical: 6.0),
+                            child: ListTile(
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Image.network(
+                                  user.avatar,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    user.fullName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: user.accountId ==
+                                              selectedElderlyUserId
+                                          ? AppColors.primaryColor
+                                          : AppColors.textColor,
+                                      fontWeight: user.accountId ==
+                                              selectedElderlyUserId
+                                          ? FontWeight.w600
+                                          : null,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    user.phoneNumber,
+                                    style: TextStyle(
+                                      color: AppColors.grayColor3,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: user.accountId == selectedElderlyUserId
+                                  ? const Icon(Icons.check_circle_rounded,
+                                      size: 28, color: AppColors.primaryColor)
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "Đóng",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -208,6 +416,14 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         }
       },
       child: Scaffold(
+        appBar: roleId == 4
+            ? AppBar(
+                automaticallyImplyLeading: true,
+                backgroundColor: AppColors.bgColor,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+              )
+            : null,
         body: Container(
           height: double.infinity,
           width: double.infinity,
@@ -223,9 +439,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Header(
-                  isChooseElderly: false,
-                ),
+                if (roleId != 4)
+                  Header(
+                    isChooseElderly: false,
+                  ),
+                if (roleId != 4)
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -240,20 +458,25 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     SizedBox(
                       width: 10,
                     ),
-                    Text(
-                      "Sức khỏe của tôi",
-                      style: const TextStyle(
-                          fontSize: 28, fontWeight: FontWeight.w600),
+                    Expanded(
+                      child: Text(
+                        "Sức khỏe của ${selectedElderlyUserName != "" ? selectedElderlyUserName : "tôi"}",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 28, fontWeight: FontWeight.w600),
+                      ),
                     ),
-                    IconButton(
-                        onPressed: () {
-                          _showAccountDialog(context);
-                        },
-                        icon: Icon(
-                          color: AppColors.textPrimary,
-                          Icons.autorenew_rounded,
-                          size: 28,
-                        ))
+                    if (userList != null && userList!.isNotEmpty && roleId == 3)
+                      IconButton(
+                          onPressed: () {
+                            _showSelectDialog();
+                          },
+                          icon: Icon(
+                            color: AppColors.textPrimary,
+                            Icons.autorenew_rounded,
+                            size: 28,
+                          ))
                   ],
                 ),
                 Expanded(
@@ -286,22 +509,25 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                         )
                       : ListView.separated(
                           controller: _scrollController,
+                          key: const PageStorageKey<String>(
+                              'healthScrollPosition'),
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 10),
                           itemCount: dataFromApi.length + 1,
                           itemBuilder: (context, index) {
                             if (index == dataFromApi.length) {
                               return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            HealthMonitoringBook(
-                                              initialTopic: "all",
-                                            )),
-                                  );
-                                },
+                                // onTap: () {
+                                //   Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             HealthMonitoringBook(
+                                //               initialTopic: "all",
+                                //             )),
+                                //   );
+                                // },
+                                onTap: _navigateToHealthBook,
                                 child: Card(
                                   margin: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 4),
@@ -408,135 +634,4 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       ),
     );
   }
-}
-
-void _showAccountDialog(BuildContext context) {
-  final List<Map<String, dynamic>> users = [
-    {"id": 1, "name": "User 1"},
-    {"id": 2, "name": "User 2"},
-    {"id": 3, "name": "User 3"},
-  ];
-
-  const int currentUserId = 2;
-  showDialog(
-    barrierColor: AppColors.secondaryColor.withOpacity(0.95),
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        insetPadding: EdgeInsets.all(20),
-        backgroundColor: AppColors.bgColor,
-        title: const Text(
-          "Hỗ trợ từ người thân",
-          style:
-              TextStyle(fontSize: 40, fontWeight: FontWeight.w600, height: 1.2),
-          textAlign: TextAlign.center,
-        ),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Chọn một người để xem hoặc thêm mới",
-                style: TextStyle(
-                    color: AppColors.grayColor5, fontSize: 20, height: 1.2),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Flexible(
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: users.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == users.length) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.borderColor,
-                              width: 1.5,
-                            ),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          margin: const EdgeInsets.symmetric(vertical: 4.0),
-                          padding: EdgeInsets.symmetric(vertical: 5),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              radius: 22,
-                              backgroundColor: Colors.transparent,
-                              child: const Icon(Icons.person_add_alt_1_outlined,
-                                  color: AppColors.primaryColor),
-                            ),
-                            title: const Text(
-                              "Thêm người mới",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        );
-                      }
-
-                      final user = users[index];
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: user['id'] == currentUserId
-                                ? AppColors.primaryColor
-                                : AppColors.borderColor,
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 5),
-                        margin: const EdgeInsets.symmetric(vertical: 6.0),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 22,
-                            child: const Icon(Icons.person),
-                          ),
-                          title: Text(
-                            user['name'],
-                            style: TextStyle(
-                              color: user['id'] == currentUserId
-                                  ? AppColors.primaryColor
-                                  : AppColors.textColor,
-                              fontWeight: user['id'] == currentUserId
-                                  ? FontWeight.w600
-                                  : null,
-                              fontSize: 20,
-                            ),
-                          ),
-                          trailing: user['id'] == currentUserId
-                              ? const Icon(Icons.check_circle_rounded,
-                                  size: 28, color: AppColors.primaryColor)
-                              : null,
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text(
-              "Đóng",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-        ],
-      );
-    },
-  );
 }

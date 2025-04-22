@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gif_view/gif_view.dart';
@@ -32,6 +33,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
   late bool isLoading = true;
   int indexAnimation = 0;
+  late int roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
 
   @override
   void initState() {
@@ -57,7 +59,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
     });
     MedicineController medicineController = MedicineController();
     await medicineController.getMedicines(
-        selectedElderlyUserId == 0 ? userId : selectedElderlyUserId, '$selectedYear-$selectedMonth-$selectedDay');
+        selectedElderlyUserId == 0 ? userId : selectedElderlyUserId,
+        '$selectedYear-$selectedMonth-$selectedDay');
     Timer(Duration(seconds: 2), () {
       if (!mounted) return;
       setState(() {
@@ -125,7 +128,14 @@ class _HomeMedicineState extends State<HomeMedicine> {
     MedicineController medicineController = MedicineController();
     await medicineController.confirmMedicine(data);
     if (medicineController.isConfirmSuccess) {
-      Timer(Duration(seconds: 2), () {
+      Timer(Duration(seconds: 1), () {
+        CherryToast.success(
+            toastDuration: Duration(seconds: 2),
+            title: Text("Xác nhận thành công!",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                ))).show(context);
         getDataPrescription();
       });
     } else {
@@ -149,7 +159,9 @@ class _HomeMedicineState extends State<HomeMedicine> {
       isLoading = true;
     });
     Map<String, dynamic> data = {"confirmations": []};
-    medicines.forEach((medicine) {
+    medicines
+        .where((med) => med['time']['status'] == 'Unused')
+        .forEach((medicine) {
       data["confirmations"].add({
         "dateTaken":
             "$selectedYear-${selectedMonth < 10 ? "0$selectedMonth" : selectedMonth}-${selectedDay < 10 ? "0$selectedDay" : selectedDay} ${medicine["time"]["time"]}:00",
@@ -160,7 +172,14 @@ class _HomeMedicineState extends State<HomeMedicine> {
     MedicineController medicineController = MedicineController();
     await medicineController.confirmMedicine(data);
     if (medicineController.isConfirmSuccess) {
-      Timer(Duration(seconds: 2), () {
+      Timer(Duration(seconds: 1), () {
+        CherryToast.success(
+            toastDuration: Duration(seconds: 2),
+            title: Text("Xác nhận thành công!",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                ))).show(context);
         getDataPrescription();
       });
     } else {
@@ -192,7 +211,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       appBar: AppBar(
         backgroundColor: AppColors.bgColor,
         title: Text(
-          'Thuốc của tôi',
+          'Lịch uống thuốc',
           style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w600,
@@ -232,50 +251,55 @@ class _HomeMedicineState extends State<HomeMedicine> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  DropdownButton<int>(
-                    value: selectedMonth,
-                    items: List.generate(12, (index) => index + 1).map((month) {
-                      return DropdownMenuItem<int>(
-                        value: month,
-                        child: Text('Tháng $month',
-                            style: const TextStyle(fontSize: 20)),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedMonth = value!;
-                        selectedDay = 1;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scrollToSelectedDay(); // Scroll to day 1
-                          getDataPrescription();
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      value: selectedMonth,
+                      items:
+                          List.generate(12, (index) => index + 1).map((month) {
+                        return DropdownMenuItem<int>(
+                          value: month,
+                          child: Text('Tháng $month',
+                              style: const TextStyle(fontSize: 20)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedMonth = value!;
+                          selectedDay = 1;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _scrollToSelectedDay(); // Scroll to day 1
+                            getDataPrescription();
+                          });
+                          indexAnimation = 0;
                         });
-                        indexAnimation = 0;
-                      });
-                    },
+                      },
+                    ),
                   ),
-                  DropdownButton<int>(
-                    value: selectedYear,
-                    items: List.generate(
-                      2050 - 2025 + 1,
-                      (index) => 2025 + index,
-                    ).map((year) {
-                      return DropdownMenuItem<int>(
-                        value: year,
-                        child: Text('Năm $year',
-                            style: const TextStyle(fontSize: 20)),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedYear = value!;
-                        selectedDay = 1;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scrollToSelectedDay(); // Scroll to day 1
-                          getDataPrescription();
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton<int>(
+                      value: selectedYear,
+                      items: List.generate(
+                        2030 - 2025 + 1,
+                        (index) => 2025 + index,
+                      ).map((year) {
+                        return DropdownMenuItem<int>(
+                          value: year,
+                          child: Text('Năm $year',
+                              style: const TextStyle(fontSize: 20)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedYear = value!;
+                          selectedDay = 1;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _scrollToSelectedDay(); // Scroll to day 1
+                            getDataPrescription();
+                          });
+                          indexAnimation = 0;
                         });
-                        indexAnimation = 0;
-                      });
-                    },
+                      },
+                    ),
                   ),
                   Container(
                     decoration: BoxDecoration(),
@@ -465,7 +489,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Không có thuốc đặt lịch',
+            'Không có lịch uống thuốc nào trong ngày này',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w500,
@@ -499,6 +524,8 @@ class _HomeMedicineState extends State<HomeMedicine> {
           convertToMinutes(a["time"]['time']) -
           convertToMinutes(b["time"]['time']));
 
+    bool allUsed = medicines.every((med) => med['time']['status'] != 'Unused');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -519,19 +546,20 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 ),
               ),
               const Spacer(),
-              TextButton(
-                onPressed: () {
-                  handleAllConfirmMedicine(medicines);
-                },
-                child: Text(
-                  "UỐNG TẤT CẢ",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.secondaryColor,
-                    fontWeight: FontWeight.w500,
+              if (!allUsed && roleId != 4)
+                TextButton(
+                  onPressed: () {
+                    handleAllConfirmMedicine(medicines);
+                  },
+                  child: Text(
+                    "UỐNG TẤT CẢ",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.secondaryColor,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              )
+                )
             ],
           ),
         ),

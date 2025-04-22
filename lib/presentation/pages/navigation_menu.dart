@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
-import 'package:sep490/features/doctor_work_schedule/screens/schedule.dart';
 import 'package:sep490/features/doctor_work_schedule/screens/work_schedule.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/doctor_advise_list.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/home_doctor_advise.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
 import 'package:sep490/features/health/screens/health_screen.dart';
@@ -203,19 +203,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
           ),
           NavigationDestination(
             icon: HugeIcon(
-              icon: HugeIcons.strokeRoundedHealth,
-              color: AppColors.iconColor,
-              size: 30,
-            ),
-            selectedIcon: HugeIcon(
-              icon: HugeIcons.strokeRoundedHealth,
-              color: AppColors.primaryColor,
-              size: 30,
-            ),
-            label: "Sức khỏe",
-          ),
-          NavigationDestination(
-            icon: HugeIcon(
               icon: HugeIcons.strokeRoundedDoctor01,
               color: AppColors.iconColor,
               size: 30,
@@ -229,16 +216,29 @@ class _NavigationMenuState extends State<NavigationMenu> {
           ),
           NavigationDestination(
             icon: HugeIcon(
-              icon: HugeIcons.strokeRoundedDashboardSquare03,
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
               color: AppColors.iconColor,
               size: 30,
             ),
             selectedIcon: HugeIcon(
-              icon: HugeIcons.strokeRoundedDashboardSquare03,
+              icon: HugeIcons.strokeRoundedBubbleChatUser,
               color: AppColors.primaryColor,
               size: 30,
             ),
-            label: "Tiện ích",
+            label: "Trò chuyện",
+          ),
+          NavigationDestination(
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedAmbulance,
+              color: AppColors.iconColor,
+              size: 30,
+            ),
+            selectedIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedAmbulance,
+              color: AppColors.primaryColor,
+              size: 30,
+            ),
+            label: "Khẩn cấp",
           ),
         ];
     }
@@ -348,11 +348,11 @@ class _NavigationMenuState extends State<NavigationMenu> {
             accountId: _accountId,
           );
         case 2:
-          return HealthScreen();
+          return DoctorAdviseList();
         case 3:
-          return HomeDoctorAdviseScreen();
+          return MobileLayoutScreen();
         case 4:
-          return UltilityScreen();
+          return EmergencyList();
         default:
           return HomeScreen();
       }

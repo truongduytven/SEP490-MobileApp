@@ -1,17 +1,22 @@
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/group_family/screens/group_family.dart';
 import 'package:sep490/features/report/screens/report_screen.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/presentation/pages/auth/signin_screen.dart';
+import 'package:sep490/presentation/pages/home/history_transaction.dart';
+import 'package:sep490/presentation/pages/home/medical_record.dart';
+import 'package:sep490/presentation/pages/home/profile.dart';
+import 'package:sep490/presentation/pages/home/profile_doctor.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({super.key});
+  final int roleId;
+  const ProfileScreen({super.key, required this.roleId});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -38,50 +43,82 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ProfilePic(avatar: avatar),
             const SizedBox(height: 20),
             ProfileMenu(
-              text: "Chỉnh sửa hồ sơ",
+              text: "Hồ sơ người dùng",
               icon: Icons.account_circle_outlined,
-              press: () => {},
-            ),
-            ProfileMenu(
-              text: "Nhóm gia đình",
-              icon: Icons.group,
               press: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const GroupFamily()),
+                  MaterialPageRoute(builder: (context) => widget.roleId != 4 ? EditProfile() : ProfileDoctor()),
                 );
               },
             ),
-            ProfileMenu(
-              text: "Gói đang sử dụng",
-              icon: Icons.redeem,
-              press: () {},
-            ),
-            ProfileMenu(
-              text: "Báo cáo hệ thống",
-              icon: Icons.report,
-              press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ReportScreen()),
-                );
-              },
-            ),
+            if (widget.roleId == 2)
+              ProfileMenu(
+                text: "Hồ sơ bệnh án",
+                icon: Icons.assignment_outlined,
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const MedicalRecord()),
+                  );
+                },
+              ),
+            if (widget.roleId != 4)
+              ProfileMenu(
+                text: "Nhóm gia đình",
+                icon: Icons.group,
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const GroupFamily()),
+                  );
+                },
+              ),
+            if (widget.roleId != 4)
+              ProfileMenu(
+                text: "Gói đang sử dụng",
+                icon: Icons.redeem,
+                press: () {},
+              ),
+            if (widget.roleId == 3)
+              ProfileMenu(
+                text: "Lịch sử giao dịch",
+                icon: Icons.history,
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const HistoryTransaction()),
+                  );
+                },
+              ),
+            if (widget.roleId != 4)
+              ProfileMenu(
+                text: "Báo cáo hệ thống",
+                icon: Icons.report,
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ReportScreen()),
+                  );
+                },
+              ),
             ProfileMenu(
               text: "Đăng xuất tài khoản",
               icon: Icons.logout,
               press: () {
                 SharedPrefsHelper().clear();
                 ref.invalidate(accountIdProvider);
-                Fluttertoast.showToast(
-                  msg: "Đăng xuất thành công",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.green,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
+                CherryToast.success(
+                    toastDuration: Duration(seconds: 2),
+                    title: Text("Đăng xuất tài khoản thành công!",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ))).show(context);
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (_) => SignInScreen()));
                 ZegoUIKitPrebuiltCallInvitationService().uninit();
@@ -113,26 +150,6 @@ class ProfilePic extends StatelessWidget {
           CircleAvatar(
             backgroundImage: NetworkImage(avatar),
           ),
-          Positioned(
-            right: -16,
-            bottom: 0,
-            child: SizedBox(
-              height: 46,
-              width: 46,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    side: const BorderSide(color: Colors.white),
-                  ),
-                  backgroundColor: const Color(0xFFF5F6F9),
-                ),
-                onPressed: () {},
-                child: SvgPicture.string(cameraIcon),
-              ),
-            ),
-          )
         ],
       ),
     );

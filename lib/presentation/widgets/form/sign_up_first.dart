@@ -1,3 +1,4 @@
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -70,17 +71,16 @@ class _SignUpFirstState extends State<SignUpFirst> {
             {});
         Navigator.of(context).pop();
         if (response['success'] && response['data']['isSuccess']) {
-          Fluttertoast.showToast(
-            msg: "Mã OTP đã được gửi đến $input",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+          CherryToast.success(
+            toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
+            title: Text(
+              "Đã gửi đi mã xác thực đến $input",
+              style: TextStyle(color: Colors.black),
+            ),
+          ).show(context);
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('typeSignUp', response['data']['data']['method']);
+          print(response['data']['data']['method']);
           prefs.setString('emailOrPhoneSignUp', input);
           prefs.setInt('accountId', response['data']['data']['accountId'] ?? 0);
           Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -129,22 +129,10 @@ class _SignUpFirstState extends State<SignUpFirst> {
           children: [
             AuthField(
               focusNode: _focusNode,
-              hintText: 'Nhập số điện thoại hoặc email',
-              labelText: "Số điện thoại hoặc email",
+              hintText: 'Nhập số điện thoại',
+              labelText: "Số điện thoại",
               controller: emailOrPhoneController,
               keyboardType: TextInputType.emailAddress,
-              // suffixIcon: SizedBox(
-              //   width: 50,
-              //   child: Row(
-              //     crossAxisAlignment: CrossAxisAlignment.center,
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: [
-              //       SvgPicture.asset('assets/icons/mailIcon.svg'),
-              //       SizedBox(width: 5),
-              //       SvgPicture.asset('assets/icons/phoneIcon.svg'),
-              //     ],
-              //   ),
-              // )
             ),
             if (errorMessage != null)
               Padding(
