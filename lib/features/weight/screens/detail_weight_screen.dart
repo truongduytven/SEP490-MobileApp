@@ -243,6 +243,9 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
 
   @override
   Widget build(BuildContext context) {
+    SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+    final currentUserRoleId = sharedPrefsHelper.getInt("roleId");
+
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
@@ -258,9 +261,10 @@ class _DetailWeightScreenState extends ConsumerState<DetailWeightScreen>
         ),
         centerTitle: true,
         actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
+          if (currentUserRoleId != 4)
+            Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
         ],
       ),
       body: SingleChildScrollView(

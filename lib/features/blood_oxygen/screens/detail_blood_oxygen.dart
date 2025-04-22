@@ -15,8 +15,7 @@ class DetailBloodOxygen extends ConsumerStatefulWidget {
   const DetailBloodOxygen({super.key});
 
   @override
-  ConsumerState<DetailBloodOxygen> createState() =>
-      _DetailBloodOxygenState();
+  ConsumerState<DetailBloodOxygen> createState() => _DetailBloodOxygenState();
 }
 
 class _DetailBloodOxygenState extends ConsumerState<DetailBloodOxygen>
@@ -112,13 +111,16 @@ class _DetailBloodOxygenState extends ConsumerState<DetailBloodOxygen>
 
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
-    final currentElderlyAccountID = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
+    final currentElderlyAccountID =
+        sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
     final heartRateController = ref.read(bloodOxygenControllerProvider);
 
     try {
       final result = await heartRateController.getHeartRatetDetail(
         context: context,
-        accountId: currentElderlyAccountID != 0 ? currentElderlyAccountID : currentUserAccountID,
+        accountId: currentElderlyAccountID != 0
+            ? currentElderlyAccountID
+            : currentUserAccountID,
       );
       for (var item in result) {
         switch (item["tabs"]) {
@@ -204,6 +206,8 @@ class _DetailBloodOxygenState extends ConsumerState<DetailBloodOxygen>
 
   @override
   Widget build(BuildContext context) {
+    SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+    final currentUserRoleId = sharedPrefsHelper.getInt("roleId");
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
@@ -219,9 +223,10 @@ class _DetailBloodOxygenState extends ConsumerState<DetailBloodOxygen>
         ),
         centerTitle: true,
         actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
+          if (currentUserRoleId != 4)
+            Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
         ],
       ),
       body: SingleChildScrollView(

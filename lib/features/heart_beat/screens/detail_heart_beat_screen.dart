@@ -112,12 +112,13 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
     final heartRateController = ref.read(heartRateControllerProvider);
-    final currentSelectedElderlyId = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
+    final currentSelectedElderlyId =
+        sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
       final result = await heartRateController.getHeartRatetDetail(
         context: context,
-        accountId: currentSelectedElderlyId != 0 
+        accountId: currentSelectedElderlyId != 0
             ? currentSelectedElderlyId
             : currentUserAccountID,
       );
@@ -205,6 +206,8 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
 
   @override
   Widget build(BuildContext context) {
+    SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+    final currentUserRoleId = sharedPrefsHelper.getInt("roleId");
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
@@ -220,9 +223,10 @@ class _DetailHeartBeatScreenState extends ConsumerState<DetailHeartBeatScreen>
         ),
         centerTitle: true,
         actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
+          if (currentUserRoleId != 4)
+            Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
         ],
       ),
       body: SingleChildScrollView(
