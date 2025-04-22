@@ -1,421 +1,9 @@
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:hugeicons/hugeicons.dart';
-// import 'package:intl/intl.dart';
-// import 'package:sep490/data/helper/shared_prefs_helper.dart';
-// import 'package:sep490/theme/color.dart';
-// import 'package:http/http.dart' as http;
-
-// class NotificationScreen extends StatefulWidget {
-//   const NotificationScreen({super.key});
-
-//   @override
-//   State<NotificationScreen> createState() => _NotificationScreenState();
-// }
-
-// class _NotificationScreenState extends State<NotificationScreen> {
-//   bool _isLoading = true;
-//   List<dynamic> _notifications = [];
-//   String _errorMessage = '';
-//   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
-//   late int userId = sharedPrefsHelper.getInt('accountId')!;
-//   @override
-//   void initState() {
-//     super.initState();
-//     _fetchNotifications();
-//   }
-
-//   Future<void> _fetchNotifications() async {
-//     try {
-//       setState(() {
-//         _isLoading = true;
-//         _errorMessage = '';
-//       });
-
-//       final response = await http.get(
-//         Uri.parse(
-//             'https://api.diavan-valuation.asia/notification-management?accountId=${userId}'),
-//       );
-
-//       if (response.statusCode == 200) {
-//         final data = json.decode(response.body);
-//         if (data['status'] == 1) {
-//           setState(() {
-//             _notifications = data['data'];
-//             _isLoading = false;
-//           });
-//         } else {
-//           setState(() {
-//             _errorMessage = data['message'] ?? 'Failed to load notifications';
-//             _isLoading = false;
-//           });
-//         }
-//       } else {
-//         setState(() {
-//           _errorMessage =
-//               'Failed to load notifications. Status code: ${response.statusCode}';
-//           _isLoading = false;
-//         });
-//       }
-//     } catch (e) {
-//       setState(() {
-//         _errorMessage = 'An error occurred: ${e.toString()}';
-//         _isLoading = false;
-//       });
-//     }
-//   }
-
-//   Future<void> _markAsRead(int notificationId) async {
-//     try {
-//       final response = await http.put(
-//         Uri.parse(
-//             'https://api.diavan-valuation.asia/notification-management/update?notiId=$notificationId&status=Đã%20đọc'),
-//       );
-
-//       if (response.statusCode == 200) {
-//         final data = json.decode(response.body);
-//         if (data['status'] != 1) {
-//           // Show error if needed
-//           debugPrint('Failed to mark as read: ${data['message']}');
-//         }
-//       } else {
-//         debugPrint(
-//             'Failed to mark as read. Status code: ${response.statusCode}');
-//       }
-//     } catch (e) {
-//       debugPrint('Error marking as read: ${e.toString()}');
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(
-//           "Thông báo",
-//           style: TextStyle(
-//             fontSize: 20,
-//             fontWeight: FontWeight.w600,
-//             color: AppColors.secondaryColor,
-//           ),
-//         ),
-//         centerTitle: true,
-//         actions: [
-//           IconButton(
-//             icon: const Icon(Icons.refresh, size: 24),
-//             onPressed: _fetchNotifications,
-//             tooltip: 'Làm mới',
-//           ),
-//         ],
-//       ),
-//       body: _buildBody(),
-//     );
-//   }
-
-//   Widget _buildBody() {
-//     if (_isLoading) {
-//       return const Center(
-//         child: CircularProgressIndicator(
-//           strokeWidth: 2,
-//           valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
-//         ),
-//       );
-//     }
-
-//     if (_errorMessage.isNotEmpty) {
-//       return Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Icon(
-//               Icons.error_outline,
-//               size: 48,
-//               color: Colors.red[400],
-//             ),
-//             const SizedBox(height: 16),
-//             Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: 24),
-//               child: Text(
-//                 _errorMessage,
-//                 textAlign: TextAlign.center,
-//                 style: TextStyle(
-//                   fontSize: 16,
-//                   color: Colors.grey[700],
-//                 ),
-//               ),
-//             ),
-//             const SizedBox(height: 24),
-//             ElevatedButton(
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: AppColors.primaryColor,
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(8),
-//                 ),
-//                 padding:
-//                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-//               ),
-//               onPressed: _fetchNotifications,
-//               child: const Text(
-//                 'Thử lại',
-//                 style: TextStyle(color: Colors.white),
-//               ),
-//             ),
-//           ],
-//         ),
-//       );
-//     }
-
-//     if (_notifications.isEmpty) {
-//       return Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Icon(
-//               Icons.notifications_none,
-//               size: 64,
-//               color: Colors.grey[300],
-//             ),
-//             const SizedBox(height: 16),
-//             Text(
-//               'Không có thông báo mới',
-//               style: TextStyle(
-//                 fontSize: 16,
-//                 color: Colors.grey[500],
-//               ),
-//             ),
-//           ],
-//         ),
-//       );
-//     }
-
-//     return RefreshIndicator(
-//       color: AppColors.primaryColor,
-//       onRefresh: _fetchNotifications,
-//       child: ListView.separated(
-//         padding: const EdgeInsets.only(top: 12, bottom: 24),
-//         itemCount: _notifications.length,
-//         separatorBuilder: (context, index) =>
-//             const Divider(height: 1, indent: 72),
-//         itemBuilder: (context, index) {
-//           final notification = _notifications[index];
-//           final isUnread = notification['status'] == 'Chưa đọc';
-
-//           return _buildNotificationItem(notification, isUnread, index);
-//         },
-//       ),
-//     );
-//   }
-
-//   Widget _buildNotificationItem(
-//       Map<String, dynamic> notification, bool isUnread, int index) {
-//     final createdDate = DateTime.parse(notification['createdDate']);
-//     final timeFormat = DateFormat('HH:mm');
-//     final dateFormat = DateFormat('dd/MM');
-//     HugeIcon getNotificationIcon(String notificationType, bool isUnread) {
-//       final Color activeColor = isUnread
-//           ? AppColors.primaryColor
-//           : Colors.grey[400] ?? AppColors.primaryColor;
-//       final Color emergencyColor =
-//           isUnread ? Colors.red : Colors.grey[400] ?? AppColors.primaryColor;
-
-//       switch (notificationType.toLowerCase()) {
-//         case 'lịch gặp bác sĩ':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedCalendar01,
-//             color: activeColor,
-//             size: 24,
-//           );
-
-//         case 'nhắc nhở uống thuốc':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedGivePill,
-//             color: activeColor,
-//             size: 24,
-//           );
-
-//         case 'nhắc nhở uống nước':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedWaterEnergy,
-//             color: Colors.blue,
-//             size: 24,
-//           );
-
-//         case 'lịch trình hàng ngày':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedCalendar02,
-//             color: activeColor,
-//             size: 24,
-//           );
-
-//         case 'hủy lịch khám':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedCalendarRemove01,
-//             color: Colors.redAccent,
-//             size: 24,
-//           );
-
-//         case 'mua gói dịch vụ':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedPackage03,
-//             color: Colors.blue,
-//             size: 24,
-//           );
-
-//         case 'gửi yêu cầu hỗ trợ':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedHelpCircle,
-//             color: activeColor,
-//             size: 24,
-//           );
-
-//         case 'xác nhận hỗ trợ':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedCheckmarkCircle01,
-//             color: Colors.green,
-//             size: 24,
-//           );
-
-//         case 'thêm vào gia đình':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedUserGroup,
-//             color: activeColor,
-//             size: 24,
-//           );
-
-//         case 'thêm vào nhóm chat':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedBubbleChatAdd,
-//             color: activeColor,
-//             size: 24,
-//           );
-
-//         case 'kết bạn mới':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedUserAdd01,
-//             color: activeColor,
-//             size: 24,
-//           );
-
-//         case 'cảnh báo sức khỏe':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedHealth,
-//             color: emergencyColor,
-//             size: 24,
-//           );
-
-//         case 'sos':
-//           return HugeIcon(
-//             icon: HugeIcons.strokeRoundedAmbulance,
-//             color: emergencyColor,
-//             size: 24,
-//           );
-
-//         default:
-//           return HugeIcon(
-//             icon: isUnread
-//                 ? HugeIcons.strokeRoundedNotification01
-//                 : HugeIcons.strokeRoundedNotification02,
-//             color: activeColor,
-//             size: 24,
-//           );
-//       }
-//     }
-
-//     return ListTile(
-//       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//       leading: Container(
-//         width: 48,
-//         height: 48,
-//         decoration: BoxDecoration(
-//           color: isUnread
-//               ? AppColors.primaryColor.withOpacity(0.1)
-//               : Colors.transparent,
-//           shape: BoxShape.circle,
-//         ),
-//         // child: Icon(
-//         //   isUnread ? Icons.notifications_active : Icons.notifications_none,
-//         //   color: isUnread ? AppColors.primaryColor : Colors.grey[400],
-//         //   size: 24,
-//         // ),
-//         child: getNotificationIcon(notification['notificationType'], isUnread),
-//       ),
-//       title: Text(
-//         notification['title'],
-//         style: TextStyle(
-//           fontSize: 16,
-//           fontWeight: isUnread ? FontWeight.w600 : FontWeight.normal,
-//           color: isUnread ? Colors.black : Colors.grey[700],
-//         ),
-//       ),
-//       subtitle: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           const SizedBox(height: 4),
-//           Text(
-//             notification['message'],
-//             style: TextStyle(
-//               fontSize: 14,
-//               color: Colors.grey[600],
-//             ),
-//             maxLines: 2,
-//             overflow: TextOverflow.ellipsis,
-//           ),
-//           const SizedBox(height: 4),
-//           Text(
-//             '${timeFormat.format(createdDate)} - ${dateFormat.format(createdDate)}',
-//             style: TextStyle(
-//               fontSize: 12,
-//               color: Colors.grey[500],
-//             ),
-//           ),
-//         ],
-//       ),
-//       trailing: isUnread
-//           ? Container(
-//               width: 8,
-//               height: 8,
-//               decoration: const BoxDecoration(
-//                 color: AppColors.primaryColor,
-//                 shape: BoxShape.circle,
-//               ),
-//             )
-//           : null,
-//       onTap: () async {
-//         if (isUnread) {
-//           // Optimistically update UI first
-//           setState(() {
-//             _notifications[index]['status'] = 'Đã đọc';
-//           });
-
-//           // Then call API
-//           try {
-//             await _markAsRead(notification['notificationId']);
-
-//             // Refresh to ensure sync with server
-//             await _fetchNotifications();
-//           } catch (e) {
-//             // Revert if API call fails
-//             setState(() {
-//               _notifications[index]['status'] = 'Chưa đọc';
-//             });
-
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(
-//                 content: Text('Đánh dấu đọc thất bại: ${e.toString()}'),
-//                 duration: const Duration(seconds: 2),
-//               ),
-//             );
-//           }
-//         }
-//       },
-//     );
-//   }
-// }
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/water_drinking/screens/water_drinking.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
@@ -750,6 +338,195 @@ class _NotificationScreenState extends State<NotificationScreen>
     final timeFormat = DateFormat('HH:mm');
     final dateFormat = DateFormat('dd/MM/yyyy');
     final notificationType = notification['notificationType'];
+    void handleNavigation() async {
+      // Xử lý đánh dấu đọc trước
+      if (isUnread) {
+        setState(() {
+          _notifications[_notifications.indexWhere((element) =>
+                  element['notificationId'] == notification['notificationId'])]
+              ['status'] = 'Đã đọc';
+        });
+        try {
+          await _markAsRead(notification['notificationId']);
+        } catch (e) {
+          setState(() {
+            _notifications[_notifications.indexWhere((element) =>
+                element['notificationId'] ==
+                notification['notificationId'])]['status'] = 'Chưa đọc';
+          });
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Đánh dấu đọc thất bại: ${e.toString()}'),
+                duration: const Duration(seconds: 2),
+                backgroundColor: Colors.red[700],
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            );
+          }
+          return;
+        }
+      }
+
+      // Xử lý điều hướng dựa trên loại thông báo
+      switch (notificationType.toLowerCase()) {
+        // case 'lịch gặp bác sĩ':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => DoctorAppointmentDetailScreen(
+        //         appointmentId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        //         case 'hủy lịch khám':
+
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => DoctorAppointmentDetailScreen(
+        //         appointmentId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        // case 'nhắc nhở uống thuốc':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => MedicineReminderScreen(
+        //         reminderId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        case 'nhắc nhở uống nước':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WaterDrinking(),
+            ),
+          );
+          break;
+
+        //             case 'lịch trình hàng ngày':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => MedicineReminderScreen(
+        //         reminderId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        // case 'mua gói dịch vụ':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => ServicePackageScreen(
+        //         packageId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        //   case 'gửi yêu cầu hỗ trợ':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => ServicePackageScreen(
+        //         packageId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        //  case 'xác nhận hỗ trợ':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => ServicePackageScreen(
+        //         packageId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        //  case 'thêm vào gia đình':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => ServicePackageScreen(
+        //         packageId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        //   case 'thêm vào nhóm chat':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => ServicePackageScreen(
+        //         packageId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        //   case 'kết bạn mới':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => ServicePackageScreen(
+        //         packageId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        case 'cảnh báo sức khỏe':
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => HealthAlertDetailScreen(
+          //       alertId: notification['relatedId'],
+          //     ),
+          //   ),
+          // );
+          print("data ${notification['data']}");
+          break;
+
+        // case 'sos':
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => EmergencyDetailScreen(
+        //         emergencyId: notification['relatedId'],
+        //       ),
+        //     ),
+        //   );
+        //   break;
+
+        // Thêm các trường hợp khác tùy theo loại thông báo
+        default:
+          // Mở màn hình chi tiết thông báo chung nếu không có loại phù hợp
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NotificationScreen(),
+            ),
+          );
+      }
+    }
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -757,51 +534,52 @@ class _NotificationScreenState extends State<NotificationScreen>
       decoration: BoxDecoration(
         color: isUnread ? Color.fromRGBO(246, 249, 255, 1) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: isUnread
-        //         ? AppColors.primaryColor.withOpacity(0.15)
-        //         : Colors.black.withOpacity(0.05),
-        //     blurRadius: 8,
-        //     offset: const Offset(0, 3),
-        //   ),
-        // ],
+        boxShadow: [
+          BoxShadow(
+            color: isUnread
+                ? AppColors.textPrimary.withOpacity(0.15)
+                : Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          onTap: handleNavigation,
           borderRadius: BorderRadius.circular(16),
-          onTap: () async {
-            if (isUnread) {
-              setState(() {
-                _notifications[_notifications.indexWhere((element) =>
-                    element['notificationId'] ==
-                    notification['notificationId'])]['status'] = 'Đã đọc';
-              });
-              try {
-                await _markAsRead(notification['notificationId']);
-              } catch (e) {
-                setState(() {
-                  _notifications[_notifications.indexWhere((element) =>
-                      element['notificationId'] ==
-                      notification['notificationId'])]['status'] = 'Chưa đọc';
-                });
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Đánh dấu đọc thất bại: ${e.toString()}'),
-                      duration: const Duration(seconds: 2),
-                      backgroundColor: Colors.red[700],
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  );
-                }
-              }
-            }
-          },
+          // onTap: () async {
+          //   if (isUnread) {
+          //     setState(() {
+          //       _notifications[_notifications.indexWhere((element) =>
+          //           element['notificationId'] ==
+          //           notification['notificationId'])]['status'] = 'Đã đọc';
+          //     });
+          //     try {
+          //       await _markAsRead(notification['notificationId']);
+          //     } catch (e) {
+          //       setState(() {
+          //         _notifications[_notifications.indexWhere((element) =>
+          //             element['notificationId'] ==
+          //             notification['notificationId'])]['status'] = 'Chưa đọc';
+          //       });
+          //       if (mounted) {
+          //         ScaffoldMessenger.of(context).showSnackBar(
+          //           SnackBar(
+          //             content: Text('Đánh dấu đọc thất bại: ${e.toString()}'),
+          //             duration: const Duration(seconds: 2),
+          //             backgroundColor: Colors.red[700],
+          //             behavior: SnackBarBehavior.floating,
+          //             shape: RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.circular(10),
+          //             ),
+          //           ),
+          //         );
+          //       }
+          //     }
+          //   }
+          // },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             child: Row(
