@@ -63,6 +63,17 @@ class EmergencyController {
     }
   }
 
+  Future<void> getEmergencyListDoctor(int accountId) async {
+    final response = await _emergencyRepository.getEmergencyListDoctor(accountId);
+    if (response != null && response['isSuccess']) {
+      emergencyList = response['data']['data']
+          .map<Emergency>((emergency) => Emergency.fromJson(emergency))
+          .toList();
+    } else {
+      emergencyList = [];
+    }
+  }
+
   Future<void> getEmergencyDetail(int emergencyId) async {
     final response = await _emergencyRepository.getEmergencyDetail(emergencyId);
     if (response != null && response['isSuccess']) {

@@ -159,7 +159,7 @@ class DoctorController {
   Future<void> confirmCheckout(String transId) async {
     final response = await _doctorRepository.confirmCheckout(transId);
     if (response != null && response['isSuccess']) {
-      isConfirmedSuccess = response['data']['status'] == 1;
+      isConfirmedSuccess = true;
     } else {
       isConfirmedSuccess = false;
     }

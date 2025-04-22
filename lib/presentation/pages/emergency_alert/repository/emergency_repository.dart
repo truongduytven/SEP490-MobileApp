@@ -107,6 +107,25 @@ class EmergencyRepository {
     }
   }
 
+  Future<dynamic> getEmergencyListDoctor(int accountId) async {
+    try {
+      final response = await http.get(Uri.parse(
+          '$baseUrl/emergency-contacts/list-emergency-confirmation-of-professor/$accountId'));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
   Future<dynamic> getEmergencyDetail(int emergencyId) async {
     try {
       final response = await http.get(Uri.parse(
@@ -149,7 +168,7 @@ class EmergencyRepository {
     try {
       final response = await http.post(Uri.parse(
           '$baseUrl/emergency-contacts/confirmation?accountId=$accountId&emergencyId=$emergencyId'));
-
+      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};

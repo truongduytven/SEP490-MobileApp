@@ -63,6 +63,7 @@ class _ResultCheckoutState extends State<ResultCheckout>
     await doctorController.checkout(
         widget.accountId, widget.elderlyId, widget.comboId);
     Timer(Duration(seconds: 2), () async {
+      if (!mounted) return;
       if (doctorController.checkoutResponse != null) {
         if (doctorController.checkoutResponse!.returnCode == 1) {
           setState(() {
@@ -87,27 +88,10 @@ class _ResultCheckoutState extends State<ResultCheckout>
   void checkPaymentStatus() async {
     DoctorController doctorController = DoctorController();
     await doctorController.checkOrderStatus(trans_id);
-    Timer(Duration(seconds: 2), () async {
+    Timer(Duration(seconds: 2), () {
+      if (!mounted) return;
       if (doctorController.isOrderSuccess) {
-        if (widget.bookingData != null) {
-          await doctorController.bookingAppointment(
-              widget.bookingData!['elderlyId'],
-              widget.bookingData!['professorId'],
-              widget.bookingData!['startTime'],
-              widget.bookingData!['endTime'],
-              widget.bookingData!['day'],
-              widget.bookingData!['description']);
-          if (doctorController.isBookingAppointmentSuccess) {
-            confirmCheckout();
-          } else {
-            setState(() {
-              isLoading = false;
-              isCheckoutSuccess = false;
-            });
-          }
-        } else {
-          confirmCheckout();
-        }
+        confirmCheckout();
       } else {
         setState(() {
           isLoading = false;
@@ -120,15 +104,39 @@ class _ResultCheckoutState extends State<ResultCheckout>
   void confirmCheckout() async {
     DoctorController doctorController = DoctorController();
     await doctorController.confirmCheckout(trans_id);
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 2), () async {
+      if (!mounted) return;
       if (doctorController.isConfirmedSuccess) {
-        setState(() {
-          isLoading = false;
-          isCheckoutSuccess = true;
-        });
+        print('Dô rồi nè');
+        if (widget.bookingData != null) {
+          await doctorController.bookingAppointment(
+              widget.bookingData!['elderlyId'],
+              widget.bookingData!['professorId'],
+              widget.bookingData!['startTime'],
+              widget.bookingData!['endTime'],
+              widget.bookingData!['day'],
+              widget.bookingData!['description']);
+          if (doctorController.isBookingAppointmentSuccess) {
+            setState(() {
+              isLoading = false;
+              isCheckoutSuccess = true;
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+              isCheckoutSuccess = false;
+            });
+          }
+        } else {
+          setState(() {
+            isLoading = false;
+            isCheckoutSuccess = true;
+          });
+        }
         _startCountdown();
       } else {
         setState(() {
+          isLoading = false;
           isCheckoutSuccess = false;
         });
       }
@@ -227,6 +235,26 @@ class _ResultCheckoutState extends State<ResultCheckout>
                                 color: AppColors.secondaryColor,
                               ),
                             ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.secondaryColor,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: const Text('Quay lại',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.bgColor,
+                                  )),
+                            )
                           ],
                         ),
                       ),

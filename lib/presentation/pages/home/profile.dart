@@ -40,6 +40,7 @@ class _EditProfileState extends State<EditProfile> {
   bool hasChanged = false;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId;
+  late int selectedElderlyId;
   late ElderlyProfile? elderlyProfile = null;
   File? _selectedImageFile;
   final ImagePicker _picker = ImagePicker();
@@ -48,6 +49,7 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     super.initState();
     accountId = sharedPrefsHelper.getInt("accountId") ?? 0;
+    selectedElderlyId = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
     getProfileData();
   }
 
@@ -56,7 +58,6 @@ class _EditProfileState extends State<EditProfile> {
       isLoading = true;
     });
     HomeController homeController = HomeController();
-    print(widget.elderlyId);
     await homeController.getElderlyProfile(widget.elderlyId ?? accountId);
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
@@ -64,8 +65,10 @@ class _EditProfileState extends State<EditProfile> {
         elderlyProfile = homeController.elderlyProfile;
         isLoading = false;
       });
-      sharedPrefsHelper.setString("avatar", elderlyProfile!.avatar);
-      sharedPrefsHelper.setString("fullName", elderlyProfile!.fullName);
+      if (selectedElderlyId == 0) {
+        sharedPrefsHelper.setString("avatar", elderlyProfile!.avatar);
+        sharedPrefsHelper.setString("fullName", elderlyProfile!.fullName);
+      }
       initData();
     });
   }
@@ -210,19 +213,19 @@ class _EditProfileState extends State<EditProfile> {
         elevation: 0,
         scrolledUnderElevation: 0,
         actions: [
-          if(widget.elderlyId == null)
-          IconButton(
-            icon: Icon(isEditing ? Icons.close : Icons.edit),
-            onPressed: () {
-              if (isEditing) {
-                resetChanges();
-              } else {
-                setState(() {
-                  isEditing = true;
-                });
-              }
-            },
-          )
+          if (widget.elderlyId == null)
+            IconButton(
+              icon: Icon(isEditing ? Icons.close : Icons.edit),
+              onPressed: () {
+                if (isEditing) {
+                  resetChanges();
+                } else {
+                  setState(() {
+                    isEditing = true;
+                  });
+                }
+              },
+            )
         ],
       ),
       body: !isLoading

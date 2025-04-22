@@ -126,6 +126,18 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   void _showActivityDialog(BuildContext context, Activity activity) {
+    final now = DateTime.now();
+    final startTimeParts = activity.startTime.split(':');
+    final activityTime = DateTime(
+      selectedYear,
+      selectedMonth,
+      selectedDay,
+      int.parse(startTimeParts[0]),
+      int.parse(startTimeParts[1]),
+    );
+    bool showButtons = activity.type != "Medication" &&
+        activity.type != "Professor Appointment" &&
+        activityTime.isBefore(now);
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -185,6 +197,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                if (showButtons)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -645,9 +658,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 SizedBox(height: 20),
                               ],
                             ),
-                            if(_isSelectedDayToday())
-                            _buildCurrentTimeIndicator(
-                                percentHeight, isCurrentHour, hourBlockHeight)
+                            if (_isSelectedDayToday())
+                              _buildCurrentTimeIndicator(
+                                  percentHeight, isCurrentHour, hourBlockHeight)
                           ],
                         );
                       })),

@@ -707,7 +707,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                     autoPlayInterval: 3000,
                     isLoop: true,
                     width: double.infinity,
-                    height: 300,
+                    height: 250,
                     initialPage: 0,
                     children: [
                       Image.network(
@@ -736,7 +736,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                             'Trải nghiệm ngay gói dịch vụ từ đội ngũ bác sĩ của chúng tôi',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                fontSize: 25,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.primaryColor)),
                         SizedBox(height: 20),

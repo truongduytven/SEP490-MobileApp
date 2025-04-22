@@ -203,6 +203,7 @@ class _PackageListState extends State<PackageList> {
                 : SingleChildScrollView(
                     child: Column(
                       children: [
+                        if(widget.isShowFull)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Column(
