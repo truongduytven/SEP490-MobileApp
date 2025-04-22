@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/main.dart';
 import 'package:sep490/models/emergency.dart';
 import 'package:sep490/presentation/pages/emergency_alert/controller/emergency_controller.dart';
 import 'package:sep490/presentation/pages/emergency_alert/emergency_detail.dart';
@@ -18,10 +20,11 @@ class EmergencyList extends StatefulWidget {
 }
 
 class _EmergencyListState extends State<EmergencyList>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver, RouteAware {
   late List<Emergency> emergencyList = [];
   bool isLoading = true;
   int accountId = 0;
+  int roleId = 0;
   late List<Map<String, dynamic>> newEmergency = [];
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   final List<String> tabs = ['Tín hiệu khẩn cấp', 'Lịch sử'];
@@ -32,7 +35,9 @@ class _EmergencyListState extends State<EmergencyList>
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
+    roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
     getEmergencyList();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void getEmergencyList() async {
@@ -40,9 +45,13 @@ class _EmergencyListState extends State<EmergencyList>
       isLoading = true;
     });
     EmergencyController emergencyController = EmergencyController();
-    await emergencyController.getEmergencyList(accountId);
+    if (roleId == 3) {
+      await emergencyController.getEmergencyList(accountId);
+    } else {
+      await emergencyController.getEmergencyListDoctor(accountId);
+    }
     Timer(Duration(seconds: 2), () {
-      if(!mounted) return;
+      if (!mounted) return;
       setState(() {
         emergencyList = emergencyController.emergencyList;
         isLoading = false;
@@ -66,6 +75,7 @@ class _EmergencyListState extends State<EmergencyList>
 
   bool checkNewEmergency() {
     bool isHaveNewEmergency = false;
+    newEmergency.clear();
     for (var element in emergencyList) {
       if (element.historyEmergency.isNotEmpty) {
         for (var e in element.historyEmergency) {
@@ -85,8 +95,29 @@ class _EmergencyListState extends State<EmergencyList>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
+    routeObserver.unsubscribe(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Đăng ký RouteAware để theo dõi sự kiện navigation
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      // Kiểm tra xem route có phải là PageRoute không
+      routeObserver.subscribe(
+          this,
+          // ignore: unnecessary_cast
+          route as PageRoute<dynamic>); // Ép kiểu thành PageRoute<dynamic>
+    }
+  }
+
+  @override
+  void didPopNext() {
+    getEmergencyList(); // Gọi lại API
   }
 
   @override
@@ -312,29 +343,34 @@ class _EmergencyListState extends State<EmergencyList>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              e.isConfirmed
+                              e.status == 'Đã xác nhận'
                                   ? Icon(
                                       Icons.circle,
                                       color: Colors.green,
                                       size: 10,
                                     )
-                                  : Lottie.asset(
-                                      'assets/img/AnimationRedDot.json',
-                                      height: 50,
-                                      width: 25),
+                                  : e.status == 'Chưa xác nhận'
+                                      ? Lottie.asset(
+                                          'assets/img/AnimationRedDot.json',
+                                          height: 50,
+                                          width: 25)
+                                      : Icon(
+                                          Icons.circle,
+                                          color: Colors.blue,
+                                          size: 10,
+                                        ),
                               SizedBox(
                                 width: 5,
                               ),
-                              Text(
-                                  e.isConfirmed
-                                      ? 'Đã xác nhận'
-                                      : 'Đang chờ hỗ trợ',
+                              Text(e.status,
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600,
-                                      color: e.isConfirmed
+                                      color: e.status == 'Đã xác nhận'
                                           ? Colors.green
-                                          : Colors.red)),
+                                          : e.status == 'Chưa xác nhận'
+                                              ? Colors.red
+                                              : Colors.blue)),
                             ],
                           ),
                           Text(
@@ -415,7 +451,7 @@ class _EmergencyListState extends State<EmergencyList>
                     phoneNumber: emergency['phoneNumber'],
                     emergencyId: emergency['emergencyConfirmationId'],
                     elderlyId: emergency['elderlyId'],
-                    isEmergencyList: false)));
+                    isEmergencyList: roleId != 4 ? false : true)));
       },
       child: Card(
         color: AppColors.bgColor,

@@ -27,7 +27,7 @@ class _CheckoutState extends State<Checkout> {
     'Được chọn chuyên gia tư vấn',
     'Nhận thông báo khi có lịch tư vấn',
     'Cảnh báo khi có chỉ số bất thường',
-    'Gặp mặt tư vấn online hoặc offline',
+    'Được tham gia các tiện ích khác',
   ];
   String selectedMethod = 'ZaloPay';
   late int selectedElderlyId = 0;
@@ -88,7 +88,7 @@ class _CheckoutState extends State<Checkout> {
                       children: [
                         Text('Người già:',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                             )),
                         Text(selectedElderlyUserName,
                             style: const TextStyle(
@@ -103,7 +103,7 @@ class _CheckoutState extends State<Checkout> {
                       children: [
                         Text('Tên gói:',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                             )),
                         Text(data.name,
                             style: const TextStyle(
@@ -118,7 +118,7 @@ class _CheckoutState extends State<Checkout> {
                       children: [
                         Text('Mô tả: ',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                             )),
                         Text(data.description,
                             maxLines: 2,
@@ -135,7 +135,7 @@ class _CheckoutState extends State<Checkout> {
                       children: [
                         Text('Số lần tư vấn trong tháng: ',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                             )),
                         Text(data.numberOfMeeting.toString(),
                             maxLines: 2,
@@ -234,7 +234,7 @@ class _CheckoutState extends State<Checkout> {
                       children: [
                         Text('Tổng tiền:',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                             )),
                         Text('${convertMoney(data.fee)} VNĐ',
                             style: const TextStyle(

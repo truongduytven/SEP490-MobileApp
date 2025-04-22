@@ -291,8 +291,9 @@ class DoctorRepository {
     try {
       final response = await http.put(
           Uri.parse("$baseUrl/booking-management/confirm?apptransid=$transId"));
+      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (jsonDecode(response.body)['status'] == 1) {
+        if (jsonDecode(response.body)['status'] == 1 || (jsonDecode(response.body)['status'] == 0 && jsonDecode(response.body)['message'] == "An unexpected error occurred: Requested entity was not found.")) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
         } else {
           return {'isSuccess': false, 'data': jsonDecode(response.body)};
@@ -314,6 +315,7 @@ class DoctorRepository {
           },
           body:
               jsonEncode({"professorId": professorId, "elderlyId": elderlyId}));
+      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};

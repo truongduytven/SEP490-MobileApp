@@ -416,6 +416,14 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         }
       },
       child: Scaffold(
+        appBar: roleId == 4
+            ? AppBar(
+                automaticallyImplyLeading: true,
+                backgroundColor: AppColors.bgColor,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+              )
+            : null,
         body: Container(
           height: double.infinity,
           width: double.infinity,
@@ -431,9 +439,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Header(
-                  isChooseElderly: false,
-                ),
+                if (roleId != 4)
+                  Header(
+                    isChooseElderly: false,
+                  ),
+                if (roleId != 4)
                 const SizedBox(height: 20),
                 Row(
                   children: [
