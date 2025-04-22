@@ -33,6 +33,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       final name = arguments["name"];
       final uid = arguments["uid"];
       final isGroupChat = arguments["isGroupChat"];
+      final isProfessorChat = arguments["isProfessorChat"];
       final profilePic = arguments["profilePic"];
       final users = arguments["users"];
 
@@ -41,6 +42,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             name: name,
             uid: uid,
             isGroupChat: isGroupChat,
+            isProfessorChat: isProfessorChat,
             profilePic: profilePic,
             users: users),
       );

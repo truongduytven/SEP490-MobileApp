@@ -20,7 +20,7 @@ class HealthScreen extends ConsumerStatefulWidget {
 }
 
 class _HealthScreenState extends ConsumerState<HealthScreen>
-    with RouteAware, WidgetsBindingObserver {
+    with RouteAware, WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> dataFromApi = [];
@@ -33,7 +33,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   bool isLoadingDialog = false;
   bool isShowSelectUser = false;
   late List<ElderlyUser>? userList = null;
-
+  @override
+  bool get wantKeepAlive => true;
   @override
   void initState() {
     super.initState();
@@ -52,10 +53,32 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
 
   @override
   void dispose() {
+    _scrollController.dispose();
     WidgetsBinding.instance
         .removeObserver(this); // Xóa observer khi widget bị hủy
     routeObserver.unsubscribe(this); // Hủy đăng ký RouteAware khi widget bị hủy
     super.dispose();
+  }
+
+  // Thêm biến để lưu vị trí scroll
+  double _savedScrollPosition = 0.0;
+
+  // Sửa hàm navigate để lưu vị trí scroll
+  void _navigateToHealthBook() {
+    _savedScrollPosition = _scrollController.position.pixels;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HealthMonitoringBook(initialTopic: "all"),
+      ),
+    ).then((_) {
+      // Khi quay lại, khôi phục vị trí scroll
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(_savedScrollPosition);
+        }
+      });
+    });
   }
 
   @override
@@ -476,22 +499,25 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                         )
                       : ListView.separated(
                           controller: _scrollController,
+                          key: const PageStorageKey<String>(
+                              'healthScrollPosition'),
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 10),
                           itemCount: dataFromApi.length + 1,
                           itemBuilder: (context, index) {
                             if (index == dataFromApi.length) {
                               return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            HealthMonitoringBook(
-                                              initialTopic: "all",
-                                            )),
-                                  );
-                                },
+                                // onTap: () {
+                                //   Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             HealthMonitoringBook(
+                                //               initialTopic: "all",
+                                //             )),
+                                //   );
+                                // },
+                                onTap: _navigateToHealthBook,
                                 child: Card(
                                   margin: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 4),
@@ -598,135 +624,4 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       ),
     );
   }
-}
-
-void _showAccountDialog(BuildContext context) {
-  final List<Map<String, dynamic>> users = [
-    {"id": 1, "name": "User 1"},
-    {"id": 2, "name": "User 2"},
-    {"id": 3, "name": "User 3"},
-  ];
-
-  const int currentUserId = 2;
-  showDialog(
-    barrierColor: AppColors.secondaryColor.withOpacity(0.95),
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        insetPadding: EdgeInsets.all(20),
-        backgroundColor: AppColors.bgColor,
-        title: const Text(
-          "Hỗ trợ từ người thân",
-          style:
-              TextStyle(fontSize: 40, fontWeight: FontWeight.w600, height: 1.2),
-          textAlign: TextAlign.center,
-        ),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Chọn một người để xem hoặc thêm mới",
-                style: TextStyle(
-                    color: AppColors.grayColor5, fontSize: 20, height: 1.2),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Flexible(
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: users.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == users.length) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.borderColor,
-                              width: 1.5,
-                            ),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          margin: const EdgeInsets.symmetric(vertical: 4.0),
-                          padding: EdgeInsets.symmetric(vertical: 5),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              radius: 22,
-                              backgroundColor: Colors.transparent,
-                              child: const Icon(Icons.person_add_alt_1_outlined,
-                                  color: AppColors.primaryColor),
-                            ),
-                            title: const Text(
-                              "Thêm người mới",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        );
-                      }
-
-                      final user = users[index];
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: user['id'] == currentUserId
-                                ? AppColors.primaryColor
-                                : AppColors.borderColor,
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 5),
-                        margin: const EdgeInsets.symmetric(vertical: 6.0),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 22,
-                            child: const Icon(Icons.person),
-                          ),
-                          title: Text(
-                            user['name'],
-                            style: TextStyle(
-                              color: user['id'] == currentUserId
-                                  ? AppColors.primaryColor
-                                  : AppColors.textColor,
-                              fontWeight: user['id'] == currentUserId
-                                  ? FontWeight.w600
-                                  : null,
-                              fontSize: 20,
-                            ),
-                          ),
-                          trailing: user['id'] == currentUserId
-                              ? const Icon(Icons.check_circle_rounded,
-                                  size: 28, color: AppColors.primaryColor)
-                              : null,
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text(
-              "Đóng",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-        ],
-      );
-    },
-  );
 }

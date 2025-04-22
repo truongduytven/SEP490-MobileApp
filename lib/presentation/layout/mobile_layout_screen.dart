@@ -56,6 +56,8 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
   Widget build(BuildContext context) {
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserId = sharedPrefsHelper.getInt("accountId");
+    final currentUserRoleId = sharedPrefsHelper.getInt("roleId");
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -155,20 +157,31 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
         // ),
         // ),
         // floatingActionButton: ExpandableFab(),
-        floatingActionButton: tabBarController.index == 0
-            ? ExpandableFab()
-            : tabBarController.index == 1
-                ? FloatingActionButton(
-                    onPressed: () {
-                      // Navigator.pushNamed(context, SelectContactsScreen.routeName);
-                    },
+
+        // floatingActionButton:
+        //  tabBarController.index == 0
+        //     ? ExpandableFab()
+        //     : tabBarController.index == 1
+        //         ? FloatingActionButton(
+        //             onPressed: () {
+        //               // Navigator.pushNamed(context, SelectContactsScreen.routeName);
+        //             },
+        //             backgroundColor: AppColors.primaryColor,
+        //             child: const Icon(
+        //               Icons.add,
+        //               color: Colors.white,
+        //             ),
+        //           )
+        //         : null,
+        floatingActionButton: currentUserRoleId != 4
+            ? tabBarController.index == 0
+                ? ExpandableFab()
+                : FloatingActionButton(
+                    onPressed: () {},
                     backgroundColor: AppColors.primaryColor,
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
+                    child: const Icon(Icons.add, color: Colors.white),
                   )
-                : null,
+            : null,
       ),
     );
   }

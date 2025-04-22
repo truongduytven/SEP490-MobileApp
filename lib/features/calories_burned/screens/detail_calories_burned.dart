@@ -20,7 +20,8 @@ class DetailCaloriesBurnedScreen extends ConsumerStatefulWidget {
       _DetailCaloriesBurnedScreenState();
 }
 
-class _DetailCaloriesBurnedScreenState extends ConsumerState<DetailCaloriesBurnedScreen>
+class _DetailCaloriesBurnedScreenState
+    extends ConsumerState<DetailCaloriesBurnedScreen>
     with SingleTickerProviderStateMixin, RouteAware, WidgetsBindingObserver {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   late TabController _tabController;
@@ -114,12 +115,13 @@ class _DetailCaloriesBurnedScreenState extends ConsumerState<DetailCaloriesBurne
     SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
     final currentUserAccountID = sharedPrefsHelper.getInt("accountId") ?? 0;
     final heartRateController = ref.read(caloriesBurnedControllerProvider);
-    final currentSelectedElderlyId = sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
+    final currentSelectedElderlyId =
+        sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
 
     try {
       final result = await heartRateController.getHeartRatetDetail(
         context: context,
-        accountId: currentSelectedElderlyId != 0 
+        accountId: currentSelectedElderlyId != 0
             ? currentSelectedElderlyId
             : currentUserAccountID,
       );
@@ -207,6 +209,8 @@ class _DetailCaloriesBurnedScreenState extends ConsumerState<DetailCaloriesBurne
 
   @override
   Widget build(BuildContext context) {
+    SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+    final currentUserRoleId = sharedPrefsHelper.getInt("roleId");
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
@@ -222,9 +226,10 @@ class _DetailCaloriesBurnedScreenState extends ConsumerState<DetailCaloriesBurne
         ),
         centerTitle: true,
         actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
+          if (currentUserRoleId != 4)
+            Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: HealthFloatingActionButton(isDialOpen: isDialOpen)),
         ],
       ),
       body: SingleChildScrollView(

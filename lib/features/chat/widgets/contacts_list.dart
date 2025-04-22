@@ -87,6 +87,8 @@ class ContactsList extends ConsumerWidget {
                                       'name': groupData.roomName,
                                       'uid': groupData.roomId,
                                       'isGroupChat': groupData.isGroupChat,
+                                      'isProfessorChat':
+                                          groupData.isProfessorChat,
                                       'profilePic': groupData.roomAvatar,
                                       "users": groupData.users
                                     },
@@ -149,7 +151,8 @@ class ContactsList extends ConsumerWidget {
                                               ),
                                             ),
                                           ),
-                                        if (groupData.isGroupChat)
+                                        if (groupData.isGroupChat &&
+                                            !groupData.isProfessorChat)
                                           Positioned(
                                             top: 2,
                                             right: 2,
@@ -166,6 +169,27 @@ class ContactsList extends ConsumerWidget {
                                               ),
                                               child: Image.asset(
                                                 'assets/img/group_chat.png',
+                                              ),
+                                            ),
+                                          ),
+                                        if (groupData.isGroupChat &&
+                                            groupData.isProfessorChat)
+                                          Positioned(
+                                            top: 2,
+                                            right: 2,
+                                            child: Container(
+                                              width: 22,
+                                              height: 22,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              child: Image.asset(
+                                                'assets/img3D/bacsi.png',
                                               ),
                                             ),
                                           ),

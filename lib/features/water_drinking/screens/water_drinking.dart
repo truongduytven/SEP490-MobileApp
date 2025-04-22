@@ -288,36 +288,39 @@ class _WaterDrinkingState extends State<WaterDrinking>
               // Motivational text at bottom
               Positioned(
                 bottom: 40,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.blue[500]!,
-                        Colors.blue[700]!,
+                child: GestureDetector(
+                  onTap: () => _showDrinkingScheduleModal(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.blue[500]!,
+                          Colors.blue[700]!,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue[300]!.withOpacity(0.6),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
+                        ),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blue[300]!.withOpacity(0.6),
-                        blurRadius: 15,
-                        offset: const Offset(0, 4),
+                    child: SizedBox(
+                      width: 250,
+                      child: Text(
+                        "💧  ${getCurrentScheduleDescription()} 💧",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ],
-                  ),
-                  child: SizedBox(
-                    width: 250,
-                    child: Text(
-                      "💧  ${getCurrentScheduleDescription()} 💧",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
-                      ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
@@ -325,6 +328,546 @@ class _WaterDrinkingState extends State<WaterDrinking>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showDrinkingScheduleModal(BuildContext context) {
+    final totalWater = _schedule.fold(0, (sum, item) => sum + item.amount);
+    final currentTime = TimeOfDay.now();
+    final currentMinutes = currentTime.hour * 60 + currentTime.minute;
+
+    int consumedWater = 0;
+    int scheduledItems = 0;
+    int upcomingItems = 0;
+    int currentItemIndex = -1;
+
+    for (int i = 0; i < _schedule.length; i++) {
+      final item = _schedule[i];
+      final itemMinutes = item.time.hour * 60 + item.time.minute;
+
+      if (itemMinutes < currentMinutes) {
+        consumedWater += item.amount;
+        scheduledItems++;
+      } else if (itemMinutes <= currentMinutes + 15) {
+        currentItemIndex = i;
+        upcomingItems++;
+      }
+    }
+
+    final percentComplete = _schedule.isEmpty
+        ? 0
+        : ((scheduledItems + (currentItemIndex != -1 ? 0.5 : 0)) /
+                _schedule.length *
+                100)
+            .round();
+    final percentWater = totalWater == 0
+        ? 0
+        : ((consumedWater +
+                    (currentItemIndex != -1
+                        ? _schedule[currentItemIndex].amount * 0.5
+                        : 0)) /
+                totalWater *
+                100)
+            .round();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              blurRadius: 30,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Header với gradient và hình ảnh sóng nước
+            Container(
+              padding: const EdgeInsets.only(top: 25, bottom: 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.blue[600]!,
+                    Colors.blue[800]!,
+                  ],
+                ),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(30)),
+                image: DecorationImage(
+                  image: AssetImage(
+                      "assets/images/water_wave.png"), // Thay bằng hình ảnh sóng nước của bạn
+                  fit: BoxFit.cover,
+                  opacity: 0.2,
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Nút đóng
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: Icon(Icons.close,
+                          color: Colors.white.withOpacity(0.8)),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+
+                  // Tiêu đề
+                  Text(
+                    'LỊCH UỐNG NƯỚC',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  // Phụ đề
+                  Text(
+                    'Theo dõi lượng nước hàng ngày',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Progress circle
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 150,
+                        height: 150,
+                        child: CircularProgressIndicator(
+                          value: percentWater / 100,
+                          strokeWidth: 12,
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '$percentWater%',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'Hoàn thành',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Thông tin tổng lượng nước
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 40),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              '$consumedWater',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              'Đã uống (ml)',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          width: 1,
+                          height: 30,
+                          color: Colors.white.withOpacity(0.3),
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              '$totalWater',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              'Mục tiêu (ml)',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Thống kê nhanh
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              child: Row(
+                children: [
+                  // Số lần đã uống
+                  Expanded(
+                    child: _buildStatCard(
+                      icon: Icons.check_circle,
+                      value: scheduledItems,
+                      label: 'Đã hoàn thành',
+                      color: Colors.green,
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  // Số lần sắp tới
+                  Expanded(
+                    child: _buildStatCard(
+                      icon: Icons.access_time,
+                      value: _schedule.length - scheduledItems,
+                      label: 'Sắp tới',
+                      color: Colors.orange,
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  // Tổng số lần
+                  Expanded(
+                    child: _buildStatCard(
+                      icon: Icons.format_list_numbered,
+                      value: _schedule.length,
+                      label: 'Tổng lần uống',
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Tiêu đề danh sách
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.schedule,
+                    color: Colors.blue[700],
+                    size: 22,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'CHI TIẾT LỊCH UỐNG',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[800],
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Text(
+                      '$percentComplete% hoàn thành',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blue[700],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Danh sách lịch uống nước
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(
+                    top: 10, bottom: 15, left: 20, right: 20),
+                itemCount: _schedule.length,
+                itemBuilder: (context, index) {
+                  final schedule = _schedule[index];
+                  final itemMinutes =
+                      schedule.time.hour * 60 + schedule.time.minute;
+
+                  final bool isPast = itemMinutes < currentMinutes;
+                  final bool isCurrent =
+                      !isPast && itemMinutes <= currentMinutes + 15;
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: isCurrent
+                          ? Colors.blue[50]
+                          : (isPast ? Colors.grey[50] : Colors.white),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: isCurrent
+                            ? Colors.blue[200]!
+                            : (isPast ? Colors.grey[200]! : Colors.grey[100]!),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        if (isCurrent)
+                          BoxShadow(
+                            color: Colors.blue[100]!.withOpacity(0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        // Thời gian
+                        Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            color: isCurrent
+                                ? Colors.blue[600]
+                                : (isPast
+                                    ? Colors.grey[300]
+                                    : Colors.grey[200]),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                schedule.time.hour.toString().padLeft(2, '0'),
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: isCurrent
+                                      ? Colors.white
+                                      : Colors.grey[800],
+                                ),
+                              ),
+                              Text(
+                                schedule.time.minute.toString().padLeft(2, '0'),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: isCurrent
+                                      ? Colors.white.withOpacity(0.9)
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(width: 15),
+
+                        // Chi tiết
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: isCurrent
+                                          ? Colors.blue[100]
+                                          : (isPast
+                                              ? Colors.grey[200]
+                                              : Colors.blue[50]),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      "${schedule.amount}ml",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: isCurrent
+                                            ? Colors.blue[800]
+                                            : (isPast
+                                                ? Colors.grey[700]
+                                                : Colors.blue[700]),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: isCurrent
+                                          ? Colors.orange[50]
+                                          : (isPast
+                                              ? Colors.green[50]
+                                              : Colors.grey[100]),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          isCurrent
+                                              ? Icons.access_time
+                                              : (isPast
+                                                  ? Icons.check
+                                                  : Icons.schedule),
+                                          size: 14,
+                                          color: isCurrent
+                                              ? Colors.orange[700]
+                                              : (isPast
+                                                  ? Colors.green[700]
+                                                  : Colors.grey[600]),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          isCurrent
+                                              ? "Đến giờ"
+                                              : (isPast
+                                                  ? "Đã uống"
+                                                  : "Sắp tới"),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: isCurrent
+                                                ? Colors.orange[700]
+                                                : (isPast
+                                                    ? Colors.green[700]
+                                                    : Colors.grey[600]),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                schedule.description,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[700],
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required int value,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 24,
+            color: color,
+          ),
+          const SizedBox(height: 5),
+          Text(
+            '$value',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[800],
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.blue[600],
+            ),
+          ),
+        ],
       ),
     );
   }
