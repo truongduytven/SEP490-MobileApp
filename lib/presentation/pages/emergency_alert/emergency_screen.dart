@@ -175,6 +175,7 @@ class _EmergencyScreenState extends State<EmergencyScreen>
             "Người thân của bạn đã xác nhận cuộc gọi khẩn cấp và đang trên đường đến!";
         isCompleteCreateConfirmation = true;
       });
+      player.stop();
       return;
     } else {
       if (!mounted) return;

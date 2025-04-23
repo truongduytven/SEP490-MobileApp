@@ -83,8 +83,7 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {
-        // numberMeeting = doctorController.numberMeeting;
-        numberMeeting = 0;
+        numberMeeting = doctorController.numberMeeting;
         isLoading = false;
       });
       if (doctorController.numberMeeting != 0) {

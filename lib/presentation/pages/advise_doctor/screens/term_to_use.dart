@@ -15,6 +15,8 @@ class TermToUse extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 color: AppColors.secondaryColor)),
         centerTitle: true,
+        elevation: 0,
+        scrolledUnderElevation: 0,
         backgroundColor: AppColors.bgColor,
       ),
       body: SingleChildScrollView(

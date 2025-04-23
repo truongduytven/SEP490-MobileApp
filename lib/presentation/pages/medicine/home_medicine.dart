@@ -516,6 +516,24 @@ class _HomeMedicineState extends State<HomeMedicine> {
     );
   }
 
+  bool _isWithinSessionTime(String session) {
+    final now = DateTime.now();
+    final currentHour = now.hour;
+
+    switch (session) {
+      case "SÁNG":
+        return currentHour >= 5 && currentHour < 12;
+      case "TRƯA":
+        return currentHour >= 11 && currentHour < 15; 
+      case "CHIỀU":
+        return currentHour >= 15 && currentHour < 19; 
+      case "TỐI":
+        return currentHour >= 18 || currentHour < 5; 
+      default:
+        return false;
+    }
+  }
+
   Widget buildSession(
       String title, List<Map<String, dynamic>> medicines, String imgSession) {
     if (medicines.isEmpty) return const SizedBox();
@@ -525,7 +543,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
           convertToMinutes(b["time"]['time']));
 
     bool allUsed = medicines.every((med) => med['time']['status'] != 'Unused');
-
+    bool isWithinSessionTime = _isWithinSessionTime(title);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -546,7 +564,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 ),
               ),
               const Spacer(),
-              if (!allUsed && roleId != 4)
+              if (!allUsed && roleId != 4 && isWithinSessionTime)
                 TextButton(
                   onPressed: () {
                     handleAllConfirmMedicine(medicines);
@@ -564,14 +582,17 @@ class _HomeMedicineState extends State<HomeMedicine> {
           ),
         ),
         Column(
-          children:
-              medicines.map((medicine) => buildMedicineCard(medicine)).toList(),
+          children: medicines
+              .map((medicine) =>
+                  buildMedicineCard(medicine, isWithinSessionTime))
+              .toList(),
         ),
       ],
     );
   }
 
-  Widget buildMedicineCard(Map<String, dynamic> medicine) {
+  Widget buildMedicineCard(
+      Map<String, dynamic> medicine, bool isWithinSessionTime) {
     indexAnimation++;
     return TweenAnimationBuilder(
       tween: Tween<Offset>(
@@ -637,46 +658,48 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 ? (medicine['time']['status'] == 'Taken'
                     ? Icon(Icons.check_circle, size: 30, color: Colors.green)
                     : Icon(Icons.cancel, size: 30, color: Colors.red))
-                : Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          handleConfirmMedicine(medicine['time']['time'],
-                              medicine['medicationId'], "Skip");
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(5),
+                : isWithinSessionTime
+                    ? Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              handleConfirmMedicine(medicine['time']['time'],
+                                  medicine['medicationId'], "Skip");
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: const Icon(
+                                Icons.cancel_outlined,
+                                color: AppColors.secondaryColor,
+                                size: 30,
+                              ),
+                            ),
                           ),
-                          child: const Icon(
-                            Icons.cancel_outlined,
-                            color: AppColors.secondaryColor,
-                            size: 30,
+                          GestureDetector(
+                            onTap: () {
+                              handleConfirmMedicine(medicine['time']['time'],
+                                  medicine['medicationId'], "Taken");
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: const Icon(
+                                Icons.check_circle,
+                                color: AppColors.secondaryColor,
+                                size: 30,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          handleConfirmMedicine(medicine['time']['time'],
-                              medicine['medicationId'], "Taken");
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: const Icon(
-                            Icons.check_circle,
-                            color: AppColors.secondaryColor,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                        ],
+                      )
+                    : SizedBox(),
           ],
         ),
       ),
