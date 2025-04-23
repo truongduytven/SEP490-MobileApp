@@ -4,6 +4,7 @@ class RoomChatDetail {
   final String roomAvatar;
   final String createdAt;
   final bool isOnline;
+  final bool isFriend;
   final bool isGroupChat;
   final int numberOfMems;
   final List<User> users;
@@ -14,6 +15,7 @@ class RoomChatDetail {
     required this.roomAvatar,
     required this.createdAt,
     required this.isOnline,
+    required this.isFriend,
     required this.isGroupChat,
     required this.numberOfMems,
     required this.users,
@@ -26,6 +28,7 @@ class RoomChatDetail {
       roomAvatar: json['roomAvatar'],
       createdAt: json['createdAt'],
       isOnline: json['isOnline'],
+      isFriend: json['isFriend'],
       isGroupChat: json['isGroupChat'],
       numberOfMems: json['numberOfMems'],
       users:
