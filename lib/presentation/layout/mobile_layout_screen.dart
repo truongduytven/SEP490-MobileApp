@@ -8,7 +8,11 @@ import 'package:sep490/features/chat/widgets/expandable_fab.dart';
 import 'package:sep490/theme/color.dart';
 
 class MobileLayoutScreen extends ConsumerStatefulWidget {
-  const MobileLayoutScreen({Key? key}) : super(key: key);
+  final int? initialTabIndex;
+  const MobileLayoutScreen({
+    Key? key,
+    this.initialTabIndex,
+  }) : super(key: key);
 
   @override
   ConsumerState<MobileLayoutScreen> createState() => _MobileLayoutScreenState();
@@ -20,7 +24,11 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
   @override
   void initState() {
     super.initState();
-    tabBarController = TabController(length: 2, vsync: this);
+    tabBarController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTabIndex ?? 0,
+    );
     WidgetsBinding.instance.addObserver(this);
     tabBarController.addListener(() {
       setState(() {}); // This ensures the UI updates when the tab changes

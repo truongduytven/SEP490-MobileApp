@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/group_family/screens/group_family.dart';
 import 'package:sep490/features/water_drinking/screens/water_drinking.dart';
+import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
@@ -58,7 +61,7 @@ class _NotificationScreenState extends State<NotificationScreen>
           });
         } else {
           setState(() {
-            _errorMessage = data['message'] ?? 'Failed to load notifications';
+            _errorMessage = data['data'] ?? 'Failed to load notifications';
             _isLoading = false;
           });
         }
@@ -460,38 +463,34 @@ class _NotificationScreenState extends State<NotificationScreen>
         //   );
         //   break;
 
-        //  case 'thêm vào gia đình':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'thêm vào gia đình':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GroupFamily(),
+            ),
+          );
+          break;
 
-        //   case 'thêm vào nhóm chat':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'thêm vào nhóm chat':
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NavigationMenu(
+                  keyIndex: 2,
+                ),
+              ));
+          break;
 
-        //   case 'kết bạn mới':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'kết bạn mới':
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NavigationMenu(
+                  keyIndex: 2,
+                ),
+              ));
+          break;
 
         case 'cảnh báo sức khỏe':
           // Navigator.push(
