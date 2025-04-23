@@ -161,8 +161,11 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       }
     } else {
-      Navigator.of(context).pop();
-      sharedPrefsHelper.clear();
+      await SharedPrefsHelper().clear();
+
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return SelectSignScreen();
+      }));
       Fluttertoast.showToast(
         msg: "Có lỗi trong quá trình xử lý!",
         toastLength: Toast.LENGTH_SHORT,
