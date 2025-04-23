@@ -118,6 +118,7 @@ dependencies:
   percent_indicator: ^4.2.5
   share_plus: ^10.1.4
   flutter_phone_direct_caller: ^2.2.1
+  zego_uikit_prebuilt_video_conference: ^2.9.9
 
 dev_dependencies:
   flutter_test:

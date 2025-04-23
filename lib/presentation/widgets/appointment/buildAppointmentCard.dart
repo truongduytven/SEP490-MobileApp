@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/video_conference/screens/video_conference_page.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/rating_doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/report_appointment.dart';
@@ -310,16 +311,16 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                       ),
                     ),
                   if (widget.appoimentDoctor!.status == 'Joined' &&
-                      widget.appoimentDoctor!.isReport && roleId == 4)
+                      widget.appoimentDoctor!.isReport &&
+                      roleId == 4)
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => ReportAppointment(
-                              appoimentDoctor: widget.appoimentDoctor,
-                              isEdited: true
-                            ),
+                                appoimentDoctor: widget.appoimentDoctor,
+                                isEdited: true),
                           ),
                         );
                       },
@@ -337,7 +338,33 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                       ),
                     ),
                 ],
-              )
+              ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoConferencePage(
+                      conferenceID: widget
+                          .appoimentDoctor!.professorAppointmentId
+                          .toString(),
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.bgColor,
+                side: BorderSide(color: AppColors.primaryColor),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Tham gia',
+                      style: TextStyle(
+                          fontSize: 16, color: AppColors.primaryColor)),
+                ],
+              ),
+            ),
           ],
         ),
       ),
