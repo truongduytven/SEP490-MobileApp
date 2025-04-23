@@ -469,8 +469,16 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void didPopNext() {
-    getSchedule();
-    getHealthIndicator(); // Gọi lại API
+    if (roleId == 2) {
+      getHealthIndicator();
+      getSchedule();
+    }
+    if (roleId == 3) {
+      getElderlyUser();
+    }
+    if (roleId == 4) {
+      getElderlyUserProfessor();
+    }
   }
 
   @override
@@ -956,7 +964,9 @@ class _HomeScreenState extends State<HomeScreen>
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditProfile(elderlyId: selectedElderlyUserId,),
+                                    builder: (context) => EditProfile(
+                                      elderlyId: selectedElderlyUserId,
+                                    ),
                                   ),
                                 );
                               },
@@ -1015,7 +1025,9 @@ class _HomeScreenState extends State<HomeScreen>
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => MedicalRecord(elderlyId: selectedElderlyUserId,),
+                                    builder: (context) => MedicalRecord(
+                                      elderlyId: selectedElderlyUserId,
+                                    ),
                                   ),
                                 );
                               },
