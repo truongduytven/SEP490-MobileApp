@@ -162,6 +162,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     } else {
       Navigator.of(context).pop();
+      sharedPrefsHelper.clear();
       Fluttertoast.showToast(
         msg: "Có lỗi trong quá trình xử lý!",
         toastLength: Toast.LENGTH_SHORT,
