@@ -215,6 +215,8 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
                 Text(
                   widget.playlistName,
                   style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
                   maxLines: 2,
