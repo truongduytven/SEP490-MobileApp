@@ -13,6 +13,8 @@ class AddBloodPressureScreen extends StatefulWidget {
   final bool isDraft;
   final String? id;
   final String? dataType;
+  final bool? canEdit;
+
   const AddBloodPressureScreen({
     super.key,
     required this.currentValueSystolic,
@@ -22,6 +24,7 @@ class AddBloodPressureScreen extends StatefulWidget {
     this.date,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -156,6 +159,7 @@ class _AddBloodPressureScreenState extends State<AddBloodPressureScreen> {
                 diastolic: currentValueDiastolic,
                 dateTime: formattedDateTime,
                 onEdit: onEdit,
+                canEdit: widget.canEdit ?? true,
               )
             : BloodPressureInputWidget(
                 key: ValueKey<bool>(showBloodPressuretWidget),

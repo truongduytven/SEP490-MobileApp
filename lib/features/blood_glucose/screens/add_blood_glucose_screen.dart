@@ -12,6 +12,8 @@ class AddBloodGlucoseScreen extends StatefulWidget {
   final bool isDraft;
   final String? id;
   final String? dataType;
+  final bool? canEdit;
+
   const AddBloodGlucoseScreen({
     super.key,
     required this.currentBloodGlucoseValue,
@@ -21,6 +23,7 @@ class AddBloodGlucoseScreen extends StatefulWidget {
     this.date,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -171,6 +174,7 @@ class _AddBloodGlucoseScreenState extends State<AddBloodGlucoseScreen> {
                 dateTime: formattedDateTime,
                 bloodGlucose: currentBloodGlucoseValue,
                 onEdit: onEdit,
+                canEdit: widget.canEdit ?? true,
               )
             : BloodGlucoseInputWidget(
                 key: ValueKey<bool>(showBloodGlucoseWidget),

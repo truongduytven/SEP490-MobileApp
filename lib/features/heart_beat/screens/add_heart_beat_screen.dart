@@ -12,6 +12,7 @@ class AddHeartBeatScreen extends StatefulWidget {
   final bool isDraft;
   final String? id;
   final String? dataType;
+  final bool? canEdit;
   const AddHeartBeatScreen({
     super.key,
     required this.currentValue,
@@ -20,6 +21,7 @@ class AddHeartBeatScreen extends StatefulWidget {
     this.date,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -161,6 +163,7 @@ class _AddHeartBeatScreenState extends State<AddHeartBeatScreen> {
                 heartBeat: currentValue,
                 onEdit: onEdit,
                 id: widget.id,
+                canEdit: widget.canEdit ?? true,
               )
             : HeartBeatInputWidget(
                 key: ValueKey<bool>(showHeartBeatWidget),

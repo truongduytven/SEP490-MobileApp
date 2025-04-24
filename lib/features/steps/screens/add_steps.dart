@@ -12,6 +12,7 @@ class AddSteps extends StatefulWidget {
   final bool isDraft;
   final String? id;
   final String? dataType;
+  final bool? canEdit;
   const AddSteps({
     super.key,
     required this.currentValue,
@@ -20,6 +21,7 @@ class AddSteps extends StatefulWidget {
     this.date,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -146,6 +148,7 @@ class _AddStepsState extends State<AddSteps> {
                 steps: currentValue,
                 onEdit: onEdit,
                 id: widget.id,
+                canEdit: widget.canEdit ?? true,
               )
             : HeartBeatInputWidget(
                 key: ValueKey<bool>(showHeartBeatWidget),

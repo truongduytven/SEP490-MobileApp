@@ -6,10 +6,10 @@ import 'package:sep490/theme/color.dart';
 
 class AddSleep extends StatefulWidget {
   final String? date;
-
   final num currentValue;
   final bool showHeartBeatWidget;
   final bool isDraft;
+  final bool? canEdit;
   final String? id;
   final String? dataType;
   const AddSleep({
@@ -20,6 +20,7 @@ class AddSleep extends StatefulWidget {
     this.date,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -146,6 +147,7 @@ class _AddSleepState extends State<AddSleep> {
                 sleep: currentValue,
                 onEdit: onEdit,
                 id: widget.id,
+                canEdit: widget.canEdit ?? true,
               )
             : HeartBeatInputWidget(
                 key: ValueKey<bool>(showHeartBeatWidget),

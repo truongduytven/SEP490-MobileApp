@@ -12,6 +12,8 @@ class AddBloodOxygen extends StatefulWidget {
   final bool isDraft;
   final String? id;
   final String? dataType;
+  final bool? canEdit;
+
   const AddBloodOxygen({
     super.key,
     required this.currentValue,
@@ -20,6 +22,7 @@ class AddBloodOxygen extends StatefulWidget {
     this.date,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -146,6 +149,7 @@ class _AddBloodOxygenState extends State<AddBloodOxygen> {
                 bloodOxygen: currentValue,
                 onEdit: onEdit,
                 id: widget.id,
+                canEdit: widget.canEdit ?? true,
               )
             : HeartBeatInputWidget(
                 key: ValueKey<bool>(showHeartBeatWidget),

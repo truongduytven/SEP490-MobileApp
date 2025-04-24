@@ -954,9 +954,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 Text(
                                   'Đang hỗ trợ: ',
                                   style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColors.textColor),
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.textColor,
+                                  ),
                                 ),
                               ],
                             ),

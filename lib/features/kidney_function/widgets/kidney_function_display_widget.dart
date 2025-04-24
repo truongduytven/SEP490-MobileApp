@@ -15,6 +15,7 @@ class KidneyFunctionDisplayWidget extends ConsumerStatefulWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final bool canEdit;
   final String typeData;
   final String? id;
 
@@ -23,6 +24,7 @@ class KidneyFunctionDisplayWidget extends ConsumerStatefulWidget {
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
+    required this.canEdit,
     required this.bunValue,
     required this.egfrValue,
     required this.gfrValue,
@@ -249,7 +251,7 @@ class _KidneyFunctionDisplayWidgetState
                               ),
                             ),
                           ),
-                          isToday(widget.dateTime)
+                          isToday(widget.dateTime) && widget.canEdit
                               ? IconButton(
                                   onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,
@@ -547,7 +549,9 @@ class _KidneyFunctionDisplayWidgetState
                                     .addKidneyFunction(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0
+                                      ? currentUserElderlyID
+                                      : currentUserAccountID ?? 0,
                                   creatinine: widget.gfrValue.toDouble(),
                                   bun: widget.bunValue.toDouble(),
                                   egfr: widget.egfrValue.toDouble(),
