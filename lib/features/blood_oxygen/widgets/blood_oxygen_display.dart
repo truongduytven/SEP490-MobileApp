@@ -14,6 +14,7 @@ class BloodOxygenDisplay extends ConsumerStatefulWidget {
   final VoidCallback onEdit;
   final bool isDraft;
   final String typeData;
+  final bool canEdit;
   final String? id;
 
   const BloodOxygenDisplay({
@@ -22,6 +23,7 @@ class BloodOxygenDisplay extends ConsumerStatefulWidget {
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
+    required this.canEdit,
     required this.typeData,
     this.id,
   });
@@ -228,7 +230,7 @@ class _BloodOxygenDisplayState extends ConsumerState<BloodOxygenDisplay> {
                                       size: 30,
                                       color: AppColors.primaryColor,
                                     )
-                                  : isToday(widget.dateTime)
+                                  : isToday(widget.dateTime) && widget.canEdit
                                       ? IconButton(
                                           onPressed: widget.onEdit,
                                           icon: Icon(Icons.edit,
@@ -373,8 +375,8 @@ class _BloodOxygenDisplayState extends ConsumerState<BloodOxygenDisplay> {
                                   if (widget.id != null) {
                                     success = false;
                                   } else {
-                                    success =
-                                        await heartRateController.addBloodOxygen(
+                                    success = await heartRateController
+                                        .addBloodOxygen(
                                       context: context,
                                       accountId: currentUserAccountID ?? 0,
                                       elderlyId: currentUserAccountID ?? 0,

@@ -386,7 +386,9 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
                             Text(
                               roomChatDetail.isGroupChat
                                   ? "Cuộc trò chuyện được tạo ngày: ${DateFormat("dd-MM-yyyy").format(DateFormat("dd-MM-yyyy HH:mm").parse(roomChatDetail.createdAt))}"
-                                  : "Các bạn là bạn bè từ: ${DateFormat("dd-MM-yyyy").format(DateFormat("dd-MM-yyyy HH:mm").parse(roomChatDetail.createdAt))}",
+                                  : roomChatDetail.isFriend
+                                      ? "Các bạn là bạn bè từ: ${DateFormat("dd-MM-yyyy").format(DateFormat("dd-MM-yyyy HH:mm").parse(roomChatDetail.createdAt))}"
+                                      : "Các bạn là người thân hỗ trợ từ: ${DateFormat("dd-MM-yyyy").format(DateFormat("dd-MM-yyyy HH:mm").parse(roomChatDetail.createdAt))}",
                               style: const TextStyle(
                                 fontSize: 18,
                                 color: AppColors.secondaryColor,
@@ -669,87 +671,88 @@ class _RoomChatDetailScreenState extends ConsumerState<RoomChatDetailScreen> {
                           ),
                         ),
                       ] else ...[
-                        GestureDetector(
-                          onTap: () async {
-                            // Show a confirmation dialog
-                            final confirmed = await showDialog<bool>(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text("Xác nhận"),
-                                  content: const Text(
-                                      "Bạn có chắc chắn muốn xóa liên hệ bạn bè này không?"),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context,
-                                            false); // Return false if canceled
-                                      },
-                                      child: const Text("Hủy"),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context,
-                                            true); // Return true if confirmed
-                                      },
-                                      child: const Text("Xóa"),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-
-                            // Proceed only if the user confirmed the action
-                            if (confirmed == true) {
-                              // Get the IDs of the two users in the private chat
-                              final requestUserId =
-                                  roomChatDetail.users[0].accountId;
-                              final responseUserId =
-                                  roomChatDetail.users[1].accountId;
-
-                              // Call the removeFriend method
-                              final success =
-                                  await selectContactController.removeFriend(
-                                context,
-                                requestUserId,
-                                responseUserId,
+                        if (roomChatDetail.isFriend)
+                          GestureDetector(
+                            onTap: () async {
+                              // Show a confirmation dialog
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text("Xác nhận"),
+                                    content: const Text(
+                                        "Bạn có chắc chắn muốn xóa liên hệ bạn bè này không?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context,
+                                              false); // Return false if canceled
+                                        },
+                                        child: const Text("Hủy"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context,
+                                              true); // Return true if confirmed
+                                        },
+                                        child: const Text("Xóa"),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
 
-                              // Show a snackbar based on the result
-                              if (success) {
-                                Navigator.pushReplacement(
+                              // Proceed only if the user confirmed the action
+                              if (confirmed == true) {
+                                // Get the IDs of the two users in the private chat
+                                final requestUserId =
+                                    roomChatDetail.users[0].accountId;
+                                final responseUserId =
+                                    roomChatDetail.users[1].accountId;
+
+                                // Call the removeFriend method
+                                final success =
+                                    await selectContactController.removeFriend(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NavigationMenu(
-                                      keyIndex: 2,
+                                  requestUserId,
+                                  responseUserId,
+                                );
+
+                                // Show a snackbar based on the result
+                                if (success) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NavigationMenu(
+                                        keyIndex: 2,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Xóa bạn bè thất bại"),
-                                  ),
-                                );
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Xóa bạn bè thất bại"),
+                                    ),
+                                  );
+                                }
                               }
-                            }
-                          },
-                          child: const Card(
-                            margin: EdgeInsets.symmetric(vertical: 12.0),
-                            child: ListTile(
-                              leading: Icon(Icons.person_off_outlined,
-                                  color: Colors.red),
-                              title: Text(
-                                'Xóa liên hệ bạn bè',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
+                            },
+                            child: const Card(
+                              margin: EdgeInsets.symmetric(vertical: 12.0),
+                              child: ListTile(
+                                leading: Icon(Icons.person_off_outlined,
+                                    color: Colors.red),
+                                title: Text(
+                                  'Xóa liên hệ bạn bè',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
                       ],
                     ],
                   ),

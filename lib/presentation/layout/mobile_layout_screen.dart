@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/friend_request/friend_request_screen.dart';
+import 'package:sep490/features/select_contacts_friend/screens/select_contacts_screen.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/features/chat/widgets/contacts_list.dart';
 import 'package:sep490/features/chat/widgets/expandable_fab.dart';
 import 'package:sep490/theme/color.dart';
 
 class MobileLayoutScreen extends ConsumerStatefulWidget {
-  const MobileLayoutScreen({Key? key}) : super(key: key);
+  final int? initialTabIndex;
+  const MobileLayoutScreen({
+    Key? key,
+    this.initialTabIndex,
+  }) : super(key: key);
 
   @override
   ConsumerState<MobileLayoutScreen> createState() => _MobileLayoutScreenState();
@@ -20,7 +25,11 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
   @override
   void initState() {
     super.initState();
-    tabBarController = TabController(length: 2, vsync: this);
+    tabBarController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTabIndex ?? 0,
+    );
     WidgetsBinding.instance.addObserver(this);
     tabBarController.addListener(() {
       setState(() {}); // This ensures the UI updates when the tab changes
@@ -177,7 +186,10 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
             ? tabBarController.index == 0
                 ? ExpandableFab()
                 : FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(
+                          context, SelectContactsScreen.routeName);
+                    },
                     backgroundColor: AppColors.primaryColor,
                     child: const Icon(Icons.add, color: Colors.white),
                   )

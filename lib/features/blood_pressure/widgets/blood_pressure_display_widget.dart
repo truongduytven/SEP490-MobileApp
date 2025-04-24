@@ -13,6 +13,8 @@ class BloodPressureDisplayWidget extends ConsumerStatefulWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final bool canEdit;
+
   final String typeData;
   final String? id;
 
@@ -21,6 +23,7 @@ class BloodPressureDisplayWidget extends ConsumerStatefulWidget {
     required this.diastolic,
     required this.dateTime,
     required this.onEdit,
+    required this.canEdit,
     required this.isDraft,
     required this.typeData,
     super.key,
@@ -259,7 +262,7 @@ class _BloodPressureDisplayWidgetState
                               ),
                             ),
                           ),
-                          isToday(widget.dateTime)
+                          isToday(widget.dateTime) && widget.canEdit
                               ? IconButton(
                                   onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,
@@ -485,7 +488,9 @@ class _BloodPressureDisplayWidgetState
                                     .addBloodPressure(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0
+                                      ? currentUserElderlyID
+                                      : currentUserAccountID ?? 0,
                                   systolic: widget.systolic.toInt(),
                                   diastolic: widget.diastolic.toInt(),
                                   systolicSource: widget.typeData,

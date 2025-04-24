@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sep490/features/blood_glucose/widgets/blood_glucose_display_widget.dart';
-import 'package:sep490/features/blood_glucose/widgets/blood_glucose_input_widget.dart';
 import 'package:sep490/features/kidney_function/widgets/kidney_function_display_widget.dart';
 import 'package:sep490/features/kidney_function/widgets/kidney_function_input_widget.dart';
 import 'package:sep490/theme/color.dart';
@@ -15,6 +13,8 @@ class AddKidneyFunctionScreen extends StatefulWidget {
   final bool isDraft;
   final String? id;
   final String? dataType;
+  final bool? canEdit;
+
   const AddKidneyFunctionScreen({
     super.key,
     this.date,
@@ -25,6 +25,7 @@ class AddKidneyFunctionScreen extends StatefulWidget {
     required this.isDraft,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -182,6 +183,7 @@ class _AddKidneyFunctionScreenState extends State<AddKidneyFunctionScreen> {
                 egfrValue: currenteGFRValue,
                 dateTime: formattedDateTime,
                 onEdit: onEdit,
+                canEdit: widget.canEdit ?? true,
               )
             : KidneyFunctionInputWidget(
                 key: ValueKey<bool>(showKidneyFunctionWidget),

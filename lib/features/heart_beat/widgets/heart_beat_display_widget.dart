@@ -12,6 +12,7 @@ class HeartBeatDisplayWidget extends ConsumerStatefulWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final bool canEdit;
   final String typeData;
   final String? id;
 
@@ -21,6 +22,7 @@ class HeartBeatDisplayWidget extends ConsumerStatefulWidget {
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
+    required this.canEdit,
     required this.typeData,
     this.id,
   });
@@ -223,7 +225,7 @@ class _HeartBeatDisplayWidgetState
                                   ),
                                 ),
                               ),
-                              isToday(widget.dateTime)
+                              isToday(widget.dateTime) && widget.canEdit
                                   ? IconButton(
                                       onPressed: widget.onEdit,
                                       icon: Icon(Icons.edit,
@@ -349,11 +351,14 @@ class _HeartBeatDisplayWidgetState
                                   SharedPrefsHelper sharedPrefsHelper =
                                       SharedPrefsHelper();
                                   final currentUserAccountID =
-                                      sharedPrefsHelper.getInt("accountId") ?? 0;
+                                      sharedPrefsHelper.getInt("accountId") ??
+                                          0;
                                   final currentUserFullName =
-                                      sharedPrefsHelper.getString("fullName") ?? '';
-                                  final currentUserElderlyID =
-                                      sharedPrefsHelper.getInt("selectedElderlyUserId") ?? 0;
+                                      sharedPrefsHelper.getString("fullName") ??
+                                          '';
+                                  final currentUserElderlyID = sharedPrefsHelper
+                                          .getInt("selectedElderlyUserId") ??
+                                      0;
                                   final heartRateController =
                                       ref.read(heartRateControllerProvider);
 

@@ -1,9 +1,20 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/blood_glucose/screens/add_blood_glucose_screen.dart';
+import 'package:sep490/features/blood_oxygen/screens/add_blood_oxygen.dart';
+import 'package:sep490/features/blood_pressure/screens/add_blood_pressure_screen.dart';
+import 'package:sep490/features/group_family/screens/group_family.dart';
+import 'package:sep490/features/heart_beat/screens/add_heart_beat_screen.dart';
+import 'package:sep490/features/kidney_function/screens/add_kidney_function_screen.dart';
+import 'package:sep490/features/lipid_profile/screens/add_lipid_profile_screen.dart';
+import 'package:sep490/features/liver_enzymes/screens/add_liver_enzymes_screen.dart';
 import 'package:sep490/features/water_drinking/screens/water_drinking.dart';
+import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
@@ -58,7 +69,7 @@ class _NotificationScreenState extends State<NotificationScreen>
           });
         } else {
           setState(() {
-            _errorMessage = data['message'] ?? 'Failed to load notifications';
+            _errorMessage = data['data'] ?? 'Failed to load notifications';
             _isLoading = false;
           });
         }
@@ -460,71 +471,330 @@ class _NotificationScreenState extends State<NotificationScreen>
         //   );
         //   break;
 
-        //  case 'thêm vào gia đình':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
-
-        //   case 'thêm vào nhóm chat':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
-
-        //   case 'kết bạn mới':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
-
-        case 'cảnh báo sức khỏe':
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => HealthAlertDetailScreen(
-          //       alertId: notification['relatedId'],
-          //     ),
-          //   ),
-          // );
-          print("data ${notification['data']}");
-          break;
-
-        // case 'sos':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => EmergencyDetailScreen(
-        //         emergencyId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
-
-        // Thêm các trường hợp khác tùy theo loại thông báo
-        default:
-          // Mở màn hình chi tiết thông báo chung nếu không có loại phù hợp
+        case 'thêm vào gia đình':
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NotificationScreen(),
+              builder: (context) => GroupFamily(),
             ),
           );
+          break;
+
+        case 'thêm vào nhóm chat':
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NavigationMenu(
+                  keyIndex: 2,
+                ),
+              ));
+          break;
+
+        case 'kết bạn mới':
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NavigationMenu(
+                  keyIndex: 2,
+                ),
+              ));
+          break;
+
+        case 'cảnh báo sức khỏe':
+          print(
+              'Kiểu dữ liệu của notification["data"]: ${notification['data'].runtimeType}');
+
+          Map<String, dynamic>? dataMap;
+
+          // Nếu là String (chuỗi JSON)
+          if (notification['data'] is String) {
+            try {
+              dataMap = json.decode(notification['data'] as String)
+                  as Map<String, dynamic>;
+            } catch (e) {
+              print('Lỗi khi parse JSON: $e');
+            }
+          }
+          // Nếu đã là Map
+          else if (notification['data'] is Map) {
+            dataMap = Map<String, dynamic>.from(notification['data'] as Map);
+          }
+
+          if (dataMap != null) {
+            print('Giá trị Tabs: ${dataMap['Tabs']}');
+            print('Giá trị Tabs: ${dataMap['Id']}');
+
+            switch (dataMap['Tabs']) {
+              case "HeartRate":
+                // Navigate to NhịpTimCard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddHeartBeatScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentValue:
+                          num.tryParse(dataMap?["Indicator"] ?? "") ?? 0,
+                      showHeartBeatWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+
+              case "BloodPressure":
+                String? data = dataMap['Indicator']; // Get the data
+                String systolic = "N/A"; // Default value
+                String diastolic = "N/A"; // Default value
+
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 2) {
+                    systolic = parts[0]; // First part
+                    diastolic = parts[1]; // Second part
+                  }
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddBloodPressureScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentValueSystolic: num.tryParse(systolic) ?? 0,
+                      currentValueDiastolic: num.tryParse(diastolic) ?? 0,
+                      showBloodPressuretWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+
+              case "BloodGlucose":
+                String? data = dataMap['Indicator'];
+                String bloodGlucoseValue = "N/A";
+                String period = "N/A";
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 2) {
+                    bloodGlucoseValue = parts[0];
+                    period = parts[1];
+                  }
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddBloodGlucoseScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      period: period,
+                      currentBloodGlucoseValue:
+                          double.tryParse(bloodGlucoseValue) ?? 0,
+                      showBloodGlucoseWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+              case "KidneyFunction":
+                String? data = dataMap['Indicator'];
+                String egfrValue = "N/A";
+                String bunValue = "N/A";
+                String gfrValue = "N/A";
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 3) {
+                    egfrValue = parts[0];
+                    bunValue = parts[1];
+                    gfrValue = parts[2];
+                  }
+                }
+                // Navigate to ChieuCaoCard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddKidneyFunctionScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentBUNValue: double.tryParse(bunValue) ?? 0,
+                      currenteGFRValue: double.tryParse(egfrValue) ?? 0,
+                      currentGFRValue: double.tryParse(gfrValue) ?? 0,
+                      showKidneyFunctionWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+              case "LipidProfile":
+                String? data = dataMap['Indicator'];
+                String total = "N/A";
+                String hdl = "N/A";
+                String ldl = "N/A";
+                String tg = "N/A";
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 4) {
+                    total = parts[0];
+                    ldl = parts[1];
+                    hdl = parts[2];
+                    tg = parts[3];
+                  }
+                }
+                // Navigate to ChieuCaoCard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddLipidProfileScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentHDLValue: double.tryParse(hdl) ?? 0,
+                      currentLDLValue: double.tryParse(ldl) ?? 0,
+                      currentTGValue: double.tryParse(tg) ?? 0,
+                      currentTCValue: double.tryParse(total) ?? 0,
+                      showLipidProfileWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+              case "LiverEnzyme":
+                String? data = dataMap['Indicator'];
+                String alt = "N/A";
+                String alp = "N/A";
+                String ast = "N/A";
+                String ggt = "N/A";
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 4) {
+                    alt = parts[0];
+                    ast = parts[1];
+                    alp = parts[2];
+                    ggt = parts[3];
+                  }
+                }
+                // Navigate to ChieuCaoCard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddLiverEnzymesScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentALTValue: double.tryParse(alt) ?? 0,
+                      currentALPValue: double.tryParse(alp) ?? 0,
+                      currentASTValue: double.tryParse(ast) ?? 0,
+                      currentGGTValue: double.tryParse(ggt) ?? 0,
+                      showLiverEnzymesWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+              case "BloodOxygen":
+                // Navigate to NhịpTimCard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddBloodOxygen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentValue:
+                          num.tryParse(dataMap?["Indicator"] ?? "") ?? 0,
+                      showHeartBeatWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+              // case "Buớc chân":
+              //   // Navigate to NhịpTimCard
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => AddSteps(
+              //             id: item["id"],
+              //             dataType: item["dataType"],
+              //             date: item['date'],
+              //             currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+              //             showHeartBeatWidget: true,
+              //             isDraft: false)),
+              //   );
+              //   break;
+              // case "Thời gian ngủ":
+              //   // Navigate to NhịpTimCard
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => AddSleep(
+              //             id: item["id"],
+              //             dataType: item["dataType"],
+              //             date: item['date'],
+              //             currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+              //             showHeartBeatWidget: true,
+              //             isDraft: false)),
+              //   );
+              //   break;
+              // case "Tiêu thụ calories":
+              //   // Navigate to NhịpTimCard
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => AddCaloriesBurned(
+              //             id: item["id"],
+              //             dataType: item["dataType"],
+              //             date: item['date'],
+              //             currentValue: num.tryParse(item["data"] ?? "") ?? 0,
+              //             showHeartBeatWidget: true,
+              //             isDraft: false)),
+              //   );
+              //   break;
+
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => HealthAlertDetailScreen(
+              //       alertId: notification['relatedId'],
+              //     ),
+              //   ),
+              // );
+              default:
+                print("No card detail screen for ${notification['data']}");
+                print("data ${notification['data']}");
+                break;
+
+              // case 'sos':
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => EmergencyDetailScreen(
+              //         emergencyId: notification['relatedId'],
+              //       ),
+              //     ),
+              //   );
+              //   break;
+
+              // Thêm các trường hợp khác tùy theo loại thông báo
+            }
+          } else {
+            print('Dữ liệu không hợp lệ hoặc không thể phân tích');
+          }
       }
     }
 
