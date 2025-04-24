@@ -12,6 +12,7 @@ class BloodGlucoseDisplayWidget extends ConsumerStatefulWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final bool canEdit;
   final String typeData;
   final String period;
   final String? id;
@@ -22,6 +23,7 @@ class BloodGlucoseDisplayWidget extends ConsumerStatefulWidget {
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
+    required this.canEdit,
     required this.period,
     required this.typeData,
     this.id,
@@ -257,7 +259,7 @@ class _BloodGlucoseDisplayWidgetState
                               ),
                             ),
                           ),
-                          isToday(widget.dateTime)
+                          isToday(widget.dateTime) && widget.canEdit
                               ? IconButton(
                                   onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,

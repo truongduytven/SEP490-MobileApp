@@ -12,7 +12,7 @@ class AddLiverEnzymesScreen extends StatefulWidget {
   final num currentGGTValue;
   final bool showLiverEnzymesWidget;
   final bool isDraft;
-
+  final bool? canEdit;
   final String? id;
   final String? dataType;
   const AddLiverEnzymesScreen({
@@ -26,6 +26,7 @@ class AddLiverEnzymesScreen extends StatefulWidget {
     required this.isDraft,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -196,6 +197,7 @@ class _AddLiverEnzymesScreenState extends State<AddLiverEnzymesScreen> {
                 isDraft: isDraft,
                 dateTime: formattedDateTime,
                 onEdit: onEdit,
+                canEdit: widget.canEdit ?? true,
               )
             : LiverEnzymesInputWidget(
                 key: ValueKey<bool>(showLiverEnzymesWidget),

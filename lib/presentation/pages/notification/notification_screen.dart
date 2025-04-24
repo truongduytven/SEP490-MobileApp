@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/blood_glucose/screens/add_blood_glucose_screen.dart';
 import 'package:sep490/features/blood_oxygen/screens/add_blood_oxygen.dart';
 import 'package:sep490/features/blood_pressure/screens/add_blood_pressure_screen.dart';
 import 'package:sep490/features/group_family/screens/group_family.dart';
 import 'package:sep490/features/heart_beat/screens/add_heart_beat_screen.dart';
+import 'package:sep490/features/kidney_function/screens/add_kidney_function_screen.dart';
+import 'package:sep490/features/lipid_profile/screens/add_lipid_profile_screen.dart';
+import 'package:sep490/features/liver_enzymes/screens/add_liver_enzymes_screen.dart';
 import 'package:sep490/features/water_drinking/screens/water_drinking.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
@@ -570,126 +574,137 @@ class _NotificationScreenState extends State<NotificationScreen>
                 );
                 break;
 
-              // case "Đường huyết":
-              //   String? data = item['data']; // Get the data
-              //   String bloodGlucoseValue = "N/A"; // Default value
-              //   String period = "N/A"; // Default value
-              //   if (data != null && data.contains("/")) {
-              //     // Safely split the string
-              //     List<String> parts = data.split("/");
-              //     if (parts.length == 2) {
-              //       bloodGlucoseValue = parts[0]; // First part
-              //       period = parts[1]; // Second part
-              //     }
-              //   }
-              //   // Navigate to ChieuCaoCard
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => AddBloodGlucoseScreen(
-              //             id: item["id"],
-              //             dataType: item["dataType"],
-              //             period: period,
-              //             date: item['date'],
-              //             currentBloodGlucoseValue:
-              //                 double.tryParse(bloodGlucoseValue) ?? 0,
-              //             showBloodGlucoseWidget: true,
-              //             isDraft: false)),
-              //   );
-              //   break;
-              // case "Chức năng thận":
-              //   String? data = item['data'];
-              //   String egfrValue = "N/A";
-              //   String bunValue = "N/A";
-              //   String gfrValue = "N/A";
-              //   if (data != null && data.contains("/")) {
-              //     // Safely split the string
-              //     List<String> parts = data.split("/");
-              //     if (parts.length == 3) {
-              //       egfrValue = parts[0];
-              //       bunValue = parts[1];
-              //       gfrValue = parts[2];
-              //     }
-              //   }
-              //   // Navigate to ChieuCaoCard
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => AddKidneyFunctionScreen(
-              //             id: item["id"],
-              //             dataType: item["dataType"],
-              //             date: item['date'],
-              //             currentBUNValue: double.tryParse(bunValue) ?? 0,
-              //             currenteGFRValue: double.tryParse(egfrValue) ?? 0,
-              //             currentGFRValue: double.tryParse(gfrValue) ?? 0,
-              //             showKidneyFunctionWidget: true,
-              //             isDraft: false)),
-              //   );
-              //   break;
-              // case "Mỡ máu":
-              //   String? data = item['data'];
-              //   String total = "N/A";
-              //   String hdl = "N/A";
-              //   String ldl = "N/A";
-              //   String tg = "N/A";
-              //   if (data != null && data.contains("/")) {
-              //     // Safely split the string
-              //     List<String> parts = data.split("/");
-              //     if (parts.length == 4) {
-              //       total = parts[0];
-              //       ldl = parts[1];
-              //       hdl = parts[2];
-              //       tg = parts[3];
-              //     }
-              //   }
-              //   // Navigate to ChieuCaoCard
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => AddLipidProfileScreen(
-              //             id: item["id"],
-              //             dataType: item["dataType"],
-              //             date: item['date'],
-              //             currentHDLValue: double.tryParse(hdl) ?? 0,
-              //             currentLDLValue: double.tryParse(ldl) ?? 0,
-              //             currentTGValue: double.tryParse(tg) ?? 0,
-              //             currentTCValue: double.tryParse(total) ?? 0,
-              //             showLipidProfileWidget: true,
-              //             isDraft: false)),
-              //   );
-              //   break;
-              // case "Men gan":
-              //   String? data = item['data'];
-              //   String alt = "N/A";
-              //   String alp = "N/A";
-              //   String ast = "N/A";
-              //   String ggt = "N/A";
-              //   if (data != null && data.contains("/")) {
-              //     // Safely split the string
-              //     List<String> parts = data.split("/");
-              //     if (parts.length == 4) {
-              //       alt = parts[0];
-              //       ast = parts[1];
-              //       alp = parts[2];
-              //       ggt = parts[3];
-              //     }
-              //   }
-              //   // Navigate to ChieuCaoCard
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => AddLiverEnzymesScreen(
-              //             id: item["id"],
-              //             dataType: item["dataType"],
-              //             date: item['date'],
-              //             currentALTValue: double.tryParse(alt) ?? 0,
-              //             currentALPValue: double.tryParse(alp) ?? 0,
-              //             currentASTValue: double.tryParse(ast) ?? 0,
-              //             currentGGTValue: double.tryParse(ggt) ?? 0,
-              //             showLiverEnzymesWidget: true,
-              //             isDraft: false)),
-              //   );
-              //   break;
+              case "BloodGlucose":
+                String? data = dataMap['Indicator'];
+                String bloodGlucoseValue = "N/A";
+                String period = "N/A";
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 2) {
+                    bloodGlucoseValue = parts[0];
+                    period = parts[1];
+                  }
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddBloodGlucoseScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      period: period,
+                      currentBloodGlucoseValue:
+                          double.tryParse(bloodGlucoseValue) ?? 0,
+                      showBloodGlucoseWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+              case "KidneyFunction":
+                String? data = dataMap['Indicator'];
+                String egfrValue = "N/A";
+                String bunValue = "N/A";
+                String gfrValue = "N/A";
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 3) {
+                    egfrValue = parts[0];
+                    bunValue = parts[1];
+                    gfrValue = parts[2];
+                  }
+                }
+                // Navigate to ChieuCaoCard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddKidneyFunctionScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentBUNValue: double.tryParse(bunValue) ?? 0,
+                      currenteGFRValue: double.tryParse(egfrValue) ?? 0,
+                      currentGFRValue: double.tryParse(gfrValue) ?? 0,
+                      showKidneyFunctionWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+              case "LipidProfile":
+                String? data = dataMap['Indicator'];
+                String total = "N/A";
+                String hdl = "N/A";
+                String ldl = "N/A";
+                String tg = "N/A";
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 4) {
+                    total = parts[0];
+                    ldl = parts[1];
+                    hdl = parts[2];
+                    tg = parts[3];
+                  }
+                }
+                // Navigate to ChieuCaoCard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddLipidProfileScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentHDLValue: double.tryParse(hdl) ?? 0,
+                      currentLDLValue: double.tryParse(ldl) ?? 0,
+                      currentTGValue: double.tryParse(tg) ?? 0,
+                      currentTCValue: double.tryParse(total) ?? 0,
+                      showLipidProfileWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
+              case "LiverEnzyme":
+                String? data = dataMap['Indicator'];
+                String alt = "N/A";
+                String alp = "N/A";
+                String ast = "N/A";
+                String ggt = "N/A";
+                if (data != null && data.contains("/")) {
+                  // Safely split the string
+                  List<String> parts = data.split("/");
+                  if (parts.length == 4) {
+                    alt = parts[0];
+                    ast = parts[1];
+                    alp = parts[2];
+                    ggt = parts[3];
+                  }
+                }
+                // Navigate to ChieuCaoCard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddLiverEnzymesScreen(
+                      id: dataMap?["Id"].toString(),
+                      dataType: dataMap?["DataType"],
+                      date: dataMap?['DateRecorded'],
+                      currentALTValue: double.tryParse(alt) ?? 0,
+                      currentALPValue: double.tryParse(alp) ?? 0,
+                      currentASTValue: double.tryParse(ast) ?? 0,
+                      currentGGTValue: double.tryParse(ggt) ?? 0,
+                      showLiverEnzymesWidget: true,
+                      isDraft: false,
+                      canEdit: false,
+                    ),
+                  ),
+                );
+                break;
               case "BloodOxygen":
                 // Navigate to NhịpTimCard
                 Navigator.push(

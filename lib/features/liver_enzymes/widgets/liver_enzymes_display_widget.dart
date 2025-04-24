@@ -15,6 +15,7 @@ class LiverEnzymesDisplayWidget extends ConsumerStatefulWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final bool canEdit;
   final String typeData;
   final String? id;
 
@@ -23,6 +24,7 @@ class LiverEnzymesDisplayWidget extends ConsumerStatefulWidget {
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
+    required this.canEdit,
     required this.altValue,
     required this.alpValue,
     required this.astValue,
@@ -251,7 +253,7 @@ class _LiverEnzymesDisplayWidgetState
                               ),
                             ),
                           ),
-                          isToday(widget.dateTime)
+                          isToday(widget.dateTime) && widget.canEdit
                               ? IconButton(
                                   onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,
@@ -552,7 +554,9 @@ class _LiverEnzymesDisplayWidgetState
                                     .addLiverEnzymes(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0
+                                      ? currentUserElderlyID
+                                      : currentUserAccountID ?? 0,
                                   alt: widget.altValue.toDouble(),
                                   ast: widget.astValue.toDouble(),
                                   alp: widget.alpValue.toDouble(),
