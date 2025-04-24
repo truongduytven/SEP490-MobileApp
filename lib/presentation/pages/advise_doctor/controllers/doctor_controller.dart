@@ -62,7 +62,6 @@ class DoctorController {
     final response = await _doctorRepository.getComboData();
     if (response != null && response['isSuccess']) {
       List<dynamic> data = response['data']['data'];
-      print(data);
       if (data.isEmpty) {
         comboData = null;
         return;

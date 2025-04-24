@@ -322,6 +322,15 @@ class _HomeScreenState extends State<HomeScreen>
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (userList == null) {
+        sharedPrefsHelper.setInt('selectedElderlyUserId', 0);
+        sharedPrefsHelper.setString('selectedElderlyUserName', '');
+        sharedPrefsHelper.setInt('selectedElderlyId', 0);
+        return;
+      }
+      if (userList!.isEmpty) {
+        sharedPrefsHelper.setInt('selectedElderlyUserId', 0);
+        sharedPrefsHelper.setString('selectedElderlyUserName', '');
+        sharedPrefsHelper.setInt('selectedElderlyId', 0);
         return;
       }
       if (sharedPrefsHelper.getInt('selectedElderlyUserId') != null) {
@@ -469,8 +478,16 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void didPopNext() {
-    getSchedule();
-    getHealthIndicator(); // Gọi lại API
+    if (roleId == 2) {
+      getHealthIndicator();
+      getSchedule();
+    }
+    if (roleId == 3) {
+      getElderlyUser();
+    }
+    if (roleId == 4) {
+      getElderlyUserProfessor();
+    }
   }
 
   @override
@@ -942,20 +959,28 @@ class _HomeScreenState extends State<HomeScreen>
                                     color: AppColors.textColor,
                                   ),
                                 ),
-                                Expanded(
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
+                              ],
+                            ),
+                          if (roleId == 3 && selectedElderlyUserId != 0)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
                                     child: Text(
                                       '$selectedElderlyUserName',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textColor,
-                                      ),
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textColor),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           if (roleId == 3 && selectedElderlyUserId != 0)
                             GestureDetector(

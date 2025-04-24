@@ -656,9 +656,13 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                             _buildInfoRow("Giá:",
                                 "${convertMoney(packageData!.price)} VNĐ"),
                             _buildInfoRow(
-                                "Thời gian bắt đầu:", convertDateTimeToDateNoTime(packageData!.startDate)),
+                                "Thời gian bắt đầu:",
+                                convertDateTimeToDateNoTime(
+                                    packageData!.startDate)),
                             _buildInfoRow(
-                                "Thời gian kết thúc:", convertDateTimeToDateNoTime(packageData!.endDate)),
+                                "Thời gian kết thúc:",
+                                convertDateTimeToDateNoTime(
+                                    packageData!.endDate)),
                             _buildInfoRow("Số buổi còn lại:",
                                 "${packageData!.numberOfMeetingLeft} buổi"),
                             SizedBox(height: 10),
@@ -680,7 +684,8 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                                     style: TextStyle(
                                       fontSize: 20,
                                       decoration: TextDecoration.underline,
-                                      decorationStyle: TextDecorationStyle.solid,
+                                      decorationStyle:
+                                          TextDecorationStyle.solid,
                                       decorationThickness: 2,
                                       color: AppColors.secondaryColor,
                                     ),
@@ -763,47 +768,45 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                     ),
                   ),
                   SizedBox(height: 20),
-                  roleId == 3
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 15),
-                          width: double.infinity,
-                          color: Colors.transparent,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PackageList(
-                                            isShowFull: true,
-                                          )));
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.secondaryColor,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  side: BorderSide(
-                                      color: AppColors.secondaryColor,
-                                      width: 1),
-                                )),
-                            icon: Icon(Icons.payment,
-                                size: 25, color: AppColors.bgColor),
-                            label: const Text('Mua gói ngay',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: AppColors.bgColor,
-                                  fontWeight: FontWeight.w400,
-                                )),
-                          ),
-                        )
-                      : Text('Bạn hãy nhờ người thân mua gói dịch vụ cho bạn!',
-                          textAlign: TextAlign.center,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
+                    width: double.infinity,
+                    color: Colors.transparent,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PackageList(
+                                      isShowFull: true,
+                                    )));
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondaryColor,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            side: BorderSide(
+                                color: AppColors.secondaryColor, width: 1),
+                          )),
+                      icon: Icon(Icons.payment,
+                          size: 25, color: AppColors.bgColor),
+                      label: const Text('Mua gói ngay',
                           style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primaryColor)),
+                            fontSize: 25,
+                            color: AppColors.bgColor,
+                            fontWeight: FontWeight.w400,
+                          )),
+                    ),
+                  )
+                  // : Text('Bạn hãy nhờ người thân mua gói dịch vụ cho bạn!',
+                  //     textAlign: TextAlign.center,
+                  //     style: TextStyle(
+                  //         fontSize: 25,
+                  //         fontWeight: FontWeight.w600,
+                  //         color: AppColors.primaryColor)),
                 ]),
           );
   }
