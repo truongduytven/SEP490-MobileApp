@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/features/friend_request/friend_request_screen.dart';
+import 'package:sep490/features/select_contacts_friend/screens/select_contacts_screen.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
 import 'package:sep490/features/chat/widgets/contacts_list.dart';
 import 'package:sep490/features/chat/widgets/expandable_fab.dart';
@@ -185,7 +186,10 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
             ? tabBarController.index == 0
                 ? ExpandableFab()
                 : FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(
+                          context, SelectContactsScreen.routeName);
+                    },
                     backgroundColor: AppColors.primaryColor,
                     child: const Icon(Icons.add, color: Colors.white),
                   )
