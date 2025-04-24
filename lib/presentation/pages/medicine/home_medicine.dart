@@ -658,7 +658,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 ? (medicine['time']['status'] == 'Taken'
                     ? Icon(Icons.check_circle, size: 30, color: Colors.green)
                     : Icon(Icons.cancel, size: 30, color: Colors.red))
-                : isWithinSessionTime
+                : isWithinSessionTime && roleId != 4
                     ? Row(
                         children: [
                           GestureDetector(
