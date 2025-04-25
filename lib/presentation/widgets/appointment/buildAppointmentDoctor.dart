@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/health/screens/health_screen.dart';
 import 'package:sep490/features/video_conference/screens/video_conference_page.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/report_appointment.dart';
@@ -38,12 +39,7 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
     print(widget.appoimentDoctor);
     time = widget.appoimentDoctor!.dateTime.split(' ')[1];
     date = widget.appoimentDoctor!.dateTime.split(' ')[0];
-    isAllowed = isJoinAllowed;
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
-    if (isJoinAllowed) {
-      // sharedPrefsHelper.setString('appoinmentId',
-      //     widget.appoimentDoctor!..toString());
-    }
   }
 
   String _formatDateTime(String input) {
@@ -51,25 +47,15 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
     final parts = input.split(' ');
     final dateParts = parts[0].split('/');
     final timePart = parts[1];
+    final hourPart = timePart.split(':')[0];
+    final minutePart = timePart.split(':')[1];
+    String hourData = (int.tryParse(hourPart) ?? 0 + 1).toString();
+    if ((int.tryParse(hourPart) ?? 0 + 1) < 10) {
+      hourData = '0$hourData';
+    }
 
     // Format to ISO string: "2025-04-09T15:00:00"
-    return "${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T$timePart:00";
-  }
-
-  bool get isJoinAllowed {
-    // Combine date and time into full string like "09/04/2025 15:00"
-    final fullDateTimeStr = "${date.trim()} ${time.trim()}";
-
-    // Parse the string into DateTime
-    final appointmentTime = DateTime.parse(
-      _formatDateTime(fullDateTimeStr),
-    );
-
-    // Get current time
-    final now = DateTime.now();
-
-    // Check if current time is within 5 minutes before or later
-    return now.isAfter(appointmentTime.subtract(Duration(minutes: 5)));
+    return "${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T$hourData:$minutePart:00";
   }
 
   bool get isCancelAllowed {
@@ -149,41 +135,36 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          widget.appoimentDoctor!.elderlyName,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primaryColor,
-                          ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: Text(
+                        widget.appoimentDoctor!.elderlyName,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryColor,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          "Hình thức: ",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.secondaryColor,
-                          ),
-                        ),
-                        Text(
-                          widget.appoimentDoctor!.isOnline
-                              ? "Online"
-                              : "Offline",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.primaryColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    sharedPrefsHelper.setInt("selectedElderlyUserId",
+                        widget.appoimentDoctor!.accountId);
+                    sharedPrefsHelper.setString("selectedElderlyUserName",
+                        widget.appoimentDoctor!.elderlyName);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HealthScreen(),
+                      ),
+                    );
+                  },
+                  child: Icon(Icons.info_outline,
+                      color: AppColors.primaryColor, size: 30),
                 ),
               ],
             ),
@@ -269,7 +250,7 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
                           ),
                         ),
                       if (widget.appoimentDoctor!.status == 'Joined' &&
-                          widget.appoimentDoctor!.isReport &&
+                          !widget.appoimentDoctor!.isReport &&
                           roleId == 4)
                         ElevatedButton(
                           onPressed: () {

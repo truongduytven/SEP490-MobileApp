@@ -67,7 +67,7 @@ class _DoctorAdviseListState extends State<DoctorAdviseList>
       isLoading = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.cancelAppointment(appointmentId);
+    await doctorController.cancelAppointment(appointmentId, accountId);
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       if (doctorController.isCancelSuccess) {
@@ -89,7 +89,9 @@ class _DoctorAdviseListState extends State<DoctorAdviseList>
         CherryToast.error(
           toastDuration: Duration(seconds: 3),
           title: Text(
-            "Hủy cuộc hẹn thất bại",
+            doctorController.errorMessage.isEmpty
+                ? "Có lỗi xảy ra"
+                : doctorController.errorMessage,
             style: TextStyle(
               color: Colors.black,
               fontSize: 20,

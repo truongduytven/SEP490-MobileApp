@@ -187,7 +187,7 @@ class _EmergencyScreenState extends State<EmergencyScreen>
       await _sendEmergencyData();
 
       if (attempt == 1) {
-         await _callDoctorAPI();
+        await _callDoctorAPI();
       }
       _checkConfirmationStatus(attempt + 1);
       return;
@@ -282,6 +282,13 @@ class _EmergencyScreenState extends State<EmergencyScreen>
         statuses[Permission.locationWhenInUse]!.isGranted;
   }
 
+  Future<void> expireEmergency() async {
+    EmergencyController emergencyController = EmergencyController();
+    await emergencyController
+        .createEmergencyConfirmation(emergencyConfirmationId);
+    if (emergencyController.isExpired) {}
+  }
+
   Future<void> _sendEmergencyData() async {
     await _captureImages();
     await _getLocation();
@@ -323,35 +330,66 @@ class _EmergencyScreenState extends State<EmergencyScreen>
       return;
     }
 
-    // Chụp ảnh từ camera sau
-    XFile backImage = await _cameraController!.takePicture();
-    backImagePath = backImage.path;
+    try {
+      // 1. Store current camera direction
+      final currentLensDirection = _cameraController!.description.lensDirection;
 
-    // Xử lý chuyển đổi sang camera trước
-    CameraDescription? frontCamera;
-    for (var camera in _cameras!) {
-      if (camera.lensDirection == CameraLensDirection.front) {
-        frontCamera = camera;
-        break;
+      // 2. If currently using front camera, switch to rear first
+      if (currentLensDirection == CameraLensDirection.front) {
+        final rearCamera = _cameras!.firstWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.back,
+        );
+        await _cameraController!.dispose();
+        _cameraController =
+            CameraController(rearCamera, ResolutionPreset.medium);
+        await _cameraController!.initialize();
+        setState(() {});
       }
-    }
 
-    if (frontCamera != null) {
-      await _cameraController
-          ?.dispose(); // 🔹 Fix crash by disposing of old controller
+      // 3. Capture back image first
+      XFile backImage = await _cameraController!.takePicture();
+      backImagePath = backImage.path;
+      print("Back image captured: $backImagePath");
+
+      // 4. Find front camera
+      final frontCamera = _cameras!.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front,
+      );
+
+      // 5. Switch to front camera
+      await _cameraController!.dispose();
       _cameraController =
           CameraController(frontCamera, ResolutionPreset.medium);
       await _cameraController!.initialize();
       setState(() {});
 
+      // 6. Capture front image
       XFile frontImage = await _cameraController!.takePicture();
       frontImagePath = frontImage.path;
-    } else {
-      print("Thiết bị không có camera trước!");
-      frontImagePath = null;
+      print("Front image captured: $frontImagePath");
+
+      // 7. Always switch back to rear camera when done
+      final rearCamera = _cameras!.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back,
+      );
+      await _cameraController!.dispose();
+      _cameraController = CameraController(rearCamera, ResolutionPreset.medium);
+      await _cameraController!.initialize();
+      setState(() {});
+    } catch (e) {
+      print("Error capturing images: $e");
+      // Fallback to rear camera if anything fails
+      if (_cameras != null && _cameras!.isNotEmpty) {
+        final rearCamera = _cameras!.firstWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.back,
+        );
+        await _cameraController?.dispose();
+        _cameraController =
+            CameraController(rearCamera, ResolutionPreset.medium);
+        await _cameraController!.initialize();
+        setState(() {});
+      }
     }
-    print("Ảnh trước: $frontImagePath");
-    print("Ảnh sau: $backImagePath");
   }
 
   // 🔹 4. Lấy vị trí GPS
@@ -382,7 +420,7 @@ class _EmergencyScreenState extends State<EmergencyScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
-      await player.play(AssetSource('music/sos.mp3'));
+      expireEmergency();
     }
   }
 

@@ -12,16 +12,19 @@ import 'package:sep490/presentation/widgets/loading/loadingImgPath.dart';
 import 'package:sep490/theme/color.dart';
 
 class ScheduleScreen extends StatefulWidget {
-  const ScheduleScreen({super.key});
+  final int? selectedDay;
+  final int? selectedMonth;
+  final int? selectedYear;
+  const ScheduleScreen({super.key, this.selectedDay, this.selectedMonth, this.selectedYear});
 
   @override
   State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-  int selectedYear = DateTime.now().year;
-  int selectedMonth = DateTime.now().month;
-  int selectedDay = DateTime.now().day;
+  late int selectedYear;
+  late int selectedMonth;
+  late int selectedDay;
   late Timer _timer;
   late DateTime _currentTime = DateTime.now();
   final ScrollController _scrollControllerDay = ScrollController();
@@ -36,6 +39,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   void initState() {
     super.initState();
+    selectedYear = widget.selectedYear ?? DateTime.now().year;
+    selectedMonth = widget.selectedMonth ?? DateTime.now().month;
+    selectedDay = widget.selectedDay ?? DateTime.now().day;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDay();
     });

@@ -13,6 +13,7 @@ class DoctorController {
   List<ComboData>? comboData;
   CheckoutResponse? checkoutResponse;
   List<FeedBackDoctor>? feedbackDoctor;
+  String errorMessage = '';
   int numberMeeting = 0;
   bool isOrderSuccess = false;
   bool isConfirmedSuccess = false;
@@ -185,11 +186,12 @@ class DoctorController {
     }
   }
 
-  Future<void> cancelAppointment(int appointmentId) async {
-    final response = await _doctorRepository.cancelAppointment(appointmentId);
+  Future<void> cancelAppointment(int appointmentId, int accountId) async {
+    final response = await _doctorRepository.cancelAppointment(appointmentId, accountId);
     if (response != null && response['isSuccess']) {
-      isCancelSuccess = response['data']['status'] == 1;
+      isCancelSuccess = true;
     } else {
+      errorMessage = response['data'] ?? 'Có lỗi xảy ra';
       isCancelSuccess = false;
     }
   }

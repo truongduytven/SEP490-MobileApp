@@ -409,12 +409,27 @@ class _NotificationScreenState extends State<NotificationScreen>
           break;
 
         case 'nhắc nhở uống thuốc':
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomeMedicine(),
-            ),
-          );
+          String data = notification['data'] ?? "";
+          if (data.isEmpty) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeMedicine(),
+              ),
+            );
+          } else {
+            List<String> dataList = data.split("-");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeMedicine(
+                  selectedYear: int.tryParse(dataList[0]),
+                  selectedMonth: int.tryParse(dataList[1]),
+                  selectedDay: int.tryParse(dataList[2]),
+                ),
+              ),
+            );
+          }
           break;
 
         case 'nhắc nhở uống nước':
@@ -427,12 +442,27 @@ class _NotificationScreenState extends State<NotificationScreen>
           break;
 
         case 'lịch trình hàng ngày':
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ScheduleScreen(),
-            ),
-          );
+          String data = notification['data'] ?? "";
+          if (data.isEmpty) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ScheduleScreen(),
+              ),
+            );
+          } else {
+            List<String> dataList = data.split("-");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ScheduleScreen(
+                  selectedYear: int.tryParse(dataList[0]),
+                  selectedMonth: int.tryParse(dataList[1]),
+                  selectedDay: int.tryParse(dataList[2]),
+                ),
+              ),
+            );
+          }
           break;
 
         case 'mua gói dịch vụ':
