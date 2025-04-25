@@ -28,8 +28,8 @@ class _BloodPressureInputWidgetState extends State<BloodPressureInputWidget> {
 
   String systolicLabel = "Tâm thu";
   String diastolicLabel = "Tâm trương";
-  String systolicDescription = "Huyết áp tâm thu tính bằng mmHg(30~300)";
-  String diastolicDescription = "Huyết áp tâm trương tính bằng mmHg(20~250)";
+  String systolicDescription = "Huyết áp tâm thu tính bằng mmHg (30~300)";
+  String diastolicDescription = "Huyết áp tâm trương tính bằng mmHg (20~250)";
 
   String? systolicErrorMessage;
   String? diastolicErrorMessage;
@@ -292,6 +292,7 @@ class _BloodPressureInputWidgetState extends State<BloodPressureInputWidget> {
                   padding: const EdgeInsets.all(18.0),
                   child: Text(
                     systolicDescription,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ),
@@ -300,6 +301,7 @@ class _BloodPressureInputWidgetState extends State<BloodPressureInputWidget> {
                   padding: const EdgeInsets.all(18.0),
                   child: Text(
                     diastolicDescription,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ),

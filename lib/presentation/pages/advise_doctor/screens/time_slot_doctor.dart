@@ -42,9 +42,6 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelectedDay();
-    });
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
     selectedElderlyUserId =
         sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
@@ -63,9 +60,6 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
       setState(() {
         doctorData = doctorController.doctorData;
         isLoading = false;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _scrollToSelectedDay();
-        });
       });
       if (doctorController.doctorData != null) {
         getNumberMeeting();
@@ -111,7 +105,7 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
     });
     DoctorController doctorController = DoctorController();
     await doctorController.bookingAppointment(
-        selectedElderlyUserId,
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId,
         0,
         selectedTimeSlot['startTime'],
         selectedTimeSlot['endTime'],
@@ -176,6 +170,7 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
         .format(DateTime(selectedYear, selectedMonth, selectedDay));
     await doctorController.getTimeSlot(doctorData!.professorId, date);
     Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
       setState(() {
         listTimeSlot = [];
 
@@ -209,11 +204,13 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
                   endTime: item.endTime,
                 ),
               );
-            } 
+            }
           });
         }
-
         isLoadingTimeSlot = false;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToSelectedDay();
       });
     });
   }
@@ -373,12 +370,13 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
                                                   return;
                                                 setState(() {
                                                   selectedMonth = value!;
-                                                  selectedDay = 1;
-                                                  WidgetsBinding.instance
-                                                      .addPostFrameCallback(
-                                                          (_) {
-                                                    _scrollToSelectedDay();
-                                                  });
+                                                  if (value ==
+                                                      DateTime.now().month) {
+                                                    selectedDay =
+                                                        DateTime.now().day;
+                                                  } else {
+                                                    selectedDay = 1;
+                                                  }
                                                   getSchedule();
                                                 });
                                               },
@@ -421,12 +419,15 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
                                                   return;
                                                 setState(() {
                                                   selectedYear = value!;
-                                                  selectedDay = 1;
-                                                  WidgetsBinding.instance
-                                                      .addPostFrameCallback(
-                                                          (_) {
-                                                    _scrollToSelectedDay(); // Scroll to day 1
-                                                  });
+                                                  if (value ==
+                                                      DateTime.now().year) {
+                                                    selectedMonth =
+                                                        DateTime.now().month;
+                                                    selectedDay =
+                                                        DateTime.now().day;
+                                                  } else {
+                                                    selectedDay = 1;
+                                                  }
                                                   getSchedule();
                                                 });
                                               },

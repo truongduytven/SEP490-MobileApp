@@ -58,10 +58,12 @@ class _PackageListState extends State<PackageList> {
         } else {
           setState(() {
             comboData = doctorController.comboData!
-                .where((element) => (element.status == 'Active' && element.validityPeriod > 0))
+                .where((element) =>
+                    (element.status == 'Active' && element.validityPeriod > 0))
                 .toList();
             comboOdd = doctorController.comboData!
-                .where((element) => (element.status == 'Active' && element.validityPeriod == 0))
+                .where((element) =>
+                    (element.status == 'Active' && element.validityPeriod == 0))
                 .toList();
             isLoading = false;
           });
@@ -111,13 +113,19 @@ class _PackageListState extends State<PackageList> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Text(package.description),
               const SizedBox(height: 15),
-              const Text('Ngày khả dụng:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('${package.validityPeriod} ngày (kể từ ngày mua)'),
-              const SizedBox(height: 15),
+              if (package.validityPeriod != 0)
+                const Text('Ngày khả dụng:',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              if (package.validityPeriod != 0)
+                Text('${package.validityPeriod} ngày (kể từ ngày mua)'),
+              if (package.validityPeriod != 0) const SizedBox(height: 15),
               const Text('Số lần gặp nhau:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('${package.numberOfMeeting} lần gặp/tháng'),
+              if (package.numberOfMeeting != 1)
+                Text('${package.numberOfMeeting} lần gặp/tháng'),
+              if (package.numberOfMeeting == 1)
+                Text('${package.numberOfMeeting} lần gặp'),
               const SizedBox(height: 15),
               const Text('Cập nhật gần nhất:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -203,20 +211,20 @@ class _PackageListState extends State<PackageList> {
                 : SingleChildScrollView(
                     child: Column(
                       children: [
-                        if(widget.isShowFull)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 16),
-                              if (comboData!.isNotEmpty)
-                                ...comboData!
-                                    .map((package) =>
-                                        _buildPackageCard(package)),
-                            ],
+                        if (widget.isShowFull)
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 16),
+                                if (comboData!.isNotEmpty)
+                                  ...comboData!.map(
+                                      (package) => _buildPackageCard(package)),
+                              ],
+                            ),
                           ),
-                        ),
                         if (comboOdd != null && comboOdd!.isNotEmpty) ...[
                           const SizedBox(height: 24),
                           const Padding(
@@ -338,13 +346,18 @@ class _PackageListState extends State<PackageList> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, size: 16),
-                      const SizedBox(width: 4),
-                      Text('${package.validityPeriod} ngày'),
+                      if (package.validityPeriod != 0)
+                        const Icon(Icons.calendar_today, size: 16),
+                      if (package.validityPeriod != 0) const SizedBox(width: 4),
+                      if (package.validityPeriod != 0)
+                        Text('${package.validityPeriod} ngày'),
                       const Spacer(),
                       const Icon(Icons.people, size: 16),
                       const SizedBox(width: 4),
-                      Text('${package.numberOfMeeting} lần gặp mặt/tháng'),
+                      if (package.numberOfMeeting != 1)
+                        Text('${package.numberOfMeeting} lần gặp mặt/tháng'),
+                      if (package.numberOfMeeting == 1)
+                        Text('${package.numberOfMeeting} lần gặp mặt'),
                     ],
                   ),
                 ],

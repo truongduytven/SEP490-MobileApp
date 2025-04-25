@@ -61,6 +61,9 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
     selectedElderlyUserId =
         sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
@@ -164,12 +167,39 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     }
   }
 
+  void showConfirmCancelAppointment(int appoinmentId) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Xác nhận"),
+          content: const Text("Bạn có chắc chắn muốn hủy cuộc hẹn này không?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng hộp thoại
+              },
+              child: const Text("Hủy"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng hộp thoại
+                cancelAppointment(appoinmentId);
+              },
+              child: const Text("Xác nhận"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void cancelAppointment(int appointmentId) async {
     setState(() {
       isLoadingAppointment = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.cancelAppointment(appointmentId);
+    await doctorController.cancelAppointment(appointmentId, accountId);
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       if (doctorController.isCancelSuccess) {
@@ -286,7 +316,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                     ],
                   ),
                 )),
-      floatingActionButton: (isPackage && roleId == 3)
+      floatingActionButton: (isPackage && _tabController.index == 0)
           ? FloatingActionButton(
               onPressed: () {
                 final result = Navigator.push(context,
@@ -299,7 +329,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                 });
               },
               shape: CircleBorder(),
-              backgroundColor: AppColors.primaryColor,
+              backgroundColor: AppColors.secondaryColor,
               child: Icon(Icons.add, color: Colors.white),
             )
           : null,
@@ -400,7 +430,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                             .map((item) => BuildAppointmentCard(
                                   appoimentDoctor: item,
                                   onCancel: () async => {
-                                    cancelAppointment(
+                                    showConfirmCancelAppointment(
                                         item.professorAppointmentId)
                                   },
                                   onJoin: () => Future.value(),
@@ -464,7 +494,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                       )),
                 ),
                 const SizedBox(height: 10),
-                if (selectedElderlyUserId != 0 && isPackage)
+                if (isPackage)
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -720,7 +750,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                         fit: BoxFit.cover,
                       ),
                       Image.network(
-                        'https://bacsitamly.vn/wp-content/uploads/2022/08/279716900_1891140167753531_2109333273842352027_n-1-640x640.jpg',
+                        'https://benhvienvietduc.org/wp-content/uploads/2018/11/bs-thanh.jpg',
                         fit: BoxFit.cover,
                       ),
                       Image.network(

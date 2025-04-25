@@ -265,7 +265,7 @@ class _InfoCardState extends State<InfoCard> {
                                 text: "  ${widget.unit}",
                                 style: const TextStyle(
                                     overflow: TextOverflow.ellipsis,
-                                    fontSize: 20,
+                                    fontSize: 16,
                                     color: AppColors.grayColor5,
                                     fontWeight: FontWeight.w500),
                               ),

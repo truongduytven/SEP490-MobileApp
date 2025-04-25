@@ -61,31 +61,31 @@ class _WorkScheduleState extends State<WorkSchedule> {
         //     onPressed: _controller.showCurrentWeek,
         //   ),
         // ],
-        actions: [
-          if (_controller.hasData && !_isEditing)
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                setState(() {
-                  _isEditing = true;
-                });
-              },
-            ),
-          if (_controller.hasData && _isEditing)
-            IconButton(
-              icon: const Icon(Icons.cancel),
-              onPressed: () {
-                setState(() {
-                  _isEditing = false;
-                });
-              },
-            ),
-          if (_controller.hasData && _isEditing)
-            IconButton(
-              icon: const Icon(Icons.today),
-              onPressed: _controller.showCurrentWeek,
-            ),
-        ],
+        // actions: [
+        //   if (_controller.hasData && !_isEditing)
+        //     IconButton(
+        //       icon: const Icon(Icons.edit),
+        //       onPressed: () {
+        //         setState(() {
+        //           _isEditing = true;
+        //         });
+        //       },
+        //     ),
+        //   if (_controller.hasData && _isEditing)
+        //     IconButton(
+        //       icon: const Icon(Icons.cancel),
+        //       onPressed: () {
+        //         setState(() {
+        //           _isEditing = false;
+        //         });
+        //       },
+        //     ),
+        //   if (_controller.hasData && _isEditing)
+        //     IconButton(
+        //       icon: const Icon(Icons.today),
+        //       onPressed: _controller.showCurrentWeek,
+        //     ),
+        // ],
       ),
       body: _buildBody(theme, colors),
       floatingActionButton: _buildFloatingActionButton(colors),

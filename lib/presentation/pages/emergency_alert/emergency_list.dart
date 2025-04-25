@@ -278,11 +278,17 @@ class _EmergencyListState extends State<EmergencyList>
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Người thân: ",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
-            Text(emergency.elderlyName,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: Text(emergency.elderlyName,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+            ),
           ],
         ),
         SizedBox(
@@ -373,16 +379,6 @@ class _EmergencyListState extends State<EmergencyList>
                                               : Colors.blue)),
                             ],
                           ),
-                          Text(
-                            'Xem chi tiết ->',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.secondaryColor,
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.black,
-                            ),
-                          )
                         ],
                       ),
                       SizedBox(
@@ -426,6 +422,25 @@ class _EmergencyListState extends State<EmergencyList>
                                   fontSize: 20, fontWeight: FontWeight.w600)),
                         ],
                       ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Xem chi tiết ->',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.secondaryColor,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 2,
+                              decorationColor: Colors.black,
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),

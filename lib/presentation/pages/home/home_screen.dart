@@ -333,12 +333,14 @@ class _HomeScreenState extends State<HomeScreen>
         sharedPrefsHelper.setInt('selectedElderlyId', 0);
         return;
       }
-      if (sharedPrefsHelper.getInt('selectedElderlyUserId') != null) {
+      if (selectedElderlyUserId != 0) {
         return;
       }
       if (userList!.isNotEmpty && selectedElderlyUserId == 0) {
-        selectedElderlyUserId = userList![0].accountId;
-        selectedElderlyUserName = userList![0].fullName;
+        setState(() {
+          selectedElderlyUserId = userList![0].accountId;
+          selectedElderlyUserName = userList![0].fullName;
+        });
         sharedPrefsHelper.setInt(
             'selectedElderlyUserId', userList![0].accountId);
         sharedPrefsHelper.setString(

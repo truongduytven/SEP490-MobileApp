@@ -38,12 +38,7 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
     super.initState();
     time = widget.appoimentDoctor!.dateTime.split(' ')[1];
     date = widget.appoimentDoctor!.dateTime.split(' ')[0];
-    isAllowed = isJoinAllowed;
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
-    if (isJoinAllowed) {
-      sharedPrefsHelper.setString('appoinmentId',
-          widget.appoimentDoctor!.professorAppointmentId.toString());
-    }
   }
 
   String _formatDateTime(String input) {
@@ -51,25 +46,15 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
     final parts = input.split(' ');
     final dateParts = parts[0].split('/');
     final timePart = parts[1];
+    final hourPart = timePart.split(':')[0];
+    final minutePart = timePart.split(':')[1];
+    String hourData = (int.tryParse(hourPart) ?? 0 + 1).toString();
+    if ((int.tryParse(hourPart) ?? 0 + 1) < 10) {
+      hourData = '0$hourData';
+    }
 
     // Format to ISO string: "2025-04-09T15:00:00"
-    return "${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T$timePart:00";
-  }
-
-  bool get isJoinAllowed {
-    // Combine date and time into full string like "09/04/2025 15:00"
-    final fullDateTimeStr = "${date.trim()} ${time.trim()}";
-
-    // Parse the string into DateTime
-    final appointmentTime = DateTime.parse(
-      _formatDateTime(fullDateTimeStr),
-    );
-
-    // Get current time
-    final now = DateTime.now();
-
-    // Check if current time is within 5 minutes before or later
-    return now.isAfter(appointmentTime.subtract(Duration(minutes: 5)));
+    return "${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T$hourData:$minutePart:00";
   }
 
   bool get isCancelAllowed {
@@ -209,40 +194,46 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                 ],
               ),
             SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => VideoConferencePage(
-                        conferenceID: widget
-                            .appoimentDoctor!.professorAppointmentId
-                            .toString(),
+            if ((widget.appoimentDoctor!.status == 'NotYet') ||
+                (widget.appoimentDoctor!.status == 'Joined' &&
+                    DateTime.parse(
+                            _formatDateTime("${date.trim()} ${time.trim()}"))
+                        .isBefore(DateTime.now())))
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VideoConferencePage(
+                          conferenceID: widget
+                              .appoimentDoctor!.professorAppointmentId
+                              .toString(),
+                        ),
                       ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    side: BorderSide(color: AppColors.primaryColor),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  side: BorderSide(color: AppColors.primaryColor),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Tham gia',
+                          style: TextStyle(
+                              fontSize: 22, color: AppColors.bgColor)),
+                      const SizedBox(width: 4),
+                      Icon(Icons.video_call,
+                          size: 25, color: AppColors.bgColor),
+                    ],
                   ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Tham gia',
-                        style:
-                            TextStyle(fontSize: 22, color: AppColors.bgColor)),
-                    const SizedBox(width: 4),
-                    Icon(Icons.video_call, size: 25, color: AppColors.bgColor),
-                  ],
-                ),
               ),
-            ),
             if (widget.isListCard)
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 10),

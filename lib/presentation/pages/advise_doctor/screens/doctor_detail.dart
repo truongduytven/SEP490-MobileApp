@@ -39,6 +39,7 @@ class _DoctorDetailState extends State<DoctorDetail>
   final ScrollController _scrollControllerDay = ScrollController();
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int selectedElderlyUserId;
+  late int accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
   List<FeedBackDoctor>? feedbackDoctor = [];
   Map<String, dynamic> selectedTimeSlot = {
     'startTime': '',
@@ -231,7 +232,10 @@ class _DoctorDetailState extends State<DoctorDetail>
                   showLoadingDialog(context);
                   DoctorController doctorController = DoctorController();
                   await doctorController.selectDoctor(
-                      doctorData!.accountId, selectedElderlyUserId);
+                      doctorData!.accountId,
+                      selectedElderlyUserId != 0
+                          ? selectedElderlyUserId
+                          : accountId);
                   Timer(Duration(seconds: 2), () {
                     Navigator.of(context).pop();
                     if (doctorController.isSelectDoctorSuccess) {

@@ -68,7 +68,7 @@ class _OtpFormState extends State<OtpForm> {
       );
     } else {
       setState(() {
-        _errorMessage = response['data']['data'];
+        _errorMessage = response['data'];
       });
     }
   }

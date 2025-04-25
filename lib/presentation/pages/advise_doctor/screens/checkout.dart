@@ -33,6 +33,7 @@ class _CheckoutState extends State<Checkout> {
   String selectedMethod = 'ZaloPay';
   late int selectedElderlyId = 0;
   late String selectedElderlyUserName = '';
+  late String fullName = '';
   late int accountId = 0;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
 
@@ -41,6 +42,7 @@ class _CheckoutState extends State<Checkout> {
     super.initState();
     data = widget.comboData;
     selectedElderlyId = sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+    fullName = sharedPrefsHelper.getString('fullName') ?? "";
     selectedElderlyUserName =
         sharedPrefsHelper.getString('selectedElderlyUserName') ?? '';
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
@@ -91,7 +93,10 @@ class _CheckoutState extends State<Checkout> {
                             style: TextStyle(
                               fontSize: 16,
                             )),
-                        Text(selectedElderlyUserName,
+                        Text(
+                            selectedElderlyUserName.isEmpty
+                                ? fullName
+                                : selectedElderlyUserName,
                             style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -397,7 +402,9 @@ class _CheckoutState extends State<Checkout> {
                                 MaterialPageRoute(
                                   builder: (context) => ResultCheckout(
                                     accountId: accountId,
-                                    elderlyId: selectedElderlyId,
+                                    elderlyId: selectedElderlyId != 0
+                                        ? selectedElderlyId
+                                        : accountId,
                                     comboId: widget.comboData.subscriptionId,
                                   ),
                                 ),

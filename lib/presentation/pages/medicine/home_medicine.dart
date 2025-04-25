@@ -14,16 +14,19 @@ import 'package:sep490/theme/color.dart';
 import 'package:intl/intl.dart';
 
 class HomeMedicine extends StatefulWidget {
-  const HomeMedicine({super.key});
+  final int? selectedYear;
+  final int? selectedMonth;
+  final int? selectedDay;
+  const HomeMedicine({super.key, this.selectedYear, this.selectedMonth, this.selectedDay});
 
   @override
   State<HomeMedicine> createState() => _HomeMedicineState();
 }
 
 class _HomeMedicineState extends State<HomeMedicine> {
-  int selectedYear = DateTime.now().year;
-  int selectedMonth = DateTime.now().month;
-  int selectedDay = DateTime.now().day;
+  late int selectedYear;
+  late int selectedMonth;
+  late int selectedDay;
   int today = DateTime.now().day;
   final ScrollController _scrollController = ScrollController();
   Prescription? prescription;
@@ -38,6 +41,9 @@ class _HomeMedicineState extends State<HomeMedicine> {
   @override
   void initState() {
     super.initState();
+    selectedYear = widget.selectedYear ?? DateTime.now().year;
+    selectedMonth = widget.selectedMonth ?? DateTime.now().month;
+    selectedDay = widget.selectedDay ?? DateTime.now().day;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDay();
     });
@@ -519,16 +525,21 @@ class _HomeMedicineState extends State<HomeMedicine> {
   bool _isWithinSessionTime(String session) {
     final now = DateTime.now();
     final currentHour = now.hour;
+    final selectedDateTime = DateTime(selectedYear, selectedMonth, selectedDay);
+
+    if(now.isBefore(selectedDateTime)) {
+      return false; // The selected date is in the past
+    }
 
     switch (session) {
       case "SÁNG":
-        return currentHour >= 5 && currentHour < 12;
+        return currentHour >= 5;
       case "TRƯA":
-        return currentHour >= 11 && currentHour < 15; 
+        return currentHour >= 11;
       case "CHIỀU":
-        return currentHour >= 15 && currentHour < 19; 
+        return currentHour >= 15;
       case "TỐI":
-        return currentHour >= 18 || currentHour < 5; 
+        return currentHour >= 18;
       default:
         return false;
     }
@@ -564,7 +575,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 ),
               ),
               const Spacer(),
-              if (!allUsed && roleId != 4 && isWithinSessionTime)
+              if (!allUsed && roleId == 2 && isWithinSessionTime)
                 TextButton(
                   onPressed: () {
                     handleAllConfirmMedicine(medicines);
@@ -658,7 +669,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
                 ? (medicine['time']['status'] == 'Taken'
                     ? Icon(Icons.check_circle, size: 30, color: Colors.green)
                     : Icon(Icons.cancel, size: 30, color: Colors.red))
-                : isWithinSessionTime && roleId != 4
+                : isWithinSessionTime && roleId == 2
                     ? Row(
                         children: [
                           GestureDetector(
