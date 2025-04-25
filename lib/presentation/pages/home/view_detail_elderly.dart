@@ -89,6 +89,72 @@ class _ViewDetailElderlyState extends State<ViewDetailElderly> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
+                    builder: (context) => MedicalRecord(
+                      elderlyId: widget.elderlyUser!.accountId,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.bgColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.secondaryColor.withOpacity(0.3),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.secondaryColor.withOpacity(0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Image.asset('assets/img3D/sotheodoi.png', width: 40),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Hồ sơ bệnh án",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textColor,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "xem bệnh án của người già",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.grayColor3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 20,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
                     builder: (context) => HealthScreen(),
                   ),
                 );
@@ -211,72 +277,6 @@ class _ViewDetailElderlyState extends State<ViewDetailElderly> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MedicalRecord(
-                      elderlyId: widget.elderlyUser!.elderlyId,
-                    ),
-                  ),
-                );
-              },
-              child: Container(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.bgColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppColors.secondaryColor.withOpacity(0.3),
-                    width: 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.secondaryColor.withOpacity(0.3),
-                      blurRadius: 4,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Image.asset('assets/img3D/sotheodoi.png', width: 40),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Hồ sơ bệnh án",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textColor,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "xem bệnh án của người già",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.grayColor3,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 20,
-                    )
-                  ],
-                ),
-              ),
-            )
           ],
         ),
       ),

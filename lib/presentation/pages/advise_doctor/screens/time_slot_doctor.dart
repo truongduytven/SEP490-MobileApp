@@ -184,7 +184,7 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
           final currentDate = DateTime(now.year, now.month, now.day);
           final selectedDate =
               DateTime(selectedYear, selectedMonth, selectedDay);
-          final oneHourLater = now.add(const Duration(hours: 1));
+          final fifteenMinutesLater = now.add(const Duration(minutes: 15));
 
           doctorController.listAppoimentDoctor!.forEach((item) {
             // Parse the start time into a DateTime on the selected day
@@ -202,14 +202,14 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
             // - Or any future day
             if (selectedDate.isAfter(currentDate) ||
                 (selectedDate.isAtSameMomentAs(currentDate) &&
-                    startDateTime.isAfter(oneHourLater))) {
+                    startDateTime.isAfter(fifteenMinutesLater))) {
               listTimeSlot!.add(
                 TimeSlots(
                   startTime: item.startTime,
                   endTime: item.endTime,
                 ),
               );
-            }
+            } 
           });
         }
 
@@ -727,7 +727,8 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
                                 if (numberMeeting == 0) SizedBox(height: 10),
                                 if (numberMeeting == 0)
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
                                     child: Text(
                                         'Bạn đã hết lượt đặt lịch, bạn có thể chọn gói đặt lịch lẻ để tiếp tục đặt lịch',
                                         textAlign: TextAlign.center,
@@ -799,8 +800,12 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
                     color: Colors.transparent,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => const PackageList(isShowFull: false,)));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const PackageList(
+                                      isShowFull: false,
+                                    )));
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondaryColor,

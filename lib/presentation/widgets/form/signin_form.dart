@@ -144,7 +144,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
             title: Text(
               "Đăng nhập thành công!",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.black, fontSize: 20),
             ),
           ).show(context);
           Navigator.pushReplacement(context,
