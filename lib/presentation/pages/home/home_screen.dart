@@ -1225,12 +1225,15 @@ class _HomeScreenState extends State<HomeScreen>
                                       ),
                                   if (userList == null)
                                     const Center(
-                                      child: Text(
-                                        'Không có người già nào được hỗ trợ',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColors.textColor,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(top: 20.0),
+                                        child: Text(
+                                          'Không có người già nào được hỗ trợ',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.textColor,
+                                          ),
                                         ),
                                       ),
                                     )

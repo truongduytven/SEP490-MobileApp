@@ -105,6 +105,7 @@ class _IotIndicatorState extends State<IotIndicator> {
           MaterialPageRoute(
               builder: (context) => AddHeartBeatScreen(
                     isDraft: true,
+                    canEdit: false,
                     currentValue: (data.last.value as NumericHealthValue)
                         .numericValue
                         .toInt(),
@@ -180,6 +181,7 @@ class _IotIndicatorState extends State<IotIndicator> {
           MaterialPageRoute(
               builder: (context) => AddBloodPressureScreen(
                     isDraft: true,
+                    canEdit: false,
                     currentValueSystolic:
                         (dataSys.last.value as NumericHealthValue)
                             .numericValue

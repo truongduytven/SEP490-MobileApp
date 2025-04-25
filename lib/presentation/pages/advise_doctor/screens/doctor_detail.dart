@@ -214,7 +214,7 @@ class _DoctorDetailState extends State<DoctorDetail>
         context: context,
         builder: (_) {
           return AlertDialog(
-            title: const Text('Thông báo chọn bác'),
+            title: const Text('Thông báo chọn bác sĩ'),
             content: const Text(
                 'Bạn có chắc chắn chọn bác sĩ này để tư vấn và theo dõi sức khỏe cho người già không?'),
             actions: [

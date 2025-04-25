@@ -14,7 +14,9 @@ import 'package:sep490/features/lipid_profile/screens/add_lipid_profile_screen.d
 import 'package:sep490/features/liver_enzymes/screens/add_liver_enzymes_screen.dart';
 import 'package:sep490/features/water_drinking/screens/water_drinking.dart';
 import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
+import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
@@ -384,39 +386,36 @@ class _NotificationScreenState extends State<NotificationScreen>
 
       // Xử lý điều hướng dựa trên loại thông báo
       switch (notificationType.toLowerCase()) {
-        // case 'lịch gặp bác sĩ':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => DoctorAppointmentDetailScreen(
-        //         appointmentId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'lịch gặp bác sĩ':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationMenu(
+                keyIndex: 3,
+              ),
+            ),
+          );
+          break;
 
-        //         case 'hủy lịch khám':
+        case 'hủy lịch khám':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationMenu(
+                keyIndex: 3,
+              ),
+            ),
+          );
+          break;
 
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => DoctorAppointmentDetailScreen(
-        //         appointmentId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
-
-        // case 'nhắc nhở uống thuốc':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => MedicineReminderScreen(
-        //         reminderId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'nhắc nhở uống thuốc':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeMedicine(),
+            ),
+          );
+          break;
 
         case 'nhắc nhở uống nước':
           Navigator.push(
@@ -427,49 +426,43 @@ class _NotificationScreenState extends State<NotificationScreen>
           );
           break;
 
-        //             case 'lịch trình hàng ngày':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => MedicineReminderScreen(
-        //         reminderId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'lịch trình hàng ngày':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ScheduleScreen(),
+            ),
+          );
+          break;
 
-        // case 'mua gói dịch vụ':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'mua gói dịch vụ':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationMenu(
+                keyIndex: 3,
+              ),
+            ),
+          );
+          break;
 
-        //   case 'gửi yêu cầu hỗ trợ':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'gửi yêu cầu hỗ trợ':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GroupFamily(),
+            ),
+          );
+          break;
 
-        //  case 'xác nhận hỗ trợ':
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => ServicePackageScreen(
-        //         packageId: notification['relatedId'],
-        //       ),
-        //     ),
-        //   );
-        //   break;
+        case 'xác nhận hỗ trợ':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GroupFamily(),
+            ),
+          );
+          break;
 
         case 'thêm vào gia đình':
           Navigator.push(

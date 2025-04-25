@@ -220,7 +220,18 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
                     const SizedBox(width: 8),
                   if (widget.appoimentDoctor!.status == 'NotYet' && isAllowed)
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => VideoConferencePage(
+                              conferenceID: widget
+                                  .appoimentDoctor!.professorAppointmentId
+                                  .toString(),
+                            ),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.bgColor,
                         side: BorderSide(color: AppColors.primaryColor),
@@ -231,12 +242,6 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
                           Text('Tham gia',
                               style: TextStyle(
                                   fontSize: 16, color: AppColors.primaryColor)),
-                          const SizedBox(width: 8),
-                          sendCallButton(
-                            isVideoCall: true,
-                            inviteeUsers: widget.appoimentDoctor!.people,
-                            onCallFinished: onSendCallInvitationFinished,
-                          ),
                         ],
                       ),
                     ),
@@ -270,32 +275,6 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
                     ),
                 ],
               ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VideoConferencePage(
-                      conferenceID: widget
-                          .appoimentDoctor!.professorAppointmentId
-                          .toString(),
-                    ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.bgColor,
-                side: BorderSide(color: AppColors.primaryColor),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Tham gia',
-                      style: TextStyle(
-                          fontSize: 16, color: AppColors.primaryColor)),
-                ],
-              ),
-            ),
           ],
         ),
       ),
