@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/video_conference/screens/video_conference_page.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/rating_doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/report_appointment.dart';
@@ -71,6 +72,15 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
     return now.isAfter(appointmentTime.subtract(Duration(minutes: 5)));
   }
 
+  bool get isCancelAllowed {
+    final fullDateTimeStr = "${date.trim()} ${time.trim()}";
+    final appointmentTime = DateTime.parse(_formatDateTime(fullDateTimeStr));
+    final now = DateTime.now();
+
+    // Check if current time is at least 6 hours before appointment
+    return now.isBefore(appointmentTime.subtract(const Duration(hours: 6)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -98,7 +108,7 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '📅 $date',
+                      date,
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -198,146 +208,175 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                   ),
                 ],
               ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VideoConferencePage(
+                        conferenceID: widget
+                            .appoimentDoctor!.professorAppointmentId
+                            .toString(),
+                      ),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  side: BorderSide(color: AppColors.primaryColor),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Tham gia',
+                        style:
+                            TextStyle(fontSize: 22, color: AppColors.bgColor)),
+                    const SizedBox(width: 4),
+                    Icon(Icons.video_call, size: 25, color: AppColors.bgColor),
+                  ],
+                ),
+              ),
+            ),
             if (widget.isListCard)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (widget.appoimentDoctor!.status == 'NotYet')
-                    ElevatedButton(
-                      onPressed: widget.onCancel,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.bgColor,
-                        side: BorderSide(color: AppColors.secondaryColor),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Hủy lịch hẹn',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.secondaryColor)),
-                          const SizedBox(width: 8),
-                          Icon(Icons.cancel, color: AppColors.secondaryColor),
-                        ],
-                      ),
-                    ),
-                  if (widget.appoimentDoctor!.status == 'NotYet')
-                    const SizedBox(width: 8),
-                  if (widget.appoimentDoctor!.status == 'NotYet' && isAllowed)
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.bgColor,
-                        side: BorderSide(color: AppColors.primaryColor),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Tham gia',
-                              style: TextStyle(
-                                  fontSize: 16, color: AppColors.primaryColor)),
-                          const SizedBox(width: 8),
-                          sendCallButton(
-                            isVideoCall: true,
-                            inviteeUsers: widget.appoimentDoctor!.people,
-                            onCallFinished: onSendCallInvitationFinished,
-                          ),
-                        ],
-                      ),
-                    ),
-                  if (widget.appoimentDoctor!.status == 'Joined' &&
-                      !widget.appoimentDoctor!.isFeedback)
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RatingDoctor(
-                                appoimentDoctor: widget.appoimentDoctor,
-                              ),
-                            ));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.bgColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(color: AppColors.primaryColor),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Đánh giá',
-                              style: TextStyle(color: AppColors.primaryColor)),
-                          const SizedBox(width: 8),
-                          Icon(Icons.star, color: AppColors.primaryColor),
-                        ],
-                      ),
-                    ),
-                  SizedBox(width: 8),
-                  if (widget.appoimentDoctor!.status == 'Joined' &&
-                      widget.appoimentDoctor!.isReport)
-                    ElevatedButton(
-                      onPressed: widget.onReport,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Xem báo cáo',
-                              style: TextStyle(color: Colors.white)),
-                          const SizedBox(width: 8),
-                          Icon(Icons.assignment, color: Colors.white),
-                        ],
-                      ),
-                    ),
-                  if (widget.appoimentDoctor!.status == 'Joined' &&
-                      !widget.appoimentDoctor!.isReport)
-                    ElevatedButton(
-                      onPressed: widget.onReport,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Xem báo cáo',
-                              style: TextStyle(color: Colors.white)),
-                          const SizedBox(width: 8),
-                          Icon(Icons.assignment, color: Colors.white),
-                        ],
-                      ),
-                    ),
-                  if (widget.appoimentDoctor!.status == 'Joined' &&
-                      widget.appoimentDoctor!.isReport && roleId == 4)
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ReportAppointment(
-                              appoimentDoctor: widget.appoimentDoctor,
-                              isEdited: true
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 10),
+                child: Container(
+                  width: double.infinity,
+                  child: Wrap(
+                    spacing: 20,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.start,
+                    children: [
+                      // Button 1: Cancel Appointment
+                      if (widget.appoimentDoctor!.status == 'NotYet' &&
+                          isCancelAllowed)
+                        SizedBox(
+                          width: 150,
+                          child: ElevatedButton(
+                            onPressed: widget.onCancel,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.bgColor,
+                              side: BorderSide(color: AppColors.secondaryColor),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Hủy lịch',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: AppColors.secondaryColor)),
+                                const SizedBox(width: 4),
+                                Icon(Icons.cancel,
+                                    size: 20, color: AppColors.secondaryColor),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Tạo báo cáo',
-                              style: TextStyle(color: Colors.white)),
-                          const SizedBox(width: 8),
-                          Icon(Icons.assignment, color: Colors.white),
-                        ],
-                      ),
-                    ),
-                ],
-              )
+                        ),
+
+                      // Button 2: Join Call
+                      //if (widget.appoimentDoctor!.status == 'NotYet')
+
+                      // Button 3: Rate Doctor
+                      if (widget.appoimentDoctor!.status == 'Joined' &&
+                          !widget.appoimentDoctor!.isFeedback)
+                        SizedBox(
+                          width: 150,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RatingDoctor(
+                                    appoimentDoctor: widget.appoimentDoctor,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.bgColor,
+                              side: BorderSide(color: AppColors.primaryColor),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Đánh giá',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: AppColors.primaryColor)),
+                                const SizedBox(width: 4),
+                                Icon(Icons.star,
+                                    size: 20, color: AppColors.primaryColor),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                      // Button 4: View Report
+                      if (widget.appoimentDoctor!.status == 'Joined' &&
+                          widget.appoimentDoctor!.isReport)
+                        SizedBox(
+                          width: 150,
+                          child: ElevatedButton(
+                            onPressed: widget.onReport,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryColor,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Báo cáo',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.white)),
+                                const SizedBox(width: 4),
+                                Icon(Icons.assignment,
+                                    size: 20, color: Colors.white),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                      // Button 5: Create Report (for doctors)
+                      if (widget.appoimentDoctor!.status == 'Joined' &&
+                          widget.appoimentDoctor!.isReport &&
+                          roleId == 4)
+                        SizedBox(
+                          width: 150,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ReportAppointment(
+                                      appoimentDoctor: widget.appoimentDoctor,
+                                      isEdited: true),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryColor,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Tạo báo cáo',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white)),
+                                const SizedBox(width: 4),
+                                Icon(Icons.edit, size: 20, color: Colors.white),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ),

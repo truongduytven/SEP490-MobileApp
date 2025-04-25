@@ -6,11 +6,11 @@ import 'package:sep490/theme/color.dart';
 
 class AddCaloriesBurned extends StatefulWidget {
   final String? date;
-
   final num currentValue;
   final bool showHeartBeatWidget;
   final bool isDraft;
   final String? id;
+  final bool? canEdit;
   final String? dataType;
   const AddCaloriesBurned({
     super.key,
@@ -20,6 +20,7 @@ class AddCaloriesBurned extends StatefulWidget {
     this.date,
     this.id,
     this.dataType,
+    this.canEdit,
   });
 
   @override
@@ -146,6 +147,7 @@ class _AddCaloriesBurnedState extends State<AddCaloriesBurned> {
                 caloriesBurned: currentValue,
                 onEdit: onEdit,
                 id: widget.id,
+                canEdit: widget.canEdit ?? true,
               )
             : HeartBeatInputWidget(
                 key: ValueKey<bool>(showHeartBeatWidget),

@@ -12,7 +12,7 @@ class AddLipidProfileScreen extends StatefulWidget {
   final num currentHDLValue; // HDL (high-density lipoprotein)
   final bool showLipidProfileWidget;
   final bool isDraft;
-
+  final bool? canEdit;
   final String? id;
   final String? dataType;
   const AddLipidProfileScreen({
@@ -24,6 +24,7 @@ class AddLipidProfileScreen extends StatefulWidget {
     required this.currentHDLValue,
     required this.showLipidProfileWidget,
     required this.isDraft,
+    this.canEdit,
     this.id,
     this.dataType,
   });
@@ -196,6 +197,7 @@ class _AddLipidProfileScreenState extends State<AddLipidProfileScreen> {
                 isDraft: isDraft,
                 dateTime: formattedDateTime,
                 onEdit: onEdit,
+                canEdit: widget.canEdit ?? true,
               )
             : LipidProfileInputWidget(
                 key: ValueKey<bool>(showLipidProfileWidget),

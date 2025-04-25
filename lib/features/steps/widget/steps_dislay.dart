@@ -12,6 +12,7 @@ class StepsDislay extends ConsumerStatefulWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final bool canEdit;
   final String typeData;
   final String? id;
 
@@ -22,6 +23,7 @@ class StepsDislay extends ConsumerStatefulWidget {
     required this.onEdit,
     required this.isDraft,
     required this.typeData,
+    required this.canEdit,
     this.id,
   });
 
@@ -216,7 +218,7 @@ class _StepsDislayState extends ConsumerState<StepsDislay> {
                                       size: 30,
                                       color: AppColors.primaryColor,
                                     )
-                                  : isToday(widget.dateTime)
+                                  : isToday(widget.dateTime) && widget.canEdit
                                       ? IconButton(
                                           onPressed: widget.onEdit,
                                           icon: Icon(Icons.edit,

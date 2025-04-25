@@ -322,6 +322,15 @@ class _HomeScreenState extends State<HomeScreen>
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (userList == null) {
+        sharedPrefsHelper.setInt('selectedElderlyUserId', 0);
+        sharedPrefsHelper.setString('selectedElderlyUserName', '');
+        sharedPrefsHelper.setInt('selectedElderlyId', 0);
+        return;
+      }
+      if (userList!.isEmpty) {
+        sharedPrefsHelper.setInt('selectedElderlyUserId', 0);
+        sharedPrefsHelper.setString('selectedElderlyUserName', '');
+        sharedPrefsHelper.setInt('selectedElderlyId', 0);
         return;
       }
       if (sharedPrefsHelper.getInt('selectedElderlyUserId') != null) {
@@ -469,8 +478,16 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void didPopNext() {
-    getSchedule();
-    getHealthIndicator(); // Gọi lại API
+    if (roleId == 2) {
+      getHealthIndicator();
+      getSchedule();
+    }
+    if (roleId == 3) {
+      getElderlyUser();
+    }
+    if (roleId == 4) {
+      getElderlyUserProfessor();
+    }
   }
 
   @override
@@ -937,18 +954,33 @@ class _HomeScreenState extends State<HomeScreen>
                                 Text(
                                   'Đang hỗ trợ: ',
                                   style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColors.textColor),
-                                ),
-                                Text(
-                                  '$selectedElderlyUserName',
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textColor),
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.textColor,
+                                  ),
                                 ),
                               ],
+                            ),
+                          if (roleId == 3 && selectedElderlyUserId != 0)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '$selectedElderlyUserName',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textColor),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           if (roleId == 3 && selectedElderlyUserId != 0)
                             GestureDetector(
@@ -956,7 +988,9 @@ class _HomeScreenState extends State<HomeScreen>
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditProfile(elderlyId: selectedElderlyUserId,),
+                                    builder: (context) => EditProfile(
+                                      elderlyId: selectedElderlyUserId,
+                                    ),
                                   ),
                                 );
                               },
@@ -1015,7 +1049,9 @@ class _HomeScreenState extends State<HomeScreen>
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => MedicalRecord(elderlyId: selectedElderlyUserId,),
+                                    builder: (context) => MedicalRecord(
+                                      elderlyId: selectedElderlyUserId,
+                                    ),
                                   ),
                                 );
                               },
@@ -1189,12 +1225,15 @@ class _HomeScreenState extends State<HomeScreen>
                                       ),
                                   if (userList == null)
                                     const Center(
-                                      child: Text(
-                                        'Không có người già nào được hỗ trợ',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColors.textColor,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(top: 20.0),
+                                        child: Text(
+                                          'Không có người già nào được hỗ trợ',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.textColor,
+                                          ),
                                         ),
                                       ),
                                     )

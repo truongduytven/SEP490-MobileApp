@@ -15,6 +15,7 @@ class LipidProfileDisplayWidget extends ConsumerStatefulWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final bool canEdit;
   final String typeData;
   final String? id;
 
@@ -23,6 +24,7 @@ class LipidProfileDisplayWidget extends ConsumerStatefulWidget {
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
+    required this.canEdit,
     required this.tcValue,
     required this.tgValue,
     required this.ldlValue,
@@ -252,7 +254,7 @@ class _LipidProfileDisplayWidgetState
                               ),
                             ),
                           ),
-                          isToday(widget.dateTime)
+                          isToday(widget.dateTime) && widget.canEdit
                               ? IconButton(
                                   onPressed: widget.onEdit,
                                   icon: Icon(Icons.edit,
@@ -526,7 +528,9 @@ class _LipidProfileDisplayWidgetState
                                     .addLipidProfile(
                                   context: context,
                                   accountId: currentUserAccountID ?? 0,
-                                  elderlyId: currentUserElderlyID != 0 ? currentUserElderlyID : currentUserAccountID ?? 0,
+                                  elderlyId: currentUserElderlyID != 0
+                                      ? currentUserElderlyID
+                                      : currentUserAccountID ?? 0,
                                   totalCholesterol: widget.tcValue.toDouble(),
                                   ldlCholesterol: widget.ldlValue.toDouble(),
                                   hdlCholesterol: widget.hdlValue.toDouble(),

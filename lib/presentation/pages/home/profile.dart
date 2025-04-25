@@ -68,6 +68,7 @@ class _EditProfileState extends State<EditProfile> {
       if (selectedElderlyId == 0) {
         sharedPrefsHelper.setString("avatar", elderlyProfile!.avatar);
         sharedPrefsHelper.setString("fullName", elderlyProfile!.fullName);
+        sharedPrefsHelper.setString("avatar", elderlyProfile!.avatar);
       }
       initData();
     });

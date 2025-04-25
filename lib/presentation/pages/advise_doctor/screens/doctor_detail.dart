@@ -53,26 +53,29 @@ class _DoctorDetailState extends State<DoctorDetail>
     super.initState();
     selectedElderlyUserId =
         sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelectedDay();
-    });
-    tabBarController = TabController(length: 3, vsync: this);
-    tabBarController.addListener(() {
-      if (tabBarController.index == 1) {
-        getSchedule();
-        setState(() {
-          selectedTimeSlot = {
-            'startTime': '',
-            'endTime': '',
-            'day': '',
-          };
-        });
-        _scrollToSelectedDay();
-      }
-    });
+    tabBarController =
+        TabController(length: widget.isChoosePackage ? 3 : 2, vsync: this);
+    if (widget.isChoosePackage) {
+      tabBarController.addListener(() {
+        if (tabBarController.index == 0) {
+          getSchedule();
+          setState(() {
+            selectedTimeSlot = {
+              'startTime': '',
+              'endTime': '',
+              'day': '',
+            };
+          });
+          _scrollToSelectedDay();
+        }
+      });
+    }
     getDoctorDetails();
     getSchedule();
     getRating();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelectedDay();
+    });
   }
 
   void _scrollToSelectedDay() {
@@ -107,12 +110,39 @@ class _DoctorDetailState extends State<DoctorDetail>
         if (doctorController.listAppoimentDoctor != null) {
           listTimeSlot = [];
           doctorController.listAppoimentDoctor!.map((item) {
-            listTimeSlot!.add(
-              TimeSlots(
-                startTime: item.startTime,
-                endTime: item.endTime,
-              ),
-            );
+            bool isToday = selectedYear == DateTime.now().year &&
+                selectedMonth == DateTime.now().month &&
+                selectedDay == DateTime.now().day;
+            if (isToday) {
+              // Parse the start time (e.g., "08:00" -> 8:00 AM)
+              final startTimeParts = item.startTime.split(':');
+              final startHour = int.parse(startTimeParts[0]);
+              final startMinute = int.parse(startTimeParts[1]);
+
+              // Get current time
+              final now = DateTime.now();
+              final currentHour = now.hour;
+
+              int minAllowedHour = currentHour + 2;
+              // Check if the time slot is in the future
+              if (startHour > currentHour ||
+                  (startHour == minAllowedHour && startMinute >= 0)) {
+                listTimeSlot!.add(
+                  TimeSlots(
+                    startTime: item.startTime,
+                    endTime: item.endTime,
+                  ),
+                );
+              }
+            } else {
+              // If not today, add all time slots
+              listTimeSlot!.add(
+                TimeSlots(
+                  startTime: item.startTime,
+                  endTime: item.endTime,
+                ),
+              );
+            }
           }).toList();
         }
         isLoadingTimeSlot = false;
@@ -184,7 +214,7 @@ class _DoctorDetailState extends State<DoctorDetail>
         context: context,
         builder: (_) {
           return AlertDialog(
-            title: const Text('Thông báo chọn bác'),
+            title: const Text('Thông báo chọn bác sĩ'),
             content: const Text(
                 'Bạn có chắc chắn chọn bác sĩ này để tư vấn và theo dõi sức khỏe cho người già không?'),
             actions: [
@@ -365,18 +395,23 @@ class _DoctorDetailState extends State<DoctorDetail>
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
-                      tabs: [
-                        Tab(text: 'Thông tin'),
-                        Tab(text: 'Giờ tư vấn'),
-                        Tab(text: 'Đánh giá'),
-                      ],
+                      tabs: widget.isChoosePackage
+                          ? [
+                              Tab(text: 'Giờ tư vấn'),
+                              Tab(text: 'Thông tin'),
+                              Tab(text: 'Đánh giá'),
+                            ]
+                          : [
+                              Tab(text: 'Thông tin'),
+                              Tab(text: 'Đánh giá'),
+                            ],
                     ),
                     const SizedBox(height: 12),
                     Expanded(
                       child:
                           TabBarView(controller: tabBarController, children: [
+                        if (widget.isChoosePackage) buildScheduleTab(),
                         buildInfoTab(),
-                        buildScheduleTab(),
                         buildRatingTab(),
                       ]),
                     ),
@@ -770,6 +805,8 @@ class _DoctorDetailState extends State<DoctorDetail>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _buildSection(
+                      "Thời gian tư vấn", ["07:00 - 19:00 hằng ngày"]),
                   _buildSection("Học vấn", doctorData!.qualification),
                   _buildSection("Sự nghiệp", doctorData!.career),
                   _buildSection("Thành tựu", doctorData!.achievement),

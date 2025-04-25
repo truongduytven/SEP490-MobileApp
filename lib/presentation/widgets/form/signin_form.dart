@@ -138,11 +138,13 @@ class _SignInFormState extends ConsumerState<SignInForm> {
           sharedPrefsHelper.setString(
               'gender', responseToken['data']['user']['gender'] ?? "");
           Navigator.of(context).pop();
+          ref.invalidate(accountIdProvider);
+
           CherryToast.success(
             toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
             title: Text(
               "Đăng nhập thành công!",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.black, fontSize: 20),
             ),
           ).show(context);
           Navigator.pushReplacement(context,
@@ -156,7 +158,8 @@ class _SignInFormState extends ConsumerState<SignInForm> {
           Navigator.of(context).pop();
           CherryToast.error(
             toastDuration: Duration(seconds: 2), // Hiển thị trong 2 giây
-            title: Text(responseToken['data'],
+            title: Text(
+              responseToken['data'],
               style: TextStyle(color: Colors.black),
             ),
           ).show(context);

@@ -3,6 +3,7 @@ import 'package:sep490/common/utils/utils.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/result_checkout.dart';
+import 'package:sep490/presentation/pages/advise_doctor/screens/term_to_use.dart';
 import 'package:sep490/theme/color.dart';
 
 class Checkout extends StatefulWidget {
@@ -105,11 +106,17 @@ class _CheckoutState extends State<Checkout> {
                             style: TextStyle(
                               fontSize: 16,
                             )),
-                        Text(data.name,
-                            style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primaryColor)),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(data.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.end,
+                              style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primaryColor)),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -191,6 +198,31 @@ class _CheckoutState extends State<Checkout> {
                         ],
                       ),
                     const SizedBox(height: 20),
+                    if (widget.timeSlots == null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const TermToUse(),
+                                  ));
+                            },
+                            child: Text(
+                              'Điều khoản sử dụng gói',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppColors.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                  decorationThickness: 2.0,
+                                  color: AppColors.primaryColor),
+                            ),
+                          ),
+                        ],
+                      ),
                     if (widget.timeSlots != null)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -337,7 +369,9 @@ class _CheckoutState extends State<Checkout> {
                             Navigator.pop(context);
                             if (widget.doctorData != null) {
                               final Map<String, dynamic> dataBooking = {
-                                "elderlyId": selectedElderlyId,
+                                "elderlyId": selectedElderlyId != 0
+                                    ? selectedElderlyId
+                                    : accountId,
                                 "professorId": widget.doctorData!.accountId,
                                 "day": widget.timeSlots!['day'],
                                 "startTime": widget.timeSlots!['startTime'],
@@ -349,7 +383,9 @@ class _CheckoutState extends State<Checkout> {
                                 MaterialPageRoute(
                                   builder: (context) => ResultCheckout(
                                     accountId: accountId,
-                                    elderlyId: selectedElderlyId,
+                                    elderlyId: selectedElderlyId != 0
+                                        ? selectedElderlyId
+                                        : accountId,
                                     comboId: widget.comboData.subscriptionId,
                                     bookingData: dataBooking,
                                   ),

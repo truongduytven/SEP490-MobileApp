@@ -8,7 +8,6 @@ import 'package:sep490/features/kidney_function/screens/add_kidney_function_scre
 import 'package:sep490/features/lipid_profile/screens/add_lipid_profile_screen.dart';
 import 'package:sep490/features/liver_enzymes/screens/add_liver_enzymes_screen.dart';
 import 'package:sep490/features/weight/screens/add_weight_screen.dart';
-import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/theme/color.dart';
 
 class HealthFloatingActionButton extends StatelessWidget {
@@ -228,6 +227,129 @@ class HealthFloatingActionButton extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
+                  builder: (context) => AddWeight(
+                        isDraft: true,
+                        currentValue: 30,
+                        showWeightWidget: false,
+                      )),
+            );
+          },
+          labelWidget: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
+            child: IntrinsicWidth(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(35.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        'assets/img3D/cannang.png',
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Cân nặng',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          Text('Thêm chỉ số đo'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        SpeedDialChild(
+          onTap: () {
+            isDialOpen.value = false;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AddHeightScreen(
+                        isDraft: true,
+                        currentValue: 145.0,
+                        showHeightWidget: false,
+                      )),
+            );
+          },
+          labelWidget: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
+            child: IntrinsicWidth(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(35.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        'assets/img3D/chieucao.png',
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Chiều cao',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          Text('Thêm chỉ số đo'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        SpeedDialChild(
+          onTap: () {
+            isDialOpen.value = false;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
                   builder: (context) => AddKidneyFunctionScreen(
                         isDraft: true,
                         showKidneyFunctionWidget: false,
@@ -400,128 +522,6 @@ class HealthFloatingActionButton extends StatelessWidget {
                         children: const [
                           Text(
                             'Men gan',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600),
-                          ),
-                          Text('Thêm chỉ số đo'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        SpeedDialChild(
-          onTap: () {
-            isDialOpen.value = false;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddWeight(
-                        isDraft: true,
-                        currentValue: 30,
-                        showWeightWidget: false,
-                      )),
-            );
-          },
-          labelWidget: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
-            child: IntrinsicWidth(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(35.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        'assets/img3D/cannang.png',
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Cân nặng',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600),
-                          ),
-                          Text('Thêm chỉ số đo'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        SpeedDialChild(
-          onTap: () {
-            isDialOpen.value = false;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddHeightScreen(
-                        isDraft: true,
-                        currentValue: 145.0,
-                        showHeightWidget: false,
-                      )),
-            );
-          },
-          labelWidget: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400, minWidth: 270),
-            child: IntrinsicWidth(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(35.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        'assets/img3D/chieucao.png',
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Chiều cao',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w600),
                           ),

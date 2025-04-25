@@ -1,7 +1,9 @@
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gif_view/gif_view.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/group_family/screens/group_family.dart';
 import 'package:sep490/features/health/controller/health_controller.dart';
 import 'package:sep490/main.dart';
 import 'package:sep490/features/health/screens/health_monitoring_book.dart';
@@ -100,6 +102,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   }
 
   Future<void> fetchHealthIndicator() async {
+    if (roleId != 2 && selectedElderlyUserId == 0) {
+      return;
+    }
     setState(() {
       isLoading = true;
     });
@@ -434,202 +439,259 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               fit: BoxFit.cover,
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (roleId != 4)
-                  Header(
-                    isChooseElderly: false,
-                  ),
-                if (roleId != 4)
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    ClipOval(
-                      child: Image.asset(
-                        "assets/img/Logo.png",
-                        width: 30,
-                        height: 30,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Text(
-                        "Sức khỏe của ${selectedElderlyUserName != "" ? selectedElderlyUserName : "tôi"}",
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    if (userList != null && userList!.isNotEmpty && roleId == 3)
-                      IconButton(
+          child: roleId != 2 && selectedElderlyUserId == 0
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GifView.asset(
+                          'assets/gif/family.gif',
+                          width: 150,
+                          height: 150,
+                          frameRate: 60,
+                        ),
+                        Text(
+                          "Hiện tại chưa có người thân trong nhóm gia đình, vui lòng thêm người thân để có thể theo dõi sức khỏe của họ.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.secondaryColor,
+                            fontSize: 22,
+                            height: 1.2,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
                           onPressed: () {
-                            _showSelectDialog();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const GroupFamily()),
+                            );
                           },
-                          icon: Icon(
-                            color: AppColors.textPrimary,
-                            Icons.autorenew_rounded,
-                            size: 28,
-                          ))
-                  ],
-                ),
-                Expanded(
-                  child: isLoading
-                      ? SingleChildScrollView(
-                          child: Column(
-                            children: List.generate(5, (index) {
-                              return TweenAnimationBuilder(
-                                tween: Tween<Offset>(
-                                  begin: const Offset(0, 0.8),
-                                  end: const Offset(0, 0),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryColor,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              )),
+                          child: const Text(
+                            "Nhóm gia đình",
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (roleId != 4)
+                        Header(
+                          isChooseElderly: false,
+                        ),
+                      if (roleId != 4) const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          ClipOval(
+                            child: Image.asset(
+                              "assets/img/Logo.png",
+                              width: 30,
+                              height: 30,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              "Sức khỏe của ${selectedElderlyUserName != "" ? selectedElderlyUserName : "tôi"}",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  fontSize: 28, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          if (userList != null &&
+                              userList!.isNotEmpty &&
+                              roleId == 3)
+                            IconButton(
+                                onPressed: () {
+                                  _showSelectDialog();
+                                },
+                                icon: Icon(
+                                  color: AppColors.textPrimary,
+                                  Icons.autorenew_rounded,
+                                  size: 28,
+                                ))
+                        ],
+                      ),
+                      Expanded(
+                        child: isLoading
+                            ? SingleChildScrollView(
+                                child: Column(
+                                  children: List.generate(5, (index) {
+                                    return TweenAnimationBuilder(
+                                      tween: Tween<Offset>(
+                                        begin: const Offset(0, 0.8),
+                                        end: const Offset(0, 0),
+                                      ),
+                                      duration: Duration(
+                                          milliseconds: 550 + (index * 300)),
+                                      curve: Curves.fastLinearToSlowEaseIn,
+                                      builder: (context, Offset offset, child) {
+                                        return Transform.translate(
+                                          offset: offset *
+                                              MediaQuery.of(context)
+                                                  .size
+                                                  .height,
+                                          child: Opacity(
+                                            opacity: (1 - offset.dy),
+                                            child: child,
+                                          ),
+                                        );
+                                      },
+                                      child: SkeletonCard(),
+                                    );
+                                  }),
                                 ),
-                                duration:
-                                    Duration(milliseconds: 550 + (index * 300)),
-                                curve: Curves.fastLinearToSlowEaseIn,
-                                builder: (context, Offset offset, child) {
-                                  return Transform.translate(
-                                    offset: offset *
-                                        MediaQuery.of(context).size.height,
-                                    child: Opacity(
-                                      opacity: (1 - offset.dy),
-                                      child: child,
+                              )
+                            : ListView.separated(
+                                controller: _scrollController,
+                                key: const PageStorageKey<String>(
+                                    'healthScrollPosition'),
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 10),
+                                itemCount: dataFromApi.length + 1,
+                                itemBuilder: (context, index) {
+                                  if (index == dataFromApi.length) {
+                                    return GestureDetector(
+                                      // onTap: () {
+                                      //   Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) =>
+                                      //             HealthMonitoringBook(
+                                      //               initialTopic: "all",
+                                      //             )),
+                                      //   );
+                                      // },
+                                      onTap: _navigateToHealthBook,
+                                      child: Card(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 4),
+                                        color: AppColors.bgColor,
+                                        elevation: 4,
+                                        shape: RoundedRectangleBorder(
+                                          // side: const BorderSide(
+                                          //     color: AppColors.secondaryColor, width: 0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            18),
+                                                    child: Image.asset(
+                                                      'assets/img3D/sotheodoi.png',
+                                                      width: 60,
+                                                      height: 60,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 16),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: const [
+                                                      Text(
+                                                        'Sổ theo dõi',
+                                                        style: TextStyle(
+                                                          fontSize: 24,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 4),
+                                                      Text(
+                                                        'Xem tất cả số lần đo của bạn.',
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 20,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  final item = dataFromApi[index];
+
+                                  return TweenAnimationBuilder(
+                                    tween: Tween<Offset>(
+                                      begin: const Offset(
+                                          0, 0.8), // Start slightly below
+                                      end: const Offset(
+                                          0, 0), // Move to normal position
+                                    ),
+                                    duration: Duration(
+                                        milliseconds: 550 +
+                                            (index *
+                                                300)), // Add delay per item
+                                    curve: Curves.fastLinearToSlowEaseIn,
+                                    builder: (context, Offset offset, child) {
+                                      return Transform.translate(
+                                        offset: offset *
+                                            MediaQuery.of(context).size.height,
+                                        child: Opacity(
+                                          opacity:
+                                              (1 - offset.dy), // Fade effect
+                                          child: child,
+                                        ),
+                                      );
+                                    },
+                                    child: InfoCard(
+                                      title: item['title']!,
+                                      imageUrl: item['imageUrl']!,
+                                      result: item['result']!,
+                                      dateTime: item['dateTime']!,
+                                      data: item['data']!,
+                                      unit: item['unit']!,
+                                      average: item['average']!,
+                                      dataAverage: item['dataAverage']!,
                                     ),
                                   );
                                 },
-                                child: SkeletonCard(),
-                              );
-                            }),
-                          ),
-                        )
-                      : ListView.separated(
-                          controller: _scrollController,
-                          key: const PageStorageKey<String>(
-                              'healthScrollPosition'),
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 10),
-                          itemCount: dataFromApi.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == dataFromApi.length) {
-                              return GestureDetector(
-                                // onTap: () {
-                                //   Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             HealthMonitoringBook(
-                                //               initialTopic: "all",
-                                //             )),
-                                //   );
-                                // },
-                                onTap: _navigateToHealthBook,
-                                child: Card(
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 4),
-                                  color: AppColors.bgColor,
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    // side: const BorderSide(
-                                    //     color: AppColors.secondaryColor, width: 0.1),
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(18),
-                                              child: Image.asset(
-                                                'assets/img3D/sotheodoi.png',
-                                                width: 60,
-                                                height: 60,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: const [
-                                                Text(
-                                                  'Sổ theo dõi',
-                                                  style: TextStyle(
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 4),
-                                                Text(
-                                                  'Xem tất cả số lần đo của bạn.',
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.grey,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          size: 20,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                            final item = dataFromApi[index];
-
-                            return TweenAnimationBuilder(
-                              tween: Tween<Offset>(
-                                begin: const Offset(
-                                    0, 0.8), // Start slightly below
-                                end: const Offset(
-                                    0, 0), // Move to normal position
                               ),
-                              duration: Duration(
-                                  milliseconds: 550 +
-                                      (index * 300)), // Add delay per item
-                              curve: Curves.fastLinearToSlowEaseIn,
-                              builder: (context, Offset offset, child) {
-                                return Transform.translate(
-                                  offset: offset *
-                                      MediaQuery.of(context).size.height,
-                                  child: Opacity(
-                                    opacity: (1 - offset.dy), // Fade effect
-                                    child: child,
-                                  ),
-                                );
-                              },
-                              child: InfoCard(
-                                title: item['title']!,
-                                imageUrl: item['imageUrl']!,
-                                result: item['result']!,
-                                dateTime: item['dateTime']!,
-                                data: item['data']!,
-                                unit: item['unit']!,
-                                average: item['average']!,
-                                dataAverage: item['dataAverage']!,
-                              ),
-                            );
-                          },
-                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
         ),
       ),
     );

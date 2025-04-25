@@ -93,8 +93,16 @@ class _MedicalRecordState extends State<MedicalRecord> {
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {
-        medicalRecord = homeController.medicalRecord;
-        updatedMedicalRecord = List<String>.from(medicalRecord!);
+        if (homeController.medicalRecord != null) {
+          medicalRecord = homeController.medicalRecord;
+        } else {
+          medicalRecord = [];
+        }
+        if (medicalRecord != null) {
+          updatedMedicalRecord = List<String>.from(medicalRecord!);
+        } else {
+          updatedMedicalRecord = [];
+        }
         isLoading = false;
         hasChanges = false;
         isEditMode = false;

@@ -13,6 +13,7 @@ class SleepDisplay extends ConsumerStatefulWidget {
   final String dateTime;
   final VoidCallback onEdit;
   final bool isDraft;
+  final bool canEdit;
   final String typeData;
   final String? id;
 
@@ -22,6 +23,7 @@ class SleepDisplay extends ConsumerStatefulWidget {
     required this.dateTime,
     required this.onEdit,
     required this.isDraft,
+    required this.canEdit,
     required this.typeData,
     this.id,
   });
@@ -51,11 +53,10 @@ class _SleepDisplayState extends ConsumerState<SleepDisplay> {
     setState(() => isLoading = true);
 
     try {
-      final success =
-          await ref.read(sleepControllerProvider).deleteHeartRate(
-                context: context,
-                heartRateId: int.parse(widget.id!),
-              );
+      final success = await ref.read(sleepControllerProvider).deleteHeartRate(
+            context: context,
+            heartRateId: int.parse(widget.id!),
+          );
       await Future.delayed(Duration(seconds: 2));
 
       if (mounted && success) {
@@ -203,7 +204,7 @@ class _SleepDisplayState extends ConsumerState<SleepDisplay> {
                                       size: 30,
                                       color: AppColors.primaryColor,
                                     )
-                                  : isToday(widget.dateTime)
+                                  : isToday(widget.dateTime) && widget.canEdit
                                       ? IconButton(
                                           onPressed: widget.onEdit,
                                           icon: Icon(Icons.edit,
@@ -312,8 +313,8 @@ class _SleepDisplayState extends ConsumerState<SleepDisplay> {
                                     success = false;
                                   } else {
                                     // Gọi hàm add nếu không có id
-                                    success =
-                                        await heartRateController.addBloodOxygen(
+                                    success = await heartRateController
+                                        .addBloodOxygen(
                                       context: context,
                                       accountId: currentUserAccountID ?? 0,
                                       elderlyId: currentUserAccountID ?? 0,
