@@ -5,10 +5,10 @@ import 'package:sep490/theme/color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpScreen extends StatefulWidget {
-  OtpScreen({super.key});
+  const OtpScreen({super.key});
 
   @override
-  _OtpScreenState createState() => _OtpScreenState();
+  State<OtpScreen> createState() => _OtpScreenState();
 }
 
 class _OtpScreenState extends State<OtpScreen> {
@@ -62,25 +62,25 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   const OtpForm(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Không nhận được mã? ",
-                        style: TextStyle(color: Color(0xFF757575)),
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: const Text(
-                          " Gửi lại mã OTP",
-                          style: TextStyle(
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ],
-                  )
+                  // SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     const Text(
+                  //       "Không nhận được mã? ",
+                  //       style: TextStyle(color: Color(0xFF757575)),
+                  //     ),
+                  //     GestureDetector(
+                  //       onTap: () {},
+                  //       child: const Text(
+                  //         " Gửi lại mã OTP",
+                  //         style: TextStyle(
+                  //             color: AppColors.primaryColor,
+                  //             fontWeight: FontWeight.w600),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),

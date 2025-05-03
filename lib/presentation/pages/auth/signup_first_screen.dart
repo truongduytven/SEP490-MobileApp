@@ -5,7 +5,8 @@ import 'package:sep490/theme/color.dart';
 
 class SignupFirstScreen extends StatelessWidget {
   final String role;
-  const SignupFirstScreen({super.key, required this.role});
+  final bool? isSignUpFor;
+  const SignupFirstScreen({super.key, required this.role, this.isSignUpFor});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class SignupFirstScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Vui lòng nhập email hoặc số điện thoại để tiếp tục tạo tài khoản với SE",
+                      "Vui lòng nhập số điện thoại để tiếp tục tạo tài khoản với SE",
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(color: AppColors.textColor, fontSize: 16),
@@ -48,6 +49,7 @@ class SignupFirstScreen extends StatelessWidget {
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
               SignUpFirst(),
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+              if(isSignUpFor == null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

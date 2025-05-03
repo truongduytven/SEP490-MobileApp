@@ -36,6 +36,7 @@ class _NotificationScreenState extends State<NotificationScreen>
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId = sharedPrefsHelper.getInt('accountId')!;
   late TabController _tabController;
+  late int roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
 
   @override
   void initState() {
@@ -524,8 +525,10 @@ class _NotificationScreenState extends State<NotificationScreen>
           break;
 
         case 'cảnh báo sức khỏe':
-          print(
-              'Kiểu dữ liệu của notification["data"]: ${notification['data'].runtimeType}');
+          if(roleId == 3) {
+            sharedPrefsHelper.setInt('selectedElderlyUserId', notification['elderlyId'] ?? 0);
+            sharedPrefsHelper.setString('selectedElderlyUserName', notification['fullName'] ?? "");
+          }
 
           Map<String, dynamic>? dataMap;
 

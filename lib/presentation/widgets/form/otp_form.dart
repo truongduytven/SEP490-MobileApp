@@ -1,7 +1,6 @@
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/presentation/pages/auth/signup_screen.dart';
 import 'package:sep490/theme/color.dart';
@@ -11,7 +10,7 @@ class OtpForm extends StatefulWidget {
   const OtpForm({super.key});
 
   @override
-  _OtpFormState createState() => _OtpFormState();
+  State<OtpForm> createState() => _OtpFormState();
 }
 
 class _OtpFormState extends State<OtpForm> {
