@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:cherry_toast/cherry_toast.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
@@ -29,7 +31,8 @@ class _GroupFamilyState extends State<GroupFamily>
   String errorMessage = '';
   bool _isDeletingGroup = false;
   late TabController _tabController;
-
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
   @override
   void initState() {
     super.initState();
@@ -37,14 +40,37 @@ class _GroupFamilyState extends State<GroupFamily>
     currentRoleID = sharedPrefsHelper.getInt("roleId") ?? 0;
     _tabController = TabController(length: 4, vsync: this);
     fetchGroupData();
+    _setupFirebaseListeners();
     _tabController.addListener(() {
       setState(() {});
     });
   }
 
+  // Hàm thiết lập lắng nghe thông báo Firebase
+  void _setupFirebaseListeners() {
+    // Lắng nghe khi app đang mở
+    _onMessageSubscription =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+
+    // Lắng nghe khi người dùng mở app từ thông báo
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  // Xử lý khi nhận được thông báo
+  void _handleNotification(RemoteMessage message) {
+    fetchGroupData();
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
+    _onMessageSubscription?.cancel();
+    _onMessageOpenedAppSubscription?.cancel();
     super.dispose();
   }
 

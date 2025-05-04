@@ -65,8 +65,6 @@ class _NotificationScreenState extends State<NotificationScreen>
 
   // Xử lý khi nhận được thông báo
   void _handleNotification(RemoteMessage message) {
-    print('Nhận thông báo: ${message.notification?.title}');
-
     _fetchNotifications();
   }
 
