@@ -75,7 +75,7 @@ class _ReportAppointmentState extends State<ReportAppointment> {
         solutionController.text);
 
     Timer(const Duration(seconds: 1), () {
-      if (doctorController.isRatingSuccess) {
+      if (doctorController.isSendReportSuccess) {
         if (!mounted) return;
         CherryToast.success(
           toastDuration: Duration(seconds: 3),
@@ -170,7 +170,7 @@ class _ReportAppointmentState extends State<ReportAppointment> {
                                       fontWeight: FontWeight.w500),
                                 )),
                                 _buildContentBox(
-                                    solutionController,!widget.isEdited ? _report!.content : ''),
+                                    solutionController,!widget.isEdited ? _report!.solution : ''),
                                 const SizedBox(height: 20),
                                 if (widget.isEdited)
                                   Row(

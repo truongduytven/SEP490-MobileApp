@@ -65,7 +65,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
   Future<void> _loadSavedAvatar() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? avatarPath = prefs.getString('avatar');
+    String? avatarPath = prefs.getString('avatarSignUp');
     if (avatarPath != null && File(avatarPath).existsSync()) {
       setState(() {
         _selectedAvatar = File(avatarPath);
@@ -79,7 +79,7 @@ class _SignUpFormState extends State<SignUpForm> {
     if (pickedImage != null) {
       File imageFile = File(pickedImage.path);
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('avatar', imageFile.path);
+      prefs.setString('avatarSignUp', imageFile.path);
       setState(() {
         _selectedAvatar = imageFile;
       });
@@ -107,9 +107,9 @@ class _SignUpFormState extends State<SignUpForm> {
         } else if (widget.typeIn == 'Email') {
           prefs.setString('emailOrPhoneSignUpLater', phoneController.text);
         }
-        prefs.setString('fullName', fullNameController.text);
-        prefs.setString('dateOfBirth', _selectedDate);
-        prefs.setString('gender', _selectedGender);
+        prefs.setString('fullNameSignUp', fullNameController.text);
+        prefs.setString('dateOfBirthSignUp', _selectedDate);
+        prefs.setString('genderSignUp', _selectedGender);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -126,7 +126,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 color: AppColors.primaryColor,
               ));
             });
-        final accountId = prefs.getInt('accountId');
+        final accountId = prefs.getInt('accountIdSignUp');
         final fullName = fullNameController.text;
         final type = prefs.getString('typeSignUp');
         final email = type == 'Email'
@@ -141,15 +141,16 @@ class _SignUpFormState extends State<SignUpForm> {
         String formatDOB = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
             .format(DateFormat("d/M/yyyy").parse(dob));
         String medicalApi = "MedicalRecord=Không có";
-        String? storedAvatar = prefs.getString('avatar');
+        String? storedAvatar = prefs.getString('avatarSignUp');
         String heightIndex = prefs.getString('height') ?? '0';
         String weightIndex = prefs.getString('weight') ?? '0';
+        int createAccountId = prefs.getInt('c') ?? 0;
         String image = (storedAvatar != null && storedAvatar.isNotEmpty)
             ? storedAvatar
             : await getDefaultAvatarPath();
         try {
           var response = await ApiService.postRequestSignUp(
-              "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$roleId&$medicalApi&Height=$heightIndex&Weight=$weightIndex",
+              "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$roleId&$medicalApi&Height=$heightIndex&Weight=$weightIndex&CreatorAccountId=$createAccountId",
               image);
 
           Navigator.of(context).pop();
@@ -158,7 +159,7 @@ class _SignUpFormState extends State<SignUpForm> {
             CherryToast.success(
               toastDuration: Duration(seconds: 2),
               title: Text(
-                "Cập nhật thông tin thành công!",
+                "Tạo tài khoản thành công! Vui lòng đăng nhập để tiếp tục!",
                 style: TextStyle(color: Colors.black),
               ),
             ).show(context);
@@ -168,6 +169,10 @@ class _SignUpFormState extends State<SignUpForm> {
                 builder: (context) => SignInScreen(),
               ),
             );
+            prefs.remove('accountIdSignUp');
+            prefs.remove('emailOrPhoneSignUp');
+            prefs.remove('emailOrPhoneSignUpLater');
+            prefs.remove('avatarSignUp');
           } else {
             Fluttertoast.showToast(
               msg: "Cõ lỗi trong quá trình xử lí",

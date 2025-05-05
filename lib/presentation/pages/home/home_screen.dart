@@ -101,6 +101,16 @@ class _HomeScreenState extends State<HomeScreen>
     WidgetsBinding.instance.addObserver(this);
   }
 
+  void getElderlySelectedData() async {
+    setState(() {
+      selectedElderlyUserId =
+          sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+      selectedElderlyUserName =
+          sharedPrefsHelper.getString('selectedElderlyUserName') ?? '';
+      selectedElderlyId = sharedPrefsHelper.getInt('selectedElderlyId') ?? 0;
+    });
+  }
+
   void _showSelectDialog() {
     showDialog(
       barrierColor: AppColors.secondaryColor.withOpacity(0.95),
@@ -486,6 +496,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
     if (roleId == 3) {
       getElderlyUser();
+      getElderlySelectedData();
     }
     if (roleId == 4) {
       getElderlyUserProfessor();

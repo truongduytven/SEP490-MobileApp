@@ -20,6 +20,8 @@ class SignUpScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       body: SafeArea(
         child: SizedBox(
@@ -46,6 +48,7 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.03),
                   SignUpForm(typeIn: typeIn),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
