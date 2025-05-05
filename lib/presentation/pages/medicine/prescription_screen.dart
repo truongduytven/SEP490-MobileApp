@@ -43,7 +43,8 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
   void getPrescription() async {
     isLoading = true;
     MedicineController medicineController = MedicineController();
-    await medicineController.getPresciption(selectedElderlyUserId == 0 ? userId : selectedElderlyUserId);
+    await medicineController.getPresciption(
+        selectedElderlyUserId == 0 ? userId : selectedElderlyUserId);
     Timer(Duration(seconds: 2), () {
       if (!mounted) return;
       setState(() {
@@ -120,46 +121,46 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if(roleId == 4)
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CreateTitlePrescription(),
+            if (roleId == 4)
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateTitlePrescription(),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 250,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Colors.white,
                   ),
-                );
-              },
-              child: Container(
-                width: 250,
-                height: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/img/typing.png',
-                      height: 100,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Nhập tay',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'LeagueSpartan',
-                        color: AppColors.secondaryColor,
-                        decoration: TextDecoration.none,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/img/typing.png',
+                        height: 100,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 10),
+                      Text(
+                        'Nhập tay',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'LeagueSpartan',
+                          color: AppColors.secondaryColor,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
             const SizedBox(height: 50),
             GestureDetector(
               onTap: () async {
@@ -258,16 +259,37 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
       );
       // ignore: unnecessary_null_comparison
       if (result != null) {
-        CherryToast.error(
-          toastDuration: Duration(seconds: 3),
-          title: Text(
-            "Không thể quét toa thuốc, vui lòng thử lại hoặc đổi sang nhập tay!",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
+        if (result == false) {
+          CherryToast.error(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Không thể quét toa thuốc này, vui lòng thử lại!",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
             ),
-          ),
-        ).show(context);
+          ).show(context);
+        } else if (result == true) {
+          CherryToast.success(
+            toastDuration: Duration(seconds: 3),
+            title: Text(
+              "Không thể quét theo định dạng toa thuốc! Bạn có thể nhập tay thông tin cho toa thuốc này",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+              ),
+            ),
+          ).show(context);
+          await sharedPrefsHelper.setString('prescriptionImage', image.path);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  CreateTitlePrescription(),
+            ),
+          );
+        }
       }
     }
   }
@@ -697,39 +719,40 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
                                               ],
                                             ),
                                           ),
-                                    if(roleId == 4)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16),
-                                      width: double.infinity,
-                                      color: Colors.transparent,
-                                      child: ElevatedButton.icon(
-                                        onPressed: () {
-                                          handleAddMedicine();
-                                        },
-                                        icon: Icon(Icons.add_circle,
-                                            size: 25,
-                                            color: AppColors.iconColor),
-                                        label: Text('Thêm thuốc',
-                                            style: TextStyle(
-                                              fontSize: 25,
-                                              color: AppColors.iconColor,
-                                            )),
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 8,
-                                            horizontal: 25,
+                                    if (roleId == 4)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16),
+                                        width: double.infinity,
+                                        color: Colors.transparent,
+                                        child: ElevatedButton.icon(
+                                          onPressed: () {
+                                            handleAddMedicine();
+                                          },
+                                          icon: Icon(Icons.add_circle,
+                                              size: 25,
+                                              color: AppColors.iconColor),
+                                          label: Text('Thêm thuốc',
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                color: AppColors.iconColor,
+                                              )),
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 8,
+                                              horizontal: 25,
+                                            ),
+                                            backgroundColor: AppColors.bgColor,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
+                                                side: BorderSide(
+                                                    color:
+                                                        AppColors.iconColor)),
+                                            shadowColor: Colors.transparent,
                                           ),
-                                          backgroundColor: AppColors.bgColor,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(25),
-                                              side: BorderSide(
-                                                  color: AppColors.iconColor)),
-                                          shadowColor: Colors.transparent,
                                         ),
                                       ),
-                                    ),
                                   ],
                                 ),
                               ),
