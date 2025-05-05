@@ -36,11 +36,15 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   late int roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
   late int selectedElderlyUserId =
       sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+  late String createPrescriptionImage =
+      sharedPrefsHelper.getString('prescriptionImage') ?? '';
 
   @override
   void initState() {
     super.initState();
-    listMedicine['accountId'] = selectedElderlyUserId != 0 ? selectedElderlyUserId : sharedPrefsHelper.getInt('accountId');
+    listMedicine['accountId'] = selectedElderlyUserId != 0
+        ? selectedElderlyUserId
+        : sharedPrefsHelper.getInt('accountId');
     listMedicine['endDate'] = widget.endDate ?? '';
     listMedicine['treatment'] = widget.treatment ?? '';
     listMedicine['createdBy'] = sharedPrefsHelper.getString('fullName');
@@ -51,7 +55,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   }
 
   void getScanMedicine() async {
-    if (widget.imagePath != null) {
+    if (widget.imagePath != null && widget.endDate == null && widget.treatment == null) {
       LoadingDialog.show(
           context, 'assets/gif/opd.gif', 'Đang quét toa thuốc...');
       MedicineController medicineController = MedicineController();
@@ -85,8 +89,13 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
             Navigator.pop(context);
           });
         } else {
-          Navigator.pop(context);
-          Navigator.pop(context, false);
+          if (medicineController.isImagePrescription) {
+            Navigator.pop(context);
+            Navigator.pop(context, true);
+          } else {
+            Navigator.pop(context);
+            Navigator.pop(context, false);
+          }
         }
       });
     }
@@ -97,7 +106,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DetailMedicine(
-          isEdited: roleId == 4,
+          isEdited: roleId == 4 || createPrescriptionImage.isNotEmpty,
           medicineData: null,
         ),
       ),
@@ -116,7 +125,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DetailMedicine(
-          isEdited: roleId == 4,
+          isEdited: roleId == 4 || createPrescriptionImage.isNotEmpty,
           medicineData: medicine,
         ),
       ),
@@ -153,7 +162,12 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     listMedicine['endDate'] = convertDateTime(listMedicine['endDate']);
     MedicineController medicineController = MedicineController();
     await medicineController.createPrescriptionController(
-        listMedicine, widget.imagePath != null ? widget.imagePath! : '');
+        listMedicine,
+        widget.imagePath != null
+            ? widget.imagePath!
+            : createPrescriptionImage.isNotEmpty
+                ? createPrescriptionImage
+                : '');
     Timer(const Duration(seconds: 1), () {
       if (medicineController.isCreateSuccess) {
         listMedicine['endDate'] = dateData;
@@ -168,7 +182,7 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
       } else {
         listMedicine['endDate'] = dateData;
         Fluttertoast.showToast(
-          msg: "Có lỗi trong quá trình xử lý!",
+          msg: medicineController.message,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -324,35 +338,36 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
                               )
                             : SizedBox(height: 20),
                         const SizedBox(height: 10),
-                        if(roleId == 4)
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          width: double.infinity,
-                          color: Colors.transparent,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              handleAddMedicine();
-                            },
-                            icon: Icon(Icons.add_circle,
-                                size: 25, color: AppColors.iconColor),
-                            label: Text('Thêm thuốc',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: AppColors.iconColor,
-                                )),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 25,
+                        if (roleId == 4 || createPrescriptionImage.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            width: double.infinity,
+                            color: Colors.transparent,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                handleAddMedicine();
+                              },
+                              icon: Icon(Icons.add_circle,
+                                  size: 25, color: AppColors.iconColor),
+                              label: Text('Thêm thuốc',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    color: AppColors.iconColor,
+                                  )),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 25,
+                                ),
+                                backgroundColor: AppColors.bgColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    side:
+                                        BorderSide(color: AppColors.iconColor)),
+                                shadowColor: Colors.transparent,
                               ),
-                              backgroundColor: AppColors.bgColor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                  side: BorderSide(color: AppColors.iconColor)),
-                              shadowColor: Colors.transparent,
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),

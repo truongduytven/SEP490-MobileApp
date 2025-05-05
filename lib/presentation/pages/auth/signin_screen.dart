@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sep490/presentation/pages/opening/select_role.dart';
 import 'package:sep490/presentation/pages/opening/select_sign.dart';
 import 'package:sep490/presentation/widgets/form/signin_form.dart';
-import 'package:sep490/presentation/widgets/socal_card.dart';
 import 'package:sep490/theme/color.dart';
 
 class SignInScreen extends StatelessWidget {

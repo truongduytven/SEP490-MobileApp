@@ -73,6 +73,29 @@ class _HistoryPrescriptionState extends State<HistoryPrescription> {
     );
   }
 
+  void handleShowImage(BuildContext context, String imagePath) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(imagePath),
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,28 +191,45 @@ class _HistoryPrescriptionState extends State<HistoryPrescription> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            RichText(
-                                              text: TextSpan(
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 16,
-                                                    color: AppColors
-                                                        .secondaryColor),
-                                                children: [
-                                                  const TextSpan(
-                                                    text: "Ngày bắt đầu: ",
-                                                  ),
-                                                  TextSpan(
-                                                    text: convertDate(
-                                                        prescription[
-                                                            'startDate']),
-                                                    style: const TextStyle(
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: TextStyle(
                                                         fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 18),
+                                                            FontWeight.w400,
+                                                        fontSize: 16,
+                                                        color: AppColors
+                                                            .secondaryColor),
+                                                    children: [
+                                                      const TextSpan(
+                                                        text: "Ngày bắt đầu: ",
+                                                      ),
+                                                      TextSpan(
+                                                        text: convertDate(
+                                                            prescription[
+                                                                'startDate']),
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontSize: 18),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    handleShowImage(
+                                                        context,
+                                                        prescription[
+                                                            'medicationImage']);
+                                                  },
+                                                  child: Icon(Icons.image,
+                                                      color: AppColors
+                                                          .secondaryColor),
+                                                ),
+                                              ],
                                             ),
                                             const SizedBox(height: 10),
                                             RichText(

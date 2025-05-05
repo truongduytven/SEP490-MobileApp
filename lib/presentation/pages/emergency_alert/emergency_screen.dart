@@ -284,9 +284,24 @@ class _EmergencyScreenState extends State<EmergencyScreen>
 
   Future<void> expireEmergency() async {
     EmergencyController emergencyController = EmergencyController();
-    await emergencyController
-        .createEmergencyConfirmation(emergencyConfirmationId);
-    if (emergencyController.isExpired) {}
+    await emergencyController.expireEmergency(emergencyConfirmationId);
+    if (emergencyController.isExpired) {
+      setState(() {
+        title = "Cuộc gọi khẩn cấp đã hết hạn!";
+        description =
+            "Chúng tôi đã gửi thông tin khẩn cấp đến người thân của bạn nhưng họ vẫn chưa xác nhận!";
+        isCompleteCreateConfirmation = true;
+      });
+      player.stop();
+    } else {
+      setState(() {
+        title = "Cuộc gọi khẩn cấp đã được xác nhận!";
+        description =
+            "Người thân của bạn đã xác nhận cuộc gọi khẩn cấp và đang trên đường đến!";
+        isCompleteCreateConfirmation = true;
+      });
+      player.stop();
+    }
   }
 
   Future<void> _sendEmergencyData() async {

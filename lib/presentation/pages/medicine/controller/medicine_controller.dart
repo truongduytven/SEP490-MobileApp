@@ -12,6 +12,7 @@ class MedicineController {
   bool isCancelSuccess = false;
   bool isConfirmSuccess = false;
   String message = '';
+  bool isImagePrescription = false;
 
   Future<void> getMedicines(int userId, String day) async {
     final response = await _medicineRepository.getMedicines(userId, day);
@@ -22,27 +23,32 @@ class MedicineController {
     }
   }
 
-  Future<void> getPresciption (int userId) async {
+  Future<void> getPresciption(int userId) async {
     final response = await _medicineRepository.getPresciption(userId);
     if (response != null && response['isSuccess']) {
-      prescriptionUpdate = PrescriptionUpdate.fromJson(response['data']['data']);
+      prescriptionUpdate =
+          PrescriptionUpdate.fromJson(response['data']['data']);
     } else {
       prescriptionUpdate = null;
     }
   }
 
-  Future<void> createPrescriptionController (Map<String, dynamic> presciption, String imgPath) async {
-    final response = await _medicineRepository.creatPresciption(presciption, imgPath);
+  Future<void> createPrescriptionController(
+      Map<String, dynamic> presciption, String imgPath) async {
+    final response =
+        await _medicineRepository.creatPresciption(presciption, imgPath);
     if (response != null && response['isSuccess']) {
       isCreateSuccess = true;
     } else {
-      message = response['data']['message'];
+      message = response['data']['message'] ?? 'Có lỗi trong quá trình xử lý!';
       isCreateSuccess = false;
     }
   }
 
-  Future<void> updatePrescriptionController (Map<String, dynamic>? presciption, int prescriptionId) async {
-    final response = await _medicineRepository.updatedMedicine(presciption, prescriptionId);
+  Future<void> updatePrescriptionController(
+      Map<String, dynamic>? presciption, int prescriptionId) async {
+    final response =
+        await _medicineRepository.updatedMedicine(presciption, prescriptionId);
     if (response != null && response['isSuccess']) {
       isUpdateSuccess = true;
     } else {
@@ -51,7 +57,7 @@ class MedicineController {
     }
   }
 
-  Future<void> cancelPrescriptionController (int prescriptionId) async {
+  Future<void> cancelPrescriptionController(int prescriptionId) async {
     final response = await _medicineRepository.cancelMedicine(prescriptionId);
     if (response != null && response['isSuccess']) {
       isCancelSuccess = true;
@@ -60,7 +66,7 @@ class MedicineController {
     }
   }
 
-  Future<void> confirmMedicine (Map<String, dynamic> medicines) async {
+  Future<void> confirmMedicine(Map<String, dynamic> medicines) async {
     final response = await _medicineRepository.confirmMedicine(medicines);
     if (response != null && response['isSuccess']) {
       isConfirmSuccess = true;
@@ -69,26 +75,31 @@ class MedicineController {
     }
   }
 
-  Future<void> scanMedicine (String imgPath, int userId) async {
+  Future<void> scanMedicine(String imgPath, int userId) async {
     final response = await _medicineRepository.scanMedicine(imgPath, userId);
     if (response != null && response['isSuccess']) {
-      if(response['data']['data'] != null) {
-        if(response['data']['data']['medicines'].isEmpty) {
+      if (response['data']['status'] == 1) {
+        if (response['data']['data']['medicines'].isEmpty) {
           medicines = null;
           return;
         } else {
           medicines = response['data']['data'];
         }
+      } else if (response['data']['status'] == 0) {
+        medicines = null;
+        isImagePrescription = true;
+        return;
       } else {
         medicines = null;
+        isImagePrescription = false;
         return;
-      } 
+      }
     } else {
       medicines = null;
     }
   }
 
-  Future<void> getHistoryPrescription (int userId) async {
+  Future<void> getHistoryPrescription(int userId) async {
     final response = await _medicineRepository.getHistoryPrescription(userId);
     if (response != null && response['isSuccess']) {
       prescriptions = [];

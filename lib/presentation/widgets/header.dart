@@ -21,7 +21,7 @@ class _HeaderState extends State<Header> {
   late String avatar = SharedPrefsHelper().getString('avatar') ??
       'https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg';
   late int roleId = SharedPrefsHelper().getInt('roleId') ?? 0;
-  late int selectedElderlyId = SharedPrefsHelper().getInt('selectedElderlyId') ?? 0;
+  late int selectedElderlyId = SharedPrefsHelper().getInt('selectedElderlyUserId') ?? 0;
 
   @override
   Widget build(BuildContext context) {
