@@ -114,6 +114,8 @@ class ContactsList extends ConsumerWidget {
                                                 ? "🚀File phương tiện"
                                                 : groupData.lastMessage,
                                         style: const TextStyle(fontSize: 15),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     leading: Stack(

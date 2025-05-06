@@ -42,18 +42,19 @@ class _WorkScheduleState extends State<WorkSchedule> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('THỜI KHÓA BIỂU LÀM VIỆC'),
+        title: const Text('Thời khóa biểu làm việc', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: AppColors.secondaryColor)),
         centerTitle: true,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.primaryLowColor, AppColors.primaryLowColor],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        // flexibleSpace: Container(
+        //   decoration: BoxDecoration(
+        //     gradient: LinearGradient(
+        //       colors: [AppColors.primaryLowColor, AppColors.primaryLowColor],
+        //       begin: Alignment.topLeft,
+        //       end: Alignment.bottomRight,
+        //     ),
+        //   ),
+        // ),
+        automaticallyImplyLeading: false,
         // actions: [
         //   IconButton(
         //     icon: const Icon(Icons.today, size: 28),
@@ -103,7 +104,7 @@ class _WorkScheduleState extends State<WorkSchedule> {
 
     return Column(
       children: [
-        WorkScheduleHeader(controller: _controller),
+        // WorkScheduleHeader(controller: _controller),
         const SizedBox(height: 8),
         Expanded(
           child: Container(
@@ -133,24 +134,28 @@ class _WorkScheduleState extends State<WorkSchedule> {
   }
 
   Widget _buildDayHeaders(ThemeData theme) {
-    return Row(
-      children: [
-        const SizedBox(width: 80), // Cột giờ
-        ...List.generate(
-            7,
-            (day) => Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      _controller.days[day],
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const SizedBox(width: 45), // Cột giờ
+          ...List.generate(
+              7,
+              (day) => Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        _controller.days[day],
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                )),
-      ],
+                  )),
+        ],
+      ),
     );
   }
 
@@ -170,17 +175,17 @@ class _WorkScheduleState extends State<WorkSchedule> {
       if (hasSchedule) {
         slots.add(
           Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               children: [
                 // Cột giờ
                 SizedBox(
-                  width: 70,
+                  width: 45,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
                       _controller.timeLabels[hour],
-                      style: theme.textTheme.bodySmall,
+                      // style: theme.textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -189,21 +194,21 @@ class _WorkScheduleState extends State<WorkSchedule> {
                     7,
                     (day) => Expanded(
                           child: Container(
-                            margin: const EdgeInsets.all(2),
-                            height: 40,
+                            margin: const EdgeInsets.all(5),
+                            height: 30,
                             decoration: BoxDecoration(
                               color: _controller.timeSlots[day][hour]
-                                  ? AppColors.primaryColor.withOpacity(0.2)
-                                  : AppColors.primaryLowColor.withOpacity(0.2),
+                                  ? AppColors.primaryLowColor.withOpacity(0.2)
+                                  : AppColors.primaryColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
                                 color: colors.outline.withOpacity(0.1),
                               ),
                             ),
                             child: _controller.timeSlots[day][hour]
-                                ? Icon(Icons.check_circle,
-                                    color: AppColors.primaryColor, size: 20)
-                                : null,
+                                ? null
+                                : Icon(Icons.check_circle,
+                                    color: AppColors.primaryColor, size: 20),
                           ),
                         )),
               ],
