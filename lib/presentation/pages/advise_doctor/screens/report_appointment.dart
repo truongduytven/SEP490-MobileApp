@@ -75,8 +75,8 @@ class _ReportAppointmentState extends State<ReportAppointment> {
         solutionController.text);
 
     Timer(const Duration(seconds: 1), () {
+      if (!mounted) return;
       if (doctorController.isSendReportSuccess) {
-        if (!mounted) return;
         CherryToast.success(
           toastDuration: Duration(seconds: 3),
           title: Text(
@@ -92,7 +92,7 @@ class _ReportAppointmentState extends State<ReportAppointment> {
         CherryToast.error(
           toastDuration: Duration(seconds: 3),
           title: Text(
-            "Gửi báo cáo thất bại, vui lòng thử lại",
+            doctorController.errorMessage,
             style: TextStyle(
               color: Colors.black,
               fontSize: 20,
@@ -140,8 +140,9 @@ class _ReportAppointmentState extends State<ReportAppointment> {
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : (_report == null ||
-                            (_report!.content.isEmpty &&
-                                _report!.solution.isEmpty) ) && !widget.isEdited
+                                (_report!.content.isEmpty &&
+                                    _report!.solution.isEmpty)) &&
+                            !widget.isEdited
                         ? Expanded(
                             child: Center(
                                 child: Text(
@@ -169,8 +170,8 @@ class _ReportAppointmentState extends State<ReportAppointment> {
                                       fontSize: 20,
                                       fontWeight: FontWeight.w500),
                                 )),
-                                _buildContentBox(
-                                    solutionController,!widget.isEdited ? _report!.solution : ''),
+                                _buildContentBox(solutionController,
+                                    !widget.isEdited ? _report!.solution : ''),
                                 const SizedBox(height: 20),
                                 if (widget.isEdited)
                                   Row(

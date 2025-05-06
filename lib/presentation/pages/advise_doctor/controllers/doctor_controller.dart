@@ -224,6 +224,7 @@ class DoctorController {
       isSendReportSuccess = true;
     } else {
       isSendReportSuccess = false;
+      errorMessage = response['data']['message'] ?? 'Có lỗi xảy ra';
     }
   }
 

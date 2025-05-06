@@ -56,31 +56,12 @@ class _OtpScreenState extends State<OtpScreen> {
                 children: [
                   const SizedBox(height: 16),
                   Text(
-                    "Chúng tôi đã gửi mã code tới $method \nVui lòng kiểm tra, mã code sẽ hết hạn lúc $timeEnd",
+                    "Chúng tôi đã gửi mã code tới $method",
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: AppColors.textColor),
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   const OtpForm(),
-                  // SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     const Text(
-                  //       "Không nhận được mã? ",
-                  //       style: TextStyle(color: Color(0xFF757575)),
-                  //     ),
-                  //     GestureDetector(
-                  //       onTap: () {},
-                  //       child: const Text(
-                  //         " Gửi lại mã OTP",
-                  //         style: TextStyle(
-                  //             color: AppColors.primaryColor,
-                  //             fontWeight: FontWeight.w600),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // )
                 ],
               ),
             ),

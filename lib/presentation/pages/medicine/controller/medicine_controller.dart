@@ -72,6 +72,7 @@ class MedicineController {
       isConfirmSuccess = true;
     } else {
       isConfirmSuccess = false;
+      message = response['data']['message'] ?? 'Có lỗi trong quá trình xử lý!';
     }
   }
 
