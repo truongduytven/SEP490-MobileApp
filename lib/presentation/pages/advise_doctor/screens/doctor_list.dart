@@ -161,6 +161,7 @@ class _DoctorListState extends State<DoctorList> {
       onTap: () =>
           Navigator.push(context, MaterialPageRoute(builder: (context) {
         return DoctorDetail(
+            accountId: doctor.accountId,
             doctorId: doctor.professorId,
             isChoosePackage: widget.isChoosePackage,
             comboData: widget.isChoosePackage ? widget.comboData : null,

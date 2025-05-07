@@ -96,7 +96,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
           appoimentDoctor!.sort((a, b) {
             final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
             final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
-            return dateA.compareTo(dateB); // ascending
+            return dateB.compareTo(dateA); // ascending
           });
         }
         isLoading = false;
@@ -137,7 +137,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
           appoimentDoctor!.sort((a, b) {
             final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
             final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
-            return dateA.compareTo(dateB); // ascending
+            return dateB.compareTo(dateA); // ascending
           });
         }
         isLoadingAppointment = false;
