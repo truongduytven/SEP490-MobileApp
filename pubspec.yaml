@@ -119,6 +119,7 @@ dependencies:
   share_plus: ^10.1.4
   flutter_phone_direct_caller: ^2.2.1
   zego_uikit_prebuilt_video_conference: ^2.9.9
+  screenshot: ^3.0.0
 
 dev_dependencies:
   flutter_test:
