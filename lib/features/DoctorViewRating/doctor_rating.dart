@@ -65,14 +65,26 @@ class _DoctorRatingState extends State<DoctorRating> {
     return Scaffold(
       backgroundColor: _backgroundColor,
       appBar: AppBar(
-        title: const Text('Đánh Giá Bác Sĩ'),
+        title: const Text(
+          'Đánh Giá Của Bạn',
+          style: TextStyle(
+            color: AppColors.primaryColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         centerTitle: true,
         elevation: 0,
+        iconTheme: const IconThemeData(
+          color: AppColors.primaryColor,
+        ),
         backgroundColor: Colors.white,
         foregroundColor: _primaryColor,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(
+              Icons.refresh,
+              color: AppColors.primaryColor,
+            ),
             onPressed: _fetchRatingData,
           ),
         ],
@@ -421,7 +433,11 @@ class _DoctorRatingState extends State<DoctorRating> {
       children: [
         Row(
           children: [
-            Icon(Icons.rate_review, size: 24, color: _primaryColor),
+            Icon(
+              Icons.rate_review,
+              size: 24,
+              color: AppColors.primaryColor,
+            ),
             const SizedBox(width: 8),
             Text(
               'Tất cả đánh giá',
