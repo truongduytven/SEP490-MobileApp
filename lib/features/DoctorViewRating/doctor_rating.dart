@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+import 'package:sep490/theme/color.dart';
 
 class DoctorRating extends StatefulWidget {
   final int doctorId;
@@ -245,6 +246,7 @@ class _DoctorRatingState extends State<DoctorRating> {
     }
 
     return Card(
+      color: AppColors.bgColor,
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -439,6 +441,7 @@ class _DoctorRatingState extends State<DoctorRating> {
     final star = rating['star'] as int;
 
     return Card(
+      color: AppColors.bgColor,
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 1,
       shape: RoundedRectangleBorder(
