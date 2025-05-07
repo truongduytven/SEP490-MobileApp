@@ -166,6 +166,7 @@ class FilteredDoctor {
   final String professorName;
   final String professorAvatar;
   final int professorId;
+  final int accountId;
   final String major;
   final String? dateTime;
   final String? date;
@@ -176,6 +177,7 @@ class FilteredDoctor {
     required this.professorName,
     required this.professorAvatar,
     required this.professorId,
+    required this.accountId,
     required this.major,
     this.dateTime,
     this.date,
@@ -188,6 +190,7 @@ class FilteredDoctor {
       professorName: json['professorName'],
       professorAvatar: json['professorAvatar'],
       professorId: json['professorId'],
+      accountId: json['accountId'],
       major: json['major'] ?? 'Chưa có chuyên khoa',
       dateTime: json['dateTime'] ?? '',
       date: json['date'] ?? '',

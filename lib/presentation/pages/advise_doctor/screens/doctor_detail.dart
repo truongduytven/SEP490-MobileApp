@@ -14,11 +14,13 @@ import 'package:sep490/theme/color.dart';
 
 class DoctorDetail extends StatefulWidget {
   final int doctorId;
+  final int? accountId;
   final bool isChoosePackage;
   final ComboData? comboData;
   const DoctorDetail(
       {super.key,
       required this.doctorId,
+      this.accountId,
       required this.isChoosePackage,
       this.comboData});
 
@@ -171,7 +173,7 @@ class _DoctorDetailState extends State<DoctorDetail>
       isLoading = true;
     });
     DoctorController doctorController = DoctorController();
-    await doctorController.getFeedbackDoctor(widget.doctorId);
+    await doctorController.getFeedbackDoctor(widget.accountId ?? 0);
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {

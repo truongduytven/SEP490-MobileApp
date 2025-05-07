@@ -143,7 +143,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
     bool showButtons = activity.type != "Medication" &&
         activity.type != "Professor Appointment" &&
-        activityTime.isBefore(now);
+        activityTime.isAfter(now);
     showGeneralDialog(
       context: context,
       barrierDismissible: true,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cherry_toast/cherry_toast.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:gif_view/gif_view.dart';
@@ -46,10 +47,12 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
   List<String> endowments = [
     'Lựa chọn 1 bác sĩ riêng để hỗ trợ',
     'Tư vấn sức khỏe online hoặc offline',
-    'Cảnh bác khi có chỉ số bất thường',
+    'Cảnh báo khi có chỉ số bất thường',
     'Hỗ trợ những trường hợp khẩn cấp',
     'Chỉ từ 50.000đ/tháng',
   ];
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId = 0;
   late int selectedElderlyUserId = 0;
@@ -73,9 +76,35 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
     getDoctorData();
     checkIsPackage();
+     _setupFirebaseListeners();
     WidgetsBinding.instance.addObserver(this);
   }
+// Hàm thiết lập lắng nghe thông báo Firebase
+  void _setupFirebaseListeners() {
+    // Lắng nghe khi app đang mở
+    _onMessageSubscription =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
 
+    // Lắng nghe khi người dùng mở app từ thông báo
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  // Xử lý khi nhận được thông báo
+  void _handleNotification(RemoteMessage message) {
+    // Báo cáo tư vấn bác sĩ
+    print("Message ${message.notification?.title}");
+    if(message.notification?.title=="Báo cáo tư vấn bác sĩ"){
+      getDoctorData();
+      checkIsPackage();
+    }
+   
+  }
+ 
   void getDoctorData() async {
     setState(() {
       isLoading = true;
@@ -96,7 +125,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
           appoimentDoctor!.sort((a, b) {
             final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
             final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
-            return dateA.compareTo(dateB); // ascending
+            return dateB.compareTo(dateA); // ascending
           });
         }
         isLoading = false;
@@ -137,7 +166,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
           appoimentDoctor!.sort((a, b) {
             final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
             final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
-            return dateA.compareTo(dateB); // ascending
+            return dateB.compareTo(dateA); // ascending
           });
         }
         isLoadingAppointment = false;
@@ -150,6 +179,8 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     routeObserver.unsubscribe(this);
+     _onMessageSubscription?.cancel();
+    _onMessageOpenedAppSubscription?.cancel();
     super.dispose();
   }
 
@@ -798,6 +829,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                     ),
                   ),
                   SizedBox(height: 20),
+                  if(roleId == 2 || (roleId == 3 && selectedElderlyUserId != 0)) 
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 15),

@@ -478,27 +478,32 @@ class _EmergencyListState extends State<EmergencyList>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  emergency['isConfirmed']
+                  emergency['status'] == 'Đã xác nhận'
                       ? Icon(
                           Icons.circle,
                           color: Colors.green,
                           size: 10,
                         )
-                      : Lottie.asset('assets/img/AnimationRedDot.json',
-                          height: 50, width: 50),
+                      : emergency['status'] == 'Chưa xác nhận'
+                          ? Lottie.asset('assets/img/AnimationRedDot.json',
+                              height: 50, width: 25)
+                          : Icon(
+                              Icons.circle,
+                              color: Colors.blue,
+                              size: 10,
+                            ),
                   SizedBox(
                     width: 5,
                   ),
-                  Text(
-                      emergency['isConfirmed']
-                          ? 'Đã xác nhận'
-                          : 'Đang chờ hỗ trợ',
+                  Text(emergency['status'],
                       style: TextStyle(
-                          fontSize: 25,
+                          fontSize: 20,
                           fontWeight: FontWeight.w600,
-                          color: emergency['isConfirmed']
+                          color: emergency['status'] == 'Đã xác nhận'
                               ? Colors.green
-                              : Colors.red)),
+                              : emergency['status'] == 'Chưa xác nhận'
+                                  ? Colors.red
+                                  : Colors.blue)),
                 ],
               ),
               SizedBox(

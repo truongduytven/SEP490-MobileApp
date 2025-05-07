@@ -54,7 +54,7 @@ class _DoctorAdviseListState extends State<DoctorAdviseList>
           listAppoimentElderly!.sort((a, b) {
             final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
             final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
-            return dateA.compareTo(dateB); // ascending
+            return dateB.compareTo(dateA); // ascending
           });
         }
         isLoading = false;

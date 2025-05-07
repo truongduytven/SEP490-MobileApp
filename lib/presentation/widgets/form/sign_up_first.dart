@@ -99,7 +99,7 @@ class _SignUpFirstState extends State<SignUpFirst> {
         }
       } else {
         setState(() {
-          errorMessage = "Không đúng định dạng. Vui lòng thử lại";
+          errorMessage = "Số điện thoại phải bắt đầu bằng 0 và có 10 chữ số";
         });
       }
     }

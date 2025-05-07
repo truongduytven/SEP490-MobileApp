@@ -5,12 +5,12 @@ import 'package:sep490/data/helper/shared_prefs_helper.dart';
 
 class WorkScheduleController {
   final List<String> days = [
-    'THỨ HAI',
-    'THỨ BA',
-    'THỨ TƯ',
-    'THỨ NĂM',
-    'THỨ SÁU',
-    'THỨ BẢY',
+    'T2',
+    'T3',
+    'T4',
+    'T5',
+    'T6',
+    'T7',
     'CN'
   ];
 
