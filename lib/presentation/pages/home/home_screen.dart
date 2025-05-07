@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cherry_toast/cherry_toast.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -70,7 +71,8 @@ class _HomeScreenState extends State<HomeScreen>
   late int? selectedElderlyId;
   bool isShowSelectUser = false;
   bool isLoadingDialog = false;
-
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
   @override
   void initState() {
     super.initState();
@@ -98,9 +100,29 @@ class _HomeScreenState extends State<HomeScreen>
     if (roleId == 4) {
       getElderlyUserProfessor();
     }
+    _setupFirebaseListeners();
     WidgetsBinding.instance.addObserver(this);
   }
+// Hàm thiết lập lắng nghe thông báo Firebase
+  void _setupFirebaseListeners() {
+    // Lắng nghe khi app đang mở
+    _onMessageSubscription =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
 
+    // Lắng nghe khi người dùng mở app từ thông báo
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  // Xử lý khi nhận được thông báo
+  void _handleNotification(RemoteMessage message) {
+    print("getElderlyUserProfessor...");
+    getElderlyUserProfessor();
+  }
   void getElderlySelectedData() async {
     setState(() {
       selectedElderlyUserId =
@@ -471,6 +493,8 @@ class _HomeScreenState extends State<HomeScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     routeObserver.unsubscribe(this);
+    _onMessageSubscription?.cancel();
+    _onMessageOpenedAppSubscription?.cancel();
     super.dispose();
   }
 
