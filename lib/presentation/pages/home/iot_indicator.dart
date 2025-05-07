@@ -80,14 +80,14 @@ class _IotIndicatorState extends State<IotIndicator> {
           isHealthConnectAvailable = false;
           hasPermission = false;
         });
-      } else {
-      }
+      } else {}
     }
   }
 
   void handleClickGetHeartRate() async {
     LoadingDialog.show(
         context, 'assets/gif/iot_loading.gif', 'Đang cập nhật chỉ số...');
+    today = DateTime.now();
     await Future.delayed(const Duration(seconds: 1));
     var typesAuth = [HealthDataType.HEART_RATE];
     List<HealthDataPoint> data = [];
@@ -156,6 +156,7 @@ class _IotIndicatorState extends State<IotIndicator> {
   void handleClickGetBloodPressure() async {
     LoadingDialog.show(
         context, 'assets/gif/iot_loading.gif', 'Đang cập nhật chỉ số...');
+    today = DateTime.now();
     await Future.delayed(const Duration(seconds: 1));
     var typesSys = [HealthDataType.BLOOD_PRESSURE_SYSTOLIC];
     var typesDia = [HealthDataType.BLOOD_PRESSURE_DIASTOLIC];
@@ -237,6 +238,7 @@ class _IotIndicatorState extends State<IotIndicator> {
   void handleClickGetBloodOxygen() async {
     LoadingDialog.show(
         context, 'assets/gif/iot_loading.gif', 'Đang cập nhật chỉ số...');
+    today = DateTime.now();
     await Future.delayed(const Duration(seconds: 1));
     var typesAuth = [HealthDataType.BLOOD_OXYGEN];
     List<HealthDataPoint> data = [];
@@ -304,6 +306,7 @@ class _IotIndicatorState extends State<IotIndicator> {
   void handleClickGetSteps() async {
     LoadingDialog.show(
         context, 'assets/gif/iot_loading.gif', 'Đang cập nhật chỉ số...');
+    today = DateTime.now();
     await Future.delayed(const Duration(seconds: 1));
     var typesAuth = [HealthDataType.STEPS];
     List<HealthDataPoint> data = [];
@@ -371,6 +374,7 @@ class _IotIndicatorState extends State<IotIndicator> {
   void handleClickGetCaloriesBurned() async {
     LoadingDialog.show(
         context, 'assets/gif/iot_loading.gif', 'Đang cập nhật chỉ số...');
+    today = DateTime.now();
     await Future.delayed(const Duration(seconds: 1));
     var typesAuth = [HealthDataType.TOTAL_CALORIES_BURNED];
     List<HealthDataPoint> data = [];
@@ -442,6 +446,7 @@ class _IotIndicatorState extends State<IotIndicator> {
   void handleClickGetSleep() async {
     LoadingDialog.show(
         context, 'assets/gif/iot_loading.gif', 'Đang cập nhật chỉ số...');
+    today = DateTime.now();
     await Future.delayed(const Duration(seconds: 1));
     var typesAuth = [HealthDataType.SLEEP_SESSION];
     List<HealthDataPoint> data = [];
@@ -510,6 +515,7 @@ class _IotIndicatorState extends State<IotIndicator> {
   void handleClickGetHeight() async {
     LoadingDialog.show(
         context, 'assets/gif/iot_loading.gif', 'Đang cập nhật chỉ số...');
+    today = DateTime.now();
     await Future.delayed(const Duration(seconds: 1));
     var typesAuth = [HealthDataType.HEIGHT];
     List<HealthDataPoint> data = [];
@@ -578,6 +584,7 @@ class _IotIndicatorState extends State<IotIndicator> {
   void handleClickGetWeight() async {
     LoadingDialog.show(
         context, 'assets/gif/iot_loading.gif', 'Đang cập nhật chỉ số...');
+    today = DateTime.now();
     await Future.delayed(const Duration(seconds: 1));
     var typesAuth = [HealthDataType.WEIGHT];
     List<HealthDataPoint> data = [];
@@ -752,7 +759,10 @@ class _IotIndicatorState extends State<IotIndicator> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            child: Text('Cấp quyền', style: TextStyle(color: AppColors.bgColor),),
+                            child: Text(
+                              'Cấp quyền',
+                              style: TextStyle(color: AppColors.bgColor),
+                            ),
                           ),
                         ],
                       ),
@@ -792,7 +802,10 @@ class _IotIndicatorState extends State<IotIndicator> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            child: Text('Cài đặt ngay', style: TextStyle(color: AppColors.bgColor),),
+                            child: Text(
+                              'Cài đặt ngay',
+                              style: TextStyle(color: AppColors.bgColor),
+                            ),
                           ),
                         ],
                       ),

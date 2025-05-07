@@ -103,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen>
     _setupFirebaseListeners();
     WidgetsBinding.instance.addObserver(this);
   }
+
 // Hàm thiết lập lắng nghe thông báo Firebase
   void _setupFirebaseListeners() {
     // Lắng nghe khi app đang mở
@@ -123,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen>
     print("getElderlyUserProfessor...");
     getElderlyUserProfessor();
   }
+
   void getElderlySelectedData() async {
     setState(() {
       selectedElderlyUserId =
@@ -553,7 +555,9 @@ class _HomeScreenState extends State<HomeScreen>
                     children: [
                       Header(
                         onPressed: _showSelectDialog,
-                        isChooseElderly: roleId == 3,
+                        isChooseElderly: roleId == 3 &&
+                            userList != null &&
+                            userList!.isNotEmpty,
                       ),
                       const SizedBox(height: 10),
                       Column(
@@ -943,7 +947,8 @@ class _HomeScreenState extends State<HomeScreen>
                                         : SizedBox(
                                             height: 170,
                                             child: Padding(
-                                              padding: const EdgeInsets.only(left: 5.0),
+                                              padding: const EdgeInsets.only(
+                                                  left: 5.0),
                                               child: Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
@@ -958,8 +963,10 @@ class _HomeScreenState extends State<HomeScreen>
                                                     'Không có lịch trình nào trong ngày hôm nay',
                                                     style: TextStyle(
                                                       fontSize: 18,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: AppColors.textColor,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          AppColors.textColor,
                                                     ),
                                                   ),
                                                 ],

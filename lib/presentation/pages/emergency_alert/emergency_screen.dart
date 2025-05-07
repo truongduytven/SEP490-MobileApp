@@ -37,6 +37,7 @@ class _EmergencyScreenState extends State<EmergencyScreen>
   final int _repeatCount = 0;
   bool _isCancelled = false;
   bool isCompleteCreateConfirmation = false;
+  bool isSendDoctor = false;
   bool _isExpired = false;
   final Completer<void> _completer = Completer<void>();
   String title = "Tiến hành gọi khẩn cấp";
@@ -186,11 +187,14 @@ class _EmergencyScreenState extends State<EmergencyScreen>
         description =
             "Chúng tôi đã gửi thông tin khẩn cấp đến người thân của bạn và đang chờ tín hiệu từ họ!";
       });
-      await _sendEmergencyData();
 
       if (attempt == 1) {
         await _callDoctorAPI();
+        setState(() {
+          isSendDoctor = true;
+        });
       }
+      await _sendEmergencyData();
       _checkConfirmationStatus(attempt + 1);
       return;
     }
@@ -316,7 +320,7 @@ class _EmergencyScreenState extends State<EmergencyScreen>
       backImagePath ?? "",
       _currentPosition?.longitude.toString() ?? "",
       _currentPosition?.latitude.toString() ?? "",
-      false,
+      isSendDoctor,
       true,
     );
     if (emergencyController.isCreateSuccess) {

@@ -47,7 +47,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
   List<String> endowments = [
     'Lựa chọn 1 bác sĩ riêng để hỗ trợ',
     'Tư vấn sức khỏe online hoặc offline',
-    'Cảnh bác khi có chỉ số bất thường',
+    'Cảnh báo khi có chỉ số bất thường',
     'Hỗ trợ những trường hợp khẩn cấp',
     'Chỉ từ 50.000đ/tháng',
   ];
@@ -829,6 +829,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                     ),
                   ),
                   SizedBox(height: 20),
+                  if(roleId == 2 || (roleId == 3 && selectedElderlyUserId != 0)) 
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 15),

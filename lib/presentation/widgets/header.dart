@@ -110,7 +110,7 @@ class _HeaderState extends State<Header> {
             ),
             Row(
               children: [
-                if  (widget.isChooseElderly)
+                if (widget.isChooseElderly)
                     Padding(
                       padding: const EdgeInsets.only(right: 10.0),
                       child: Container(
