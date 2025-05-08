@@ -26,7 +26,8 @@ class VideoConferencePage extends StatefulWidget {
 
 class _VideoConferencePageState extends State<VideoConferencePage> {
   final ScreenshotController screenshotController = ScreenshotController();
-
+  SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
+  int roleId = 0;
   void _setupUserListener() {
     ZegoUIKit().getUserListStream().listen((users) {
       // Lấy danh sách ID người dùng từ Zego và chuyển sang int
@@ -46,6 +47,7 @@ class _VideoConferencePageState extends State<VideoConferencePage> {
   void initState() {
     super.initState();
     _isMounted = true;
+    roleId = sharedPrefsHelper.getInt("roleId") ?? 0;
     _setupUserListener();
     _startRandomTimer();
     _captureAndUploadImage();
@@ -78,7 +80,9 @@ class _VideoConferencePageState extends State<VideoConferencePage> {
         //     duration: Duration(seconds: 2),
         //   ),
         // );
-        _captureAndUploadImage();
+        if(roleId == 4) {
+          _captureAndUploadImage();
+        }
         // Bắt đầu lại timer để lặp quá trình
         _startRandomTimer();
       }
