@@ -148,6 +148,20 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: Text(
+                        widget.appoimentDoctor!.description,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.secondaryColor,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 GestureDetector(
