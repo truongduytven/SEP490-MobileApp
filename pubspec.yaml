@@ -121,6 +121,7 @@ dependencies:
   flutter_phone_direct_caller: ^2.2.1
   zego_uikit_prebuilt_video_conference: ^2.9.9
   month_year_picker: ^0.4.0+1
+  screenshot: ^3.0.0
 
 dev_dependencies:
   flutter_test:

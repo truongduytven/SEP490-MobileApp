@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'dart:math';
+import 'dart:typed_data';
+
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:sep490/common/constants/common.dart';
 import 'package:sep490/common/constants/secrets.example.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
@@ -20,6 +25,8 @@ class VideoConferencePage extends StatefulWidget {
 }
 
 class _VideoConferencePageState extends State<VideoConferencePage> {
+  final ScreenshotController screenshotController = ScreenshotController();
+
   void _setupUserListener() {
     ZegoUIKit().getUserListStream().listen((users) {
       // Lấy danh sách ID người dùng từ Zego và chuyển sang int
@@ -33,18 +40,81 @@ class _VideoConferencePageState extends State<VideoConferencePage> {
   }
 
   bool _isMounted = false; // Thêm biến cờ kiểm tra mounted state
-
+  Timer? _randomTimer;
+  final Random _random = Random();
   @override
   void initState() {
     super.initState();
     _isMounted = true;
     _setupUserListener();
+    _startRandomTimer();
+    _captureAndUploadImage();
   }
 
   @override
   void dispose() {
     _isMounted = false; // Đánh dấu widget đã bị dispose
+    _randomTimer?.cancel();
     super.dispose();
+  }
+
+  void _startRandomTimer() {
+    // Hủy timer cũ nếu có
+    _randomTimer?.cancel();
+
+    // Random số giây từ 1 đến 10
+    final randomMinutes = 1 + _random.nextInt(10);
+    print('Sẽ in text sau $randomMinutes  giây');
+
+    // Thiết lập timer mới
+    _randomTimer = Timer(Duration(seconds: randomMinutes), () {
+      if (_isMounted) {
+        print('This is text');
+
+        // Hiển thị toast thông báo (nếu muốn hiển thị lên UI)
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('This is text (sau $randomMinutes  giây)'),
+        //     duration: Duration(seconds: 2),
+        //   ),
+        // );
+        _captureAndUploadImage();
+        // Bắt đầu lại timer để lặp quá trình
+        _startRandomTimer();
+      }
+    });
+  }
+
+  void _captureAndUploadImage() async {
+    try {
+      final Uint8List? imageFile = await screenshotController.capture();
+      if (imageFile == null) {
+        print('Không thể chụp màn hình');
+        return;
+      }
+
+      final uri = Uri.parse(
+          'https://api.diavan-valuation.asia/api/Professor/professor-appointment/image');
+
+      var request = http.MultipartRequest('POST', uri)
+        ..fields['AppointmentId'] = widget.conferenceID
+        ..files.add(
+          http.MultipartFile.fromBytes(
+            'Image',
+            imageFile,
+            filename: 'screenshot.jpg',
+          ),
+        );
+
+      var response = await request.send();
+
+      final responseBody = await response.stream.bytesToString();
+      final result = jsonDecode(responseBody);
+
+      print('Upload thành công: $result');
+    } catch (e) {
+      print('Lỗi khi upload ảnh: $e');
+    }
   }
 
   Future<void> _checkMeetingConfirmation(List<int> participantIds) async {
@@ -141,7 +211,6 @@ class _VideoConferencePageState extends State<VideoConferencePage> {
     final currentUserName =
         sharedPrefsHelper.getString('fullName') ?? "Không xác định";
     final avatar = sharedPrefsHelper.getString('avatar') ?? "Không xác định";
-
     // ZegoUIKit().getUserListStream().listen((users) {
     //   final count = users.length;
     //   print('==== DANH SÁCH NGƯỜI THAM GIA ====');
@@ -153,63 +222,66 @@ class _VideoConferencePageState extends State<VideoConferencePage> {
     // });
     return SafeArea(
       child: SafeArea(
-        child: ZegoUIKitPrebuiltVideoConference(
-          appID: AppSecretsVideoConference.appId,
-          appSign: AppSecretsVideoConference.appSign,
-          userID: currentUserAccountID.toString(),
-          userName: currentUserName,
-          conferenceID: widget.conferenceID,
-          events: ZegoUIKitPrebuiltVideoConferenceEvents(
-            duration: ZegoVideoConferenceDurationEvents(
-              onUpdated: (Duration d) {
-                if (d.inSeconds == 60 * 60) {
-                  ZegoUIKitPrebuiltVideoConferenceController()
-                      .room
-                      .leave(context);
-                }
-              },
-            ),
-          ),
-          config: ZegoUIKitPrebuiltVideoConferenceConfig(
-            avatarBuilder: (context, size, user, extraInfo) {
-              return customAvatarBuilder(
-                context,
-                size,
-                user,
-                {'avatar': avatar},
-              );
-            },
-            topMenuBarConfig: ZegoTopMenuBarConfig(
-              title: "Cuộc họp của bạn",
-            ),
-            onLeaveConfirmation: (BuildContext context) async {
-              return await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text("Rời khỏi cuộc họp"),
-                    content:
-                        const Text("Bạn có chắc chắn muốn rời khỏi cuộc họp?"),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text("Hủy"),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text("Rời khỏi"),
-                      ),
-                    ],
-                  );
+        child: Screenshot(
+          controller: screenshotController,
+          child: ZegoUIKitPrebuiltVideoConference(
+            appID: AppSecretsVideoConference.appId,
+            appSign: AppSecretsVideoConference.appSign,
+            userID: currentUserAccountID.toString(),
+            userName: currentUserName,
+            conferenceID: widget.conferenceID,
+            events: ZegoUIKitPrebuiltVideoConferenceEvents(
+              duration: ZegoVideoConferenceDurationEvents(
+                onUpdated: (Duration d) {
+                  if (d.inSeconds == 60 * 60) {
+                    ZegoUIKitPrebuiltVideoConferenceController()
+                        .room
+                        .leave(context);
+                  }
                 },
-              );
-            },
-            onLeave: () {
-              Navigator.of(context).pop();
-            },
-            memberListConfig: ZegoMemberListConfig(
-              showMicrophoneState: true,
-              showCameraState: true,
+              ),
+            ),
+            config: ZegoUIKitPrebuiltVideoConferenceConfig(
+              avatarBuilder: (context, size, user, extraInfo) {
+                return customAvatarBuilder(
+                  context,
+                  size,
+                  user,
+                  {'avatar': avatar},
+                );
+              },
+              topMenuBarConfig: ZegoTopMenuBarConfig(
+                title: "Cuộc họp của bạn",
+              ),
+              onLeaveConfirmation: (BuildContext context) async {
+                return await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Rời khỏi cuộc họp"),
+                      content: const Text(
+                          "Bạn có chắc chắn muốn rời khỏi cuộc họp?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text("Hủy"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text("Rời khỏi"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              onLeave: () {
+                Navigator.of(context).pop();
+              },
+              memberListConfig: ZegoMemberListConfig(
+                showMicrophoneState: true,
+                showCameraState: true,
+              ),
             ),
           ),
         ),

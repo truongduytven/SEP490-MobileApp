@@ -2,6 +2,7 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sep490/data/helper/shared_prefs_helper.dart';
+import 'package:sep490/features/DoctorViewRating/doctor_rating.dart';
 import 'package:sep490/features/group_family/screens/group_family.dart';
 import 'package:sep490/features/report/screens/report_screen.dart';
 import 'package:sep490/presentation/pages/auth/controller/auth_controller.dart';
@@ -61,10 +62,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 icon: Icons.manage_accounts,
                 press: () async {
                   await SharedPrefsHelper().setString('role', 'Elderly');
-                  await SharedPrefsHelper().setInt('CreateAccountId', accountId);
+                  await SharedPrefsHelper()
+                      .setInt('CreateAccountId', accountId);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignupFirstScreen(role: 'Elderly', isSignUpFor: true,)),
+                    MaterialPageRoute(
+                        builder: (context) => SignupFirstScreen(
+                              role: 'Elderly',
+                              isSignUpFor: true,
+                            )),
                   );
                 },
               ),
@@ -119,6 +125,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ReportScreen()),
+                  );
+                },
+              ),
+            if (widget.roleId == 4)
+              ProfileMenu(
+                text: "Đánh giá của bạn",
+                icon: Icons.star,
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DoctorRating(
+                              doctorId: accountId,
+                            )),
                   );
                 },
               ),
