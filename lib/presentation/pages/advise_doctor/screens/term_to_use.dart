@@ -39,6 +39,8 @@ class TermToUse extends StatelessWidget {
             buildText(
                 '- Bạn có thể đánh giá bác sĩ sau khi hoàn tất buổi tư vấn.'),
             buildText(
+                '- Trong quá trình tư vấn, hệ thống sẽ tự động chụp màn hình sau khoảng thời gian nhất định để đảm bảo chất lượng buổi tư vấn.'),
+            buildText(
                 '- Nếu có bất kỳ vấn đề gì xảy ra trong buổi tư vấn hoặc do bác sĩ, bạn có thể báo cáo cho chúng tôi thông qua chức năng báo cáo. (Ở màn hình chính chọn vào ảnh đại diện -> chọn báo cáo -> điền thông tin cần báo cáo -> gửi báo cáo và đợi sự liện hệ từ chúng tôi).'),
             buildTitle('3. Điều khoản với tiện ích'),
             buildText(
