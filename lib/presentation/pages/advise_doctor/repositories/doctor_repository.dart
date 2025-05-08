@@ -42,8 +42,8 @@ class DoctorRepository {
 
   Future<dynamic> getDoctorDetailsByAccountId(int account) async {
     try {
-      final response =
-          await http.get(Uri.parse("$baseUrl/api/Professor/by-account/$account"));
+      final response = await http
+          .get(Uri.parse("$baseUrl/api/Professor/by-account/$account"));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -60,8 +60,8 @@ class DoctorRepository {
 
   Future<dynamic> getPackageUser(int account) async {
     try {
-      final response = await http
-          .get(Uri.parse("$baseUrl/booking-management/user-subscription/$account"));
+      final response = await http.get(
+          Uri.parse("$baseUrl/booking-management/user-subscription/$account"));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
@@ -95,10 +95,11 @@ class DoctorRepository {
     }
   }
 
-  Future<dynamic> getAppointmentByID(int account, String type) async {
+  Future<dynamic> getAppointmentByID(
+      int account, String type, String date) async {
     try {
       final response = await http.get(Uri.parse(
-          "$baseUrl/api/Professor/elderly/schedules/$account?type=$type"));
+          "$baseUrl/api/Professor/elderly/schedules/$account?type=$type&date=$date"));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -112,11 +113,12 @@ class DoctorRepository {
       return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
     }
   }
-  
-  Future<dynamic> getAppointmentElderly(int account, String status) async {
+
+  Future<dynamic> getAppointmentElderly(
+      int account, String status, String date) async {
     try {
       final response = await http.get(Uri.parse(
-          "$baseUrl/api/Professor/appointment/$account?type=$status"));
+          "$baseUrl/api/Professor/appointment/$account?type=$status&date=$date"));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -288,7 +290,10 @@ class DoctorRepository {
       final response = await http.put(
           Uri.parse("$baseUrl/booking-management/confirm?apptransid=$transId"));
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (jsonDecode(response.body)['status'] == 1 || (jsonDecode(response.body)['status'] == 0 && jsonDecode(response.body)['message'] == "An unexpected error occurred: Requested entity was not found.")) {
+        if (jsonDecode(response.body)['status'] == 1 ||
+            (jsonDecode(response.body)['status'] == 0 &&
+                jsonDecode(response.body)['message'] ==
+                    "An unexpected error occurred: Requested entity was not found.")) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
         } else {
           return {'isSuccess': false, 'data': jsonDecode(response.body)};
@@ -324,8 +329,8 @@ class DoctorRepository {
     }
   }
 
-  Future<dynamic> bookingAppointment(
-      int elderlyId, int professorId, String startTime, String endTime, String day, String description) async {
+  Future<dynamic> bookingAppointment(int elderlyId, int professorId,
+      String startTime, String endTime, String day, String description) async {
     try {
       final response = await http.post(
           Uri.parse("$baseUrl/api/Professor/professor-appointment"),
@@ -356,8 +361,8 @@ class DoctorRepository {
 
   Future<dynamic> cancelAppointment(int appointmentId, int accountId) async {
     try {
-      final response = await http
-          .put(Uri.parse("$baseUrl/api/Professor/cancel/$appointmentId/$accountId"));
+      final response = await http.put(
+          Uri.parse("$baseUrl/api/Professor/cancel/$appointmentId/$accountId"));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -449,8 +454,26 @@ class DoctorRepository {
 
   Future<dynamic> getNumberMeeting(int elderlyId) async {
     try {
-      final response = await http
-          .get(Uri.parse("$baseUrl/api/Professor/number-of-meeting/elderly/$elderlyId"));
+      final response = await http.get(Uri.parse(
+          "$baseUrl/api/Professor/number-of-meeting/elderly/$elderlyId"));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (jsonDecode(response.body)['status'] == 1) {
+          return {'isSuccess': true, 'data': jsonDecode(response.body)};
+        } else {
+          return {'isSuccess': false, 'data': jsonDecode(response.body)};
+        }
+      } else {
+        return {'isSuccess': false, 'data': jsonDecode(response.body)};
+      }
+    } catch (e) {
+      return {'isSuccess': false, 'data': 'Có lỗi trong quá trình xử lý!'};
+    }
+  }
+
+  Future<dynamic> getOneTimeSubscription(int accountId) async {
+    try {
+      final response = await http.get(Uri.parse(
+          "$baseUrl/combo-management/one-time-subscription/$accountId"));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};

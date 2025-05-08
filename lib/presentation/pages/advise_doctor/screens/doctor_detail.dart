@@ -8,6 +8,7 @@ import 'package:sep490/data/helper/shared_prefs_helper.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/checkout.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/appointment/_infoChip.dart';
 import 'package:sep490/presentation/widgets/auth_field.dart';
 import 'package:sep490/theme/color.dart';
@@ -197,19 +198,65 @@ class _DoctorDetailState extends State<DoctorDetail>
       ).show(context);
       return;
     }
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => Checkout(
-                  comboData: widget.comboData!,
-                  doctorData: doctorData,
-                  timeSlots: selectedTimeSlot,
-                  description: moreInformationController.text.trim(),
-                ))).then((value) {
-      if (value != null && value) {
-        Navigator.of(context).pop();
-      }
+    setState(() {
+      isLoading = true;
     });
+    DoctorController doctorController = DoctorController();
+    await doctorController.getOneTimeSubscription(
+        selectedElderlyUserId != 0 ? selectedElderlyUserId : accountId);
+    if (doctorController.isCheckSuccess) {
+      await doctorController.bookingAppointment(
+          selectedElderlyUserId != 0 ? selectedElderlyUserId : accountId,
+          doctorData!.accountId,
+          selectedTimeSlot['startTime'],
+          selectedTimeSlot['endTime'],
+          selectedTimeSlot['day'],
+          moreInformationController.text.trim());
+      if (doctorController.isBookingAppointmentSuccess) {
+        CherryToast.success(
+          toastDuration: Duration(seconds: 2),
+          title: Text(
+            "Đặt lịch tư vấn thành công!!",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NavigationMenu(keyIndex: 3)));
+      } else {
+        CherryToast.error(
+          toastDuration: Duration(seconds: 2),
+          title: Text(
+            doctorController.errorMessage,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ).show(context);
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Checkout(
+                    comboData: widget.comboData!,
+                    doctorData: doctorData,
+                    timeSlots: selectedTimeSlot,
+                    description: moreInformationController.text.trim(),
+                  ))).then((value) {
+        if (value != null && value) {
+          Navigator.of(context).pop();
+        }
+      });
+    }
   }
 
   void handleSelectedDoctor() async {
@@ -231,7 +278,9 @@ class _DoctorDetailState extends State<DoctorDetail>
                 onPressed: () async {
                   // Handle the action when the user confirms
                   Navigator.of(context).pop();
-                  showLoadingDialog(context);
+                  setState(() {
+                    isLoading = true;
+                  });
                   DoctorController doctorController = DoctorController();
                   await doctorController.selectDoctor(
                       doctorData!.accountId,
@@ -264,6 +313,9 @@ class _DoctorDetailState extends State<DoctorDetail>
                           ),
                         ),
                       ).show(context);
+                      setState(() {
+                        isLoading = false;
+                      });
                     }
                   });
                 },

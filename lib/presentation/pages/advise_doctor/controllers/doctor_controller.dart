@@ -22,6 +22,7 @@ class DoctorController {
   bool isCancelSuccess = false;
   bool isRatingSuccess = false;
   bool isSendReportSuccess = false;
+  bool isCheckSuccess = false;
 
   Future<void> getDoctorData(int accountId) async {
     final response = await _doctorRepository.getDoctorDataById(accountId);
@@ -73,9 +74,9 @@ class DoctorController {
     }
   }
 
-  Future<void> getAppointmentByID(int accountId, String type) async {
+  Future<void> getAppointmentByID(int accountId, String type, String date) async {
     final response =
-        await _doctorRepository.getAppointmentByID(accountId, type);
+        await _doctorRepository.getAppointmentByID(accountId, type, date);
     if (response != null && response['isSuccess']) {
       List<dynamic> data = response['data']['data'];
       appoimentDoctor =
@@ -85,9 +86,9 @@ class DoctorController {
     }
   }
 
-  Future<void> getAppointmentElderly(int accountId, String status) async {
+  Future<void> getAppointmentElderly(int accountId, String status, String date) async {
     final response =
-        await _doctorRepository.getAppointmentElderly(accountId, status);
+        await _doctorRepository.getAppointmentElderly(accountId, status, date);
     if (response != null && response['isSuccess']) {
       List<dynamic> data = response['data']['data'];
       appoimentElderly =
@@ -180,9 +181,10 @@ class DoctorController {
     final response = await _doctorRepository.bookingAppointment(
         elderlyId, professorId, startTime, endTime, day, description);
     if (response != null && response['isSuccess']) {
-      isBookingAppointmentSuccess = response['data']['status'] == 1;
+      isBookingAppointmentSuccess = true;
     } else {
       isBookingAppointmentSuccess = false;
+      errorMessage = response['data']['message'] ?? 'Có lỗi xảy ra';
     }
   }
 
@@ -236,6 +238,16 @@ class DoctorController {
           data.map((item) => FeedBackDoctor.fromJson(item)).toList();
     } else {
       feedbackDoctor = [];
+    }
+  }
+
+  Future<void> getOneTimeSubscription(int accountId) async {
+    final response = await _doctorRepository.getOneTimeSubscription(accountId);
+    if (response != null && response['isSuccess']) {
+      isCheckSuccess = true;
+    } else {
+      isCheckSuccess = false;
+      errorMessage = response['data']['message'] ?? 'Có lỗi xảy ra';
     }
   }
 }
