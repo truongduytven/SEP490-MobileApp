@@ -304,8 +304,12 @@ class _EmergencyListState extends State<EmergencyList>
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Người thân: ",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
+            roleId == 4
+                ? Text("Người già: ",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400))
+                : Text("Người thân: ",
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
               child: Text(emergency.elderlyName,

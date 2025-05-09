@@ -184,7 +184,7 @@ class DoctorController {
       isBookingAppointmentSuccess = true;
     } else {
       isBookingAppointmentSuccess = false;
-      errorMessage = response['data']['message'] ?? 'Có lỗi xảy ra';
+      errorMessage = response['data']['data'] ?? 'Có lỗi xảy ra';
     }
   }
 
