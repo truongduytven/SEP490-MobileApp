@@ -233,7 +233,7 @@ class DoctorController {
   Future<void> getFeedbackDoctor(int professorId) async {
     final response = await _doctorRepository.getFeedbackDoctor(professorId);
     if (response != null && response['isSuccess']) {
-      List<dynamic> data = response['data']['data'];
+      List<dynamic> data = response['data']['data']['listOfRating'];
       feedbackDoctor =
           data.map((item) => FeedBackDoctor.fromJson(item)).toList();
     } else {

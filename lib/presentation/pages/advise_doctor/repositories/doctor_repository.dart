@@ -439,8 +439,10 @@ class DoctorRepository {
 
   Future<dynamic> getFeedbackDoctor(int professorId) async {
     try {
+      print(professorId);
       final response = await http
           .get(Uri.parse("$baseUrl/api/Professor/feedback/$professorId"));
+      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
