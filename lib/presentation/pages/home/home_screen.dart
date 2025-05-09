@@ -1024,6 +1024,23 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                               ],
                             ),
+                          if (roleId == 3 && userList == null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: Center(
+                                child: Text(
+                                  'Bạn chưa có người già nào để hỗ trợ',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.textColor,
+                                  ),
+                                ),
+                              ),
+                            ),
                           if (roleId == 3 && selectedElderlyUserId != 0)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 10),
@@ -1167,19 +1184,123 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                               ),
                             ),
-                          if (roleId == 3) SizedBox(height: 20),
-                          if (roleId == 3)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Tùy chọn',
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textColor),
+                          if (roleId == 3 && selectedElderlyUserId != 0)
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeMedicine(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.bgColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.secondaryColor
+                                          .withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.medication,
+                                      size: 50,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Lịch uống thuốc",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.textColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 20,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          if (roleId == 3 && selectedElderlyUserId != 0)
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ScheduleScreen(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.bgColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.secondaryColor
+                                          .withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_month,
+                                      size: 50,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Lịch Hắng ngày",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.textColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 20,
+                                    )
+                                  ],
+                                ),
+                              ),
                             ),
                           if (roleId != 4) SizedBox(height: 20),
                           if (roleId != 4)
@@ -1187,34 +1308,35 @@ class _HomeScreenState extends State<HomeScreen>
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildCategoryCard(
-                                  icon:
-                                      'assets/img3D/thuoc.png', // Replace with your asset path
-                                  label: 'Lịch uống thuốc',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => HomeMedicine(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                if (roleId == 3)
+                                if (roleId == 2)
                                   _buildCategoryCard(
                                     icon:
-                                        'assets/img3D/calendar_create.webp', // Replace with your asset path
-                                    label: 'Lịch trình hằng ngày',
+                                        'assets/img3D/thuoc.png', // Replace with your asset path
+                                    label: 'Lịch uống thuốc',
                                     onTap: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              ScheduleScreen(),
+                                          builder: (context) => HomeMedicine(),
                                         ),
                                       );
                                     },
                                   ),
+                                // if (roleId == 3)
+                                //   _buildCategoryCard(
+                                //     icon:
+                                //         'assets/img3D/calendar_create.webp', // Replace with your asset path
+                                //     label: 'Lịch trình hằng ngày',
+                                //     onTap: () {
+                                //       Navigator.push(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //           builder: (context) =>
+                                //               ScheduleScreen(),
+                                //         ),
+                                //       );
+                                //     },
+                                //   ),
                                 if (roleId == 2)
                                   _buildCategoryCard(
                                     icon:

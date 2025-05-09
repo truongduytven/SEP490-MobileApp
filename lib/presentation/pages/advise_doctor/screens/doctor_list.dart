@@ -157,15 +157,16 @@ class _DoctorListState extends State<DoctorList> {
   }
 
   Widget buildDoctorCard(FilteredDoctor doctor) {
+    print(doctor.accountId);
     return GestureDetector(
       onTap: () =>
           Navigator.push(context, MaterialPageRoute(builder: (context) {
         return DoctorDetail(
-            accountId: doctor.accountId,
-            doctorId: doctor.professorId,
-            isChoosePackage: widget.isChoosePackage,
-            comboData: widget.isChoosePackage ? widget.comboData : null,
-            );
+          accountId: doctor.accountId,
+          doctorId: doctor.professorId,
+          isChoosePackage: widget.isChoosePackage,
+          comboData: widget.isChoosePackage ? widget.comboData : null,
+        );
       })),
       child: Container(
         margin: EdgeInsets.only(bottom: 12),
