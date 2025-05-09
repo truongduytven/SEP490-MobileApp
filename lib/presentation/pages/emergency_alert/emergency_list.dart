@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:lottie/lottie.dart';
@@ -29,6 +30,8 @@ class _EmergencyListState extends State<EmergencyList>
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   final List<String> tabs = ['Tín hiệu khẩn cấp', 'Lịch sử'];
   late TabController _tabController;
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
 
   @override
   void initState() {
@@ -37,7 +40,26 @@ class _EmergencyListState extends State<EmergencyList>
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
     getEmergencyList();
+    _setupFirebaseListeners();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _setupFirebaseListeners() {
+    // Lắng nghe khi app đang mở
+    _onMessageSubscription =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+
+    // Lắng nghe khi người dùng mở app từ thông báo
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  void _handleNotification(RemoteMessage message) {
+    getEmergencyList();
   }
 
   void getEmergencyList() async {
@@ -98,6 +120,8 @@ class _EmergencyListState extends State<EmergencyList>
     WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     routeObserver.unsubscribe(this);
+    _onMessageSubscription?.cancel();
+    _onMessageOpenedAppSubscription?.cancel();
     super.dispose();
   }
 

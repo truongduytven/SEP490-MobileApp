@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,9 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
   }
 
   void getScanMedicine() async {
-    if (widget.imagePath != null && widget.endDate == null && widget.treatment == null) {
+    if (widget.imagePath != null &&
+        widget.endDate == null &&
+        widget.treatment == null) {
       LoadingDialog.show(
           context, 'assets/gif/opd.gif', 'Đang quét toa thuốc...');
       MedicineController medicineController = MedicineController();
@@ -195,6 +198,32 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
     });
   }
 
+  void _showScannedImage(BuildContext context) {
+    final String imagePath = widget.imagePath ?? createPrescriptionImage;
+    if (imagePath.isEmpty) {
+      return; // Do nothing if no image path is available
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop(); // Close the dialog on tap
+          },
+          child: Image.file(
+            File(imagePath),
+            width: double.infinity,
+            height: double.infinity,
+            errorBuilder: (context, error, stackTrace) {
+              return const Text("Không thể tải hình ảnh");
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -211,6 +240,17 @@ class _CreatePrescriptionScreenState extends State<CreatePrescriptionScreen> {
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 0,
+        actions: [
+          if (widget.imagePath != null || createPrescriptionImage.isNotEmpty)
+            IconButton(
+              icon: Icon(
+                Icons.image,
+                color: AppColors.textColor,
+                size: 30,
+              ),
+              onPressed: () => _showScannedImage(context),
+            ),
+        ],
       ),
       body: Container(
         width: double.infinity,

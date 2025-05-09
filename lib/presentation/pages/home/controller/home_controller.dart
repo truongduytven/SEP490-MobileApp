@@ -5,6 +5,7 @@ class HomeController {
   final HomeRepository _homeRepository = HomeRepository();
   List<HomeHealthIndicator>? homeHealthIndicators;
   List<ElderlyUser>? elderlyUsers;
+  ElderlyUser? elderlyUser;
   List<HistoryTransactionData>? historyTransactions;
   ElderlyProfile? elderlyProfile;
   String? errorMessage;
@@ -75,8 +76,10 @@ class HomeController {
     }
   }
 
-  Future<void> updateMedicalRecord(int account, List<String> MedicalRecord) async {
-    final response = await _homeRepository.updateMedicalRecord(account, MedicalRecord);
+  Future<void> updateMedicalRecord(
+      int account, List<String> MedicalRecord) async {
+    final response =
+        await _homeRepository.updateMedicalRecord(account, MedicalRecord);
     if (response != null && response['isSuccess']) {
       isUpdateMedicalSuccess = true;
     } else {
@@ -111,6 +114,16 @@ class HomeController {
       }
     } else {
       historyTransactions = null;
+    }
+  }
+
+  Future<void> getElderlyUserInformation(int account) async {
+    final response = await _homeRepository.getElderlyUserInformation(account);
+    if (response != null && response['isSuccess']) {
+      elderlyUser = ElderlyUser.fromJson(
+          response['data']['data'] as Map<String, dynamic>);
+    } else {
+      elderlyUser = null;
     }
   }
 }

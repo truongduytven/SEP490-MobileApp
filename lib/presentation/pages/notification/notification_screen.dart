@@ -838,13 +838,48 @@ class _NotificationScreenState extends State<NotificationScreen>
           } else {
             print('Dữ liệu không hợp lệ hoặc không thể phân tích');
           }
-        case 'Tín hiệu cầu cứu khẩn cấp':
+        case 'tín hiệu cầu cứu khẩn cấp':
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => EmergencyList(),
             ),
           );
+          break;
+
+        case 'báo cáo tư vấn bác sĩ':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationMenu(
+                keyIndex: 3,
+              ),
+            ),
+          );
+          break;
+
+        case 'bỏ qua lịch uống thuốc':
+          String data = notification['data'] ?? "";
+          if (data.isEmpty) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeMedicine(),
+              ),
+            );
+          } else {
+            List<String> dataList = data.split("-");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeMedicine(
+                  selectedYear: int.tryParse(dataList[0]),
+                  selectedMonth: int.tryParse(dataList[1]),
+                  selectedDay: int.tryParse(dataList[2]),
+                ),
+              ),
+            );
+          }
           break;
       }
     }

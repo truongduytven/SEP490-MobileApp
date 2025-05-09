@@ -89,7 +89,7 @@ class _WorkScheduleState extends State<WorkSchedule> {
         // ],
       ),
       body: _buildBody(theme, colors),
-      floatingActionButton: _buildFloatingActionButton(colors),
+      // floatingActionButton: _buildFloatingActionButton(colors),
     );
   }
 

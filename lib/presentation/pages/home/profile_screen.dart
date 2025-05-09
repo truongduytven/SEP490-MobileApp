@@ -104,7 +104,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             //     icon: Icons.redeem,
             //     press: () {},
             //   ),
-            if (widget.roleId == 3)
+            if (widget.roleId != 4)
               ProfileMenu(
                 text: "Lịch sử giao dịch",
                 icon: Icons.history,

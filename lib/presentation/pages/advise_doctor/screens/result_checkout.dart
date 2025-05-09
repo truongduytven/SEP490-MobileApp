@@ -131,12 +131,12 @@ class _ResultCheckoutState extends State<ResultCheckout>
           isLoading = false;
           isCheckoutSuccess = true;
         });
+        _startCountdown();
       } else {
         setState(() {
           isLoading = false;
           isCheckoutSuccess = false;
         });
-        _startCountdown();
       }
     });
   }
