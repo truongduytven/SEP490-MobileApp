@@ -201,7 +201,7 @@ class _EmergencyScreenState extends State<EmergencyScreen>
   }
 
   void _callNumber() async {
-    const number = '0964160769'; //set the number here
+    const number = '0354026679'; //set the number here
     await FlutterPhoneDirectCaller.callNumber(number);
   }
 

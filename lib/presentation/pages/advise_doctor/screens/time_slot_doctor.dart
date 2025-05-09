@@ -129,7 +129,7 @@ class _TimeSlotDoctorState extends State<TimeSlotDoctor> {
         CherryToast.error(
           toastDuration: Duration(seconds: 3),
           title: Text(
-            doctorController.errorMessage,
+            doctorController.errorMessage, 
             style: TextStyle(
               color: Colors.black,
               fontSize: 20,
