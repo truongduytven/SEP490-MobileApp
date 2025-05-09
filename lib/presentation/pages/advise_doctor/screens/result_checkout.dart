@@ -107,7 +107,6 @@ class _ResultCheckoutState extends State<ResultCheckout>
     Timer(Duration(seconds: 2), () async {
       if (!mounted) return;
       if (doctorController.isConfirmedSuccess) {
-        print('Dô rồi nè');
         if (widget.bookingData != null) {
           await doctorController.bookingAppointment(
               widget.bookingData!['elderlyId'],
@@ -127,18 +126,17 @@ class _ResultCheckoutState extends State<ResultCheckout>
               isCheckoutSuccess = false;
             });
           }
-        } else {
-          setState(() {
-            isLoading = false;
-            isCheckoutSuccess = true;
-          });
         }
-        _startCountdown();
+        setState(() {
+          isLoading = false;
+          isCheckoutSuccess = true;
+        });
       } else {
         setState(() {
           isLoading = false;
           isCheckoutSuccess = false;
         });
+        _startCountdown();
       }
     });
   }

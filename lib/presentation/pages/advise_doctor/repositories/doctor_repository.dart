@@ -253,6 +253,7 @@ class DoctorRepository {
             "elderlyId": elderlyId,
             "subscriptionId": subscriptionId
           }));
+      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -271,6 +272,7 @@ class DoctorRepository {
     try {
       final response = await http.get(Uri.parse(
           "$baseUrl/booking-management/order-status?appTransId=$transId"));
+      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -289,6 +291,7 @@ class DoctorRepository {
     try {
       final response = await http.put(
           Uri.parse("$baseUrl/booking-management/confirm?apptransid=$transId"));
+      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1 ||
             (jsonDecode(response.body)['status'] == 0 &&

@@ -288,7 +288,6 @@ class _DoctorDetailState extends State<DoctorDetail>
                           ? selectedElderlyUserId
                           : accountId);
                   Timer(Duration(seconds: 2), () {
-                    Navigator.of(context).pop();
                     if (doctorController.isSelectDoctorSuccess) {
                       CherryToast.success(
                         toastDuration: Duration(seconds: 3),
