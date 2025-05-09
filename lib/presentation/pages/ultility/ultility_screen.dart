@@ -194,6 +194,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: AppColors.bgColor,
         appBar: AppBar(
           scrolledUnderElevation: 0,
           elevation: 0,
@@ -349,7 +350,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
                 size:40,
                 color: Colors.white,
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -363,7 +364,7 @@ class _UltilityScreenState extends State<UltilityScreen> {
                   ),
                   const SizedBox(height: 4),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.6,
+                    width: MediaQuery.of(context).size.width * 0.5,
                     child: Text(
                       premiumUtilities[index]['subtitle'],
                       maxLines: 3,

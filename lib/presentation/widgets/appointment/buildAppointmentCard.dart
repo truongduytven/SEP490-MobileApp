@@ -135,6 +135,7 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "Bác sĩ: ",
@@ -142,34 +143,15 @@ class BuildAppointmentCardState extends State<BuildAppointmentCard> {
                             fontSize: 20,
                           ),
                         ),
-                        Text(
-                          widget.appoimentDoctor!.professorName,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          "Hình thức: ",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.secondaryColor,
-                          ),
-                        ),
-                        Text(
-                          widget.appoimentDoctor!.isOnline
-                              ? "Online"
-                              : "Offline",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.primaryColor,
-                            fontWeight: FontWeight.w600,
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          child: Text(
+                            widget.appoimentDoctor!.professorName,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primaryColor,
+                            ),
                           ),
                         ),
                       ],

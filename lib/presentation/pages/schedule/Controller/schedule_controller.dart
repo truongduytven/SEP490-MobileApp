@@ -25,7 +25,7 @@ class ScheduleController {
       isCreateSuccess = true;
     } else {
       isCreateSuccess = false;
-      message = response != null ? response['message'] : "Có lỗi trong quá trình xử lý!";
+      message = response != null ? response['data']['message'] : "Có lỗi trong quá trình xử lý!";
     }
   }
 

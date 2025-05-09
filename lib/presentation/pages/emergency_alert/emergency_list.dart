@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:lottie/lottie.dart';
@@ -29,6 +30,8 @@ class _EmergencyListState extends State<EmergencyList>
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   final List<String> tabs = ['Tín hiệu khẩn cấp', 'Lịch sử'];
   late TabController _tabController;
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
 
   @override
   void initState() {
@@ -37,7 +40,26 @@ class _EmergencyListState extends State<EmergencyList>
     accountId = sharedPrefsHelper.getInt('accountId') ?? 0;
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
     getEmergencyList();
+    _setupFirebaseListeners();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _setupFirebaseListeners() {
+    // Lắng nghe khi app đang mở
+    _onMessageSubscription =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+
+    // Lắng nghe khi người dùng mở app từ thông báo
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  void _handleNotification(RemoteMessage message) {
+    getEmergencyList();
   }
 
   void getEmergencyList() async {
@@ -98,6 +120,8 @@ class _EmergencyListState extends State<EmergencyList>
     WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     routeObserver.unsubscribe(this);
+    _onMessageSubscription?.cancel();
+    _onMessageOpenedAppSubscription?.cancel();
     super.dispose();
   }
 
@@ -280,8 +304,12 @@ class _EmergencyListState extends State<EmergencyList>
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Người thân: ",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
+            roleId == 4
+                ? Text("Người già: ",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400))
+                : Text("Người thân: ",
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w400)),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
               child: Text(emergency.elderlyName,
@@ -478,27 +506,32 @@ class _EmergencyListState extends State<EmergencyList>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  emergency['isConfirmed']
+                  emergency['status'] == 'Đã xác nhận'
                       ? Icon(
                           Icons.circle,
                           color: Colors.green,
                           size: 10,
                         )
-                      : Lottie.asset('assets/img/AnimationRedDot.json',
-                          height: 50, width: 50),
+                      : emergency['status'] == 'Chưa xác nhận'
+                          ? Lottie.asset('assets/img/AnimationRedDot.json',
+                              height: 50, width: 25)
+                          : Icon(
+                              Icons.circle,
+                              color: Colors.blue,
+                              size: 10,
+                            ),
                   SizedBox(
                     width: 5,
                   ),
-                  Text(
-                      emergency['isConfirmed']
-                          ? 'Đã xác nhận'
-                          : 'Đang chờ hỗ trợ',
+                  Text(emergency['status'],
                       style: TextStyle(
-                          fontSize: 25,
+                          fontSize: 20,
                           fontWeight: FontWeight.w600,
-                          color: emergency['isConfirmed']
+                          color: emergency['status'] == 'Đã xác nhận'
                               ? Colors.green
-                              : Colors.red)),
+                              : emergency['status'] == 'Chưa xác nhận'
+                                  ? Colors.red
+                                  : Colors.blue)),
                 ],
               ),
               SizedBox(

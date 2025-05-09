@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sep490/data/services/api_services.dart';
 import 'package:sep490/presentation/pages/auth/signin_screen.dart';
+import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/widgets/form/medical_record_form.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,8 +36,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final weightIndex = prefs.getString('weight') ?? '0';
     final heightIndex = prefs.getString('height') ?? '0';
-    final accountId = prefs.getInt('accountId');
-    final fullName = prefs.getString('fullName');
+    final accountId = prefs.getInt('accountIdSignUp');
+    final fullName = prefs.getString('fullNameSignUp');
     final type = prefs.getString('typeSignUp');
     final email = type == 'Email'
         ? prefs.getString('emailOrPhoneSignUp')
@@ -45,42 +46,69 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
         ? prefs.getString('emailOrPhoneSignUp')
         : prefs.getString('emailOrPhoneSignUpLater');
     final roleId = prefs.getString('role') == 'Elderly' ? 2 : 3;
-    final gender = prefs.getString('gender');
-    final dob = prefs.getString('dateOfBirth') ?? '';
+    final gender = prefs.getString('genderSignUp');
+    final dob = prefs.getString('dateOfBirthSignUp') ?? '';
     String formatDOB = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         .format(DateFormat("d/M/yyyy").parse(dob));
     String medicalApi = '';
     if (selectedTreatments.isNotEmpty) {
-      medicalApi = selectedTreatments.map((e) => "MedicalRecord=${e['name']}").join("&");
+      medicalApi =
+          selectedTreatments.map((e) => "MedicalRecord=${e['name']}").join("&");
     } else {
       medicalApi = "MedicalRecord=Không có";
     }
-    String? storedAvatar = prefs.getString('avatar');
+    String? storedAvatar = prefs.getString('avatarSignUp');
+    int createAccountId = prefs.getInt('CreateAccountId') ?? 0;
     String image = (storedAvatar != null && storedAvatar.isNotEmpty)
         ? storedAvatar
         : await getDefaultAvatarPath();
 
     try {
       var response = await ApiService.postRequestSignUp(
-          "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$roleId&$medicalApi&Height=$heightIndex&Weight=$weightIndex",
+          "auth-management/managed-auths/sign-ups?AccountId=$accountId&FullName=$fullName&Email=$email&Gender=$gender&DateOfBirth=$formatDOB&PhoneNumber=$numberPhone&RoleId=$roleId&$medicalApi&Height=$heightIndex&Weight=$weightIndex&CreatorAccountId=$createAccountId",
           image);
 
       Navigator.of(context).pop();
 
       if (response['success'] && response['data']['isSuccess']) {
-        CherryToast.success(
-          toastDuration: Duration(seconds: 2),
-          title: Text(
-            "Cập nhật thông tin thành công!",
-            style: TextStyle(color: Colors.black),
-          ),
-        ).show(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SignInScreen(),
-          ),
-        );
+        if (createAccountId != 0) {
+          CherryToast.success(
+            toastDuration: Duration(seconds: 2),
+            title: Text(
+              "Tạo tài khoản thành công! Bạn có thể đăng nhập tài khoản vừa tại trên thiết bị người thân của bạn!",
+              style: TextStyle(color: Colors.black),
+            ),
+          ).show(context);
+          prefs.remove('accountIdSignUp');
+          prefs.remove('fullNameSignUp');
+          prefs.remove('emailOrPhoneSignUp');
+          prefs.remove('emailOrPhoneSignUpLater');
+          prefs.remove('genderSignUp');
+          prefs.remove('dateOfBirthSignUp');
+          prefs.remove('weight');
+          prefs.remove('height');
+          prefs.remove('avatarSignUp');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationMenu(keyIndex: 0,),
+            ),
+          );
+        } else {
+          CherryToast.success(
+            toastDuration: Duration(seconds: 2),
+            title: Text(
+              "Tạo tài khoản thành công!",
+              style: TextStyle(color: Colors.black),
+            ),
+          ).show(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SignInScreen(),
+            ),
+          );
+        }
       } else {
         Fluttertoast.showToast(
           msg: "Cõ lỗi trong quá trình xử lí",

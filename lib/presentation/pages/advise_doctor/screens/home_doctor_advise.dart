@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cherry_toast/cherry_toast.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:gif_view/gif_view.dart';
@@ -18,6 +19,8 @@ import 'package:sep490/presentation/pages/advise_doctor/screens/time_slot_doctor
 import 'package:sep490/presentation/widgets/appointment/_infoChip.dart';
 import 'package:sep490/presentation/widgets/appointment/buildAppointmentCard.dart';
 import 'package:sep490/theme/color.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 
 class HomeDoctorAdviseScreen extends StatefulWidget {
   const HomeDoctorAdviseScreen({super.key});
@@ -46,16 +49,23 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
   List<String> endowments = [
     'Lựa chọn 1 bác sĩ riêng để hỗ trợ',
     'Tư vấn sức khỏe online hoặc offline',
-    'Cảnh bác khi có chỉ số bất thường',
+    'Cảnh báo khi có chỉ số bất thường',
     'Hỗ trợ những trường hợp khẩn cấp',
     'Chỉ từ 50.000đ/tháng',
   ];
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int accountId = 0;
   late int selectedElderlyUserId = 0;
   late String fullName = "";
   late String selectedElderlyUserName = "";
   late int roleId = 0;
+  DateTime selectedDate = DateTime.now(); // Default to current date
+  String selectedMonthYear = DateFormat('MM/yyyy').format(
+      DateTime.now()); // Default to current month/year in "MM/yyyy" format
+  final TextEditingController _dateController =
+      TextEditingController(); // Default to current year (2025)
 
   @override
   void initState() {
@@ -71,9 +81,41 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
         sharedPrefsHelper.getString('selectedElderlyUserName') ?? "";
     fullName = sharedPrefsHelper.getString('fullName') ?? "";
     roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
+    initializeDateFormatting('vi_VN', null).then((_) {
+      setState(() {
+        selectedMonthYear = DateFormat('MM/yyyy', 'vi_VN').format(selectedDate);
+        _dateController.text = selectedMonthYear;
+      });
+    });
     getDoctorData();
     checkIsPackage();
+    _setupFirebaseListeners();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+// Hàm thiết lập lắng nghe thông báo Firebase
+  void _setupFirebaseListeners() {
+    // Lắng nghe khi app đang mở
+    _onMessageSubscription =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+
+    // Lắng nghe khi người dùng mở app từ thông báo
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  // Xử lý khi nhận được thông báo
+  void _handleNotification(RemoteMessage message) {
+    // Báo cáo tư vấn bác sĩ
+    print("Message ${message.notification?.title}");
+    if (message.notification?.title == "Báo cáo tư vấn bác sĩ") {
+      getDoctorData();
+      checkIsPackage();
+    }
   }
 
   void getDoctorData() async {
@@ -86,7 +128,8 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
         selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId);
     await doctorController.getAppointmentByID(
         selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId,
-        selectedStatus);
+        selectedStatus,
+        selectedMonthYear);
     Timer(const Duration(seconds: 2), () {
       if (!mounted) return;
       setState(() {
@@ -96,7 +139,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
           appoimentDoctor!.sort((a, b) {
             final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
             final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
-            return dateA.compareTo(dateB); // ascending
+            return dateB.compareTo(dateA); // ascending
           });
         }
         isLoading = false;
@@ -122,13 +165,15 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     });
   }
 
-  void getAppointmentByStatus(String status) async {
+  void getAppointmentByStatus(String status, {String? month}) async {
     setState(() {
       isLoadingAppointment = true;
     });
     DoctorController doctorController = DoctorController();
     await doctorController.getAppointmentByID(
-        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId, status);
+        selectedElderlyUserId == 0 ? accountId : selectedElderlyUserId,
+        status,
+        selectedMonthYear);
     Timer(const Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() {
@@ -137,7 +182,7 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
           appoimentDoctor!.sort((a, b) {
             final dateA = DateFormat("dd/MM/yyyy HH:mm").parse(a.dateTime);
             final dateB = DateFormat("dd/MM/yyyy HH:mm").parse(b.dateTime);
-            return dateA.compareTo(dateB); // ascending
+            return dateB.compareTo(dateA); // ascending
           });
         }
         isLoadingAppointment = false;
@@ -145,11 +190,62 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     });
   }
 
+  Future<void> _selectMonthYear(BuildContext context) async {
+    final DateTime? picked = await showMonthYearPicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      locale: const Locale('vi', 'VN'),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            visualDensity: VisualDensity.compact, // Reduce space
+            dialogTheme: DialogTheme(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+            ),
+            textTheme: TextTheme(
+              bodyMedium: TextStyle(fontSize: 14), // Smaller font
+            ),
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primaryColor,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black87,
+            ),
+          ),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaleFactor: 0.9, // Optional: smaller text globally
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 8, vertical: 4), // Reduce outer padding
+              child: child!,
+            ),
+          ),
+        );
+      },
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        selectedMonthYear = DateFormat('MM/yyyy', 'vi_VN').format(picked);
+        _dateController.text = selectedMonthYear;
+        getAppointmentByStatus(selectedStatus, month: selectedMonthYear);
+      });
+    }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     routeObserver.unsubscribe(this);
+    _onMessageSubscription?.cancel();
+    _onMessageOpenedAppSubscription?.cancel();
     super.dispose();
   }
 
@@ -357,57 +453,98 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
     // ignore: unnecessary_null_comparison
     return Column(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(25.0),
-            border: Border.all(color: AppColors.grayColor1, width: 1),
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: selectedStatus,
-              onChanged: (String? newValue) {
-                if (selectedStatus == newValue) return;
-                setState(() {
-                  selectedStatus = newValue!;
-                  getAppointmentByStatus(newValue);
-                });
-              },
-              items:
-                  statusOptions.entries.map<DropdownMenuItem<String>>((entry) {
-                return DropdownMenuItem<String>(
-                  value: entry.value,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        entry.key,
-                        style: TextStyle(fontSize: 18),
+        Row(children: [
+          // Status Dropdown
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25.0),
+                border: Border.all(color: AppColors.grayColor1, width: 1),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: selectedStatus,
+                  onChanged: (String? newValue) {
+                    if (selectedStatus == newValue) return;
+                    setState(() {
+                      selectedStatus = newValue!;
+                      getAppointmentByStatus(newValue);
+                    });
+                  },
+                  items: statusOptions.entries
+                      .map<DropdownMenuItem<String>>((entry) {
+                    return DropdownMenuItem<String>(
+                      value: entry.value,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            entry.key,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          if (selectedStatus == entry.value)
+                            Icon(
+                              Icons.check,
+                              color: AppColors.primaryColor,
+                              size: 20,
+                            ),
+                        ],
                       ),
-                      if (selectedStatus == entry.value)
-                        Icon(
-                          Icons.check,
-                          color: AppColors.primaryColor,
-                          size: 30,
-                        ),
-                    ],
-                  ),
-                );
-              }).toList(),
-              selectedItemBuilder: (context) {
-                return statusOptions.entries
-                    .map<Widget>((entry) => Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(entry.key, style: TextStyle(fontSize: 18)),
-                          ],
-                        ))
-                    .toList();
-              },
+                    );
+                  }).toList(),
+                  selectedItemBuilder: (context) {
+                    return statusOptions.entries
+                        .map<Widget>((entry) => Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(entry.key, style: TextStyle(fontSize: 16)),
+                              ],
+                            ))
+                        .toList();
+                  },
+                ),
+              ),
             ),
           ),
-        ),
+          SizedBox(width: 10),
+          // Month Dropdown
+          Expanded(
+            child: GestureDetector(
+              onTap: () => _selectMonthYear(context),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25.0),
+                  border: Border.all(color: AppColors.grayColor1, width: 1),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _dateController,
+                        enabled: false, // Disable manual text input
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.calendar_today,
+                      color: AppColors.primaryColor,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ]),
         SizedBox(height: 10),
         (isLoading || isLoadingAppointment)
             ? Expanded(
@@ -729,6 +866,37 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                     ],
                   ),
                 ),
+                SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PackageList(
+                            isShowFull: false,
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: BorderSide(
+                            color: AppColors.secondaryColor, width: 1),
+                      ),
+                    ),
+                    child: Text('Mua gói dịch vụ lẻ',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.bgColor,
+                          fontWeight: FontWeight.w400,
+                        )),
+                  ),
+                )
               ],
             ),
           )
@@ -798,39 +966,41 @@ class _HomeDoctorAdviseScreenState extends State<HomeDoctorAdviseScreen>
                     ),
                   ),
                   SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 15),
-                    width: double.infinity,
-                    color: Colors.transparent,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PackageList(
-                                      isShowFull: true,
-                                    )));
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.secondaryColor,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            side: BorderSide(
-                                color: AppColors.secondaryColor, width: 1),
-                          )),
-                      icon: Icon(Icons.payment,
-                          size: 25, color: AppColors.bgColor),
-                      label: const Text('Mua gói ngay',
-                          style: TextStyle(
-                            fontSize: 25,
-                            color: AppColors.bgColor,
-                            fontWeight: FontWeight.w400,
-                          )),
-                    ),
-                  )
+                  if (roleId == 2 ||
+                      (roleId == 3 && selectedElderlyUserId != 0))
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 15),
+                      width: double.infinity,
+                      color: Colors.transparent,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PackageList(
+                                        isShowFull: true,
+                                      )));
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.secondaryColor,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              side: BorderSide(
+                                  color: AppColors.secondaryColor, width: 1),
+                            )),
+                        icon: Icon(Icons.payment,
+                            size: 25, color: AppColors.bgColor),
+                        label: const Text('Mua gói ngay',
+                            style: TextStyle(
+                              fontSize: 25,
+                              color: AppColors.bgColor,
+                              fontWeight: FontWeight.w400,
+                            )),
+                      ),
+                    )
                   // : Text('Bạn hãy nhờ người thân mua gói dịch vụ cho bạn!',
                   //     textAlign: TextAlign.center,
                   //     style: TextStyle(

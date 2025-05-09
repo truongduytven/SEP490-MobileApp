@@ -45,8 +45,8 @@ class MedicineRepository {
 
   Future<dynamic> getHistoryPrescription(int userId) async {
     try {
-      final response = await http.get(
-          Uri.parse('$baseUrl/medication-management/prescription/history/$userId'));
+      final response = await http.get(Uri.parse(
+          '$baseUrl/medication-management/prescription/history/$userId'));
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -70,32 +70,55 @@ class MedicineRepository {
       request.fields['Treatment'] = prescription['treatment'];
       request.fields['EndDate'] = prescription['endDate'];
       request.fields['CreatedBy'] = prescription['createdBy'];
-      if(imgPath != '') {
-        request.files.add(await http.MultipartFile.fromPath('MedicationImage', imgPath));
+      if (imgPath != '') {
+        request.files
+            .add(await http.MultipartFile.fromPath('MedicationImage', imgPath));
       } else {
         request.fields['MedicationImage'] = "";
       }
       prescription['medication'].forEach((medicine) {
-        request.fields['Medication[${prescription['medication'].indexOf(medicine)}][medicationName]'] = medicine['medicationName'];
-        request.fields['Medication[${prescription['medication'].indexOf(medicine)}][dosage]'] = medicine['dosage'];
-        request.fields['Medication[${prescription['medication'].indexOf(medicine)}][shape]'] = medicine['shape'];
-        request.fields['Medication[${prescription['medication'].indexOf(medicine)}][isBeforeMeal]'] = medicine['isBeforeMeal'].toString();
-        request.fields['Medication[${prescription['medication'].indexOf(medicine)}][note]'] = medicine['note'] ?? 'nothing';
-        request.fields['Medication[${prescription['medication'].indexOf(medicine)}][remaining]'] = medicine['remaining'].toString();
-        request.fields['Medication[${prescription['medication'].indexOf(medicine)}][frequencyType]'] = medicine['frequencyType'];
-        request.fields['Medication[${prescription['medication'].indexOf(medicine)}][treatment]'] = medicine['treatment'] ?? 'string';
-        medicine['frequencySelect'].length != 0 ? 
-        medicine['frequencySelect'].forEach((frequency) {
-          request.fields['Medication[${prescription['medication'].indexOf(medicine)}][frequencySelect][${medicine['frequencySelect'].indexOf(frequency)}]'] = frequency;
-        }) : request.fields['Medication[${prescription['medication'].indexOf(medicine)}][frequencySelect]'] = '';
+        request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][medicationName]'] =
+            medicine['medicationName'];
+        request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][dosage]'] =
+            medicine['dosage'];
+        request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][shape]'] =
+            medicine['shape'];
+        request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][isBeforeMeal]'] =
+            medicine['isBeforeMeal'].toString();
+        request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][note]'] =
+            medicine['note'] ?? 'nothing';
+        request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][remaining]'] =
+            medicine['remaining'].toString();
+        request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][frequencyType]'] =
+            medicine['frequencyType'];
+        request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][treatment]'] =
+            medicine['treatment'] ?? 'string';
+        medicine['frequencySelect'].length != 0
+            ? medicine['frequencySelect'].forEach((frequency) {
+                request.fields[
+                        'Medication[${prescription['medication'].indexOf(medicine)}][frequencySelect][${medicine['frequencySelect'].indexOf(frequency)}]'] =
+                    frequency;
+              })
+            : request.fields[
+                'Medication[${prescription['medication'].indexOf(medicine)}][frequencySelect]'] = '';
         medicine['schedule'].forEach((schedule) {
-          request.fields['Medication[${prescription['medication'].indexOf(medicine)}][schedule][${medicine['schedule'].indexOf(schedule)}]'] = schedule;
+          request.fields[
+                  'Medication[${prescription['medication'].indexOf(medicine)}][schedule][${medicine['schedule'].indexOf(schedule)}]'] =
+              schedule;
         });
       });
-      
+
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (jsonDecode(response.body)['status'] == 1) {
           return {'isSuccess': true, 'data': jsonDecode(response.body)};
@@ -185,7 +208,7 @@ class MedicineRepository {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('$baseUrl/medication-management/scan?accountID=$userID'),
+        Uri.parse('$baseUrl/medication-management/scan'),
       );
       request.files.add(await http.MultipartFile.fromPath('file', imgPath));
       var response = await request.send();
@@ -193,11 +216,7 @@ class MedicineRepository {
       var jsonResponse = jsonDecode(responseBody);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (jsonResponse['status'] == 1) {
-          return {'isSuccess': true, 'data': jsonResponse};
-        } else {
-          return {'isSuccess': false, 'data': jsonResponse};
-        }
+        return {'isSuccess': true, 'data': jsonResponse};
       } else {
         return {'isSuccess': false, 'data': jsonResponse};
       }

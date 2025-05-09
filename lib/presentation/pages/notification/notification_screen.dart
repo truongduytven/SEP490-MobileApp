@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +15,7 @@ import 'package:sep490/features/kidney_function/screens/add_kidney_function_scre
 import 'package:sep490/features/lipid_profile/screens/add_lipid_profile_screen.dart';
 import 'package:sep490/features/liver_enzymes/screens/add_liver_enzymes_screen.dart';
 import 'package:sep490/features/water_drinking/screens/water_drinking.dart';
-import 'package:sep490/presentation/layout/mobile_layout_screen.dart';
+import 'package:sep490/presentation/pages/emergency_alert/emergency_list.dart';
 import 'package:sep490/presentation/pages/medicine/home_medicine.dart';
 import 'package:sep490/presentation/pages/navigation_menu.dart';
 import 'package:sep490/presentation/pages/schedule/schedule_screen.dart';
@@ -36,17 +38,42 @@ class _NotificationScreenState extends State<NotificationScreen>
   SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper();
   late int userId = sharedPrefsHelper.getInt('accountId')!;
   late TabController _tabController;
-
+  late int roleId = sharedPrefsHelper.getInt('roleId') ?? 0;
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _fetchNotifications();
+    _setupFirebaseListeners();
+  }
+
+  // Hàm thiết lập lắng nghe thông báo Firebase
+  void _setupFirebaseListeners() {
+    // Lắng nghe khi app đang mở
+    _onMessageSubscription =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+
+    // Lắng nghe khi người dùng mở app từ thông báo
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  // Xử lý khi nhận được thông báo
+  void _handleNotification(RemoteMessage message) {
     _fetchNotifications();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _onMessageSubscription?.cancel();
+    _onMessageOpenedAppSubscription?.cancel();
     super.dispose();
   }
 
@@ -524,8 +551,12 @@ class _NotificationScreenState extends State<NotificationScreen>
           break;
 
         case 'cảnh báo sức khỏe':
-          print(
-              'Kiểu dữ liệu của notification["data"]: ${notification['data'].runtimeType}');
+          if (roleId == 3) {
+            sharedPrefsHelper.setInt(
+                'selectedElderlyUserId', notification['elderlyId'] ?? 0);
+            sharedPrefsHelper.setString(
+                'selectedElderlyUserName', notification['fullName'] ?? "");
+          }
 
           Map<String, dynamic>? dataMap;
 
@@ -802,22 +833,54 @@ class _NotificationScreenState extends State<NotificationScreen>
                 print("data ${notification['data']}");
                 break;
 
-              // case 'sos':
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => EmergencyDetailScreen(
-              //         emergencyId: notification['relatedId'],
-              //       ),
-              //     ),
-              //   );
-              //   break;
-
               // Thêm các trường hợp khác tùy theo loại thông báo
             }
           } else {
             print('Dữ liệu không hợp lệ hoặc không thể phân tích');
           }
+        case 'tín hiệu cầu cứu khẩn cấp':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmergencyList(),
+            ),
+          );
+          break;
+
+        case 'báo cáo tư vấn bác sĩ':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NavigationMenu(
+                keyIndex: 3,
+              ),
+            ),
+          );
+          break;
+
+        case 'bỏ qua lịch uống thuốc':
+          String data = notification['data'] ?? "";
+          if (data.isEmpty) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeMedicine(),
+              ),
+            );
+          } else {
+            List<String> dataList = data.split("-");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeMedicine(
+                  selectedYear: int.tryParse(dataList[0]),
+                  selectedMonth: int.tryParse(dataList[1]),
+                  selectedDay: int.tryParse(dataList[2]),
+                ),
+              ),
+            );
+          }
+          break;
       }
     }
 

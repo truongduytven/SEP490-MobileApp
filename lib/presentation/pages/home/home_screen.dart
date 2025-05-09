@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cherry_toast/cherry_toast.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -70,7 +71,8 @@ class _HomeScreenState extends State<HomeScreen>
   late int? selectedElderlyId;
   bool isShowSelectUser = false;
   bool isLoadingDialog = false;
-
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
   @override
   void initState() {
     super.initState();
@@ -98,7 +100,39 @@ class _HomeScreenState extends State<HomeScreen>
     if (roleId == 4) {
       getElderlyUserProfessor();
     }
+    _setupFirebaseListeners();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+// Hàm thiết lập lắng nghe thông báo Firebase
+  void _setupFirebaseListeners() {
+    // Lắng nghe khi app đang mở
+    _onMessageSubscription =
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+
+    // Lắng nghe khi người dùng mở app từ thông báo
+    _onMessageOpenedAppSubscription =
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotification(message);
+    });
+  }
+
+  // Xử lý khi nhận được thông báo
+  void _handleNotification(RemoteMessage message) {
+    print("getElderlyUserProfessor...");
+    getElderlyUserProfessor();
+  }
+
+  void getElderlySelectedData() async {
+    setState(() {
+      selectedElderlyUserId =
+          sharedPrefsHelper.getInt('selectedElderlyUserId') ?? 0;
+      selectedElderlyUserName =
+          sharedPrefsHelper.getString('selectedElderlyUserName') ?? '';
+      selectedElderlyId = sharedPrefsHelper.getInt('selectedElderlyId') ?? 0;
+    });
   }
 
   void _showSelectDialog() {
@@ -461,6 +495,8 @@ class _HomeScreenState extends State<HomeScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     routeObserver.unsubscribe(this);
+    _onMessageSubscription?.cancel();
+    _onMessageOpenedAppSubscription?.cancel();
     super.dispose();
   }
 
@@ -486,6 +522,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
     if (roleId == 3) {
       getElderlyUser();
+      getElderlySelectedData();
     }
     if (roleId == 4) {
       getElderlyUserProfessor();
@@ -518,10 +555,13 @@ class _HomeScreenState extends State<HomeScreen>
                     children: [
                       Header(
                         onPressed: _showSelectDialog,
-                        isChooseElderly: roleId == 3,
+                        isChooseElderly: roleId == 3 &&
+                            userList != null &&
+                            userList!.isNotEmpty,
                       ),
                       const SizedBox(height: 10),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (roleId == 2)
                             Row(
@@ -580,138 +620,153 @@ class _HomeScreenState extends State<HomeScreen>
                                     scrollDirection: Axis.horizontal,
                                     child: Row(
                                       children: [
-                                        HealthCard(
-                                          icon: 'assets/img3D/nhiptim.png',
-                                          label: 'Nhịp tim',
-                                          value:
-                                              '${healthIndicators['HeartRate']}',
-                                          index: 'BPM',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailHeartBeatScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon: 'assets/img3D/huyetap.png',
-                                          label: 'Huyết áp',
-                                          value:
-                                              '${healthIndicators['BloodPressure']}',
-                                          index: 'MmHg',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailBloodPressureScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
-                                              'assets/img3D/treatment_medical/tieuduong.png',
-                                          label: 'Đường huyết',
-                                          value:
-                                              '${healthIndicators['BloodGlucose']}',
-                                          index: 'mmol/l',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon: 'assets/img3D/cannang.png',
-                                          label: 'Cân nặng',
-                                          value:
-                                              '${healthIndicators['Weight']}',
-                                          index: 'Kg',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon: 'assets/img3D/chieucao.png',
-                                          label: 'Chiều cao',
-                                          value:
-                                              '${healthIndicators['Height']}',
-                                          index: 'cm',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailHeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
-                                              'assets/img3D/treatment_medical/momau.webp',
-                                          label: 'Mỡ máu',
-                                          value:
-                                              '${healthIndicators['LipidProfile']}',
-                                          index: 'mmol/l',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
-                                              'assets/img3D/treatment_medical/gan.png',
-                                          label: 'Men gan',
-                                          value:
-                                              '${healthIndicators['LiverEnzyme']}',
-                                          index: 'UI/L',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        HealthCard(
-                                          icon:
-                                              'assets/img3D/treatment_medical/than.png',
-                                          label: 'Chức năng thận',
-                                          value:
-                                              '${healthIndicators['KidneyFunction']}',
-                                          index: 'mL/phút/1.73m2',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailWeightScreen(), // Replace with the correct screen
-                                              ),
-                                            );
-                                          },
-                                        ),
+                                        if (healthIndicators['HeartRate'] !=
+                                            "0")
+                                          HealthCard(
+                                            icon: 'assets/img3D/nhiptim.png',
+                                            label: 'Nhịp tim',
+                                            value:
+                                                '${healthIndicators['HeartRate']}',
+                                            index: 'BPM',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailHeartBeatScreen(), // Replace with the correct screen
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        if (healthIndicators['BloodPressure'] !=
+                                            "0")
+                                          HealthCard(
+                                            icon: 'assets/img3D/huyetap.png',
+                                            label: 'Huyết áp',
+                                            value:
+                                                '${healthIndicators['BloodPressure']}',
+                                            index: 'MmHg',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailBloodPressureScreen(), // Replace with the correct screen
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        if (healthIndicators['BloodGlucose'] !=
+                                            "0")
+                                          HealthCard(
+                                            icon:
+                                                'assets/img3D/treatment_medical/tieuduong.png',
+                                            label: 'Đường huyết',
+                                            value:
+                                                '${healthIndicators['BloodGlucose']}',
+                                            index: 'mmol/l',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailWeightScreen(), // Replace with the correct screen
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        if (healthIndicators['Weight'] != "0")
+                                          HealthCard(
+                                            icon: 'assets/img3D/cannang.png',
+                                            label: 'Cân nặng',
+                                            value:
+                                                '${healthIndicators['Weight']}',
+                                            index: 'Kg',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailWeightScreen(), // Replace with the correct screen
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        if (healthIndicators['Height'] != "0")
+                                          HealthCard(
+                                            icon: 'assets/img3D/chieucao.png',
+                                            label: 'Chiều cao',
+                                            value:
+                                                '${healthIndicators['Height']}',
+                                            index: 'cm',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailHeightScreen(), // Replace with the correct screen
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        if (healthIndicators['LipidProfile'] !=
+                                            "0")
+                                          HealthCard(
+                                            icon:
+                                                'assets/img3D/treatment_medical/momau.webp',
+                                            label: 'Mỡ máu',
+                                            value:
+                                                '${healthIndicators['LipidProfile']}',
+                                            index: 'mmol/l',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailWeightScreen(), // Replace with the correct screen
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        if (healthIndicators['LiverEnzyme'] !=
+                                            "0")
+                                          HealthCard(
+                                            icon:
+                                                'assets/img3D/treatment_medical/gan.png',
+                                            label: 'Men gan',
+                                            value:
+                                                '${healthIndicators['LiverEnzyme']}',
+                                            index: 'UI/L',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailWeightScreen(), // Replace with the correct screen
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        if (healthIndicators[
+                                                'KidneyFunction'] !=
+                                            "0")
+                                          HealthCard(
+                                            icon:
+                                                'assets/img3D/treatment_medical/than.png',
+                                            label: 'Chức năng thận',
+                                            value:
+                                                '${healthIndicators['KidneyFunction']}',
+                                            index: 'mL/phút/1.73m2',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailWeightScreen(), // Replace with the correct screen
+                                                ),
+                                              );
+                                            },
+                                          ),
                                       ],
                                     ),
                                   ),
@@ -891,25 +946,31 @@ class _HomeScreenState extends State<HomeScreen>
                                           )
                                         : SizedBox(
                                             height: 170,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                const SizedBox(height: 10),
-                                                Image.asset(
-                                                    'assets/img/no-data.png',
-                                                    width: 50,
-                                                    height: 50),
-                                                const SizedBox(height: 10),
-                                                const Text(
-                                                  'Không có lịch trình nào trong ngày hôm nay',
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: AppColors.textColor,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 5.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  const SizedBox(height: 10),
+                                                  Image.asset(
+                                                      'assets/img/no-data.png',
+                                                      width: 50,
+                                                      height: 50),
+                                                  const SizedBox(height: 10),
+                                                  const Text(
+                                                    'Không có lịch trình nào trong ngày hôm nay',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          AppColors.textColor,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           )
                                     : SizedBox(

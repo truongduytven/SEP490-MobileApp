@@ -246,7 +246,8 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                             toastDuration: Duration(seconds: 2),
                             title: Text(
                               "Không thể chọn giờ trong quá khứ",
-                              style: TextStyle(color: Colors.black, fontSize: 22),
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 22),
                             ),
                           ).show(context);
                           Navigator.pop(context);
@@ -255,7 +256,7 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                         }
                       }
 
-                      if (key == "endTime") {                  
+                      if (key == "endTime") {
                         String? startTimeStr = schedules[index]["startTime"];
                         if (startTimeStr != null) {
                           List<String> startSplit = startTimeStr.split(":");
@@ -267,7 +268,8 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
                               toastDuration: Duration(seconds: 2),
                               title: Text(
                                 "Thời gian kết thúc phải sau thời gian bắt đầu",
-                                style: TextStyle(color: Colors.black, fontSize: 22),
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 22),
                               ),
                             ).show(context);
                             Navigator.pop(context);
@@ -304,6 +306,33 @@ class _CreateCalendarScreenState extends State<CreateCalendarScreen> {
 
   void handleAddActivity() async {
     if (_formKey.currentState!.validate()) {
+      for (var schedule in schedules) {
+        String? startTimeStr = schedule["startTime"];
+        String? endTimeStr = schedule["endTime"];
+
+        if (startTimeStr != null && endTimeStr != null) {
+          List<String> startSplit = startTimeStr.split(":");
+          List<String> endSplit = endTimeStr.split(":");
+
+          int startHour = int.parse(startSplit[0]);
+          int startMinute = int.parse(startSplit[1]);
+          int endHour = int.parse(endSplit[0]);
+          int endMinute = int.parse(endSplit[1]);
+
+          // Compare times
+          if (endHour < startHour ||
+              (endHour == startHour && endMinute <= startMinute)) {
+            CherryToast.error(
+              toastDuration: Duration(seconds: 2),
+              title: Text(
+                "Thời gian kết thúc phải sau thời gian bắt đầu",
+                style: TextStyle(color: Colors.black, fontSize: 22),
+              ),
+            ).show(context);
+            return; // Exit the method if validation fails
+          }
+        }
+      }
       LoadingDialog.show(
           context, 'assets/gif/loading_calendar.gif', "Đang tạo sự kiện...");
 

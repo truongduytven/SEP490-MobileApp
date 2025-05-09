@@ -146,7 +146,7 @@ class _HomeMedicineState extends State<HomeMedicine> {
       });
     } else {
       Fluttertoast.showToast(
-        msg: "Có lỗi trong quá trình xử lý!",
+        msg: medicineController.message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,

@@ -82,7 +82,7 @@ class _SignUpFirstState extends State<SignUpFirst> {
           prefs.setString('typeSignUp', response['data']['data']['method']);
           print(response['data']['data']['method']);
           prefs.setString('emailOrPhoneSignUp', input);
-          prefs.setInt('accountId', response['data']['data']['accountId'] ?? 0);
+          prefs.setInt('accountIdSignUp', response['data']['data']['accountId'] ?? 0);
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return OtpScreen();
           }));
@@ -99,7 +99,7 @@ class _SignUpFirstState extends State<SignUpFirst> {
         }
       } else {
         setState(() {
-          errorMessage = "Không đúng định dạng. Vui lòng thử lại";
+          errorMessage = "Số điện thoại phải bắt đầu bằng 0 và có 10 chữ số";
         });
       }
     }

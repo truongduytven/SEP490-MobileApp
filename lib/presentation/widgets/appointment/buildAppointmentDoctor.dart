@@ -4,6 +4,7 @@ import 'package:sep490/features/health/screens/health_screen.dart';
 import 'package:sep490/features/video_conference/screens/video_conference_page.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/screens/report_appointment.dart';
+import 'package:sep490/presentation/pages/home/view_detail_elderly.dart';
 import 'package:sep490/theme/color.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
@@ -148,6 +149,20 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: Text(
+                        widget.appoimentDoctor!.description,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.secondaryColor,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 GestureDetector(
@@ -159,7 +174,7 @@ class BuildAppointmentDoctorState extends State<BuildAppointmentDoctor> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HealthScreen(),
+                        builder: (context) => ViewDetailElderly(elderlyId: widget.appoimentDoctor!.accountId,),
                       ),
                     );
                   },

@@ -522,7 +522,7 @@ class _EmergencyDetailState extends State<EmergencyDetail> {
             Center(
               child: GestureDetector(
                 onTap: () {
-                  _openGoogleMaps(10.8539804, 106.6698322);
+                  _openGoogleMaps(double.tryParse(emergencyInformationList.first.latitude) ?? 0, double.tryParse(emergencyInformationList.first.longitude) ?? 0);
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

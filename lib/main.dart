@@ -23,6 +23,8 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -842,6 +844,17 @@ class _MyAppState extends State<MyApp>
       navigatorObservers: [routeObserver],
       onGenerateRoute: (settings) => generateRoute(settings),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        MonthYearPickerLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('vi', 'VN'),
+        // Add others if needed
+      ],
+      locale: const Locale('vi', 'VN'),
       builder: (BuildContext context, Widget? child) {
         return Stack(
           children: [

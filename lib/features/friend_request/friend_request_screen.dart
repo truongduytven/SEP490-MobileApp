@@ -206,6 +206,7 @@ class _FriendRequestScreenState extends ConsumerState<FriendRequestScreen> {
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           bottom: PreferredSize(
             preferredSize:
                 Size.fromHeight(10), // Adjust the height of the TabBar

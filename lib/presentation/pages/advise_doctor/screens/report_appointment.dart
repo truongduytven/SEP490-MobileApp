@@ -4,8 +4,6 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:sep490/models/doctor.dart';
 import 'package:sep490/presentation/pages/advise_doctor/controllers/doctor_controller.dart';
-import 'package:sep490/presentation/widgets/appointment/buildAppointmentCard.dart';
-import 'package:sep490/presentation/widgets/appointment/buildAppointmentDoctor.dart';
 import 'package:sep490/theme/color.dart';
 
 class ReportAppointment extends StatefulWidget {
@@ -75,8 +73,8 @@ class _ReportAppointmentState extends State<ReportAppointment> {
         solutionController.text);
 
     Timer(const Duration(seconds: 1), () {
-      if (doctorController.isRatingSuccess) {
-        if (!mounted) return;
+      if (!mounted) return;
+      if (doctorController.isSendReportSuccess) {
         CherryToast.success(
           toastDuration: Duration(seconds: 3),
           title: Text(
@@ -92,7 +90,7 @@ class _ReportAppointmentState extends State<ReportAppointment> {
         CherryToast.error(
           toastDuration: Duration(seconds: 3),
           title: Text(
-            "Gửi báo cáo thất bại, vui lòng thử lại",
+            doctorController.errorMessage,
             style: TextStyle(
               color: Colors.black,
               fontSize: 20,
@@ -122,26 +120,192 @@ class _ReportAppointmentState extends State<ReportAppointment> {
             child: Column(
               children: [
                 if (widget.appoimentDoctor != null)
-                  BuildAppointmentCard(
-                    appoimentDoctor: widget.appoimentDoctor,
-                    onCancel: () => Future.value(),
-                    onJoin: () => Future.value(),
-                    onReport: () => Future.value(),
-                    isListCard: false,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.grey.shade200,
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 35,
+                              backgroundImage: NetworkImage(
+                                widget.appoimentDoctor?.professorAvatar ?? '',
+                              ),
+                              backgroundColor: Colors.grey[100],
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.appoimentDoctor?.professorName ?? '',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black87,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 6),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_today_rounded,
+                                        size: 14,
+                                        color: Colors.blue.shade700,
+                                      ),
+                                      SizedBox(width: 6),
+                                      Text(
+                                        widget.appoimentDoctor?.dateTime ?? '',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.blue.shade700,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 if (widget.appoimentElderly != null)
-                  BuildAppointmentDoctor(
-                    appoimentDoctor: widget.appoimentElderly,
-                    onCancel: () => Future.value(),
-                    onJoin: () => Future.value(),
-                    onReport: () => Future.value(),
-                    isListCard: false,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.grey.shade200,
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 35,
+                              backgroundImage: NetworkImage(
+                                widget.appoimentElderly?.avatar ?? '',
+                              ),
+                              backgroundColor: Colors.grey[100],
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.appoimentElderly?.elderlyName ?? '',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black87,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 6),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_today_rounded,
+                                        size: 14,
+                                        color: Colors.blue.shade700,
+                                      ),
+                                      SizedBox(width: 6),
+                                      Text(
+                                        widget.appoimentElderly?.dateTime ?? '',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.blue.shade700,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : (_report == null ||
-                            (_report!.content.isEmpty &&
-                                _report!.solution.isEmpty) ) && !widget.isEdited
+                                (_report!.content.isEmpty &&
+                                    _report!.solution.isEmpty)) &&
+                            !widget.isEdited
                         ? Expanded(
                             child: Center(
                                 child: Text(
@@ -169,8 +333,8 @@ class _ReportAppointmentState extends State<ReportAppointment> {
                                       fontSize: 20,
                                       fontWeight: FontWeight.w500),
                                 )),
-                                _buildContentBox(
-                                    solutionController,!widget.isEdited ? _report!.content : ''),
+                                _buildContentBox(solutionController,
+                                    !widget.isEdited ? _report!.solution : ''),
                                 const SizedBox(height: 20),
                                 if (widget.isEdited)
                                   Row(
